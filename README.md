@@ -98,6 +98,19 @@ mức (PDF, Word, Excel 50 MB · ảnh 20 MB · không nhận video) rồi chỉ
 trình duyệt (tối đa 480px) để hiện được trong thư viện; khoảng 80–100 ảnh là đầy `sessionStorage`, khi đó
 hệ thống báo thật chứ không im lặng nuốt mất dữ liệu.
 
+## Bốn quyết định chốt ngày 14/08/2026
+
+Dựng phần quản trị buộc mọi câu hỏi về quyền phải có đúng một câu trả lời, và ba câu trước đây
+có nhiều hơn một. Bản mô phỏng nay theo bốn quyết định dưới đây; tài liệu trong repo
+`reco-sales-hub` đã được sửa cho khớp (QD-049 → QD-052 trong `docs/09-decisions/decision-log.md`).
+
+| Mã | Quyết định | Vì sao |
+| --- | --- | --- |
+| QD-049 | **Tổng giám đốc** xem toàn bộ và duyệt nội dung đặc biệt, **không cập nhật dữ liệu và không cấp tài khoản**; vẫn xem được danh sách người dùng ở chế độ chỉ đọc | Ba tài liệu mô tả vai trò này theo ba kiểu khác nhau. Tách người quyền cao nhất khỏi cả việc tự sửa lẫn việc tự phát quyền, giữ được ranh giới ai sửa — ai duyệt |
+| QD-050 | **Marketing không soạn kịch bản kinh doanh dùng chung**; việc soạn thuộc Thư ký kinh doanh và Giám đốc dự án. Marketing giữ mẫu nội dung và ảnh đã duyệt | Ma trận nhánh 7 cho Marketing đúng quyền xem; Thư ký kinh doanh đã được ghi rõ "Chỉ Kịch bản dùng chung" nên việc soạn có người nhận |
+| QD-051 | **HCNS & Kế toán** trong cây thư mục chỉ thấy nhánh 1 và phần số liệu ở nhánh 7 | Bảng hàng, pháp lý, tài liệu bán hàng, ảnh và hỏi đáp không thuộc phạm vi nhân sự — kế toán |
+| QD-052 | Bảng hàng quản lý theo **phân khu → tòa hoặc dãy → tầng → căn/lô**; khối *Vị trí và liên kết vùng* lưu trong `content_sections` | MH-09 đã hứa quản lý phân cấp nhưng chưa có giao diện; khối Vị trí chưa có bảng nào trong schema |
+
 ## Đọc trước khi code thật: kho của bản mô phỏng ≠ schema
 
 Kho trong `store.js` được gom cho gọn để một tệp JS chạy được mọi màn. **Schema thật tách nhỏ hơn.**
