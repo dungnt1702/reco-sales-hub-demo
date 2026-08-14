@@ -273,18 +273,25 @@ document.addEventListener('DOMContentLoaded', function () {
   /* Tìm theo tên tệp và tên thư mục — MH-11 yêu cầu tìm được trong cây,
      không bắt người dùng mở lần lượt bảy nhánh. */
   var q = '';
-  function hitFolder(f) { return !q || RECO.norm(f.name).indexOf(q) >= 0; }
-  function hitDoc(d) { return !q || RECO.norm(d.name).indexOf(q) >= 0; }
+  /* Thư mục, tệp và ảnh đều khớp theo tên nên dùng chung một phép thử — hai hàm riêng
+     là cách chắc chắn để một ngày nào đó chỗ này lọc còn chỗ kia thì không. */
+  function hitName(x) { return !q || RECO.norm(x.name).indexOf(q) >= 0; }
+  /* Thư mục hiện khi chính nó khớp, hoặc khi có tệp bên trong khớp — tìm ra một tệp
+     mà không có đường bấm tới nó thì coi như không tìm thấy. */
+  function folderHit(f) {
+    return hitName(f) || seen(docs(f.branch, f.id)).some(hitName);
+  }
   function branchHits(b) {
-    var fs = folders(b).filter(canSee).filter(hitFolder);
-    var ds = seen(docs(b)).filter(hitDoc);
-    return fs.length + ds.length;
+    var fs = folders(b).filter(canSee).filter(folderHit);
+    var ds = seen(docs(b)).filter(hitName);
+    var ms = b === 5 ? medias() : [];
+    return fs.length + ds.length + ms.length;
   }
 
   function treeHtml() {
     return '<ul>' + S.BRANCHES.map(function (name, i) {
       var b = i + 1;
-      var subs = folders(b).filter(canSee).filter(hitFolder);
+      var subs = folders(b).filter(canSee).filter(folderHit);
       if (q && !branchHits(b)) return '';
       var open = q ? true : !!expanded[b];
       var kids = subs.map(function (f) {
@@ -348,10 +355,13 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function folderRow(f) {
-    var n = seen(docs(f.branch, f.id)).length;
+    var inside = seen(docs(f.branch, f.id));
+    /* Đang tìm thì đếm số tệp khớp bên trong, để con số trên dòng khớp với thứ mở ra sẽ thấy */
+    var khop = inside.filter(hitName).length;
+    var n = q ? khop : inside.length;
     return '<div class="frow"><span class="fico">' + RECO.svg('folder') + '</span>' +
       '<div class="fmeta"><div class="fname">' + esc(f.name) + '</div>' +
-      '<div class="fsub"><span>Thư mục con · ' + n + ' tệp</span>' + S.label(f.label) + '</div></div>' +
+      '<div class="fsub"><span>Thư mục con · ' + n + ' tệp' + (q ? ' khớp' : '') + '</span>' + S.label(f.label) + '</div></div>' +
       '<div class="fend"><button type="button" class="btn btn-quiet btn-sm" data-act="open" data-id="' + f.id + '">Mở</button></div></div>';
   }
 
@@ -375,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
       '</div></div>';
   }
   function medias() {
-    return S.get('media').filter(function (m) { return m.pj === pj && canSee(m); });
+    return S.get('media').filter(function (m) { return m.pj === pj && canSee(m) && hitName(m); });
   }
 
   function paneHtml() {
@@ -387,27 +397,33 @@ document.addEventListener('DOMContentLoaded', function () {
     if (sel.folder) {
       var f = S.find('folders', sel.folder);
       if (!f) { sel.folder = null; return paneHtml(); }
-      var list = seen(docs(b, f.id));
+      /* Đang tìm thì bên trong thư mục cũng chỉ hiện tệp khớp — đúng con số ghi ở dòng thư mục */
+      var list = seen(docs(b, f.id)).filter(hitName);
       return '<div class="card">' +
         '<div class="card-head"><div>' +
           '<span class="eyebrow">Nhánh ' + b + ' · ' + esc(bName) + '</span><h3>' + esc(f.name) + '</h3>' +
-          '<div class="row-tight mt-1">' + S.label(f.label) + '<span class="chip">' + list.length + ' tệp</span></div></div>' +
+          '<div class="row-tight mt-1">' + S.label(f.label) +
+          '<span class="chip">' + list.length + ' tệp' + (q ? ' khớp từ khoá' : '') + '</span></div></div>' +
           '<div class="row-tight">' + upBtn +
             '<button type="button" class="btn btn-quiet btn-sm" data-act="up">← Về nhánh ' + b + '</button></div>' +
         '</div>' +
         (list.length
           ? '<div>' + list.map(function (d) { return fileRow(d, f.label, f.name); }).join('') + '</div>'
-          : '<div style="padding:14px">' + RECO_DATA.empty('Thư mục con này chưa có tệp',
-              'Tệp đưa vào đây tự mang nhãn ' + S.LABELS[f.label].text + ' của thư mục cha.', upBtn) + '</div>') +
+          : '<div style="padding:14px">' + (q
+              ? RECO_DATA.empty('Không có tệp nào khớp trong thư mục này',
+                  'Xóa từ khoá ở ô tìm bên trái để xem toàn bộ nội dung thư mục.')
+              : RECO_DATA.empty('Thư mục con này chưa có tệp',
+                  'Tệp đưa vào đây tự mang nhãn ' + S.LABELS[f.label].text + ' của thư mục cha.', upBtn)) + '</div>') +
         '</div>' +
         '<div class="note mt-3"><strong>Nhãn quyền kế thừa xuống.</strong> Thư mục con mang nhãn ' +
           S.LABELS[f.label].text + ' trong khi nhánh cha là ' + S.LABELS[bLabel].text +
           ' — nội dung con chỉ được siết chặt hơn, không bao giờ được nới lỏng hơn nội dung cha.</div>';
     }
 
-    var subs = folders(b).filter(canSee).filter(hitFolder);
-    var here = seen(docs(b, null)).filter(hitDoc);
-    var total = seen(docs(b)).length;
+    var subs = folders(b).filter(canSee).filter(folderHit);
+    var here = seen(docs(b, null)).filter(hitName);
+    /* Đếm phải cùng bộ lọc với danh sách đang hiện, nếu không chip nói một đằng mắt thấy một nẻo */
+    var total = seen(docs(b)).filter(hitName).length;
     var pics = b === 5 ? medias() : [];
     var body = subs.map(folderRow).join('') + pics.map(mediaRow).join('') +
       here.map(function (d) { return fileRow(d, bLabel, 'nhánh ' + b); }).join('');
@@ -417,14 +433,17 @@ document.addEventListener('DOMContentLoaded', function () {
         '<span class="eyebrow">Nhánh ' + b + '</span><h3>' + esc(bName) + '</h3>' +
         '<div class="row-tight mt-1">' + S.label(bLabel) +
         '<span class="chip">' + subs.length + ' thư mục con · ' + total + ' tệp' +
-        (b === 5 ? ' · ' + pics.length + ' ảnh' : '') + '</span></div></div>' +
+        (b === 5 ? ' · ' + pics.length + ' ảnh' : '') + (q ? ' khớp từ khoá' : '') + '</span></div></div>' +
         '<div class="row-tight">' + addBtn + upBtn + imgBtn + '</div>' +
       '</div>' +
       (body
         ? '<div>' + body + '</div>'
-        : '<div style="padding:14px">' + RECO_DATA.empty('Nhánh này chưa có tài liệu nào',
-            'Bảy nhánh cố định luôn tồn tại ở mọi dự án, kể cả khi chưa có tệp. Tạo thư mục con để sắp xếp trước khi Chủ đầu tư gửi tài liệu.',
-            '<button type="button" class="btn btn-outline" data-act="addsub" data-roles="' + ADD_ROLES + '">+ Thư mục con</button>' + upBtn) + '</div>') +
+        : '<div style="padding:14px">' + (q
+            ? RECO_DATA.empty('Không có gì khớp trong nhánh này',
+                'Xóa từ khoá ở ô tìm bên trái để xem lại toàn bộ nhánh.')
+            : RECO_DATA.empty('Nhánh này chưa có tài liệu nào',
+                'Bảy nhánh cố định luôn tồn tại ở mọi dự án, kể cả khi chưa có tệp. Tạo thư mục con để sắp xếp trước khi Chủ đầu tư gửi tài liệu.',
+                '<button type="button" class="btn btn-outline" data-act="addsub" data-roles="' + ADD_ROLES + '">+ Thư mục con</button>' + upBtn)) + '</div>') +
       '</div>' +
       (b === 2 ? '<div class="note note-navy mt-3">Tài liệu thuộc <strong>liên kết sống</strong> do Chủ đầu tư sở hữu — RECO chỉ xem, không sửa được trong Sales Hub.</div>' : '') +
       (b === 7 ? '<div class="note note-navy mt-3">Nhánh này <strong>không bao giờ có phần Công khai</strong> và không có chức năng chia sẻ ra ngoài. Nhân viên bán hàng không có quyền trên nhánh này, trừ kịch bản cá nhân do chính mình tạo.</div>' : '');

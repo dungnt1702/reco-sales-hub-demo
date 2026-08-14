@@ -162,7 +162,7 @@ sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiế
 ```
 
 ```powershell
-.\check-all.ps1                # chay ca bon bo kiem tra, in ra cac dong khong dat
+.\check-all.ps1                # chay ca nam bo kiem tra, in ra cac dong khong dat
 .\check-all.ps1 -Only actions  # chi mot bo
 ```
 
@@ -172,6 +172,7 @@ sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiế
 | `_check-roles.html` | 82 trường hợp ẩn/hiện theo vai trò |
 | `_check-actions.html` | **Bấm thử từng phần tử** trên mọi màn, so nội dung trước/sau. Đạt khi DOM đổi, hoặc mở hộp thoại, hoặc phần tử mang `data-gd2`. Toast không tính — nó nằm ngoài vùng so sánh. Kiểm thêm: hành động khó hoàn tác có hỏi lại không, ô nhập có phản hồi không, còn liên kết cụt `href="#"` không, và biểu mẫu tải tài liệu có chặn lỗi rồi ghi thật vào kho không |
 | `_check-bundle.html` | Bản một tệp: dựng màn, tràn ngang, liên kết, ảnh và phông nhúng sẵn, phân quyền, mã riêng từng màn |
+| `_check-tim.html` | Tìm trong cây thư mục: con số trên chip phải bằng đúng số dòng người dùng với tới được, thư mục chứa tệp khớp phải hiện ra để bấm vào, ảnh cũng theo bộ lọc |
 
 Ba cạm bẫy khi tự viết bộ kiểm tra cho bộ này, đã trả giá rồi mới biết:
 - Đổi hai bộ lọc liên tiếp trong nhịp chờ 250ms cho ra DOM y hệt nhau → tưởng ô lọc chết. Phải trả ô về giá trị cũ sau mỗi lần thử.

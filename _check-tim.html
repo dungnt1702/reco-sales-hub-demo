@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="utf-8"><title>Kiểm tra: tìm trong cây thư mục</title>
+<style>body{font:13px/1.55 monospace;margin:16px;background:#111;color:#ddd}pre{white-space:pre-wrap}iframe{position:absolute;left:-99999px;width:1280px;height:900px;border:0}</style></head>
+<body>
+<h1>Con số trên chip phải bằng đúng số dòng đang hiện</h1>
+<pre id="out">Đang chạy…</pre>
+<div id="frames"></div>
+<script>
+var out = document.getElementById('out'), frames = document.getElementById('frames');
+var lines = [], fail = 0;
+function say(ok, msg) { if (!ok) fail++; lines.push((ok ? 'OK   ' : 'HONG ') + msg); }
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+function load(role) {
+  return new Promise(function (res) {
+    var f = document.createElement('iframe');
+    f.src = 'cay-thu-muc.html?bare=1&role=' + role;
+    f.onload = function () { setTimeout(function () { res(f); }, 300); };
+    frames.appendChild(f);
+  });
+}
+/* Chip dạng "N thư mục con · M tệp[ · K ảnh][ khớp từ khoá]" */
+function chip(d) {
+  var el = d.querySelector('#pane .chip');
+  var m = /(\d+) thư mục con · (\d+) tệp(?: · (\d+) ảnh)?/.exec(el ? el.textContent : '');
+  return m ? { thumuc: +m[1], tep: +m[2], anh: m[3] ? +m[3] : 0, text: el.textContent.trim() } : null;
+}
+function dem(d) {
+  var pane = d.querySelector('#pane');
+  return {
+    thumuc: pane.querySelectorAll('.frow [data-act="open"]').length,
+    tep: pane.querySelectorAll('.frow[data-doc]').length,
+    anh: pane.querySelectorAll('.frow[data-media]').length
+  };
+}
+function go(d, tu) {
+  var o = d.getElementById('t-q');
+  o.value = tu;
+  o.dispatchEvent(new d.defaultView.Event('input', { bubbles: true }));
+}
+function chonNhanh(d, b) {
+  var n = d.querySelector('.tnode.root[data-branch="' + b + '"]');
+  if (n) n.click();
+  return !!n;
+}
+
+(async function () {
+  var f = await load('gddu');
+  var d = f.contentDocument;
+
+  /* 1 · Không tìm gì: chip phải khớp danh sách ở nhánh 1 */
+  chonNhanh(d, 1);
+  var c = chip(d), n = dem(d);
+  say(c && c.thumuc === n.thumuc, 'nhanh 1 khong loc: so thu muc tren chip = so dong (' + (c && c.thumuc) + ' vs ' + n.thumuc + ')');
+
+  /* 2 · Tìm "quy hoạch" — tệp d10 nằm TRONG thư mục f2 "Tiến độ thi công" */
+  go(d, 'quy hoạch');
+  await wait(120);
+  chonNhanh(d, 1);
+  c = chip(d); n = dem(d);
+  say(!!c, 'nhanh 1 con hien khi tim "quy hoach"');
+  say(c && c.thumuc === n.thumuc,
+      'so thu muc tren chip = so dong dang hien (' + (c && c.thumuc) + ' vs ' + n.thumuc + ')');
+  say(c && c.thumuc >= 1, 'thu muc chua tep khop van hien ra de bam vao (' + (c && c.thumuc) + ')');
+  say(!!(c && /khớp/.test(c.text)), 'chip noi ro day la so khop: "' + (c && c.text) + '"');
+
+  /* Đây là chính lỗi được báo: số tệp trên chip phải bằng số tệp NGƯỜI DÙNG với tới được —
+     tệp nằm thẳng trong nhánh, cộng tệp bên trong các thư mục con đang hiện. */
+  var trongThuMuc = 0;
+  Array.prototype.forEach.call(d.querySelectorAll('#pane .frow'), function (row) {
+    if (!row.querySelector('[data-act="open"]')) return;
+    var m = /(\d+) tệp/.exec(row.textContent);
+    if (m) trongThuMuc += +m[1];
+  });
+  say(c && c.tep === n.tep + trongThuMuc,
+      'so tep tren chip = tep hien thang (' + n.tep + ') + tep trong thu muc dang hien (' +
+      trongThuMuc + ') → chip noi ' + (c && c.tep));
+
+  /* 3 · Mở đúng thư mục đó: chỉ thấy tệp khớp, và chip khớp số dòng */
+  var mo = d.querySelector('#pane .frow [data-act="open"]');
+  say(!!mo, 'co nut Mo tren dong thu muc');
+  if (mo) {
+    mo.click();
+    await wait(80);
+    var tep = d.querySelectorAll('#pane .frow[data-doc]').length;
+    var ch = d.querySelector('#pane .chip');
+    var sc = /(\d+) tệp/.exec(ch ? ch.textContent : '');
+    say(!!sc && +sc[1] === tep, 'trong thu muc: chip = so dong (' + (sc && sc[1]) + ' vs ' + tep + ')');
+    say(tep === 1, 'chi hien dung tep khop, khong hien ca thu muc (' + tep + ')');
+  }
+
+  /* 4 · Nhánh 5: ảnh cũng phải theo bộ lọc, không hiện tràn khi tìm */
+  f.remove();
+  f = await load('gddu'); d = f.contentDocument;
+  chonNhanh(d, 5);
+  var truoc = dem(d).anh;
+  go(d, 'khong-co-gi-khop-dau-2026');
+  await wait(120);
+  var sau = d.querySelector('#pane') ? dem(d).anh : 0;
+  say(truoc > 0, 'nhanh 5 khong loc co ' + truoc + ' anh');
+  say(sau === 0, 'tim tu khoa khong khop: anh cung bien mat (' + sau + ')');
+  f.remove();
+
+  lines.push('');
+  lines.push(fail ? '=== ' + fail + ' MUC HONG ===' : '=== TAT CA DEU DUNG ===');
+  out.textContent = lines.join('\n');
+  document.title = 'XONG';
+})();
+</script>
+</body>
+</html>
