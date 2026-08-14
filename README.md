@@ -109,7 +109,7 @@ Ai code Giai đoạn 1 phải theo `docs/12-architecture/database-schema.md`, kh
 | `sections` `kind:'point'` | `selling_points` | |
 | `sections` `kind:'plan'` | **`documents`** nhánh `sales_docs`, `kind='matbang'` | Bản mô phỏng để riêng cho dễ sửa tại chỗ; thật thì mặt bằng là tài liệu, **đừng tạo bảng thứ hai** |
 | `sections` `kind:'content'` | **`content_templates`** | Trùng vai trò với kho `templates` của màn Chuẩn bị nội dung — thật thì chỉ một bảng |
-| `sections` `kind:'place'` | **chưa có bảng nào** | Khu vực 02 *Vị trí và liên kết vùng* không có chỗ lưu trong schema — cần bổ sung trước khi code |
+| `sections` `kind:'place'` | `content_sections` (`branch_key='project_info'`) | Mỗi điểm liên kết là một dòng: `title` = tên địa điểm, `body` = "2,1 km · 5 phút". Giai đoạn 1 chỉ hiển thị nên chưa tách số; muốn lọc theo khoảng cách hay chấm lên bản đồ thì Giai đoạn 2 mới cần bảng riêng |
 | `media` | `documents` nhánh `media_library` | Schema không có bảng ảnh riêng |
 | `qas` | `faq_groups` + `faq_items` | Bản mô phỏng bỏ tầng nhóm hỏi đáp |
 | `scripts` | `sales_scripts` + `script_promotion_requests` | `scope` thật là `shared`/`personal`; đề xuất là **bảng riêng**, không phải `scope:'proposal'` |
