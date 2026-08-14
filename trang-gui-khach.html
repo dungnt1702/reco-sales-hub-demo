@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (shots.length) {
     gal.innerHTML = shots.map(function (m, i) {
       return '<button type="button" data-i="' + i + '" aria-label="Xem ảnh lớn: ' + E(m.name) + '">' +
-        '<img src="' + RECO.asset(m.img) + '" alt="' + E(m.name) + '" loading="lazy"></button>';
+        '<img src="' + S.imgSrc(m) + '" alt="' + E(m.name) + '" loading="lazy"></button>';
     }).join('');
   }
 
@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!shots.length) return;
     at = (i + shots.length) % shots.length;
     var m = shots[at];
-    lbxImg.src = RECO.asset(m.img);
+    lbxImg.src = S.imgSrc(m);
     lbxImg.alt = m.name;
     lbxCap.textContent = m.name;
     lbxCount.textContent = 'Ảnh ' + (at + 1) + ' trên ' + shots.length;

@@ -49,7 +49,10 @@
         <div class="card">
           <div class="card-head" style="padding-block:13px">
             <h3 style="font-size:.98rem">Bảy nhánh cố định</h3>
-            <button class="btn btn-outline btn-sm" id="add-top" data-roles="tkkd gddu mkt gd">+ Thư mục con</button>
+            <div class="row-tight">
+              <button class="btn btn-outline btn-sm" id="add-top" data-roles="tkkd gddu mkt gd">+ Thư mục con</button>
+              <button class="btn btn-primary btn-sm" id="up-top" data-roles="tkkd gddu gd">+ Tải tài liệu</button>
+            </div>
           </div>
           <div class="card-body" style="padding:10px">
             <div class="tree" id="tree"></div>
@@ -88,6 +91,109 @@
     <div class="modal-foot">
       <button class="btn btn-outline" data-close="1">Hủy</button>
       <button class="btn btn-primary" id="m-tmc-ok">Tạo thư mục con</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tải tài liệu lên -->
+<div class="modal" id="m-taitailieu" hidden role="dialog" aria-modal="true" aria-labelledby="m-tl-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">QD-031 · Nguồn tài liệu</span><h3 id="m-tl-t">Tải tài liệu lên</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="tl-form">
+      <p class="small muted mb-2" id="tl-ctx"></p>
+
+      <fieldset class="field" style="border:0;padding:0;margin:0 0 14px">
+        <legend class="lab" style="display:block">Nguồn tài liệu</legend>
+        <label class="check"><input type="radio" name="tl-src" value="reco" checked>
+          <span>Tệp RECO lưu — hệ thống giữ bản gốc và phát bản có dấu nhận diện</span></label>
+        <label class="check mt-1"><input type="radio" name="tl-src" value="drive">
+          <span>Liên kết sống Google Drive — Chủ đầu tư sở hữu, RECO chỉ đọc</span></label>
+      </fieldset>
+
+      <label class="field" id="tl-wrap-file"><span class="lab">Chọn tệp</span>
+        <span class="filepick">
+          <input type="file" id="tl-file" data-required data-msg="Chọn một tệp trước khi lưu."
+                 accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp">
+          <span class="fileinfo" id="tl-info" hidden></span>
+        </span>
+        <span class="hint">PDF, Word, Excel tối đa 50 MB · ảnh tối đa 20 MB · không nhận tệp video. Tệp không rời khỏi máy anh/chị.</span>
+      </label>
+
+      <label class="field" id="tl-wrap-url" hidden><span class="lab">Đường dẫn Google Drive</span>
+        <input class="inp" type="url" id="tl-url" placeholder="https://drive.google.com/…"
+               data-pattern="^https?://.+" data-msg="Dán đường dẫn bắt đầu bằng https://">
+        <span class="hint">Video chỉ đưa vào hệ thống bằng cách này.</span>
+      </label>
+
+      <label class="field"><span class="lab">Tên hiển thị</span>
+        <input class="inp" type="text" id="tl-ten" data-required data-msg="Đặt tên để đội kinh doanh nhận ra tài liệu này."></label>
+
+      <label class="field"><span class="lab">Loại tài liệu</span>
+        <select class="inp" id="tl-loai">
+          <option value="gioithieu">Tài liệu giới thiệu</option>
+          <option value="banghang">Bảng hàng &amp; phiếu tính giá</option>
+          <option value="chinhsach">Chính sách</option>
+          <option value="matbang">Mặt bằng</option>
+          <option value="anhvideo">Ảnh và video</option>
+        </select></label>
+
+      <label class="field"><span class="lab">Nhãn quyền</span>
+        <select class="inp" id="tl-nhan"></select>
+        <span class="hint" id="tl-nhan-hint"></span></label>
+
+      <label class="field"><span class="lab">Phiên bản</span>
+        <input class="inp" type="text" id="tl-ver" value="v1"></label>
+      <label class="field"><span class="lab">Hiệu lực đến</span>
+        <input class="inp" type="date" id="tl-den">
+        <span class="hint">Để trống nếu tài liệu không có hạn. Hệ thống nhắc trước 7 ngày.</span></label>
+
+      <div class="note note-navy" id="tl-note-mkt" hidden>
+        Bản do <strong>Marketing</strong> tải lên dừng ở trạng thái <strong>chờ Giám đốc dự án duyệt</strong> (QD-006),
+        chưa dùng để gửi khách.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="tl-save">Tải lên</button>
+    </div>
+  </div>
+</div>
+
+<!-- Thêm ảnh vào thư viện -->
+<div class="modal" id="m-themanh" hidden role="dialog" aria-modal="true" aria-labelledby="m-anh-t">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-head">
+      <div><span class="eyebrow">Nhánh 5 · Thư viện ảnh và video</span><h3 id="m-anh-t">Thêm ảnh vào thư viện</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="anh-form">
+      <label class="field"><span class="lab">Chọn ảnh</span>
+        <span class="filepick">
+          <input type="file" id="anh-file" accept="image/jpeg,image/png,image/webp" multiple
+                 data-required data-msg="Chọn ít nhất một ảnh.">
+          <span class="thumbs" id="anh-thumbs"></span>
+        </span>
+        <span class="hint">JPG, PNG hoặc WebP, tối đa 20 MB mỗi ảnh. Ảnh được thu nhỏ ngay tại trình duyệt, không gửi đi đâu.</span>
+      </label>
+      <label class="field"><span class="lab">Tên ảnh</span>
+        <input class="inp" type="text" id="anh-ten" data-required data-msg="Đặt tên để đội kinh doanh tìm được ảnh.">
+        <span class="hint">Chọn nhiều ảnh thì hệ thống đánh số theo tên này.</span></label>
+      <label class="field"><span class="lab">Nhãn quyền</span>
+        <select class="inp" id="anh-nhan">
+          <option value="public">Công khai — dùng được cho trang gửi khách</option>
+          <option value="internal">Nội bộ — chỉ nhân viên RECO đã đăng nhập</option>
+        </select></label>
+      <div class="note note-navy" id="anh-note-mkt" hidden>
+        Ảnh do <strong>Marketing</strong> thêm dừng ở <strong>chờ Giám đốc dự án duyệt</strong> (QD-006),
+        chưa dùng để gửi khách.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="anh-save">Thêm vào thư viện</button>
     </div>
   </div>
 </div>
@@ -198,9 +304,33 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------- Khung nội dung bên phải ---------- */
+  /* Ảnh thư viện nằm cùng nhánh 5 với tài liệu — vẽ chung một kiểu dòng để nhìn là hiểu. */
+  function mediaRow(m) {
+    var wait = m.state !== 'approved';
+    var src = S.imgSrc(m);
+    return '<div class="frow" data-media="' + m.id + '">' +
+      (src ? '<span class="fico img" style="overflow:hidden;padding:0"><img src="' + src + '" alt="" style="width:100%;height:100%;object-fit:cover"></span>'
+           : '<span class="fico img">' + RECO.svg('image') + '</span>') +
+      '<div class="fmeta"><div class="fname">' + esc(m.name) + '</div><div class="fsub">' +
+        '<span class="src src-reco">Ảnh RECO</span>' + S.label(m.label) +
+        (wait ? '<span class="st st-wait">Chờ duyệt</span>' : '<span class="st st-live">Đã duyệt</span>') +
+        (m.size ? '<span>' + S.fileSize(m.size) + '</span>' : '') +
+      '</div></div>' +
+      '<div class="fend">' +
+        (wait
+          ? '<button type="button" class="btn btn-primary btn-sm" data-act="duyetanh" data-id="' + m.id + '" data-roles="gddu gd">Duyệt</button>'
+          : '<a class="btn btn-quiet btn-sm" href="soan-noi-dung.html">Dùng soạn nội dung</a>') +
+      '</div></div>';
+  }
+  function medias() {
+    return S.get('media').filter(function (m) { return m.pj === pj && canSee(m); });
+  }
+
   function paneHtml() {
     var b = sel.branch, bName = S.BRANCHES[b - 1], bLabel = BRANCH_LABEL[b - 1];
     var addBtn = '<button type="button" class="btn btn-outline btn-sm" data-act="addsub" data-roles="' + ADD_ROLES + '">+ Thư mục con</button>';
+    var upBtn = '<button type="button" class="btn btn-primary btn-sm" data-act="upload" data-roles="' + S.uploadRoles(b) + '">+ Tải tài liệu</button>';
+    var imgBtn = b === 5 ? '<button type="button" class="btn btn-outline btn-sm" data-act="addimg" data-roles="mkt gddu gd">+ Thêm ảnh</button>' : '';
 
     if (sel.folder) {
       var f = S.find('folders', sel.folder);
@@ -210,12 +340,13 @@ document.addEventListener('DOMContentLoaded', function () {
         '<div class="card-head"><div>' +
           '<span class="eyebrow">Nhánh ' + b + ' · ' + esc(bName) + '</span><h3>' + esc(f.name) + '</h3>' +
           '<div class="row-tight mt-1">' + S.label(f.label) + '<span class="chip">' + list.length + ' tệp</span></div></div>' +
-          '<button type="button" class="btn btn-quiet btn-sm" data-act="up">← Về nhánh ' + b + '</button>' +
+          '<div class="row-tight">' + upBtn +
+            '<button type="button" class="btn btn-quiet btn-sm" data-act="up">← Về nhánh ' + b + '</button></div>' +
         '</div>' +
         (list.length
           ? '<div>' + list.map(function (d) { return fileRow(d, f.label, f.name); }).join('') + '</div>'
           : '<div style="padding:14px">' + RECO_DATA.empty('Thư mục con này chưa có tệp',
-              'Tệp đưa vào đây tự mang nhãn ' + S.LABELS[f.label].text + ' của thư mục cha.') + '</div>') +
+              'Tệp đưa vào đây tự mang nhãn ' + S.LABELS[f.label].text + ' của thư mục cha.', upBtn) + '</div>') +
         '</div>' +
         '<div class="note mt-3"><strong>Nhãn quyền kế thừa xuống.</strong> Thư mục con mang nhãn ' +
           S.LABELS[f.label].text + ' trong khi nhánh cha là ' + S.LABELS[bLabel].text +
@@ -225,20 +356,23 @@ document.addEventListener('DOMContentLoaded', function () {
     var subs = folders(b).filter(canSee);
     var here = seen(docs(b, null));
     var total = seen(docs(b)).length;
-    var body = subs.map(folderRow).join('') + here.map(function (d) { return fileRow(d, bLabel, 'nhánh ' + b); }).join('');
+    var pics = b === 5 ? medias() : [];
+    var body = subs.map(folderRow).join('') + pics.map(mediaRow).join('') +
+      here.map(function (d) { return fileRow(d, bLabel, 'nhánh ' + b); }).join('');
 
     return '<div class="card">' +
       '<div class="card-head"><div>' +
         '<span class="eyebrow">Nhánh ' + b + '</span><h3>' + esc(bName) + '</h3>' +
         '<div class="row-tight mt-1">' + S.label(bLabel) +
-        '<span class="chip">' + subs.length + ' thư mục con · ' + total + ' tệp</span></div></div>' +
-        addBtn +
+        '<span class="chip">' + subs.length + ' thư mục con · ' + total + ' tệp' +
+        (b === 5 ? ' · ' + pics.length + ' ảnh' : '') + '</span></div></div>' +
+        '<div class="row-tight">' + addBtn + upBtn + imgBtn + '</div>' +
       '</div>' +
       (body
         ? '<div>' + body + '</div>'
         : '<div style="padding:14px">' + RECO_DATA.empty('Nhánh này chưa có tài liệu nào',
             'Bảy nhánh cố định luôn tồn tại ở mọi dự án, kể cả khi chưa có tệp. Tạo thư mục con để sắp xếp trước khi Chủ đầu tư gửi tài liệu.',
-            '<button type="button" class="btn btn-primary" data-act="addsub" data-roles="' + ADD_ROLES + '">+ Thư mục con</button>') + '</div>') +
+            '<button type="button" class="btn btn-outline" data-act="addsub" data-roles="' + ADD_ROLES + '">+ Thư mục con</button>' + upBtn) + '</div>') +
       '</div>' +
       (b === 2 ? '<div class="note note-navy mt-3">Tài liệu thuộc <strong>liên kết sống</strong> do Chủ đầu tư sở hữu — RECO chỉ xem, không sửa được trong Sales Hub.</div>' : '') +
       (b === 7 ? '<div class="note note-navy mt-3">Nhánh này <strong>không bao giờ có phần Công khai</strong> và không có chức năng chia sẻ ra ngoài. Nhân viên bán hàng không có quyền trên nhánh này, trừ kịch bản cá nhân do chính mình tạo.</div>' : '');
@@ -253,6 +387,11 @@ document.addEventListener('DOMContentLoaded', function () {
     title.textContent = 'Cây thư mục — ' + S.projectName(pj);
     paintTree();
     paintPane();
+    /* Quyền tải lên của Marketing phụ thuộc nhánh đang chọn, mà nút này là đánh dấu tĩnh —
+       phải đồng bộ lại mỗi lần đổi nhánh. applyRoles chỉ quét con nên truyền phần tử cha. */
+    var up = document.getElementById('up-top');
+    up.setAttribute('data-roles', S.uploadRoles(sel.branch));
+    RECO.applyRoles(up.parentElement);
   }
 
   /* ---------- Chọn nhánh / thư mục ---------- */
@@ -285,6 +424,19 @@ document.addEventListener('DOMContentLoaded', function () {
     if (act === 'open') { sel.folder = b.getAttribute('data-id'); expanded[sel.branch] = true; paintAll(); return; }
     if (act === 'up') { sel.folder = null; paintAll(); return; }
     if (act === 'addsub') { moTaoThuMuc(); return; }
+    if (act === 'upload') { moTaiLieu(); return; }
+    if (act === 'addimg') { moThemAnh(); return; }
+    if (act === 'duyetanh') {
+      var m = S.find('media', b.getAttribute('data-id'));
+      if (!m) return;
+      RECO.busy(b, 'Đang duyệt…', 800, function () {
+        S.update('media', m.id, { state: 'approved' });
+        var ap = S.get('approvals').filter(function (a) { return a.media === m.id && a.state === 'pending'; })[0];
+        if (ap) S.update('approvals', ap.id, { state: 'approved' });
+        RECO.toast('Đã duyệt ảnh “' + m.name + '” — đội kinh doanh dùng được ngay');
+      });
+      return;
+    }
     var d = S.find('documents', b.getAttribute('data-id'));
     if (!d) return;
     if (act === 'tai') {
@@ -345,7 +497,220 @@ document.addEventListener('DOMContentLoaded', function () {
     RECO.toast('Đã tạo thư mục con ' + f.name + ' trong nhánh ' + b);
   });
 
+  /* ---------- Tải tài liệu lên ---------- */
+  var id = function (x) { return document.getElementById(x); };
+  var UP = {
+    form: id('tl-form'), file: id('tl-file'), url: id('tl-url'), ten: id('tl-ten'),
+    loai: id('tl-loai'), nhan: id('tl-nhan'), ver: id('tl-ver'), den: id('tl-den'),
+    save: id('tl-save'), info: id('tl-info')
+  };
+  var pickedFile = null;
+
+  function upParent() { return S.parentLabel(pj, sel.branch, sel.folder); }
+  function fillUpLabels() {
+    var parent = upParent();
+    UP.nhan.innerHTML = Object.keys(S.LABELS).map(function (k) {
+      if (!S.canGrant(k, RECO.role)) return '';
+      var loose = !S.atLeastAsStrict(k, parent);
+      return '<option value="' + k + '"' + (loose ? ' disabled' : '') + (k === parent ? ' selected' : '') +
+        '>' + S.LABELS[k].text + (loose ? ' — không được nới lỏng hơn cấp cha' : '') + '</option>';
+    }).join('');
+    id('tl-nhan-hint').innerHTML = 'Nhãn cấp cha là <strong>' + S.LABELS[parent].text +
+      '</strong>. Tài liệu con chỉ được giữ nguyên hoặc siết chặt hơn.' +
+      (RECO.role !== 'gddu' ? ' Nhãn <strong>Nội bộ hạn chế</strong> chỉ Giám đốc dự án cấp được (QD-027).' : '');
+  }
+  fillUpLabels();
+
+  /* Đổi nguồn phải gỡ/gắn data-required chứ không chỉ ẩn — validate() quét cả ô đang ẩn. */
+  function syncSrc() {
+    var drive = UP.form.querySelector('[name="tl-src"]:checked').value === 'drive';
+    id('tl-wrap-file').hidden = drive;
+    id('tl-wrap-url').hidden = !drive;
+    if (drive) { UP.file.removeAttribute('data-required'); UP.url.setAttribute('data-required', ''); RECO.fieldError(UP.file, ''); }
+    else { UP.url.removeAttribute('data-required'); UP.file.setAttribute('data-required', ''); RECO.fieldError(UP.url, ''); }
+  }
+  UP.form.querySelectorAll('[name="tl-src"]').forEach(function (r) { r.addEventListener('change', syncSrc); });
+
+  UP.file.addEventListener('change', function () {
+    pickedFile = null;
+    UP.info.hidden = true;
+    var f = UP.file.files && UP.file.files[0];
+    if (!f) return;
+    var r = S.checkFile(f);
+    if (!r.ok) { RECO.fieldError(UP.file, r.msg); UP.file.value = ''; return; }
+    RECO.fieldError(UP.file, '');
+    pickedFile = { name: f.name, size: f.size, mime: f.type, icon: r.icon };
+    UP.info.hidden = false;
+    UP.info.innerHTML = '<span class="src src-reco">' + esc(f.name) + '</span>' +
+      '<span class="micro muted">' + S.fileSize(f.size) + '</span>';
+    if (!UP.ten.value.trim()) UP.ten.value = f.name.replace(/\.[^.]+$/, '');
+  });
+
+  function moTaiLieu() {
+    var f = sel.folder && S.find('folders', sel.folder);
+    id('tl-ctx').textContent = 'Tài liệu sẽ nằm trong Nhánh ' + sel.branch + ' — ' + S.BRANCHES[sel.branch - 1] +
+      (f ? ' › ' + f.name : ' (đặt thẳng trong nhánh)') + ' của dự án ' + S.projectName(pj) + '.';
+    fillUpLabels();
+    syncSrc();
+    UP.ten.value = ''; UP.url.value = ''; UP.file.value = ''; UP.ver.value = 'v1'; UP.den.value = '';
+    pickedFile = null; UP.info.hidden = true;
+    id('tl-note-mkt').hidden = RECO.role !== 'mkt';
+    UP.form.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    UP.form.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    RECO.openModal('m-taitailieu');
+  }
+  id('up-top').addEventListener('click', moTaiLieu);
+
+  UP.save.addEventListener('click', function () {
+    if (!RECO.validate(UP.form)) return;
+    var drive = UP.form.querySelector('[name="tl-src"]:checked').value === 'drive';
+    if (!drive && !pickedFile) { RECO.fieldError(UP.file, 'Chọn một tệp trước khi lưu.'); return; }
+
+    var parent = upParent();
+    if (!S.atLeastAsStrict(UP.nhan.value, parent)) {
+      RECO.toast('Nhãn ' + S.LABELS[UP.nhan.value].text + ' nới lỏng hơn cấp cha — không lưu được', { danger: true });
+      return;
+    }
+
+    var wait = RECO.role === 'mkt';               /* QD-006: Marketing không tự công bố */
+    var life = S.lifeFrom(UP.den.value);
+    if (wait) { life.state = 'draft'; life.daysLeft = null; }
+    var rec = {
+      pj: pj, branch: sel.branch, folder: sel.folder || null,
+      name: UP.ten.value.trim(), kind: UP.loai.value,
+      src: drive ? 'drive' : 'reco', label: UP.nhan.value,
+      ver: UP.ver.value.trim() || 'v1', from: S.todayVN(),
+      to: life.to, state: life.state, daysLeft: life.daysLeft,
+      icon: drive ? 'link' : pickedFile.icon,
+      by: RECO.current.who, at: S.stamp()
+    };
+    if (drive) rec.url = UP.url.value.trim();
+    else { rec.file = pickedFile.name; rec.size = pickedFile.size; rec.mime = pickedFile.mime; }
+
+    RECO.busy(UP.save, 'Đang tải lên…', 1100, function () {
+      RECO.closeModal('m-taitailieu');
+      var d = S.add('documents', rec);
+      if (wait) {
+        S.add('approvals', {
+          name: d.name, pj: d.pj, kind: 'Tài liệu', by: RECO.current.who, at: 'vừa xong',
+          label: d.label, state: 'pending', icon: d.icon, doc: d.id,
+          preview: 'Marketing tải lên ' + (d.file || 'liên kết ngoài') +
+            (d.size ? ' · ' + S.fileSize(d.size) : '') + ' vào nhánh ' + d.branch + '.'
+        });
+      }
+      var p = S.find('projects', d.pj);
+      if (p) S.update('projects', d.pj, { docs: (p.docs || 0) + 1, updated: 'vừa xong' });
+      expanded[d.branch] = true;
+      sel = { branch: d.branch, folder: d.folder };
+      paintAll();
+      RECO.toast(wait
+        ? 'Đã tải lên — chờ Giám đốc dự án duyệt trước khi dùng gửi khách'
+        : 'Đã tải lên “' + d.name + '” vào nhánh ' + d.branch);
+    });
+  });
+
+  /* ---------- Thêm ảnh vào thư viện ---------- */
+  var ANH = {
+    form: id('anh-form'), file: id('anh-file'), ten: id('anh-ten'),
+    nhan: id('anh-nhan'), save: id('anh-save'), thumbs: id('anh-thumbs')
+  };
+  var pickedImgs = [];
+
+  /* Thu nhỏ ngay tại trình duyệt rồi lưu data URL. Blob URL chết khi rời trang,
+     và bản gói một tệp yêu cầu mọi <img src> bắt đầu bằng data:. */
+  function thumbnail(file, max, done) {
+    var fr = new FileReader();
+    fr.onload = function () {
+      var im = new Image();
+      im.onload = function () {
+        var s = Math.min(1, max / Math.max(im.width, im.height));
+        var c = document.createElement('canvas');
+        c.width = Math.round(im.width * s);
+        c.height = Math.round(im.height * s);
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+        try { done(c.toDataURL('image/jpeg', 0.72)); } catch (e) { done(null); }
+      };
+      im.onerror = function () { done(null); };
+      im.src = fr.result;
+    };
+    fr.onerror = function () { done(null); };
+    fr.readAsDataURL(file);
+  }
+
+  ANH.file.addEventListener('change', function () {
+    pickedImgs = [];
+    ANH.thumbs.innerHTML = '';
+    var files = Array.prototype.slice.call(ANH.file.files || []);
+    if (!files.length) return;
+    var bad = null;
+    files.forEach(function (f) {
+      var r = S.checkFile(f);
+      if (!r.ok || r.kind !== 'image') { bad = bad || (r.ok ? 'Chỉ nhận ảnh JPG, PNG hoặc WebP.' : r.msg); return; }
+      pickedImgs.push({ name: f.name, size: f.size, mime: f.type, thumb: null });
+      thumbnail(f, 480, function (url) {
+        var rec = pickedImgs.filter(function (x) { return x.name === f.name && x.size === f.size; })[0];
+        if (rec) rec.thumb = url;
+        if (url) ANH.thumbs.insertAdjacentHTML('beforeend', '<img src="' + url + '" alt="">');
+      });
+    });
+    RECO.fieldError(ANH.file, bad || '');
+    if (!ANH.ten.value.trim() && pickedImgs.length) {
+      ANH.ten.value = pickedImgs[0].name.replace(/\.[^.]+$/, '');
+    }
+  });
+
+  function moThemAnh() {
+    ANH.file.value = ''; ANH.ten.value = ''; ANH.thumbs.innerHTML = '';
+    pickedImgs = [];
+    id('anh-note-mkt').hidden = RECO.role !== 'mkt';
+    ANH.form.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    ANH.form.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    RECO.openModal('m-themanh');
+  }
+
+  ANH.save.addEventListener('click', function () {
+    if (!RECO.validate(ANH.form)) return;
+    if (!pickedImgs.length) { RECO.fieldError(ANH.file, 'Chọn ít nhất một ảnh.'); return; }
+    var wait = RECO.role === 'mkt';
+    var base = ANH.ten.value.trim(), label = ANH.nhan.value;
+
+    RECO.busy(ANH.save, 'Đang thêm ảnh…', 1000, function () {
+      RECO.closeModal('m-themanh');
+      var made = pickedImgs.map(function (p, i) {
+        return S.add('media', {
+          pj: pj, branch: 5, img: '', thumb: p.thumb || '',
+          name: pickedImgs.length > 1 ? base + ' ' + (i + 1) : base,
+          label: label, state: wait ? 'pending' : 'approved', on: false,
+          file: p.name, size: p.size, mime: p.mime, by: RECO.current.who, at: S.stamp()
+        });
+      });
+      if (wait) {
+        made.forEach(function (m) {
+          S.add('approvals', {
+            name: 'Ảnh: ' + m.name, pj: pj, kind: 'Ảnh', by: RECO.current.who, at: 'vừa xong',
+            label: m.label, state: 'pending', icon: 'img', media: m.id,
+            preview: 'Marketing thêm ' + (m.file || 'ảnh') + (m.size ? ' · ' + S.fileSize(m.size) : '') + ' vào thư viện ảnh.'
+          });
+        });
+      }
+      expanded[5] = true;
+      sel = { branch: 5, folder: null };
+      paintAll();
+      var noThumb = made.filter(function (m) { return !m.thumb; }).length;
+      if (S.isFull()) {
+        RECO.toast('Bộ nhớ phiên đã đầy — ảnh hiện trong phiên này nhưng không giữ được khi sang màn khác', { danger: true });
+      } else if (noThumb) {
+        RECO.toast('Đã thêm ' + made.length + ' ảnh, nhưng ' + noThumb + ' ảnh không dựng được bản xem trước', { danger: true });
+      } else {
+        RECO.toast(wait
+          ? 'Đã thêm ' + made.length + ' ảnh — chờ Giám đốc dự án duyệt trước khi dùng gửi khách'
+          : 'Đã thêm ' + made.length + ' ảnh vào thư viện ' + S.projectName(pj));
+      }
+    });
+  });
+
   S.on('documents', paintPane);
+  S.on('media', paintPane);
 
   paintAll();
 });

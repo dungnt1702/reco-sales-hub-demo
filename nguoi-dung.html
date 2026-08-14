@@ -27,10 +27,26 @@
       <button class="btn btn-primary" id="u-new" data-roles="gd hcns">+ Tài khoản mới</button>
     </div>
 
-    <div class="note note-navy mb-3" data-roles="gd gddu tkkd qlkd nvbh mkt">
-      Màn này chỉ dành cho <strong>người quản trị chung</strong> (thuộc HCNS &amp; Kế toán hoặc vai trò kỹ thuật do RECO chỉ định).
-      Vai trò hiện tại của anh/chị đang xem ở chế độ tham khảo.
+    <!-- Chặn ở cấp màn, không chỉ ẩn nút. Ẩn menu mà gõ thẳng địa chỉ vẫn đọc được họ tên,
+         số điện thoại và phạm vi quyền của toàn bộ nhân sự thì coi như không chặn gì. -->
+    <div class="state-error" data-roles="gddu tkkd qlkd nvbh mkt">
+      <h3>Anh/chị không có quyền vào màn Người dùng và quyền</h3>
+      <p class="lead mt-1" style="max-width:56ch;margin-inline:auto">
+        Cấp tài khoản, gán vai trò, gán dự án hoặc vùng và đặt lại mật khẩu do người quản trị chung thực hiện.
+        Danh sách nhân sự kèm số điện thoại và phạm vi quyền chỉ hiển thị với vai trò đó.
+      </p>
+      <div class="row mt-3" style="justify-content:center">
+        <a class="btn btn-primary" href="trang-dau.html">Về Trang đầu</a>
+        <a class="btn btn-outline" href="quan-tri.html">Mở màn Quản trị</a>
+      </div>
     </div>
+
+    <div class="note note-navy mb-3" data-roles="gd">
+      Người quản trị chung (thuộc HCNS &amp; Kế toán hoặc vai trò kỹ thuật do RECO chỉ định) là người duy nhất
+      cấp tài khoản và đặt lại mật khẩu. Anh/chị xem được danh sách để nắm phạm vi quyền toàn hệ thống.
+    </div>
+
+    <div id="u-zone" data-roles="gd hcns">
 
     <div class="filterbar mb-3">
       <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
@@ -82,6 +98,8 @@
       </div>
       <p class="micro muted mt-2">Nguồn: <em>docs/07-security/role-permission-matrix.md</em> — xác nhận trong buổi làm việc ngày 13/08/2026.</p>
     </section>
+
+    </div><!-- /#u-zone -->
 
   </div>
 </main>

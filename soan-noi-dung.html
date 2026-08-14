@@ -111,6 +111,7 @@
               <div class="pick" id="pick"></div>
               <p class="micro muted mt-2">Chỉ ảnh mang nhãn Công khai và đã được duyệt mới xuất hiện ở đây.</p>
               <p class="micro muted mt-1" id="pick-note" hidden></p>
+              <p class="micro mt-1" data-roles="mkt gddu gd"><a href="cay-thu-muc.html">Thêm ảnh vào thư viện dự án →</a></p>
             </div>
           </div>
 
@@ -311,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var list = pickable();
     pick.innerHTML = list.map(function (m) {
       return '<label><input type="checkbox" data-mid="' + E(m.id) + '"' + (m.on ? ' checked' : '') +
-        ' aria-label="' + E(m.name) + '"><img src="' + RECO.asset(m.img) + '" alt="' + E(m.name) +
+        ' aria-label="' + E(m.name) + '"><img src="' + S.imgSrc(m) + '" alt="' + E(m.name) +
         '" loading="lazy"><span class="mark">' + TICK + '</span></label>';
     }).join('');
     var hidden = S.get('media').filter(function (m) {
@@ -342,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function renderPreview() {
     var imgs = chosen();
     pvImgs.innerHTML = imgs.map(function (m) {
-      return '<img src="' + RECO.asset(m.img) + '" alt="' + E(m.name) + '" loading="lazy">';
+      return '<img src="' + S.imgSrc(m) + '" alt="' + E(m.name) + '" loading="lazy">';
     }).join('');
     pvImgs.hidden = !imgs.length;
     pvNoImg.hidden = !!imgs.length;
@@ -494,6 +495,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   S.on('templates', function () { renderTplSelect(); renderTplList(); renderPreview(); });
+  /* Ảnh vừa được duyệt ở màn khác phải hiện ra đây ngay, không đợi tải lại trang. */
+  S.on('media', function () { renderPick(); renderPreview(); });
 
   renderTplSelect();
   renderTplList();

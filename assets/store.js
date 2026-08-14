@@ -345,10 +345,15 @@
     save();
     return mem;
   }
+  /* Ảnh thêm vào thư viện được lưu dạng data URL nên kho phiên có thể đầy thật.
+     Nuốt lỗi im lặng thì dữ liệu ngừng lưu mà không ai biết — trả cờ để màn báo cho người dùng. */
+  var full = false;
   function save() {
-    if (!USE_SS || !mem) return;
-    try { window.sessionStorage.setItem(KEY, JSON.stringify(mem)); } catch (e) { /* đầy bộ nhớ — bỏ qua */ }
+    if (!USE_SS || !mem) return true;
+    try { window.sessionStorage.setItem(KEY, JSON.stringify(mem)); full = false; return true; }
+    catch (e) { full = true; return false; }
   }
+  function isFull() { return full; }
 
   /* ---------- Phát tín hiệu ---------- */
   var subs = {};
@@ -451,6 +456,77 @@
     return d <= 7 ? 'expiring' : 'live';
   }
 
+  /* ---------- Đưa tài liệu và ảnh vào hệ thống ---------- */
+  var MB = 1048576;
+  var LIMIT = { doc: 50 * MB, image: 20 * MB };
+  /* Marketing chỉ đưa nội dung vào ba nhánh nội dung của mình (QD-006). */
+  var MKT_BRANCHES = [4, 5, 6];
+
+  function fileSize(b) {
+    if (!b && b !== 0) return '';
+    if (b < 1024) return b + ' B';
+    if (b < MB) return (b / 1024).toFixed(0) + ' KB';
+    return (b / MB).toFixed(1).replace('.', ',') + ' MB';
+  }
+  function fileKind(f) {
+    var t = (f.type || '').toLowerCase(), n = (f.name || '').toLowerCase();
+    if (t.indexOf('video/') === 0 || /\.(mp4|mov|avi|mkv|webm)$/.test(n)) return 'video';
+    if (t.indexOf('image/') === 0 || /\.(jpe?g|png|webp)$/.test(n)) return 'image';
+    if (t === 'application/pdf' || /\.pdf$/.test(n)) return 'pdf';
+    if (/sheet|excel/.test(t) || /\.(xlsx?|csv)$/.test(n)) return 'excel';
+    if (/word|document/.test(t) || /\.docx?$/.test(n)) return 'word';
+    return 'khac';
+  }
+  /* Kiểm ngay lúc chọn tệp. Thông điệp viết sẵn để màn đưa thẳng vào RECO.fieldError. */
+  function checkFile(f) {
+    var k = fileKind(f);
+    if (k === 'video') return { ok: false, kind: k, msg: 'Hệ thống không nhận tệp video. Anh/chị gắn video bằng liên kết ngoài — chọn nguồn “Liên kết sống Google Drive”.' };
+    if (k === 'khac') return { ok: false, kind: k, msg: 'Chỉ nhận PDF, Word, Excel và ảnh JPG, PNG, WebP.' };
+    var max = k === 'image' ? LIMIT.image : LIMIT.doc;
+    if (f.size > max) {
+      return { ok: false, kind: k,
+        msg: (k === 'image' ? 'Ảnh tối đa 20 MB.' : 'Tệp tối đa 50 MB.') + ' Tệp của anh/chị là ' + fileSize(f.size) + '.' };
+    }
+    return { ok: true, kind: k, icon: iconFor(k) };
+  }
+  function iconFor(kind) {
+    if (kind === 'image') return 'img';
+    if (kind === 'excel') return 'xls';
+    if (kind === 'link') return 'link';
+    return 'pdf';
+  }
+  /* Ảnh mẫu nằm trong assets/img, ảnh vừa thêm là data URL — đừng đưa data URL qua RECO.asset. */
+  function imgSrc(m) {
+    if (m.thumb) return m.thumb;
+    return m.img ? window.RECO.asset(m.img) : '';
+  }
+  function todayVN() { return TODAY; }
+  function stamp() {
+    var d = new Date();
+    var hh = ('0' + d.getHours()).slice(-2), mm = ('0' + d.getMinutes()).slice(-2);
+    return TODAY + ' · ' + hh + ':' + mm;
+  }
+  /* Trạng thái hiệu lực suy từ ngày hết hạn — dùng chung cho luồng tải lên và luồng gia hạn. */
+  function lifeFrom(isoTo) {
+    if (!isoTo) return { to: null, state: 'live', daysLeft: null };
+    var a = isoTo.split('-');
+    var to = a[2] + '/' + a[1] + '/' + a[0];
+    var d = daysLeft(to);
+    return { to: to, state: d !== null && d <= 7 ? 'expiring' : 'live', daysLeft: d };
+  }
+  function canUpload(role, branch) {
+    if (['tkkd', 'gddu', 'gd'].indexOf(role) >= 0) return true;
+    return role === 'mkt' && MKT_BRANCHES.indexOf(+branch) >= 0;
+  }
+  function uploadRoles(branch) {
+    return MKT_BRANCHES.indexOf(+branch) >= 0 ? 'tkkd gddu gd mkt' : 'tkkd gddu gd';
+  }
+  /* Nhãn của cấp cha để chặn nới lỏng: thư mục con nếu có, không thì nhãn mặc định của nhánh. */
+  function parentLabel(pj, branch, folderId) {
+    var f = folderId && find('folders', folderId);
+    return f ? f.label : BRANCH_LABEL[(+branch || 1) - 1];
+  }
+
   function label(key) {
     var l = LABELS[key] || LABELS.internal;
     return '<span class="lb ' + l.cls + '">' + l.text + '</span>';
@@ -494,6 +570,11 @@
     myProjects: myProjects,
     atLeastAsStrict: atLeastAsStrict, stricter: stricter, canGrant: canGrant,
     TODAY: TODAY, parseVN: parseVN, daysLeft: daysLeft, lifeState: lifeState,
+    LIMIT: LIMIT, MKT_BRANCHES: MKT_BRANCHES,
+    fileSize: fileSize, fileKind: fileKind, checkFile: checkFile, iconFor: iconFor,
+    imgSrc: imgSrc, todayVN: todayVN, stamp: stamp, lifeFrom: lifeFrom,
+    canUpload: canUpload, uploadRoles: uploadRoles, parentLabel: parentLabel,
+    isFull: isFull,
     persistent: USE_SS
   };
 })();

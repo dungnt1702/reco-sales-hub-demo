@@ -254,7 +254,8 @@
             </div>
             <p class="micro muted mt-2" id="pt-note" role="status"></p>
             <div class="row mt-3">
-              <button type="button" class="btn btn-primary btn-sm" id="pt-tao">Tạo phiếu tính giá</button>
+              <button type="button" class="btn btn-primary btn-sm" id="pt-tao" data-roles="gd gddu tkkd qlkd nvbh">Tạo phiếu tính giá</button>
+              <span class="chip" data-roles="hcns mkt">Vai trò của anh/chị chỉ xem bảng hàng, không lập phiếu tính giá</span>
               <span class="micro muted">Phiếu phải được duyệt mới xuất hiện trên trang gửi khách.</span>
             </div>
             <div class="stack mt-3" id="pt-list"></div>
@@ -314,6 +315,7 @@
           <div id="qa-list"></div>
           <p class="micro muted mt-1" id="qa-count" role="status"></p>
           <div class="row mt-2">
+            <button class="btn btn-primary btn-sm" id="qa-new" data-roles="tkkd gddu gd mkt" data-open="m-hoidap">+ Thêm câu hỏi</button>
             <button class="btn btn-outline btn-sm" data-roles="nvbh qlkd" data-open="m-denghi">Câu trả lời chưa đúng? Gửi đề nghị sửa</button>
             <button class="btn btn-outline btn-sm" data-roles="gddu gd" data-open="m-duyetqa">Duyệt nội dung hỏi đáp</button>
           </div>
@@ -362,7 +364,8 @@
             <div class="card">
               <div class="tabs" role="tablist" aria-label="Kịch bản kinh doanh">
                 <button role="tab" id="t-chung" aria-controls="p-chung" aria-selected="true">Kịch bản dùng chung</button>
-                <button role="tab" id="t-toi" aria-controls="p-toi" aria-selected="false" tabindex="-1">Kịch bản của tôi</button>
+                <!-- Không có tab "Kịch bản của tôi" ở đây: kịch bản cá nhân chỉ Nhân viên bán hàng
+                     mới có (QD-032), và bản của họ nằm ở khối rút gọn phía dưới. -->
                 <button role="tab" id="t-ghichu" aria-controls="p-ghichu" aria-selected="false" tabindex="-1">Ghi chú nội bộ</button>
                 <button role="tab" id="t-dexuat" aria-controls="p-dexuat" aria-selected="false" tabindex="-1">Đề xuất nâng lên bản chung</button>
               </div>
@@ -373,14 +376,6 @@
                   <button type="button" class="btn btn-outline btn-sm" data-roles="gd gddu mkt" data-new-kb="shared">Thêm kịch bản</button>
                 </div>
                 <div class="stack" id="kb-chung"></div>
-              </div>
-
-              <div role="tabpanel" id="p-toi" aria-labelledby="t-toi" class="card-body" hidden>
-                <div class="spread mb-2">
-                  <p class="small muted" style="margin:0">Kịch bản cá nhân chỉ chủ sở hữu xem được, không chia sẻ trực tiếp cho đồng nghiệp.</p>
-                  <button type="button" class="btn btn-outline btn-sm" data-new-kb="mine">Thêm kịch bản của tôi</button>
-                </div>
-                <div class="stack" id="kb-toi"></div>
               </div>
 
               <div role="tabpanel" id="p-ghichu" aria-labelledby="t-ghichu" class="card-body" hidden>
@@ -518,6 +513,40 @@
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" data-close="1">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- KV-07 · soạn câu hỏi đáp mới -->
+<div class="modal" id="m-hoidap" hidden role="dialog" aria-modal="true" aria-labelledby="m-hoidap-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Khu vực 07</span><h3 id="m-hoidap-t">Thêm câu hỏi đáp</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="qa-form">
+      <label class="field"><span class="lab">Câu hỏi</span>
+        <textarea class="inp" id="qa-f-q" rows="2" data-required data-msg="Nhập câu hỏi khách hay hỏi nhất."
+                  placeholder="Ví dụ: Dự án đã có sổ hồng từng căn chưa?"></textarea></label>
+      <label class="field"><span class="lab">Câu trả lời chuẩn</span>
+        <textarea class="inp" id="qa-f-a" rows="4" data-required data-msg="Nhập câu trả lời để cả đội nói giống nhau."></textarea></label>
+      <label class="field"><span class="lab">Chủ đề</span>
+        <select class="inp" id="qa-f-topic"></select></label>
+      <label class="field"><span class="lab">Nhãn quyền</span>
+        <select class="inp" id="qa-f-label">
+          <option value="public">Công khai — khách xem được trên trang gửi khách</option>
+          <option value="internal">Nội bộ — chỉ nhân viên RECO đã đăng nhập</option>
+        </select></label>
+      <label class="field"><span class="lab">Tài liệu đối chiếu</span>
+        <input class="inp" type="text" id="qa-f-ref" placeholder="Ví dụ: Hồ sơ pháp lý v2">
+        <span class="hint">Không bắt buộc. Ghi tên tài liệu để nhân viên tra lại khi khách hỏi sâu.</span></label>
+      <div class="note" id="qa-f-note"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="qa-f-save">Lưu câu hỏi đáp</button>
     </div>
   </div>
 </div>
@@ -749,9 +778,11 @@ document.addEventListener('DOMContentLoaded', function () {
       '<b>Đã chọn ' + ids.length + ' căn</b>' +
       '<span class="chip-gd2">Giai đoạn 2 · ngoài báo giá</span>' +
       '<button type="button" class="btn btn-primary btn-sm" data-bulk="cmp">So sánh</button>' +
-      '<button type="button" class="btn btn-ghost btn-sm" data-bulk="share">Gửi một đường dẫn</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-bulk="share" data-roles="gd gddu tkkd qlkd nvbh mkt">Gửi một đường dẫn</button>' +
       '<button type="button" class="btn btn-ghost btn-sm" data-bulk="clear">Bỏ chọn</button>' +
     '</div>';
+    /* Thanh này vẽ lại mỗi lần tick nên phải áp quyền lại, applyRoles toàn cục chỉ chạy lúc nạp trang. */
+    RECO.applyRoles(box);
     box.querySelector('[data-bulk="cmp"]').addEventListener('click', compare);
     box.querySelector('[data-bulk="share"]').addEventListener('click', shareMany);
     box.querySelector('[data-bulk="clear"]').addEventListener('click', function () {
@@ -884,7 +915,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var t = norm(id('qa-q').value.trim());
     var list = S.get('qas').filter(function (q) {
       if (q.pj !== PJ || !S.canSee(q.label, RECO.role)) return false;
-      if (q.state !== 'approved' && !CAN_APPROVE_QA) return false;
+      /* Người soạn phải thấy câu mình vừa gửi, nếu không bấm Lưu xong câu biến mất
+         và nút trông như không có tác dụng. */
+      if (q.state !== 'approved' && !CAN_APPROVE_QA && q.by !== ME) return false;
       if (topic && q.topic !== topic) return false;
       return !t || norm(q.q + ' ' + q.a).indexOf(t) >= 0;
     });
@@ -929,6 +962,47 @@ document.addEventListener('DOMContentLoaded', function () {
     paintQA();
   });
 
+  /* Soạn câu hỏi đáp mới. Ai duyệt được thì công bố luôn, còn lại rơi vào hàng chờ (QD-006). */
+  var qaForm = id('qa-form'), qaSave = id('qa-f-save');
+  id('qa-f-topic').innerHTML = Object.keys(S.TOPICS).map(function (k) {
+    return '<option value="' + k + '">' + S.TOPICS[k] + '</option>';
+  }).join('');
+  id('qa-f-note').innerHTML = CAN_APPROVE_QA
+    ? 'Anh/chị là người duyệt cuối — câu này <strong>hiển thị ngay</strong> sau khi lưu.'
+    : 'Câu này <strong>chờ Giám đốc dự án duyệt</strong> trước khi nhân viên và khách nhìn thấy. Anh/chị vẫn thấy nó với chip “Chờ duyệt”.';
+
+  document.getElementById('qa-new').addEventListener('click', function () {
+    id('qa-f-q').value = ''; id('qa-f-a').value = ''; id('qa-f-ref').value = '';
+    id('qa-f-topic').value = 'phaply'; id('qa-f-label').value = 'public';
+    qaForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    qaForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+  });
+
+  qaSave.addEventListener('click', function () {
+    if (!RECO.validate(qaForm)) return;
+    var q = id('qa-f-q').value.trim(), a = id('qa-f-a').value.trim();
+    var label = id('qa-f-label').value, ref = id('qa-f-ref').value.trim();
+    RECO.busy(qaSave, 'Đang lưu…', 900, function () {
+      RECO.closeModal('m-hoidap');
+      var rec = S.add('qas', {
+        pj: PJ, topic: id('qa-f-topic').value, q: q, a: a,
+        ref: ref || undefined, label: label,
+        state: CAN_APPROVE_QA ? 'approved' : 'pending',
+        by: ME, at: today()
+      });
+      if (!CAN_APPROVE_QA) {
+        S.add('approvals', {
+          name: 'Câu hỏi đáp mới: ' + q.slice(0, 48), pj: PJ, kind: 'Hỏi đáp',
+          by: ME, at: 'vừa xong', label: label, state: 'pending', icon: 'file',
+          qa: rec.id, preview: a
+        });
+      }
+      RECO.toast(CAN_APPROVE_QA
+        ? 'Đã thêm câu hỏi đáp — cả đội thấy ngay'
+        : 'Đã gửi câu hỏi đáp — chờ Giám đốc dự án duyệt');
+    });
+  });
+
   function paintDuyetQA() {
     var list = S.get('qas').filter(function (q) { return q.pj === PJ && q.state !== 'approved'; });
     if (!list.length) {
@@ -959,8 +1033,14 @@ document.addEventListener('DOMContentLoaded', function () {
           onOk: function () {
             RECO.busy(b, 'Đang công bố…', 900, function () {
               S.update('qas', qid, { state: 'approved' });
+              /* Cùng một câu nằm ở hai hàng chờ — duyệt ở đây thì hàng chờ màn Quản trị phải sạch theo. */
+              var ap = S.get('approvals').filter(function (x) { return x.qa === qid && x.state === 'pending'; })[0];
+              if (ap) S.update('approvals', ap.id, { state: 'approved' });
               RECO.toast('Đã duyệt câu hỏi đáp', {
-                undo: function () { S.update('qas', qid, { state: 'pending' }); }
+                undo: function () {
+                  S.update('qas', qid, { state: 'pending' });
+                  if (ap) S.update('approvals', ap.id, { state: 'pending' });
+                }
               });
             });
           }
@@ -1022,7 +1102,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var mineHtml = toi.length ? toi.map(function (s) { return scriptCard(s, 'mine'); }).join('')
       : RECO_DATA.empty('Anh/chị chưa có kịch bản riêng', 'Kịch bản cá nhân chỉ mình anh/chị xem được, không chia sẻ trực tiếp cho đồng nghiệp.');
-    id('kb-toi').innerHTML = mineHtml;
+    if (id('kb-toi')) id('kb-toi').innerHTML = mineHtml;
     if (id('kb-nvbh')) id('kb-nvbh').innerHTML = mineHtml;
 
     var notes = S.get('notes').filter(function (n) { return n.pj === PJ; });

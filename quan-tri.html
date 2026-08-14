@@ -89,6 +89,42 @@
           Dự án <strong>nổi bật</strong> luôn đứng trước ở Trang đầu và Danh sách dự án. Dự án <strong>đã ẩn</strong> biến mất khỏi mọi danh sách,
           khỏi ô tìm kiếm và khỏi trang gửi khách — chỉ còn thấy ở màn này.
         </p>
+
+        <!-- Bảng hàng tới cấp căn/lô. data-roles đặt ở lớp ngoài, còn hidden do JS điều khiển
+             đặt ở lớp trong — để chung một phần tử thì applyRoles sẽ bung panel ra lúc nạp trang. -->
+        <section id="bhq-zone" class="mt-4" data-roles="gd gddu tkkd">
+          <div id="bhq-panel" hidden>
+            <div class="spread mb-2">
+              <div>
+                <span class="eyebrow">Bảng hàng</span>
+                <h3 id="bhq-title" style="font-size:1.05rem"></h3>
+                <p class="small muted mt-1" id="bhq-sub" style="margin:0"></p>
+              </div>
+              <div class="row-tight">
+                <button class="btn btn-primary btn-sm" id="bhq-new">+ Thêm căn/lô</button>
+                <button class="btn btn-quiet btn-sm" id="bhq-close">Đóng bảng hàng</button>
+              </div>
+            </div>
+            <div class="tbl-wrap" id="bhq-wrap">
+              <table class="tbl">
+                <thead><tr><th>Mã căn/lô</th><th>Loại</th><th class="r">Diện tích</th><th class="r">Giá bán</th><th>Tình trạng</th><th class="r">Thao tác</th></tr></thead>
+                <tbody id="bhq-body"></tbody>
+              </table>
+            </div>
+            <div id="bhq-rong" hidden></div>
+            <p class="micro muted mt-2">
+              Bảng hàng mang nhãn <strong>Nội bộ</strong> và không bao giờ ra thẳng trang gửi khách.
+              Khách chỉ thấy <em>phiếu tính giá đã được duyệt</em>.
+            </p>
+          </div>
+          <p class="small muted" id="bhq-goi" style="margin:0">
+            Bấm <strong>Bảng hàng</strong> ở dòng dự án phía trên để quản lý căn/lô, giá và tình trạng của dự án đó.
+          </p>
+        </section>
+        <p class="micro muted mt-2" data-roles="mkt hcns">
+          Vai trò của anh/chị không quản lý bảng hàng — nhánh <em>Sản phẩm và Bảng hàng</em> do Thư ký kinh doanh
+          và Giám đốc dự án phụ trách.
+        </p>
       </div>
 
       <!-- Chờ duyệt -->
@@ -247,6 +283,49 @@
   </div>
 </div>
 
+<!-- Thêm hoặc sửa một căn/lô -->
+<div class="modal" id="m-unit" hidden role="dialog" aria-modal="true" aria-labelledby="m-unit-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Bảng hàng tới cấp căn/lô</span><h3 id="m-unit-t">Thêm căn/lô</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="unit-form">
+      <label class="field"><span class="lab">Mã căn/lô</span>
+        <input class="inp" type="text" id="un-id" placeholder="A-12.05"
+               data-required data-msg="Nhập mã căn/lô đúng như Chủ đầu tư đặt, ví dụ A-12.05 hoặc B4-07.">
+        <span class="hint">Mã là khóa duy nhất của bảng hàng — phiếu tính giá và đường dẫn gửi khách trỏ theo mã này.</span></label>
+      <label class="field"><span class="lab">Phân khu, tòa hoặc dãy</span>
+        <input class="inp" type="text" id="un-block" data-required data-msg="Nhập phân khu, tòa hoặc dãy, ví dụ A, Ruby, B4."></label>
+      <label class="field"><span class="lab">Tầng</span>
+        <input class="inp" type="text" id="un-floor" inputmode="numeric" placeholder="12">
+        <span class="hint">Để trống hoặc ghi 0 với nhà thấp tầng, biệt thự và đất nền.</span></label>
+      <label class="field"><span class="lab">Loại sản phẩm</span>
+        <input class="inp" type="text" id="un-kind" data-required data-msg="Ghi loại sản phẩm, ví dụ 2PN + 1, Liền kề, Lô góc."></label>
+      <label class="field"><span class="lab">Diện tích (m²)</span>
+        <input class="inp" type="text" id="un-area" inputmode="decimal"
+               data-required data-msg="Nhập diện tích theo m², ví dụ 72,4."></label>
+      <label class="field"><span class="lab">Hướng</span>
+        <input class="inp" type="text" id="un-dir" placeholder="Đông Nam"></label>
+      <label class="field"><span class="lab">Giá bán (triệu đồng)</span>
+        <input class="inp" type="text" id="un-price" inputmode="numeric"
+               data-required data-msg="Nhập giá theo triệu đồng, ví dụ 4860 cho căn 4,86 tỷ.">
+        <span class="hint">Kho dữ liệu lưu theo triệu đồng để mọi màn quy đổi ra tỷ giống nhau.</span></label>
+      <label class="field"><span class="lab">Tình trạng</span>
+        <select class="inp" id="un-state">
+          <option value="con">Còn hàng</option>
+          <option value="giu">Đang giữ chỗ</option>
+          <option value="ban">Đã bán</option>
+        </select></label>
+      <div class="note">Bảng hàng là nội dung Nội bộ. Sửa giá ở đây đổi ngay số liệu ở màn Chi tiết dự án và ở công cụ phiếu tính giá.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="un-save">Thêm vào bảng hàng</button>
+    </div>
+  </div>
+</div>
+
 <!-- Trả lại nội dung -->
 <div class="modal" id="m-tra" hidden role="dialog" aria-modal="true" aria-labelledby="m-tra-t">
   <div class="modal-box">
@@ -350,8 +429,9 @@ document.addEventListener('DOMContentLoaded', function () {
         ? '<span class="st st-stop">Đã ẩn</span>'
         : '<span class="st ' + (STATUS_CLS[p.status] || 'st-off') + '">' + esc(p.statusText) + '</span>') + '</td>' +
       '<td data-l="Nổi bật">' + (p.featured ? '<span class="hot">Có</span>' : '<span class="chip">Không</span>') + '</td>' +
-      '<td data-l="" class="r"><div class="row-tight" style="justify-content:flex-end">' + acts +
-        '<span class="chip" data-roles="mkt hcns qlkd nvbh">Chỉ xem</span></div></td>' +
+      '<td data-l="" class="r"><div class="row-tight" style="justify-content:flex-end">' +
+        '<button class="btn btn-quiet btn-sm" data-act="units" data-id="' + p.id + '" data-roles="gd gddu tkkd">Bảng hàng</button>' +
+        acts + '<span class="chip" data-roles="mkt hcns qlkd nvbh">Chỉ xem</span></div></td>' +
     '</tr>';
   }
 
@@ -438,6 +518,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var p = S.find('projects', b.getAttribute('data-id'));
     if (!p) return;
     if (act === 'edit') { pjOpen(p); return; }
+    if (act === 'units') { bhqOpen(p); return; }
     if (act === 'star') {
       var on = !p.featured;
       S.update('projects', p.id, { featured: on });
@@ -480,6 +561,137 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function pjReset() { pjQ.value = ''; pjType.value = ''; pjStatus.value = ''; pjRender(); }
   document.getElementById('pj-reset').addEventListener('click', pjReset);
+
+  /* ================= Tab 1 · Bảng hàng tới cấp căn/lô ================= */
+  var bhqPanel = document.getElementById('bhq-panel'), bhqGoi = document.getElementById('bhq-goi'),
+      bhqBody = document.getElementById('bhq-body'), bhqWrap = document.getElementById('bhq-wrap'),
+      bhqRong = document.getElementById('bhq-rong'), bhqTitle = document.getElementById('bhq-title'),
+      bhqSub = document.getElementById('bhq-sub');
+  var unForm = document.getElementById('unit-form'), unSave = document.getElementById('un-save');
+  var unId = document.getElementById('un-id');
+  var bhqPj = null, editingUnit = null;
+
+  function units() {
+    return S.get('units').filter(function (u) { return u.pj === bhqPj.id; });
+  }
+  /* Số kiểu Việt: 4.860 và 72,4 đều phải đọc được. */
+  function num(v) {
+    var s = String(v || '').trim().replace(/\./g, '').replace(',', '.');
+    var n = parseFloat(s);
+    return isFinite(n) ? n : null;
+  }
+  function unRow(u) {
+    var st = S.UNIT_STATE[u.state] || S.UNIT_STATE.con;
+    return '<tr>' +
+      '<td data-l="Mã căn/lô"><b>' + esc(u.id) + '</b><div class="micro muted">' + esc(u.block) +
+        (u.floor ? ' · tầng ' + u.floor : '') + (u.dir ? ' · ' + esc(u.dir) : '') + '</div></td>' +
+      '<td data-l="Loại">' + esc(u.kind) + '</td>' +
+      '<td data-l="Diện tích" class="r">' + String(u.area).replace('.', ',') + ' m²</td>' +
+      '<td data-l="Giá bán" class="r"><b>' + S.billion(u.price) + '</b></td>' +
+      '<td data-l="Tình trạng"><span class="st ' + st.cls + '">' + st.text + '</span></td>' +
+      '<td data-l="" class="r"><div class="row-tight" style="justify-content:flex-end">' +
+        '<button class="btn btn-outline btn-sm" data-act="uedit" data-id="' + esc(u.id) + '" data-roles="gd gddu tkkd">Sửa</button>' +
+      '</div></td></tr>';
+  }
+  function bhqRender() {
+    if (!bhqPj) return;
+    var list = units();
+    var none = list.length === 0;
+    bhqWrap.hidden = none;
+    bhqRong.hidden = !none;
+    if (none) {
+      bhqRong.innerHTML = RECO_DATA.empty('Dự án này chưa có căn/lô nào',
+        'Bấm Thêm căn/lô để dựng bảng hàng đầu tiên. Căn vừa thêm hiện ngay ở khu vực Bảng hàng của màn Chi tiết dự án.');
+    } else {
+      bhqBody.innerHTML = list.map(unRow).join('');
+    }
+    var con = list.filter(function (u) { return u.state === 'con'; }).length;
+    bhqSub.textContent = list.length
+      ? list.length + ' căn/lô trong kho dữ liệu · còn hàng ' + con + ' · quy mô công bố: ' + bhqPj.struct
+      : 'Quy mô công bố: ' + bhqPj.struct;
+    RECO.applyRoles(none ? bhqRong : bhqBody);
+  }
+  function bhqOpen(p) {
+    bhqPj = p;
+    bhqTitle.textContent = 'Bảng hàng — ' + p.name;
+    bhqPanel.hidden = false;
+    bhqGoi.hidden = true;
+    bhqRender();
+    document.getElementById('bhq-zone').scrollIntoView({ block: 'nearest' });
+  }
+  document.getElementById('bhq-close').addEventListener('click', function () {
+    bhqPanel.hidden = true;
+    bhqGoi.hidden = false;
+    bhqPj = null;
+  });
+
+  function unOpen(u) {
+    editingUnit = u || null;
+    document.getElementById('m-unit-t').textContent = u ? 'Sửa căn/lô ' + u.id : 'Thêm căn/lô';
+    unSave.textContent = u ? 'Lưu thay đổi' : 'Thêm vào bảng hàng';
+    unId.value = u ? u.id : '';
+    unId.readOnly = !!u;
+    document.getElementById('un-block').value = u ? u.block : '';
+    document.getElementById('un-floor').value = u && u.floor ? u.floor : '';
+    document.getElementById('un-kind').value = u ? u.kind : '';
+    document.getElementById('un-area').value = u ? String(u.area).replace('.', ',') : '';
+    document.getElementById('un-dir').value = u && u.dir ? u.dir : '';
+    document.getElementById('un-price').value = u ? u.price : '';
+    document.getElementById('un-state').value = u ? u.state : 'con';
+    unForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    unForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    RECO.openModal('m-unit');
+  }
+  document.getElementById('bhq-new').addEventListener('click', function () { unOpen(null); });
+
+  bhqBody.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act="uedit"]');
+    if (!b) return;
+    var u = S.find('units', b.getAttribute('data-id'));
+    if (u) unOpen(u);
+  });
+
+  unSave.addEventListener('click', function () {
+    if (!RECO.validate(unForm)) return;
+    var code = unId.value.trim();
+    /* S.add không kiểm trùng id — hai căn cùng mã sẽ làm phiếu tính giá bám nhầm bản ghi. */
+    if (!editingUnit && S.find('units', code)) {
+      RECO.fieldError(unId, 'Mã ' + code + ' đã có trong bảng hàng. Mỗi căn/lô chỉ có một mã.');
+      return;
+    }
+    var area = num(document.getElementById('un-area').value);
+    if (area === null || area <= 0) {
+      RECO.fieldError(document.getElementById('un-area'), 'Diện tích phải là số lớn hơn 0, ví dụ 72,4.');
+      return;
+    }
+    var price = num(document.getElementById('un-price').value);
+    if (price === null || price <= 0) {
+      RECO.fieldError(document.getElementById('un-price'), 'Giá phải là số triệu đồng lớn hơn 0, ví dụ 4860.');
+      return;
+    }
+    var floor = num(document.getElementById('un-floor').value) || 0;
+    var patch = {
+      pj: bhqPj.id, block: document.getElementById('un-block').value.trim(),
+      floor: floor, kind: document.getElementById('un-kind').value.trim(),
+      area: area, dir: document.getElementById('un-dir').value.trim(),
+      price: price, state: document.getElementById('un-state').value
+    };
+    RECO.busy(unSave, editingUnit ? 'Đang lưu…' : 'Đang thêm…', 900, function () {
+      RECO.closeModal('m-unit');
+      if (editingUnit) {
+        S.update('units', editingUnit.id, patch);
+        RECO.toast('Đã lưu căn/lô ' + editingUnit.id + ' — giá và tình trạng đổi ngay ở màn Chi tiết dự án');
+      } else {
+        patch.id = code;
+        S.add('units', patch);
+        RECO.toast('Đã thêm ' + code + ' vào bảng hàng ' + bhqPj.name);
+      }
+      editingUnit = null;
+      bhqRender();
+    });
+  });
+
+  S.on('units', function () { if (bhqPj) bhqRender(); });
   [pjQ, pjType, pjStatus].forEach(function (el) {
     el.addEventListener('input', pjRender); el.addEventListener('change', pjRender);
   });
@@ -558,9 +770,18 @@ document.addEventListener('DOMContentLoaded', function () {
       : '';
   }
 
+  /* Duyệt một mục phải lật cả bản ghi gốc mà nó trỏ tới, không chỉ mục trong hàng chờ —
+     nếu không thì tài liệu vừa duyệt vẫn còn chữ "Chưa duyệt" ở Thư viện và Cây thư mục. */
+  function commitApproved(a) {
+    S.update('approvals', a.id, { state: 'approved' });
+    if (a.doc) S.update('documents', a.doc, { state: 'live', from: S.todayVN() });
+    if (a.media) S.update('media', a.media, { state: 'approved' });
+    if (a.qa) S.update('qas', a.qa, { state: 'approved' });
+  }
+
   function approve(a, btn) {
     RECO.busy(btn, 'Đang công bố…', 1000, function () {
-      S.update('approvals', a.id, { state: 'approved' });
+      commitApproved(a);
       dqRender();
       RECO.toast('Đã duyệt và công bố “' + a.name + '”');
     });
@@ -597,7 +818,7 @@ document.addEventListener('DOMContentLoaded', function () {
         danger: list.some(function (a) { return a.label === 'public'; }),
         onOk: function () {
           RECO.busy(b, 'Đang công bố…', 1200, function () {
-            list.forEach(function (a) { S.update('approvals', a.id, { state: 'approved' }); });
+            list.forEach(commitApproved);
             picked = {};
             dqRender();
             RECO.toast('Đã duyệt và công bố ' + list.length + ' mục');

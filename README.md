@@ -69,6 +69,26 @@ Nút **"Đặt lại dữ liệu demo"** trên thanh đen đưa mọi thứ về
 Sáu dự án phủ đúng ba nhóm bất động sản Giai đoạn 1: căn hộ chung cư, đất nền, nhà thấp tầng và biệt thự.
 Tên dự án, con số và ảnh đều là dữ liệu mẫu dùng để minh họa giao diện.
 
+## Đưa nội dung vào hệ thống
+
+Bốn lối thêm nội dung, đều ghi bản ghi thật vào kho nên màn khác thấy ngay:
+
+| Thao tác | Ở đâu | Vai trò làm được |
+| --- | --- | --- |
+| Tải tài liệu lên | Thư viện tài liệu · Cây thư mục (theo đúng thư mục đang chọn) | Thư ký kinh doanh, Giám đốc dự án, Tổng giám đốc; Marketing chỉ nhánh 4–6 |
+| Thêm ảnh vào thư viện | Cây thư mục, nhánh 5 | Marketing, Giám đốc dự án, Tổng giám đốc |
+| Thêm căn/lô vào bảng hàng | Quản trị, tab Dự án và nội dung | Thư ký kinh doanh, Giám đốc dự án, Tổng giám đốc |
+| Thêm câu hỏi đáp | Chi tiết dự án, khu vực 07 | Thư ký kinh doanh, Marketing, Giám đốc dự án, Tổng giám đốc |
+
+Ai **không** phải người duyệt cuối thì nội dung vừa tạo dừng ở trạng thái chờ duyệt (QD-006) và rơi vào hàng
+chờ ở màn Quản trị — bấm Duyệt ở đó lật luôn bản ghi gốc, chip "Chưa duyệt" biến mất trước mắt người xem.
+
+Ô chọn tệp là `<input type="file">` thật: hệ thống đọc tên, dung lượng và kiểu tệp từ máy anh/chị, kiểm hạn
+mức (PDF, Word, Excel 50 MB · ảnh 20 MB · không nhận video) rồi chỉ ghi lại **thông tin mô tả**.
+**Không có byte nào rời khỏi máy** — bản mô phỏng không có máy chủ để gửi lên. Ảnh được thu nhỏ ngay tại
+trình duyệt (tối đa 480px) để hiện được trong thư viện; khoảng 80–100 ảnh là đầy `sessionStorage`, khi đó
+hệ thống báo thật chứ không im lặng nuốt mất dữ liệu.
+
 ## Bản một tệp để gửi link (Claude Artifact)
 
 ```powershell
@@ -102,8 +122,8 @@ sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiế
 | Bộ | Kiểm gì |
 | --- | --- |
 | `_check.html` | Tràn ngang ở 360/390/768/1440 và liên kết hỏng trên cả 14 trang |
-| `_check-roles.html` | 16 trường hợp ẩn/hiện theo vai trò |
-| `_check-actions.html` | **Bấm thử từng phần tử** trên mọi màn, so nội dung trước/sau. Đạt khi DOM đổi, hoặc mở hộp thoại, hoặc phần tử mang `data-gd2`. Toast không tính — nó nằm ngoài vùng so sánh. Kiểm thêm: hành động khó hoàn tác có hỏi lại không, ô nhập có phản hồi không, còn liên kết cụt `href="#"` không |
+| `_check-roles.html` | 54 trường hợp ẩn/hiện theo vai trò |
+| `_check-actions.html` | **Bấm thử từng phần tử** trên mọi màn, so nội dung trước/sau. Đạt khi DOM đổi, hoặc mở hộp thoại, hoặc phần tử mang `data-gd2`. Toast không tính — nó nằm ngoài vùng so sánh. Kiểm thêm: hành động khó hoàn tác có hỏi lại không, ô nhập có phản hồi không, còn liên kết cụt `href="#"` không, và biểu mẫu tải tài liệu có chặn lỗi rồi ghi thật vào kho không |
 | `_check-bundle.html` | Bản một tệp: dựng màn, tràn ngang, liên kết, ảnh và phông nhúng sẵn, phân quyền, mã riêng từng màn |
 
 Ba cạm bẫy khi tự viết bộ kiểm tra cho bộ này, đã trả giá rồi mới biết:

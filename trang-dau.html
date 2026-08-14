@@ -73,7 +73,8 @@
         <div class="card-head">
           <div>
             <h3>Việc đang chờ anh/chị</h3>
-            <p class="small muted mt-1">Nội dung công khai của dự án phụ trách cần Giám đốc dự án duyệt cuối.</p>
+            <p class="small muted mt-1" data-roles="gd gddu">Nội dung công khai của dự án phụ trách cần Giám đốc dự án duyệt cuối.</p>
+            <p class="small muted mt-1" data-roles="tkkd mkt">Nội dung anh/chị đã gửi, đang chờ Giám đốc dự án duyệt cuối.</p>
           </div>
           <a class="btn btn-outline btn-sm" href="quan-tri.html">Mở màn quản trị</a>
         </div>
@@ -227,6 +228,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var ap = S.get('approvals').filter(function (a) { return a.state === 'pending' && pj(a); });
     var rq = S.get('requests').filter(function (r) { return r.state === 'new' && pj(r); });
     tile('tl-duyet', ap.length + rq.length, ap.length + ' nội dung · ' + rq.length + ' đề nghị sửa', 'tab=duyet');
+    /* Thư ký kinh doanh và Marketing thấy hàng chờ nhưng không phải là người duyệt. */
+    document.querySelector('#tl-duyet .k').textContent =
+      ['gd', 'gddu'].indexOf(RECO.role) >= 0 ? 'Chờ tôi duyệt' : 'Nội dung tôi gửi đang chờ duyệt';
 
     var sent = S.get('requests').filter(function (r) { return r.by === RECO.current.who; });
     var done = sent.filter(function (r) { return r.state === 'done'; }).length;
@@ -258,7 +262,8 @@ document.addEventListener('DOMContentLoaded', function () {
             '<div class="fsub"><span>' + esc(a.kind) + ' · ' + esc(a.by) + ' · ' + esc(a.at) + '</span>' + S.label(a.label) + '</div></div>' +
           '<div class="fend">' +
             '<a class="btn btn-outline btn-sm" href="' + RECO.link('quan-tri.html') + '">Xem</a>' +
-            '<button type="button" class="btn btn-primary btn-sm" data-ok="' + a.id + '">Duyệt</button>' +
+            '<button type="button" class="btn btn-primary btn-sm" data-roles="gddu gd" data-ok="' + a.id + '">Duyệt</button>' +
+            '<span class="chip" data-roles="tkkd mkt">Chờ Giám đốc dự án duyệt</span>' +
           '</div></div>';
       }).join('') +
       rq.map(function (r) {
@@ -286,7 +291,12 @@ document.addEventListener('DOMContentLoaded', function () {
           okText: 'Duyệt và công bố',
           onOk: function () {
             RECO.busy(btn, 'Đang công bố…', 900, function () {
+              /* Phải lật cả bản ghi gốc mà mục chờ duyệt trỏ tới, giống màn Quản trị —
+                 nếu không thì tài liệu vừa duyệt vẫn còn chữ "Chưa duyệt" ở Thư viện. */
               S.update('approvals', id, { state: 'approved' });
+              if (a.doc) S.update('documents', a.doc, { state: 'live', from: S.todayVN() });
+              if (a.media) S.update('media', a.media, { state: 'approved' });
+              if (a.qa) S.update('qas', a.qa, { state: 'approved' });
               RECO.toast('Đã duyệt và công bố: ' + a.name, {
                 undo: function () { S.update('approvals', id, { state: 'pending' }); }
               });
@@ -295,6 +305,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       });
     });
+    /* queue() vẽ lại bằng JS nên data-roles ở đây phải được áp lại sau mỗi lần vẽ. */
+    RECO.applyRoles(box);
   }
 
   /* ---------- Khu ghim ---------- */

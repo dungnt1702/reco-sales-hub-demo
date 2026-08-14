@@ -193,7 +193,65 @@ async function checkPage(page) {
 
   say(errs.length === 0, page + ' — khong loi JS' + (errs.length ? ' → ' + errs.slice(0, 2).join(' | ') : ''));
 
+  /* --- 5. Biểu mẫu tải tài liệu: chặn được lỗi, và ghi thật vào kho ---
+     Vòng quét ở trên bỏ qua mọi thứ nằm trong .modal, nên biểu mẫu phải kiểm riêng. */
+  var UPBTN = { 'thu-vien-tai-lieu': 'tl-new', 'cay-thu-muc': 'up-top' }[page];
+  if (UPBTN) await checkUpload(page, d, w, UPBTN);
+
   f.remove();
+}
+
+async function checkUpload(page, d, w, openId) {
+  var S = w.RECO.store;
+
+  /* 5a. Quy tắc nhận tệp — kiểm thẳng, không phụ thuộc trình duyệt dựng được File hay không */
+  var MB = 1048576;
+  say(S.checkFile({ name: 'clip.mp4', type: 'video/mp4', size: MB }).ok === false &&
+      S.checkFile({ name: 'to.pdf', type: 'application/pdf', size: 60 * MB }).ok === false &&
+      S.checkFile({ name: 'anh.jpg', type: 'image/jpeg', size: 25 * MB }).ok === false &&
+      S.checkFile({ name: 'ok.pdf', type: 'application/pdf', size: 3 * MB }).ok === true,
+      page + ' — dung han muc 50 MB / 20 MB va tu choi video');
+
+  /* 5b. Bấm Lưu khi chưa chọn tệp: phải báo lỗi và không thêm bản ghi nào */
+  var n0 = S.get('documents').length;
+  d.getElementById(openId).click();
+  await wait(150);
+  d.getElementById('tl-save').click();
+  await wait(250);
+  say(d.querySelectorAll('#m-taitailieu .err').length > 0 && S.get('documents').length === n0,
+      page + ' — bieu mau tai len chan luu khi thieu tep');
+
+  /* 5c. Đường đi hạnh phúc: tên và dung lượng lấy thật từ File API */
+  var placed = false;
+  try {
+    var dt = new w.DataTransfer();
+    dt.items.add(new w.File([new w.Uint8Array(1024)], 'bang-hang-dot-4.pdf', { type: 'application/pdf' }));
+    var fi = d.getElementById('tl-file');
+    fi.files = dt.files;
+    fi.dispatchEvent(new w.Event('change', { bubbles: true }));
+    placed = fi.files.length === 1;
+  } catch (e) { placed = false; }
+
+  if (!placed) {
+    lines.push('OK   ' + page + ' — bo qua phan dat File: trinh duyet chan DataTransfer');
+  } else {
+    await wait(150);
+    var ten = d.getElementById('tl-ten');
+    ten.value = 'Tep kiem tra tu dong';
+    ten.dispatchEvent(new w.Event('input', { bubbles: true }));
+    d.getElementById('tl-save').click();
+    await wait(1500);                       // RECO.busy giữ 1100ms
+    var moi = S.get('documents')[0];
+    say(S.get('documents').length === n0 + 1 && moi.file === 'bang-hang-dot-4.pdf' &&
+        moi.size === 1024 && moi.src === 'reco',
+        page + ' — tai len ghi that vao kho (ten va dung luong lay tu File API)');
+  }
+
+  Array.prototype.forEach.call(d.querySelectorAll('.modal:not([hidden])'), function (m) {
+    var x = m.querySelector('[data-close]');
+    if (x) x.click();
+  });
+  S.reset();                                 /* trả kho về gốc cho màn kiểm sau */
 }
 
 (async function () {

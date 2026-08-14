@@ -55,8 +55,119 @@ var CASES = [
   ['quan-tri', 'tkkd', 'Thư ký kinh doanh không thấy tab Báo cáo vận hành',
    function (d) { return d.querySelector('#t-bc').hidden; }, true],
   ['quan-tri', 'gddu', 'Giám đốc dự án vẫn vào được màn Quản trị',
-   function (d) { return !d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns"]').hidden; }, true]
+   function (d) { return !d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns"]').hidden; }, true],
+
+  /* --- Đợt bổ sung lối thêm nội dung. Bám id chứ không bám chuỗi data-roles nguyên văn:
+         các ca cũ bám chuỗi nên mỗi lần sắp lại vai trò là một quả mìn. --- */
+
+  /* A1 · tải tài liệu lên */
+  ['thu-vien-tai-lieu', 'tkkd', 'Thư ký kinh doanh có nút Tải tài liệu lên',
+   function (d) { return !d.querySelector('#tl-new').hidden; }, true],
+  ['thu-vien-tai-lieu', 'nvbh', 'Nhân viên bán hàng không tải tài liệu lên được',
+   function (d) { return d.querySelector('#tl-new').hidden; }, true],
+  ['thu-vien-tai-lieu', 'qlkd', 'Quản lý kinh doanh không tải tài liệu lên được',
+   function (d) { return d.querySelector('#tl-new').hidden; }, true],
+  ['thu-vien-tai-lieu', 'mkt', 'Marketing chỉ chọn được ba nhánh nội dung 4-6',
+   function (d) {
+     return Array.prototype.map.call(d.querySelectorAll('#tl-nhanh option'), function (o) { return o.value; }).join(',');
+   }, '4,5,6'],
+  ['thu-vien-tai-lieu', 'tkkd', 'Thư ký kinh doanh không cấp được nhãn Nội bộ hạn chế',
+   function (d) { return d.querySelectorAll('#tl-nhan option[value="restricted"]').length; }, 0],
+  ['thu-vien-tai-lieu', 'gddu', 'Giám đốc dự án cấp được nhãn Nội bộ hạn chế',
+   function (d) { return d.querySelectorAll('#tl-nhan option[value="restricted"]').length; }, 1],
+  ['cay-thu-muc', 'tkkd', 'Thư ký kinh doanh tải tài liệu lên được ở nhánh 1',
+   function (d) { return d.querySelector('#up-top').hidden; }, false],
+  ['cay-thu-muc', 'nvbh', 'Nhân viên bán hàng không tải tài liệu lên được',
+   function (d) { return d.querySelector('#up-top').hidden; }, true],
+  ['cay-thu-muc', 'mkt', 'Marketing không tải lên được ở nhánh 1',
+   function (d) { return d.querySelector('#up-top').hidden; }, true],
+  ['cay-thu-muc', 'mkt', 'Marketing tải lên được khi chuyển sang nhánh 5',
+   function (d) {
+     d.querySelector('.tnode.root[data-branch="5"]').click();
+     return d.querySelector('#up-top').hidden;
+   }, false],
+
+  /* A2 · thêm ảnh thư viện */
+  ['cay-thu-muc', 'mkt', 'Marketing thấy nút Thêm ảnh ở nhánh 5',
+   function (d) {
+     d.querySelector('.tnode.root[data-branch="5"]').click();
+     return !d.querySelector('#pane [data-act="addimg"]').hidden;
+   }, true],
+  ['cay-thu-muc', 'tkkd', 'Thư ký kinh doanh không thêm ảnh vào thư viện Marketing',
+   function (d) {
+     d.querySelector('.tnode.root[data-branch="5"]').click();
+     return d.querySelector('#pane [data-act="addimg"]').hidden;
+   }, true],
+
+  /* A3 · bảng hàng tới cấp căn/lô */
+  ['quan-tri', 'tkkd', 'Thư ký kinh doanh thấy nút thêm căn/lô',
+   function (d) { return !d.querySelector('#bhq-new').hidden; }, true],
+  ['quan-tri', 'mkt', 'Marketing không thấy khu quản lý bảng hàng',
+   function (d) { return d.querySelector('#bhq-zone').hidden; }, true],
+  ['quan-tri', 'hcns', 'HCNS va Ke toan không thấy khu quản lý bảng hàng',
+   function (d) { return d.querySelector('#bhq-zone').hidden; }, true],
+  ['quan-tri', 'gddu', 'Giám đốc dự án có nút Bảng hàng trên dòng dự án',
+   function (d) { return !d.querySelector('#pj-body [data-act="units"]').hidden; }, true],
+  ['quan-tri', 'mkt', 'Marketing không có nút Bảng hàng trên dòng dự án',
+   function (d) { return d.querySelector('#pj-body [data-act="units"]').hidden; }, true],
+
+  /* A4 · thêm hỏi đáp */
+  ['du-an-chi-tiet', 'tkkd', 'Thư ký kinh doanh thêm được câu hỏi đáp',
+   function (d) { return !d.querySelector('#qa-new').hidden; }, true],
+  ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng không thêm được câu hỏi đáp',
+   function (d) { return d.querySelector('#qa-new').hidden; }, true],
+  ['du-an-chi-tiet', 'qlkd', 'Quản lý kinh doanh không thêm được câu hỏi đáp',
+   function (d) { return d.querySelector('#qa-new').hidden; }, true],
+
+  /* B · các nút từng hở quyền */
+  ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng lập được phiếu tính giá',
+   function (d) { return !d.querySelector('#pt-tao').hidden; }, true],
+  ['du-an-chi-tiet', 'hcns', 'HCNS va Ke toan không lập được phiếu tính giá',
+   function (d) { return d.querySelector('#pt-tao').hidden; }, true],
+  ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng gửi được một đường dẫn cho nhiều căn',
+   function (d) {
+     d.querySelector('#bh-body [data-pick]').click();
+     return !d.querySelector('#bh-bulk [data-bulk="share"]').hidden;
+   }, true],
+  ['du-an-chi-tiet', 'hcns', 'HCNS va Ke toan không gửi được đường dẫn cho nhiều căn',
+   function (d) {
+     d.querySelector('#bh-body [data-pick]').click();
+     return d.querySelector('#bh-bulk [data-bulk="share"]').hidden;
+   }, true],
+  ['du-an-chi-tiet', 'gddu', 'Chỉ còn một lối thêm kịch bản cá nhân, dành cho Nhân viên bán hàng',
+   function (d) { return d.querySelectorAll('#kv9 [data-new-kb="mine"]').length; }, 1],
+  ['de-nghi-sua', 'nvbh', 'Nhân viên bán hàng gửi được đề nghị mới',
+   function (d) { return !d.querySelector('#req-new').hidden; }, true],
+  ['de-nghi-sua', 'tkkd', 'Thư ký kinh doanh không gửi đề nghị mới, chỉ xử lý',
+   function (d) { return d.querySelector('#req-new').hidden; }, true],
+  ['trang-dau', 'tkkd', 'Thư ký kinh doanh thấy hàng chờ nhưng không có nút Duyệt',
+   function (d) { return d.querySelector('#viec [data-ok]').hidden; }, true],
+  ['trang-dau', 'gddu', 'Giám đốc dự án vẫn duyệt được ngay ở Trang đầu',
+   function (d) { return !d.querySelector('#viec [data-ok]').hidden; }, true],
+  ['nguoi-dung', 'nvbh', 'Vào thẳng địa chỉ màn Người dùng vẫn bị chặn ở cấp màn',
+   function (d) {
+     return !d.querySelector('.state-error[data-roles="gddu tkkd qlkd nvbh mkt"]').hidden &&
+            d.querySelector('#u-zone').hidden;
+   }, true],
+  ['nguoi-dung', 'hcns', 'Người quản trị chung vẫn vào được màn Người dùng',
+   function (d) { return !d.querySelector('#u-zone').hidden; }, true],
+
+  /* Trạng thái rỗng ở màn Chia sẻ. Lọc cho ra 0 dòng vẫn ra khối "bỏ bộ lọc" chứ không ra nút
+     tạo mới — phải dọn sạch kho rồi trả lại bằng reset() để các ca sau không bị lây. */
+  ['chia-se', 'hcns', 'HCNS va Ke toan không tạo được đường dẫn ở trạng thái rỗng',
+   function (d) { return emptyShare(d).hidden; }, true],
+  ['chia-se', 'nvbh', 'Nhân viên bán hàng tạo được đường dẫn ở trạng thái rỗng',
+   function (d) { return !emptyShare(d).hidden; }, true]
 ];
+
+function emptyShare(d) {
+  var S = d.defaultView.RECO.store;
+  S.get('shareLinks').slice().forEach(function (l) { S.remove('shareLinks', l.id); });
+  var btn = d.querySelector('#lk-empty [data-act="new"]');
+  var state = { hidden: btn ? btn.hidden : 'khong tim thay nut tao moi' };
+  S.reset();
+  return state;
+}
 
 var out = document.getElementById('out'), frames = document.getElementById('frames'), lines = [], fail = 0;
 
