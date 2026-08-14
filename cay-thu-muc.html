@@ -57,7 +57,7 @@
             <h3 style="font-size:.98rem">Bảy nhánh cố định</h3>
             <div class="row-tight">
               <button class="btn btn-outline btn-sm" id="add-top" data-roles="tkkd gddu mkt gd">+ Thư mục con</button>
-              <button class="btn btn-primary btn-sm" id="up-top" data-roles="tkkd gddu gd">+ Tải tài liệu</button>
+              <button class="btn btn-primary btn-sm" id="up-top" data-roles="tkkd gddu">+ Tải tài liệu</button>
             </div>
           </div>
           <div class="card-body" style="padding:10px">
@@ -72,6 +72,10 @@
 
         <div class="note note-navy mt-2 micro" data-roles="nvbh">
           Vai trò <strong>Nhân viên bán hàng</strong> xem cây ở chế độ chỉ đọc, không tạo được thư mục con, và không thấy nhánh 7.
+        </div>
+        <div class="note note-navy mt-2 micro" data-roles="hcns">
+          Vai trò <strong>HCNS &amp; Kế toán</strong> chỉ thấy nhánh 1 (Thông tin dự án) và phần số liệu ở nhánh 7 —
+          bảng hàng, pháp lý, tài liệu bán hàng, ảnh và hỏi đáp không thuộc phạm vi của anh/chị.
         </div>
       </div>
 
@@ -231,7 +235,8 @@ document.addEventListener('DOMContentLoaded', function () {
   /* Nhãn mặc định của từng nhánh cố định — nhánh 7 không bao giờ có phần Công khai */
   var BRANCH_LABEL = ['public', 'internal', 'internal', 'public', 'public', 'public', 'restricted'];
   var RANK = { public: 0, internal: 1, restricted: 2 };
-  var BR7_ROLES = 'gd gddu tkkd qlkd hcns mkt';      /* nhánh 7 ẩn với Nhân viên bán hàng */
+  /* Nhánh nào vai trò nào thấy — tra từ kho thay vì chỉ ẩn nhánh 7 với nhân viên bán hàng.
+     HCNS & Kế toán chỉ liên quan tới nhánh 1 và phần số liệu ở nhánh 7 (ma trận nhánh). */
   var ADD_ROLES = 'tkkd gddu mkt gd';                /* QD-035: nhân viên bán hàng không tạo thư mục con */
 
   var pjSel = document.getElementById('f-pj'), title = document.getElementById('tree-title'),
@@ -287,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
           '<span style="width:14px"></span>' + RECO.svg('folder', 'ficon') +
           '<span class="tname">' + esc(f.name) + '</span>' + S.label(f.label) + '</button></li>';
       }).join('');
-      return '<li' + (b === 7 ? ' data-roles="' + BR7_ROLES + '"' : '') + '>' +
+      return '<li data-roles="' + S.BRANCH_ROLES[b - 1] + '">' +
         '<button type="button" class="tnode root' + (sel.branch === b && !sel.folder ? ' sel' : '') + '" data-branch="' + b + '"' +
           (subs.length ? ' aria-expanded="' + open + '"' : '') + '>' +
           (subs.length ? '<span class="caret">' + RECO.svg('caret') + '</span>' : '<span style="width:14px"></span>') +
@@ -377,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var b = sel.branch, bName = S.BRANCHES[b - 1], bLabel = BRANCH_LABEL[b - 1];
     var addBtn = '<button type="button" class="btn btn-outline btn-sm" data-act="addsub" data-roles="' + ADD_ROLES + '">+ Thư mục con</button>';
     var upBtn = '<button type="button" class="btn btn-primary btn-sm" data-act="upload" data-roles="' + S.uploadRoles(b) + '">+ Tải tài liệu</button>';
-    var imgBtn = b === 5 ? '<button type="button" class="btn btn-outline btn-sm" data-act="addimg" data-roles="mkt gddu gd">+ Thêm ảnh</button>' : '';
+    var imgBtn = b === 5 ? '<button type="button" class="btn btn-outline btn-sm" data-act="addimg" data-roles="mkt gddu">+ Thêm ảnh</button>' : '';
 
     if (sel.folder) {
       var f = S.find('folders', sel.folder);
@@ -431,6 +436,13 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function paintAll() {
+    /* Đổi vai trò xong mà nhánh đang chọn không còn quyền xem thì đưa về nhánh đầu tiên
+       vai trò đó thấy — không để khung bên phải vẽ nội dung của nhánh đã bị ẩn. */
+    if (!S.canSeeBranch(sel.branch, RECO.role)) {
+      for (var b = 1; b <= 7; b++) {
+        if (S.canSeeBranch(b, RECO.role)) { sel = { branch: b, folder: null }; break; }
+      }
+    }
     title.textContent = 'Cây thư mục — ' + S.projectName(pj);
     paintTree();
     paintPane();

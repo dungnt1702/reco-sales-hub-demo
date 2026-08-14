@@ -57,16 +57,16 @@
 
       /* Bảng hàng — cấp căn/lô, dùng cho MH-04 và phiếu tính giá */
       units: [
-        { id: 'A-12.05', pj: 'celestine', block: 'A', floor: 12, kind: '2PN + 1', area: 72.4, dir: 'Đông Nam', price: 4860, state: 'con' },
-        { id: 'A-15.02', pj: 'celestine', block: 'A', floor: 15, kind: '3PN', area: 96.8, dir: 'Tây Bắc', price: 6420, state: 'giu' },
-        { id: 'A-18.07', pj: 'celestine', block: 'A', floor: 18, kind: '2PN', area: 68.0, dir: 'Đông', price: 4520, state: 'con' },
-        { id: 'B-05.03', pj: 'celestine', block: 'B', floor: 5, kind: '1PN + 1', area: 55.6, dir: 'Nam', price: 3280, state: 'con' },
-        { id: 'B-22.09', pj: 'celestine', block: 'B', floor: 22, kind: '3PN + 1', area: 108.5, dir: 'Đông Nam', price: 7040, state: 'ban' },
-        { id: 'C-08.11', pj: 'celestine', block: 'C', floor: 8, kind: '1PN + 1', area: 58.2, dir: 'Bắc', price: 3440, state: 'con' },
-        { id: 'C-14.06', pj: 'celestine', block: 'C', floor: 14, kind: '2PN + 1', area: 74.1, dir: 'Đông Nam', price: 5120, state: 'con' },
-        { id: 'C-21.03', pj: 'celestine', block: 'C', floor: 21, kind: '3PN + 1', area: 112.0, dir: 'Đông Nam', price: 7180, state: 'ban' },
-        { id: 'D-09.08', pj: 'celestine', block: 'D', floor: 9, kind: '2PN', area: 70.2, dir: 'Tây', price: 4380, state: 'giu' },
-        { id: 'D-25.01', pj: 'celestine', block: 'D', floor: 25, kind: '3PN', area: 99.4, dir: 'Đông Nam', price: 6890, state: 'con' },
+        { id: 'A-12.05', pj: 'celestine', zone: 'z-cel-a1-12', block: 'A', floor: 12, kind: '2PN + 1', area: 72.4, dir: 'Đông Nam', price: 4860, state: 'con' },
+        { id: 'A-15.02', pj: 'celestine', zone: 'z-cel-a1-15', block: 'A', floor: 15, kind: '3PN', area: 96.8, dir: 'Tây Bắc', price: 6420, state: 'giu' },
+        { id: 'A-18.07', pj: 'celestine', zone: 'z-cel-a1-18', block: 'A', floor: 18, kind: '2PN', area: 68.0, dir: 'Đông', price: 4520, state: 'con' },
+        { id: 'B-05.03', pj: 'celestine', zone: 'z-cel-b1-05', block: 'B', floor: 5, kind: '1PN + 1', area: 55.6, dir: 'Nam', price: 3280, state: 'con' },
+        { id: 'B-22.09', pj: 'celestine', zone: 'z-cel-b1-22', block: 'B', floor: 22, kind: '3PN + 1', area: 108.5, dir: 'Đông Nam', price: 7040, state: 'ban' },
+        { id: 'C-08.11', pj: 'celestine', zone: 'z-cel-c1-08', block: 'C', floor: 8, kind: '1PN + 1', area: 58.2, dir: 'Bắc', price: 3440, state: 'con' },
+        { id: 'C-14.06', pj: 'celestine', zone: 'z-cel-c1-14', block: 'C', floor: 14, kind: '2PN + 1', area: 74.1, dir: 'Đông Nam', price: 5120, state: 'con' },
+        { id: 'C-21.03', pj: 'celestine', zone: 'z-cel-c1-21', block: 'C', floor: 21, kind: '3PN + 1', area: 112.0, dir: 'Đông Nam', price: 7180, state: 'ban' },
+        { id: 'D-09.08', pj: 'celestine', zone: 'z-cel-d1-09', block: 'D', floor: 9, kind: '2PN', area: 70.2, dir: 'Tây', price: 4380, state: 'giu' },
+        { id: 'D-25.01', pj: 'celestine', zone: 'z-cel-d1-25', block: 'D', floor: 25, kind: '3PN', area: 99.4, dir: 'Đông Nam', price: 6890, state: 'con' },
         { id: 'RB-14', pj: 'la-perle', block: 'Ruby', floor: 0, kind: 'Liền kề', area: 128, dir: 'Đông', price: 12500, state: 'con' },
         { id: 'RB-15', pj: 'la-perle', block: 'Ruby', floor: 0, kind: 'Liền kề', area: 128, dir: 'Đông', price: 12500, state: 'ban' },
         { id: 'SP-02', pj: 'la-perle', block: 'Sapphire', floor: 0, kind: 'Biệt thự đơn lập', area: 300, dir: 'Nam', price: 28000, state: 'con' },
@@ -128,6 +128,28 @@
         { id: 'd17', pj: 'palmy', branch: 2, folder: null, name: 'Phiếu tính giá mẫu đợt 3',
           kind: 'banghang', src: 'reco', label: 'internal', ver: 'v2', from: '01/08/2026', to: '14/08/2026',
           state: 'expiring', icon: 'xls', daysLeft: 0 }
+      ],
+
+      /* Phân cấp bảng hàng: phân khu → tòa (hoặc dãy) → tầng. Căn/lô treo vào nút lá.
+         Đúng `zones` + `units.zone_id` của schema; căn hộ đủ ba cấp, đất nền và thấp tầng
+         dừng ở cấp dãy nên nút lá chính là cấp 2. */
+      zones: [
+        { id: 'z-cel-a', pj: 'celestine', parent: null, kind: 'khu', name: 'Phân khu Sông' },
+        { id: 'z-cel-a1', pj: 'celestine', parent: 'z-cel-a', kind: 'toa', name: 'Tòa A' },
+        { id: 'z-cel-a1-12', pj: 'celestine', parent: 'z-cel-a1', kind: 'tang', name: 'Tầng 12' },
+        { id: 'z-cel-a1-15', pj: 'celestine', parent: 'z-cel-a1', kind: 'tang', name: 'Tầng 15' },
+        { id: 'z-cel-a1-18', pj: 'celestine', parent: 'z-cel-a1', kind: 'tang', name: 'Tầng 18' },
+        { id: 'z-cel-b1', pj: 'celestine', parent: 'z-cel-a', kind: 'toa', name: 'Tòa B' },
+        { id: 'z-cel-b1-05', pj: 'celestine', parent: 'z-cel-b1', kind: 'tang', name: 'Tầng 5' },
+        { id: 'z-cel-b1-22', pj: 'celestine', parent: 'z-cel-b1', kind: 'tang', name: 'Tầng 22' },
+        { id: 'z-cel-c', pj: 'celestine', parent: null, kind: 'khu', name: 'Phân khu Vườn' },
+        { id: 'z-cel-c1', pj: 'celestine', parent: 'z-cel-c', kind: 'toa', name: 'Tòa C' },
+        { id: 'z-cel-c1-08', pj: 'celestine', parent: 'z-cel-c1', kind: 'tang', name: 'Tầng 8' },
+        { id: 'z-cel-c1-14', pj: 'celestine', parent: 'z-cel-c1', kind: 'tang', name: 'Tầng 14' },
+        { id: 'z-cel-c1-21', pj: 'celestine', parent: 'z-cel-c1', kind: 'tang', name: 'Tầng 21' },
+        { id: 'z-cel-d1', pj: 'celestine', parent: 'z-cel-c', kind: 'toa', name: 'Tòa D' },
+        { id: 'z-cel-d1-09', pj: 'celestine', parent: 'z-cel-d1', kind: 'tang', name: 'Tầng 9' },
+        { id: 'z-cel-d1-25', pj: 'celestine', parent: 'z-cel-d1', kind: 'tang', name: 'Tầng 25' }
       ],
 
       /* Thành phần nội dung của màn Chi tiết dự án — khu vực 01 đến 04 và 08.
@@ -556,21 +578,39 @@
     var d = daysLeft(to);
     return { to: to, state: d !== null && d <= 7 ? 'expiring' : 'live', daysLeft: d };
   }
+  /* Tổng giám đốc xem toàn bộ và duyệt, nhưng không sửa dữ liệu nội dung hàng ngày
+     — ma trận nhánh cho `ceo` đúng X, T, C. */
   function canUpload(role, branch) {
-    if (['tkkd', 'gddu', 'gd'].indexOf(role) >= 0) return true;
+    if (['tkkd', 'gddu'].indexOf(role) >= 0) return true;
     return role === 'mkt' && MKT_BRANCHES.indexOf(+branch) >= 0;
   }
   function uploadRoles(branch) {
-    return MKT_BRANCHES.indexOf(+branch) >= 0 ? 'tkkd gddu gd mkt' : 'tkkd gddu gd';
+    return MKT_BRANCHES.indexOf(+branch) >= 0 ? 'tkkd gddu mkt' : 'tkkd gddu';
+  }
+
+  /* Nhánh nào vai trò nào được nhìn thấy trong cây thư mục.
+     HCNS & Kế toán chỉ liên quan tới nhánh 1 (Thông tin dự án) và phần số liệu ở nhánh 7;
+     Nhân viên bán hàng không có quyền trên nhánh 7 (trừ kịch bản cá nhân ở màn riêng). */
+  var BRANCH_ROLES = [
+    'gd gddu tkkd qlkd nvbh hcns mkt',
+    'gd gddu tkkd qlkd nvbh mkt',
+    'gd gddu tkkd qlkd nvbh mkt',
+    'gd gddu tkkd qlkd nvbh mkt',
+    'gd gddu tkkd qlkd nvbh mkt',
+    'gd gddu tkkd qlkd nvbh mkt',
+    'gd gddu tkkd qlkd hcns mkt'
+  ];
+  function canSeeBranch(branch, role) {
+    return BRANCH_ROLES[(+branch || 1) - 1].split(' ').indexOf(role) >= 0;
   }
   /* Ai sửa được từng loại thành phần của màn Chi tiết dự án.
      Mặt bằng và Nội dung được duyệt là việc của Marketing, phần còn lại là dữ liệu dự án. */
   var SECTION_ROLES = {
-    overview: 'tkkd gddu gd',
-    place: 'tkkd gddu gd',
-    point: 'tkkd gddu gd',
-    plan: 'tkkd gddu gd mkt',
-    content: 'mkt gddu gd'
+    overview: 'tkkd gddu',
+    place: 'tkkd gddu',
+    point: 'tkkd gddu',
+    plan: 'tkkd gddu mkt',
+    content: 'mkt gddu'
   };
   var SECTION_NAME = {
     overview: 'Tổng quan', place: 'Điểm liên kết vùng', point: 'Điểm bán hàng',
@@ -633,6 +673,7 @@
     fileSize: fileSize, fileKind: fileKind, checkFile: checkFile, iconFor: iconFor,
     imgSrc: imgSrc, todayVN: todayVN, stamp: stamp, lifeFrom: lifeFrom,
     canUpload: canUpload, uploadRoles: uploadRoles, parentLabel: parentLabel,
+    BRANCH_ROLES: BRANCH_ROLES, canSeeBranch: canSeeBranch,
     SECTION_ROLES: SECTION_ROLES, SECTION_NAME: SECTION_NAME, canEditSection: canEditSection,
     isFull: isFull,
     persistent: USE_SS

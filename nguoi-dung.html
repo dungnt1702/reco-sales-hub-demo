@@ -24,7 +24,7 @@
           Người quản trị chung là người duy nhất cấp tài khoản, gán vai trò, gán dự án hoặc vùng và đặt lại mật khẩu.
         </p>
       </div>
-      <button class="btn btn-primary" id="u-new" data-roles="gd hcns">+ Tài khoản mới</button>
+      <button class="btn btn-primary" id="u-new" data-roles="hcns">+ Tài khoản mới</button>
     </div>
 
     <!-- Chặn ở cấp màn, không chỉ ẩn nút. Ẩn menu mà gõ thẳng địa chỉ vẫn đọc được họ tên,
@@ -176,8 +176,8 @@ document.addEventListener('DOMContentLoaded', function () {
       '<td data-l="Phạm vi">' + esc(u.scope) + '</td>' +
       '<td data-l="Trạng thái"><span class="st ' + (on ? 'st-live">Đang hoạt động' : 'st-stop">Đã ngừng') + '</span></td>' +
       '<td data-l="" class="r"><div class="row-tight" style="justify-content:flex-end">' +
-        '<span class="row-tight" data-roles="gd hcns">' + acts + '</span>' +
-        '<span class="chip" data-roles="gddu tkkd qlkd nvbh mkt">Chỉ xem</span>' +
+        '<span class="row-tight" data-roles="hcns">' + acts + '</span>' +
+        '<span class="chip" data-roles="gd">Chỉ xem</span>' +
       '</div></td>' +
     '</tr>';
   }

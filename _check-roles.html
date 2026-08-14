@@ -20,7 +20,7 @@ var CASES = [
   ['du-an-chi-tiet', 'gddu', 'nút nổi Gửi đề nghị sửa ẩn với Giám đốc dự án',
    function (d) { return d.querySelector('.fab').hidden; }, true],
   ['du-an-chi-tiet', 'tkkd', 'Thư ký kinh doanh thấy nút Cập nhật ở khu vực 1',
-   function (d) { return !d.querySelector('#kv1 [data-roles="tkkd gddu gd"]').hidden; }, true],
+   function (d) { return !d.querySelector('#kv1 [data-roles="tkkd gddu"]').hidden; }, true],
   ['thu-vien-tai-lieu', 'nvbh', 'Nhân viên bán hàng không tải được tài liệu Nội bộ hạn chế',
    function (d) { return d.querySelector('[data-roles="gd gddu qlkd hcns"]').hidden; }, true],
   ['thu-vien-tai-lieu', 'qlkd', 'Quản lý kinh doanh tải được Chính sách hoa hồng',
@@ -173,10 +173,10 @@ var CASES = [
    function (d) { return d.querySelector('#t-kb').hidden; }, false],
   ['quan-tri', 'hcns', 'HCNS va Ke toan không thấy tab Kịch bản',
    function (d) { return d.querySelector('#t-kb').hidden; }, true],
-  ['quan-tri', 'mkt', 'Marketing soạn được kịch bản dùng chung',
-   function (d) { return d.querySelector('#kb-new').hidden; }, false],
-  ['quan-tri', 'tkkd', 'Thư ký kinh doanh không soạn kịch bản dùng chung',
+  ['quan-tri', 'mkt', 'Marketing không soạn kịch bản dùng chung (nhánh 7 chỉ Xem)',
    function (d) { return d.querySelector('#kb-new').hidden; }, true],
+  ['quan-tri', 'tkkd', 'Thư ký kinh doanh soạn được kịch bản dùng chung',
+   function (d) { return d.querySelector('#kb-new').hidden; }, false],
   ['quan-tri', 'gddu', 'Kịch bản cá nhân của người khác không lọt vào danh sách quản trị',
    function (d) { return d.querySelector('#kb-list').innerHTML.indexOf('Cách mình mở đầu') >= 0; }, false],
 
@@ -223,6 +223,47 @@ var CASES = [
    function (d) {
      d.querySelector('#pj-body [data-act="units"]').click();
      return d.getElementById('bhq-new').hidden && !d.getElementById('bhq-drive').hidden;
+   }, true],
+
+  /* --- Bốn quyết định chốt ngày 14/08/2026 --- */
+
+  /* 1 · Tổng giám đốc xem toàn bộ và duyệt, không sửa nội dung, không cấp tài khoản */
+  ['du-an-chi-tiet', 'gd', 'Tổng giám đốc không sửa thành phần nào của trang dự án',
+   function (d) {
+     return Array.prototype.every.call(d.querySelectorAll('[data-sec-new], [data-sec-edit]'),
+       function (b) { return b.hidden; });
+   }, true],
+  ['thu-vien-tai-lieu', 'gd', 'Tổng giám đốc không tải tài liệu lên',
+   function (d) { return d.querySelector('#tl-new').hidden; }, true],
+  ['quan-tri', 'gd', 'Tổng giám đốc không quản lý bảng hàng',
+   function (d) { return d.querySelector('#bhq-zone').hidden; }, true],
+  ['nguoi-dung', 'gd', 'Tổng giám đốc xem được danh sách nhưng không cấp tài khoản',
+   function (d) { return !d.querySelector('#u-zone').hidden && d.querySelector('#u-new').hidden; }, true],
+
+  /* 3 · HCNS & Kế toán chỉ thấy nhánh 1 và nhánh 7 */
+  ['cay-thu-muc', 'hcns', 'HCNS va Ke toan chi thay hai nhanh trong cay',
+   function (d) {
+     return Array.prototype.filter.call(d.querySelectorAll('#tree > ul > li'),
+       function (li) { return !li.hidden; }).length;
+   }, 2],
+  ['cay-thu-muc', 'tkkd', 'Thư ký kinh doanh thấy đủ bảy nhánh',
+   function (d) {
+     return Array.prototype.filter.call(d.querySelectorAll('#tree > ul > li'),
+       function (li) { return !li.hidden; }).length;
+   }, 7],
+
+  /* 4 · Cây phân khu → tòa → tầng */
+  ['quan-tri', 'tkkd', 'Bảng hàng có cây phân khu, tòa và tầng (MH-09)',
+   function (d) {
+     d.querySelector('#pj-body [data-act="units"]').click();
+     return d.querySelectorAll('#bhq-tree [data-zone]').length;
+   }, 16],
+  ['quan-tri', 'tkkd', 'Chọn một tòa thì bảng hàng lọc theo tòa đó',
+   function (d) {
+     d.querySelector('#pj-body [data-act="units"]').click();
+     var truoc = d.querySelectorAll('#bhq-body tr').length;
+     d.querySelector('#bhq-tree [data-zone="z-cel-a1"]').click();
+     return d.querySelectorAll('#bhq-body tr').length < truoc;
    }, true]
 ];
 
