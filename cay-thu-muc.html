@@ -61,6 +61,11 @@
             </div>
           </div>
           <div class="card-body" style="padding:10px">
+            <div class="searchbox mb-2" style="display:flex">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="search" id="t-q" placeholder="Tìm tệp hoặc thư mục trong cây" aria-label="Tìm tệp hoặc thư mục trong cây">
+            </div>
+            <p class="micro muted mb-1" id="t-qcount" hidden></p>
             <div class="tree" id="tree"></div>
           </div>
         </div>
@@ -168,6 +173,21 @@
   </div>
 </div>
 
+<!-- Xem trước tài liệu ngay trong cây (MH-05: xem trước không cần tải về) -->
+<div class="modal" id="m-xem" hidden role="dialog" aria-modal="true" aria-labelledby="m-xem-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Xem trước</span><h3 id="m-xem-t">Xem trước tài liệu</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="m-xem-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Đóng</button>
+      <button class="btn btn-primary" id="m-xem-tai">Tải bản có dấu nhận diện</button>
+    </div>
+  </div>
+</div>
+
 <!-- Thêm ảnh vào thư viện -->
 <div class="modal" id="m-themanh" hidden role="dialog" aria-modal="true" aria-labelledby="m-anh-t">
   <div class="modal-box" style="max-width:560px">
@@ -245,11 +265,23 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   var LOCK = '<span class="lock" title="Nhánh cố định — không đổi tên, di chuyển hoặc xóa">' + RECO.svg('lock') + '</span>';
 
+  /* Tìm theo tên tệp và tên thư mục — MH-11 yêu cầu tìm được trong cây,
+     không bắt người dùng mở lần lượt bảy nhánh. */
+  var q = '';
+  function hitFolder(f) { return !q || RECO.norm(f.name).indexOf(q) >= 0; }
+  function hitDoc(d) { return !q || RECO.norm(d.name).indexOf(q) >= 0; }
+  function branchHits(b) {
+    var fs = folders(b).filter(canSee).filter(hitFolder);
+    var ds = seen(docs(b)).filter(hitDoc);
+    return fs.length + ds.length;
+  }
+
   function treeHtml() {
     return '<ul>' + S.BRANCHES.map(function (name, i) {
       var b = i + 1;
-      var subs = folders(b).filter(canSee);
-      var open = !!expanded[b];
+      var subs = folders(b).filter(canSee).filter(hitFolder);
+      if (q && !branchHits(b)) return '';
+      var open = q ? true : !!expanded[b];
       var kids = subs.map(function (f) {
         return '<li><button type="button" class="tnode' + (sel.folder === f.id ? ' sel' : '') + '" data-folder="' + f.id + '" data-branch="' + b + '">' +
           '<span style="width:14px"></span>' + RECO.svg('folder', 'ficon') +
@@ -268,8 +300,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function paintTree() {
-    tree.innerHTML = treeHtml();
+    tree.innerHTML = treeHtml() || '<p class="small muted" style="padding:8px">Không có tệp hoặc thư mục nào khớp.</p>';
     RECO.applyRoles(tree);
+    var qc = document.getElementById('t-qcount');
+    qc.hidden = !q;
+    if (q) {
+      var n = 0;
+      for (var b = 1; b <= 7; b++) n += branchHits(b);
+      qc.textContent = n ? 'Tìm thấy ' + n + ' mục khớp “' + document.getElementById('t-q').value.trim() + '”' : 'Không có mục nào khớp';
+    }
   }
 
   /* ---------- Dòng tệp và thư mục ---------- */
@@ -286,9 +325,11 @@ document.addEventListener('DOMContentLoaded', function () {
     } else if (d.src === 'drive') {
       act = '<button type="button" class="btn btn-outline btn-sm" data-act="mo" data-id="' + d.id + '">Mở nguồn</button>';
     } else if (d.state === 'draft') {
-      act = '<span class="chip">Chưa duyệt — chờ Giám đốc dự án</span>';
+      act = '<button type="button" class="btn btn-quiet btn-sm" data-act="xem" data-id="' + d.id + '">Xem trước</button>' +
+        '<span class="chip">Chưa duyệt — chờ Giám đốc dự án</span>';
     } else {
-      act = '<button type="button" class="btn btn-outline btn-sm" data-act="tai" data-id="' + d.id + '" title="Tải bản có dấu nhận diện">Tải</button>';
+      act = '<button type="button" class="btn btn-quiet btn-sm" data-act="xem" data-id="' + d.id + '">Xem trước</button>' +
+        '<button type="button" class="btn btn-outline btn-sm" data-act="tai" data-id="' + d.id + '" title="Tải bản có dấu nhận diện">Tải</button>';
     }
     var src = d.src === 'reco' ? '<span class="src src-reco">Tệp RECO</span>'
       : d.src === 'drive' ? '<span class="src src-drive">Liên kết sống · chỉ xem</span>'
@@ -359,8 +400,8 @@ document.addEventListener('DOMContentLoaded', function () {
           ' — nội dung con chỉ được siết chặt hơn, không bao giờ được nới lỏng hơn nội dung cha.</div>';
     }
 
-    var subs = folders(b).filter(canSee);
-    var here = seen(docs(b, null));
+    var subs = folders(b).filter(canSee).filter(hitFolder);
+    var here = seen(docs(b, null)).filter(hitDoc);
     var total = seen(docs(b)).length;
     var pics = b === 5 ? medias() : [];
     var body = subs.map(folderRow).join('') + pics.map(mediaRow).join('') +
@@ -415,6 +456,11 @@ document.addEventListener('DOMContentLoaded', function () {
     paintAll();
   });
 
+  document.getElementById('t-q').addEventListener('input', function () {
+    q = RECO.norm(this.value.trim());
+    paintAll();
+  });
+
   pjSel.addEventListener('change', function () {
     pj = pjSel.value;
     sel = { branch: 1, folder: null };
@@ -445,6 +491,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     var d = S.find('documents', b.getAttribute('data-id'));
     if (!d) return;
+    if (act === 'xem') { xemTruoc(d); return; }
     if (act === 'tai') {
       RECO.busy(b, 'Đang tạo bản có dấu nhận diện…', 1400, function () {
         RECO.toast(d.icon === 'xls' || d.kind === 'banghang'
@@ -460,6 +507,36 @@ document.addEventListener('DOMContentLoaded', function () {
       paintPane();
       RECO.toast('Đang mở liên kết sống trên Google Drive — tệp do Chủ đầu tư sở hữu, RECO chỉ xem');
     }
+  });
+
+  /* ---------- Xem trước tài liệu ---------- */
+  var xemId = null;
+  function xemTruoc(d) {
+    xemId = d.id;
+    document.getElementById('m-xem-t').textContent = d.name;
+    document.getElementById('m-xem-body').innerHTML =
+      '<div class="prev-frame mb-3"><div class="prev-page">' +
+        '<h4>' + esc(d.name) + '</h4>' +
+        '<div class="prev-line w88"></div><div class="prev-line"></div><div class="prev-line w70"></div>' +
+        '<div class="prev-line w88"></div><div class="prev-line w45"></div>' +
+        '<div class="prev-stamp">Bản xem trước · dấu nhận diện ' + esc(RECO.current.who) + ' · ' + esc(RECO.current.name) + '</div>' +
+      '</div></div>' +
+      '<div class="kv">' +
+        '<div><div class="k">Nhánh</div><div class="v">' + d.branch + '. ' + esc(S.BRANCHES[d.branch - 1]) + '</div></div>' +
+        '<div><div class="k">Phiên bản</div><div class="v">' + esc(d.ver || '—') + '</div></div>' +
+        '<div><div class="k">Ngày hiệu lực</div><div class="v">' +
+          esc(d.from || '—') + (d.to ? ' → ' + esc(d.to) : ' → không giới hạn') + '</div></div>' +
+        '<div><div class="k">Nhãn quyền</div><div class="v">' + S.label(d.label) + '</div></div>' +
+      '</div>';
+    document.getElementById('m-xem-tai').hidden = d.src !== 'reco';
+    RECO.openModal('m-xem');
+  }
+  document.getElementById('m-xem-tai').addEventListener('click', function () {
+    var d = S.find('documents', xemId), btn = this;
+    if (!d) return;
+    RECO.busy(btn, 'Đang tạo bản có dấu nhận diện…', 1400, function () {
+      RECO.toast('Đã tạo bản có dấu nhận diện ' + RECO.current.who + ' — ' + d.name);
+    });
   });
 
   /* ---------- Thêm thư mục con ---------- */

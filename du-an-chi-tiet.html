@@ -36,6 +36,11 @@
     box-shadow: 0 0 0 7px rgba(242,118,34,.22); position: absolute; left: 46%; top: 44%;
   }
   .bullet { display: flex; gap: 11px; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  /* Nhãn và nút Sửa dồn về mép phải thành một cột, không bám đuôi câu chữ dài ngắn khác nhau */
+  .bullet .bmeta { flex: 1 1 auto; min-width: 0; }
+  .bullet .bend { margin-left: auto; flex: none; display: flex; align-items: center; gap: 8px; }
+  /* Nút Sửa trên ảnh mặt bằng: .gal figure cắt theo tỉ lệ 4:3 nên phải đặt nổi, không để trong luồng */
+  .gal figure .btn { position: absolute; right: 8px; top: 8px; background: rgb(255 255 255 / .92); }
   .bullet:last-child { border-bottom: 0; }
   .bullet .bi { width: 22px; height: 22px; flex: none; border-radius: 50%; background: var(--notice); color: var(--orange-text); display: inline-flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; font-family: var(--font-display); }
   .fab {
@@ -303,7 +308,8 @@
           <div id="qa-list"></div>
           <p class="micro muted mt-1" id="qa-count" role="status"></p>
           <div class="row mt-2">
-            <button class="btn btn-primary btn-sm" id="qa-new" data-roles="tkkd gddu gd mkt" data-open="m-hoidap">+ Thêm câu hỏi</button>
+            <!-- Ma trận nhánh 6 (Hỏi đáp và Điểm bán) cho Marketing đúng một quyền Xem -->
+            <button class="btn btn-primary btn-sm" id="qa-new" data-roles="tkkd gddu gd" data-open="m-hoidap">+ Thêm câu hỏi</button>
             <button class="btn btn-outline btn-sm" data-roles="nvbh qlkd" data-open="m-denghi">Câu trả lời chưa đúng? Gửi đề nghị sửa</button>
             <button class="btn btn-outline btn-sm" data-roles="gddu gd" data-open="m-duyetqa">Duyệt nội dung hỏi đáp</button>
           </div>
@@ -708,12 +714,12 @@ document.addEventListener('DOMContentLoaded', function () {
     id('kv3-list').innerHTML = pts.map(function (s, i) {
       var row = '<div class="bullet"' + (s.label === 'restricted' ? ' data-roles="' + SEE_RESTRICTED + '"' : '') + '>' +
         '<span class="bi">' + (i + 1) + '</span>' +
-        '<div><b>' + esc(s.title) + '</b><div class="small muted">' + esc(s.body) + '</div></div>' +
-        S.label(s.label) + editBtn(s) + '</div>';
+        '<div class="bmeta"><b>' + esc(s.title) + '</b><div class="small muted">' + esc(s.body) + '</div></div>' +
+        '<div class="bend">' + S.label(s.label) + editBtn(s) + '</div></div>';
       if (s.label !== 'restricted') return row;
       return row + '<div class="bullet" data-roles="' + HIDDEN_RESTRICTED + '"><span class="bi">' + (i + 1) + '</span>' +
-        '<div><b>Một điểm bán hàng bị ẩn</b><div class="small muted">Nội dung mang nhãn Nội bộ hạn chế, vai trò của anh/chị không được xem.</div></div>' +
-        '<span class="lb lb-restricted">Nội bộ hạn chế</span></div>';
+        '<div class="bmeta"><b>Một điểm bán hàng bị ẩn</b><div class="small muted">Nội dung mang nhãn Nội bộ hạn chế, vai trò của anh/chị không được xem.</div></div>' +
+        '<div class="bend"><span class="lb lb-restricted">Nội bộ hạn chế</span></div></div>';
     }).join('') || '<p class="small muted">Chưa có điểm bán hàng nào.</p>';
 
     /* 04 · Mặt bằng */
@@ -810,6 +816,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (TP_LAB[kind].title) patch.title = id('tp-title').value.trim();
     if (kind === 'plan') patch.img = id('tp-img').value;
     if (kind === 'content') patch.at = today();
+    /* Hạ nhãn của mục đã có xuống Công khai phải hỏi lại — MH-09 */
+    RECO.guardLabel({
+      from: editingSec ? editingSec.label : null, to: patch.label,
+      name: patch.title || S.SECTION_NAME[kind], onOk: luuThanhPhan
+    });
+
+    function luuThanhPhan() {
     RECO.busy(tpSave, 'Đang lưu…', 800, function () {
       RECO.closeModal('m-thanhphan');
       if (editingSec) {
@@ -823,6 +836,7 @@ document.addEventListener('DOMContentLoaded', function () {
       editingSec = null;
       paintSections();
     });
+    }
   });
 
   tpDel.addEventListener('click', function () {
@@ -1232,8 +1246,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function scriptCard(s, kind) {
     var head = '<div class="spread"><h4>' + esc(s.title) + '</h4>' +
       (kind === 'proposal'
-        ? '<span class="st ' + (s.state === 'rejected' ? 'st-stop' : 'st-wait') + '">' +
-          (s.state === 'rejected' ? 'Đã từ chối' : 'Chờ duyệt') + '</span>'
+        ? '<span class="st ' + (s.state === 'rejected' ? 'st-stop' : s.state === 'accepted' ? 'st-live' : 'st-wait') + '">' +
+          (s.state === 'rejected' ? 'Đã từ chối' : s.state === 'accepted' ? 'Đã có bản dùng chung' : 'Chờ duyệt') + '</span>'
         : kind === 'mine' ? '<span class="chip">Của tôi</span>' : S.label(s.label)) +
       '</div>';
 
@@ -1246,13 +1260,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var act = '';
     if (kind === 'shared') {
       act = '<div class="row mt-2" data-roles="gd gddu mkt">' +
-        '<button type="button" class="btn btn-outline btn-sm" data-edit="' + esc(s.id) + '">Sửa</button></div>';
+        '<button type="button" class="btn btn-outline btn-sm" data-edit="' + esc(s.id) + '">Sửa</button>' +
+        '<button type="button" class="btn btn-quiet btn-sm" data-hide-kb="' + esc(s.id) + '">Ẩn khỏi đội</button></div>';
     } else if (kind === 'mine') {
       act = '<div class="row mt-2">' +
         '<button type="button" class="btn btn-outline btn-sm" data-edit="' + esc(s.id) + '">Sửa</button>' +
         (s.proposed
           ? '<span class="chip">Đã gửi đề xuất · chờ duyệt</span>'
           : '<button type="button" class="btn btn-primary btn-sm" data-propose="' + esc(s.id) + '">Đề xuất thành bản dùng chung</button>') +
+        '<button type="button" class="btn btn-quiet btn-sm" data-del-kb="' + esc(s.id) + '">Xóa</button>' +
         '</div>';
     } else if (kind === 'proposal' && s.state === 'pending') {
       act = '<div class="row mt-2" data-roles="gddu gd">' +
@@ -1266,7 +1282,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function scripts(scope) {
     return S.get('scripts').filter(function (s) {
       if (s.pj !== PJ || s.scope !== scope) return false;
-      if (scope === 'shared') return S.canSee(s.label, RECO.role);
+      if (scope === 'shared') return !s.hidden && S.canSee(s.label, RECO.role);
       if (scope === 'mine') return s.by === ME;
       return true;
     });
@@ -1304,6 +1320,51 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('[data-edit]').forEach(function (b) {
       b.addEventListener('click', function () { openKB('edit', null, b.getAttribute('data-edit')); });
     });
+    /* MH-12: nhân viên xóa được kịch bản cá nhân của mình; người phân quyền ẩn được bản dùng chung */
+    document.querySelectorAll('[data-del-kb]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var s = S.find('scripts', b.getAttribute('data-del-kb'));
+        if (!s) return;
+        RECO.confirm({
+          eyebrow: 'Kịch bản của tôi',
+          title: 'Xóa “' + esc(s.title) + '”?',
+          body: '<p class="small">Đây là ghi chú riêng của anh/chị, xóa xong không ai khác bị ảnh hưởng.</p>' +
+                (s.proposed ? '<p class="small muted mt-2">Đề xuất nâng lên bản dùng chung đã gửi vẫn còn ở hàng chờ của Giám đốc dự án.</p>' : ''),
+          okText: 'Xóa kịch bản',
+          danger: true,
+          onOk: function () {
+            RECO.busy(b, 'Đang xóa…', 700, function () {
+              S.remove('scripts', s.id);
+              RECO.toast('Đã xóa kịch bản của tôi', {
+                danger: true, undo: function () { S.add('scripts', s); }
+              });
+            });
+          }
+        });
+      });
+    });
+    document.querySelectorAll('[data-hide-kb]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var s = S.find('scripts', b.getAttribute('data-hide-kb'));
+        if (!s) return;
+        RECO.confirm({
+          eyebrow: 'Kịch bản dùng chung',
+          title: 'Ẩn “' + esc(s.title) + '” khỏi cả đội?',
+          body: '<p class="small">Kịch bản biến mất khỏi tab Kịch bản dùng chung của mọi nhân viên. ' +
+                'Nội dung không bị xóa — bật lại được ở tab Kịch bản màn Quản trị.</p>',
+          okText: 'Ẩn khỏi đội',
+          danger: true,
+          onOk: function () {
+            RECO.busy(b, 'Đang ẩn…', 700, function () {
+              S.update('scripts', s.id, { hidden: true });
+              RECO.toast('Đã ẩn “' + s.title + '” khỏi cả đội', {
+                danger: true, undo: function () { S.update('scripts', s.id, { hidden: false }); }
+              });
+            });
+          }
+        });
+      });
+    });
     document.querySelectorAll('[data-propose]').forEach(function (b) {
       b.addEventListener('click', function () {
         var s = S.find('scripts', b.getAttribute('data-propose'));
@@ -1326,13 +1387,23 @@ document.addEventListener('DOMContentLoaded', function () {
           body: '<p class="small" style="font-weight:700;margin-bottom:6px">' + esc(s.title) + '</p>' +
                 '<div class="note note-navy small">' + esc(s.body) + '</div>' +
                 '<p class="micro muted mt-2">' + esc(s.by) + ' đề xuất · ' + esc(s.at) +
-                '. Sau khi duyệt, kịch bản chuyển sang tab Kịch bản dùng chung và cả đội dùng được.</p>',
+                '. Hệ thống <strong>tạo một bản sao dùng chung</strong> cho cả đội; bản cá nhân gốc vẫn ' +
+                'thuộc về ' + esc(s.by) + ' (QD-032).</p>',
           okText: 'Duyệt thành bản chung',
           onOk: function () {
             RECO.busy(b, 'Đang duyệt…', 900, function () {
-              S.update('scripts', sid, { scope: 'shared', state: 'approved', at: today() });
-              RECO.toast('Đã duyệt — kịch bản trở thành bản dùng chung', {
-                undo: function () { S.update('scripts', sid, { scope: 'proposal', state: 'pending' }); }
+              /* Sao chép chứ không đổi scope tại chỗ — đổi tại chỗ là lấy mất ghi chú riêng
+                 của nhân viên, trái đúng lý do tồn tại của bản cá nhân (QD-022, QD-032). */
+              var ban = S.add('scripts', {
+                pj: s.pj, scope: 'shared', title: s.title, body: s.body, label: s.label,
+                by: RECO.current.who, at: today(), fromProposal: s.id
+              });
+              S.update('scripts', sid, { state: 'accepted', sharedId: ban.id });
+              RECO.toast('Đã duyệt — bản sao dùng chung đã tạo, bản cá nhân của ' + s.by + ' giữ nguyên', {
+                undo: function () {
+                  S.remove('scripts', ban.id);
+                  S.update('scripts', sid, { state: 'pending', sharedId: null });
+                }
               });
             });
           }

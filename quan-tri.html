@@ -114,6 +114,7 @@
               </table>
             </div>
             <div id="bhq-rong" hidden></div>
+            <div class="note note-danger mt-2" id="bhq-drive" hidden></div>
             <p class="micro muted mt-2">
               Bảng hàng mang nhãn <strong>Nội bộ</strong> và không bao giờ ra thẳng trang gửi khách.
               Khách chỉ thấy <em>phiếu tính giá đã được duyệt</em>.
@@ -346,6 +347,7 @@
           <option value="con">Còn hàng</option>
           <option value="giu">Đang giữ chỗ</option>
           <option value="ban">Đã bán</option>
+          <option value="ngung">Ngừng bán</option>
         </select></label>
       <div class="note">Bảng hàng là nội dung Nội bộ. Sửa giá ở đây đổi ngay số liệu ở màn Chi tiết dự án và ở công cụ phiếu tính giá.</div>
     </div>
@@ -668,8 +670,25 @@ document.addEventListener('DOMContentLoaded', function () {
         '<button class="btn btn-outline btn-sm" data-act="uedit" data-id="' + esc(u.id) + '" data-roles="gd gddu tkkd">Sửa</button>' +
       '</div></td></tr>';
   }
+  /* Bảng hàng của dự án là liên kết sống do Chủ đầu tư sở hữu thì RECO chỉ đọc,
+     không sửa được trong Sales Hub (ADR-0003) — khoá luôn nút thêm căn. */
+  function driveSheet() {
+    return S.get('documents').filter(function (d) {
+      return d.pj === bhqPj.id && d.branch === 2 && (d.src === 'drive' || d.src === 'broken');
+    })[0];
+  }
   function bhqRender() {
     if (!bhqPj) return;
+    var ext = driveSheet();
+    document.getElementById('bhq-new').hidden = !!ext;
+    var warn = document.getElementById('bhq-drive');
+    warn.hidden = !ext;
+    if (ext) {
+      warn.innerHTML = '<strong>Bảng hàng dự án này là nguồn ngoài.</strong> “' + esc(ext.name) +
+        '” là ' + (ext.src === 'broken' ? 'liên kết đã hỏng' : 'liên kết sống Google Drive do Chủ đầu tư sở hữu') +
+        ' — RECO chỉ đọc, không thêm hay sửa căn/lô trong Sales Hub. Muốn RECO quản lý đầy đủ thì phải ' +
+        'chuyển tài liệu sang chế độ tệp RECO lưu trước.';
+    }
     var list = units();
     var none = list.length === 0;
     bhqWrap.hidden = none;
@@ -809,14 +828,17 @@ document.addEventListener('DOMContentLoaded', function () {
              '<span class="chip" data-roles="tkkd mkt">Chờ Giám đốc dự án duyệt</span>';
     } else if (s.scope === 'shared') {
       acts = '<button class="btn btn-outline btn-sm" data-kb="sua" data-id="' + s.id + '" data-roles="gd gddu mkt">Sửa</button>' +
+             '<button class="btn btn-quiet btn-sm" data-kb="' + (s.hidden ? 'hien' : 'an') + '" data-id="' + s.id +
+               '" data-roles="gd gddu mkt">' + (s.hidden ? 'Bỏ ẩn' : 'Ẩn khỏi đội') + '</button>' +
              '<span class="chip" data-roles="tkkd">Chỉ xem</span>';
     } else {
-      acts = '<span class="chip">' + (s.state === 'rejected' ? 'Đã từ chối' : 'Đã xử lý') + '</span>';
+      acts = '<span class="chip">' + (s.state === 'rejected' ? 'Đã từ chối' : 'Đã có bản dùng chung') + '</span>';
     }
     return '<div class="frow">' +
       '<span class="fico">' + RECO.svg('file') + '</span>' +
       '<div class="fmeta"><div class="fname">' + esc(s.title) + '</div>' +
         '<div class="fsub"><span class="chip">' + SCOPE[s.scope] + '</span>' + S.label(s.label) +
+          (s.hidden ? '<span class="st st-off">Đang ẩn khỏi đội</span>' : '') +
           '<span>' + esc(S.projectName(s.pj)) + '</span><span>' + esc(s.by) + ' · ' + esc(s.at) + '</span></div>' +
         '<div class="micro muted mt-1">' + esc(s.body) + '</div>' +
         (s.reason ? '<div class="micro muted mt-1">Lý do đề xuất: ' + esc(s.reason) + '</div>' : '') +
@@ -873,6 +895,12 @@ document.addEventListener('DOMContentLoaded', function () {
       pj: kbFPj.value, title: kbFTitle.value.trim(), body: kbFBody.value.trim(),
       label: kbFLabel.value
     };
+    /* Hạ nhãn kịch bản xuống Công khai phải hỏi lại — MH-09 */
+    RECO.guardLabel({
+      from: editingKb ? editingKb.label : null, to: patch.label, name: patch.title, onOk: luuKb
+    });
+
+    function luuKb() {
     RECO.busy(kbSave, 'Đang lưu…', 900, function () {
       RECO.closeModal('m-kb');
       if (editingKb) {
@@ -888,6 +916,7 @@ document.addEventListener('DOMContentLoaded', function () {
       editingKb = null;
       kbRender();
     });
+    }
   });
 
   kbList.addEventListener('click', function (e) {
@@ -897,6 +926,25 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!s) return;
     var act = b.getAttribute('data-kb');
     if (act === 'sua') { kbOpen(s); return; }
+    if (act === 'an' || act === 'hien') {
+      var an = act === 'an';
+      var doIt = function () {
+        RECO.busy(b, an ? 'Đang ẩn…' : 'Đang bật lại…', 700, function () {
+          S.update('scripts', s.id, { hidden: an });
+          kbRender();
+          RECO.toast(an ? 'Đã ẩn “' + s.title + '” khỏi cả đội' : 'Đã bật lại “' + s.title + '” cho cả đội',
+            { danger: an, undo: function () { S.update('scripts', s.id, { hidden: !an }); kbRender(); } });
+        });
+      };
+      if (!an) { doIt(); return; }
+      RECO.confirm({
+        eyebrow: 'Kịch bản dùng chung',
+        title: 'Ẩn “' + esc(s.title) + '” khỏi cả đội?',
+        body: '<p class="small">Kịch bản biến mất khỏi khu vực 09 của mọi nhân viên. Nội dung không bị xóa, bật lại được ngay tại đây.</p>',
+        okText: 'Ẩn khỏi đội', danger: true, onOk: doIt
+      });
+      return;
+    }
     if (act === 'tuchoi') {
       refusing = s;
       document.getElementById('kbtc-ctx').textContent = '“' + s.title + '” — ' + s.by + ' gửi ngày ' + s.at + '.';
@@ -911,18 +959,24 @@ document.addEventListener('DOMContentLoaded', function () {
         title: 'Duyệt “' + esc(s.title) + '” thành kịch bản dùng chung?',
         body: '<div class="note note-navy small">' + esc(s.body) + '</div>' +
               '<p class="micro muted mt-2">' + esc(s.by) + ' gửi ngày ' + esc(s.at) +
-              '. Sau khi duyệt, cả đội dùng được kịch bản này ở khu vực 09 màn Chi tiết dự án.</p>',
+              '. Hệ thống <strong>tạo một bản sao dùng chung</strong> cho cả đội; bản cá nhân gốc vẫn ' +
+              'thuộc về ' + esc(s.by) + ' (QD-032).</p>',
         okText: 'Duyệt thành bản chung',
         onOk: function () {
           RECO.busy(b, 'Đang duyệt…', 900, function () {
-            S.update('scripts', s.id, { scope: 'shared', state: 'approved' });
+            /* Sao chép chứ không đổi scope tại chỗ (QD-022, QD-032) */
+            var ban = S.add('scripts', {
+              pj: s.pj, scope: 'shared', title: s.title, body: s.body, label: s.label,
+              by: RECO.current.who, at: S.todayVN(), fromProposal: s.id
+            });
+            S.update('scripts', s.id, { state: 'accepted', sharedId: ban.id });
             S.add('notifications', {
               kind: 'ok', title: 'Đề xuất kịch bản được duyệt',
-              body: '“' + s.title + '” nay là kịch bản dùng chung của cả đội.',
+              body: '“' + s.title + '” nay có bản dùng chung cho cả đội; bản riêng của anh/chị giữ nguyên.',
               at: 'vừa xong', read: false, go: 'du-an-chi-tiet.html'
             });
             kbRender();
-            RECO.toast('Đã duyệt “' + s.title + '” thành kịch bản dùng chung');
+            RECO.toast('Đã duyệt “' + s.title + '” — bản sao dùng chung đã tạo');
           });
         }
       });

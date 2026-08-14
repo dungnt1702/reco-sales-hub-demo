@@ -595,6 +595,28 @@
     return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
   }
 
+  /* Hạ nhãn xuống Công khai là thao tác dễ lộ thông tin nội bộ nhất trong ba cấp nhãn —
+     MH-09 bắt buộc cảnh báo và xác nhận lại. Gom vào một chỗ để mọi biểu mẫu có ô chọn
+     nhãn đều hỏi cùng một câu, thay vì nơi hỏi nơi không. */
+  function guardLabel(o) {
+    var S = window.RECO.store;
+    var down = o.to === 'public' && o.from && o.from !== 'public';
+    if (!down) { o.onOk(); return; }
+    confirmBox({
+      eyebrow: 'Hạ nhãn quyền',
+      title: 'Chuyển “' + (o.name || 'nội dung này') + '” sang Công khai?',
+      body: '<p class="small">Đang mang nhãn ' + S.label(o.from) + '. Chuyển sang ' + S.label('public') +
+            ' là <strong>đưa nội dung ra tới khách hàng, không cần đăng nhập</strong> — mọi trang gửi khách ' +
+            'của dự án đều lấy được nội dung này.</p>' +
+            '<p class="small muted mt-2">Nhắc lại năm nhóm không bao giờ được công khai: chính sách hoa hồng; ' +
+            'bảng hàng, giá hoặc chính sách chưa công bố; kịch bản bán hàng và ghi chú nội bộ; báo cáo, KPI và ' +
+            'số liệu tài chính; tài liệu chưa duyệt hoặc đã hết hiệu lực.</p>',
+      okText: 'Công khai nội dung',
+      danger: true,
+      onOk: o.onOk
+    });
+  }
+
   /* ---------- Hộp xác nhận ----------
      Mọi hành động khó hoàn tác (thu hồi đường dẫn, ngừng tài khoản, công bố nội dung ra
      ngoài, hạ nhãn quyền) phải đi qua đây, không được chỉ hiện toast rồi coi như xong. */
@@ -1015,7 +1037,7 @@
     role: role, roles: ROLES, current: R, page: page,
     svg: svg, link: link, toast: toast, asset: asset,
     openModal: openModal, closeModal: closeModal, applyRoles: applyRoles,
-    confirm: confirmBox, busy: busy, validate: validate, fieldError: fieldError,
+    confirm: confirmBox, guardLabel: guardLabel, busy: busy, validate: validate, fieldError: fieldError,
     copy: copy, copyWithToast: copyWithToast, today: today, now: now,
     download: download, downloadWithToast: downloadWithToast,
     /* Đọc tham số của màn ở cả bản nhiều trang (?q=) lẫn bản gói (#du-an?q=) */

@@ -67,10 +67,11 @@ var CASES = [
    function (d) { return d.querySelector('#tl-new').hidden; }, true],
   ['thu-vien-tai-lieu', 'qlkd', 'Quản lý kinh doanh không tải tài liệu lên được',
    function (d) { return d.querySelector('#tl-new').hidden; }, true],
-  ['thu-vien-tai-lieu', 'mkt', 'Marketing chỉ chọn được ba nhánh nội dung 4-6',
+  /* Ma trận nhánh cho Marketing quyền Sửa ở nhánh 4 và 5; nhánh 6 chỉ Xem */
+  ['thu-vien-tai-lieu', 'mkt', 'Marketing chỉ tải lên được nhánh 4 và 5',
    function (d) {
      return Array.prototype.map.call(d.querySelectorAll('#tl-nhanh option'), function (o) { return o.value; }).join(',');
-   }, '4,5,6'],
+   }, '4,5'],
   ['thu-vien-tai-lieu', 'tkkd', 'Thư ký kinh doanh không cấp được nhãn Nội bộ hạn chế',
    function (d) { return d.querySelectorAll('#tl-nhan option[value="restricted"]').length; }, 0],
   ['thu-vien-tai-lieu', 'gddu', 'Giám đốc dự án cấp được nhãn Nội bộ hạn chế',
@@ -197,6 +198,31 @@ var CASES = [
    function (d) {
      return Array.prototype.every.call(d.querySelectorAll('[data-sec-new], [data-sec-edit]'),
        function (b) { return b.hidden; });
+   }, true],
+
+  /* --- Đợt rà soát toàn diện: khớp lại với ma trận nhánh và các mục đặc tả còn thiếu --- */
+
+  ['du-an-chi-tiet', 'mkt', 'Marketing không thêm được câu hỏi đáp (nhánh 6 chỉ có quyền Xem)',
+   function (d) { return d.querySelector('#qa-new').hidden; }, true],
+  ['du-an-chi-tiet', 'tkkd', 'Nút Sửa mặt bằng nằm trong khung ảnh chứ không bị cắt mất',
+   function (d) {
+     var f = d.querySelector('#kv4-gal figure'), b = f && f.querySelector('[data-sec-edit]');
+     if (!b) return 'khong co nut sua mat bang';
+     var fr = f.getBoundingClientRect(), br = b.getBoundingClientRect();
+     return br.width > 0 && br.top >= fr.top - 1 && br.bottom <= fr.bottom + 1;
+   }, true],
+  ['cay-thu-muc', 'nvbh', 'Cây thư mục có ô tìm tệp và thư mục (MH-11)',
+   function (d) { return d.getElementById('t-q') !== null; }, true],
+  ['cay-thu-muc', 'nvbh', 'Cây thư mục xem trước được tài liệu, không phải tải mới xem (MH-05)',
+   function (d) { return d.querySelector('#pane [data-act="xem"]') !== null; }, true],
+  ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng xóa được kịch bản cá nhân của mình (MH-12)',
+   function (d) { return d.querySelector('#kb-nvbh [data-del-kb]') !== null; }, true],
+  ['du-an-chi-tiet', 'gddu', 'Người phân quyền ẩn được kịch bản dùng chung (MH-12)',
+   function (d) { return !d.querySelector('#kb-chung [data-hide-kb]').closest('[data-roles]').hidden; }, true],
+  ['quan-tri', 'tkkd', 'Bảng hàng nguồn Drive không thêm được căn trong Sales Hub (ADR-0003)',
+   function (d) {
+     d.querySelector('#pj-body [data-act="units"]').click();
+     return d.getElementById('bhq-new').hidden && !d.getElementById('bhq-drive').hidden;
    }, true]
 ];
 

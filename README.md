@@ -94,6 +94,30 @@ mức (PDF, Word, Excel 50 MB · ảnh 20 MB · không nhận video) rồi chỉ
 trình duyệt (tối đa 480px) để hiện được trong thư viện; khoảng 80–100 ảnh là đầy `sessionStorage`, khi đó
 hệ thống báo thật chứ không im lặng nuốt mất dữ liệu.
 
+## Đọc trước khi code thật: kho của bản mô phỏng ≠ schema
+
+Kho trong `store.js` được gom cho gọn để một tệp JS chạy được mọi màn. **Schema thật tách nhỏ hơn.**
+Ai code Giai đoạn 1 phải theo `docs/12-architecture/database-schema.md`, không theo cấu trúc dưới đây.
+
+| Kho trong bản mô phỏng | Bảng thật | Ghi chú khi chuyển |
+| --- | --- | --- |
+| `sections` `kind:'overview'` | `content_sections` (`branch_key='project_info'`) | |
+| `sections` `kind:'point'` | `selling_points` | |
+| `sections` `kind:'plan'` | **`documents`** nhánh `sales_docs`, `kind='matbang'` | Bản mô phỏng để riêng cho dễ sửa tại chỗ; thật thì mặt bằng là tài liệu, **đừng tạo bảng thứ hai** |
+| `sections` `kind:'content'` | **`content_templates`** | Trùng vai trò với kho `templates` của màn Chuẩn bị nội dung — thật thì chỉ một bảng |
+| `sections` `kind:'place'` | **chưa có bảng nào** | Khu vực 02 *Vị trí và liên kết vùng* không có chỗ lưu trong schema — cần bổ sung trước khi code |
+| `media` | `documents` nhánh `media_library` | Schema không có bảng ảnh riêng |
+| `qas` | `faq_groups` + `faq_items` | Bản mô phỏng bỏ tầng nhóm hỏi đáp |
+| `scripts` | `sales_scripts` + `script_promotion_requests` | `scope` thật là `shared`/`personal`; đề xuất là **bảng riêng**, không phải `scope:'proposal'` |
+| `units` `state` `con/giu/ban/ngung` | `units.status` `available/hold/sold/stopped` | |
+| `branch` 1–7 | `branch_definitions.branch_key` (chuỗi) | Thật dùng khoá chữ, không dùng số thứ tự |
+
+Ba điểm nghiệp vụ dễ code sai, đã được bản mô phỏng thể hiện đúng — bám theo:
+
+- **Duyệt đề xuất nâng kịch bản = tạo bản sao**, không đổi `scope` tại chỗ. Đổi tại chỗ là lấy mất ghi chú riêng của nhân viên (QD-022, QD-032).
+- **Hạ nhãn xuống Công khai phải hỏi lại** (`RECO.guardLabel`) — MH-09. Còn nhãn con nới lỏng hơn cha thì **chặn hẳn**, không phải cảnh báo (ADR-0005).
+- **Bảng hàng nguồn liên kết sống Drive thì RECO chỉ đọc** — không thêm/sửa căn trong Sales Hub (ADR-0003). Màn Quản trị khóa nút và nói rõ lý do.
+
 ## Bản một tệp để gửi link (Claude Artifact)
 
 ```powershell
@@ -127,7 +151,7 @@ sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiế
 | Bộ | Kiểm gì |
 | --- | --- |
 | `_check.html` | Tràn ngang ở 360/390/768/1440 và liên kết hỏng trên cả 14 trang |
-| `_check-roles.html` | 67 trường hợp ẩn/hiện theo vai trò |
+| `_check-roles.html` | 74 trường hợp ẩn/hiện theo vai trò |
 | `_check-actions.html` | **Bấm thử từng phần tử** trên mọi màn, so nội dung trước/sau. Đạt khi DOM đổi, hoặc mở hộp thoại, hoặc phần tử mang `data-gd2`. Toast không tính — nó nằm ngoài vùng so sánh. Kiểm thêm: hành động khó hoàn tác có hỏi lại không, ô nhập có phản hồi không, còn liên kết cụt `href="#"` không, và biểu mẫu tải tài liệu có chặn lỗi rồi ghi thật vào kho không |
 | `_check-bundle.html` | Bản một tệp: dựng màn, tràn ngang, liên kết, ảnh và phông nhúng sẵn, phân quyền, mã riêng từng màn |
 

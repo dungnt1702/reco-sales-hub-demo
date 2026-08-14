@@ -450,10 +450,12 @@
     internal: { text: 'Nội bộ', cls: 'lb-internal' },
     restricted: { text: 'Nội bộ hạn chế', cls: 'lb-restricted' }
   };
+  /* Bốn trạng thái căn/lô theo schema: available | hold | sold | stopped */
   var UNIT_STATE = {
     con: { text: 'Còn hàng', cls: 'st-live' },
     giu: { text: 'Đang giữ chỗ', cls: 'st-wait' },
-    ban: { text: 'Đã bán', cls: 'st-stop' }
+    ban: { text: 'Đã bán', cls: 'st-stop' },
+    ngung: { text: 'Ngừng bán', cls: 'st-off' }
   };
   var BRANCHES = [
     'Thông tin dự án', 'Sản phẩm và Bảng hàng', 'Pháp lý và Chính sách', 'Tài liệu bán hàng',
@@ -497,8 +499,10 @@
   /* ---------- Đưa tài liệu và ảnh vào hệ thống ---------- */
   var MB = 1048576;
   var LIMIT = { doc: 50 * MB, image: 20 * MB };
-  /* Marketing chỉ đưa nội dung vào ba nhánh nội dung của mình (QD-006). */
-  var MKT_BRANCHES = [4, 5, 6];
+  /* Marketing chỉ có quyền Sửa ở nhánh 4 (Tài liệu bán hàng — mẫu và ảnh chờ duyệt) và
+     nhánh 5 (Ảnh và video) theo ma trận nhánh. Nhánh 6 Hỏi đáp và Điểm bán chỉ cho Marketing
+     quyền Xem, nên không đưa vào đây. */
+  var MKT_BRANCHES = [4, 5];
 
   function fileSize(b) {
     if (!b && b !== 0) return '';
