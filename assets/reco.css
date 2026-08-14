@@ -585,13 +585,14 @@ select.inp { appearance: none; background-image: url("data:image/svg+xml,%3Csvg 
 .check input { margin-top: 3px; width: 17px; height: 17px; accent-color: var(--orange-button); flex: none; }
 
 .seg { display: inline-flex; background: var(--soft); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 3px; gap: 2px; }
-.seg button {
+.seg button, .seg a[role="button"] {
   border: 0; background: transparent; font: inherit; font-size: 0.84rem; font-weight: 600;
   padding: 6px 13px; border-radius: 7px; cursor: pointer; color: var(--muted);
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
 }
 .seg button svg { width: 15px; height: 15px; }
 .seg button[aria-pressed="true"] { background: var(--white); color: var(--navy); box-shadow: 0 1px 3px rgb(8 39 67 / 0.12); }
+.seg a[role="button"]:hover { color: var(--navy); }
 
 .filterbar {
   display: flex; gap: 10px; flex-wrap: wrap; align-items: center;

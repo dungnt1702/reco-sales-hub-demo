@@ -130,6 +130,44 @@
           state: 'expiring', icon: 'xls', daysLeft: 0 }
       ],
 
+      /* Thành phần nội dung của màn Chi tiết dự án — khu vực 01 đến 04 và 08.
+         Một kho chung, phân loại bằng `kind`, để mọi khu vực dùng chung một luồng
+         thêm/sửa/xóa và một quy tắc nhãn quyền. */
+      sections: [
+        { id: 'sc1', pj: 'celestine', kind: 'overview', label: 'public',
+          body: 'Khu căn hộ ven sông tại Long Biên, gồm bốn tòa cao 27 tầng trên tổng diện tích 6,4 ha, bàn giao theo ba đợt từ quý II/2027. Sản phẩm hướng tới nhóm khách gia đình trẻ và khách đầu tư cho thuê dài hạn.' },
+
+        { id: 'sc2', pj: 'celestine', kind: 'place', label: 'public', title: 'Cầu Vĩnh Tuy', body: '2,1 km · 5 phút' },
+        { id: 'sc3', pj: 'celestine', kind: 'place', label: 'public', title: 'Hồ Hoàn Kiếm', body: '7,4 km · 18 phút' },
+        { id: 'sc4', pj: 'celestine', kind: 'place', label: 'public', title: 'Vành đai 3', body: '3,6 km · 8 phút' },
+        { id: 'sc5', pj: 'celestine', kind: 'place', label: 'public', title: 'Bệnh viện Tâm Anh', body: '1,8 km · 4 phút' },
+        { id: 'sc6', pj: 'celestine', kind: 'place', label: 'public', title: 'Trường liên cấp Vinschool', body: '1,2 km · 3 phút' },
+        { id: 'sc7', pj: 'celestine', kind: 'place', label: 'public', title: 'Sân bay Nội Bài', body: '26 km · 38 phút' },
+
+        { id: 'sc8', pj: 'celestine', kind: 'point', label: 'public', title: 'Ba mặt view sông Hồng',
+          body: 'Tòa C và D có 62% số căn nhìn trực diện sông.' },
+        { id: 'sc9', pj: 'celestine', kind: 'point', label: 'public', title: 'Bàn giao nội thất liền tường',
+          body: 'Bếp, tủ âm, thiết bị vệ sinh thương hiệu châu Âu.' },
+        { id: 'sc10', pj: 'celestine', kind: 'point', label: 'public', title: 'Hỗ trợ lãi suất 0% trong 18 tháng',
+          body: 'Áp dụng cho đợt 3, ngân hàng liên kết.' },
+        { id: 'sc11', pj: 'celestine', kind: 'point', label: 'internal', title: 'Chiết khấu thanh toán sớm 95%',
+          body: 'Mức chiết khấu chưa công bố ra ngoài, chỉ dùng khi tư vấn trực tiếp.' },
+        { id: 'sc12', pj: 'celestine', kind: 'point', label: 'restricted', title: 'Chính sách hoa hồng đợt 3',
+          body: 'Chỉ vai trò được chỉ định xem được nội dung này.' },
+
+        { id: 'sc13', pj: 'celestine', kind: 'plan', label: 'public', title: 'Mặt bằng tầng điển hình tòa A', img: 'celestine.jpg' },
+        { id: 'sc14', pj: 'celestine', kind: 'plan', label: 'public', title: 'Mặt bằng căn 2 phòng ngủ', img: 'la-perle.webp' },
+        { id: 'sc15', pj: 'celestine', kind: 'plan', label: 'public', title: 'Mặt bằng căn 3 phòng ngủ', img: 'palmy.jpg' },
+        { id: 'sc16', pj: 'celestine', kind: 'plan', label: 'internal', title: 'Mặt bằng tổng thể khu', img: 'thien-duong.jpg' },
+
+        { id: 'sc17', pj: 'celestine', kind: 'content', label: 'public', title: 'Giới thiệu dự án — bản ngắn',
+          body: 'Khoảng 90 từ, kèm 4 ảnh đã duyệt. Dùng cho mọi kênh, nhân viên tự cắt gọt khi đăng.', at: '09/08/2026' },
+        { id: 'sc18', pj: 'celestine', kind: 'content', label: 'public', title: 'Chính sách đợt 3 — bản gửi khách',
+          body: 'Chỉ nêu phần chính sách được phép công bố, không có chiết khấu nội bộ.', at: '11/08/2026' },
+        { id: 'sc19', pj: 'celestine', kind: 'content', label: 'public', title: 'Bộ ảnh căn mẫu 2PN',
+          body: '12 ảnh đã duyệt, có thể tải hoặc chèn thẳng vào nội dung đăng.', at: '05/08/2026' }
+      ],
+
       /* Thư mục con bên trong bảy nhánh cố định */
       folders: [
         { id: 'f1', pj: 'celestine', branch: 1, name: 'Hồ sơ chủ đầu tư', label: 'internal' },
@@ -521,6 +559,23 @@
   function uploadRoles(branch) {
     return MKT_BRANCHES.indexOf(+branch) >= 0 ? 'tkkd gddu gd mkt' : 'tkkd gddu gd';
   }
+  /* Ai sửa được từng loại thành phần của màn Chi tiết dự án.
+     Mặt bằng và Nội dung được duyệt là việc của Marketing, phần còn lại là dữ liệu dự án. */
+  var SECTION_ROLES = {
+    overview: 'tkkd gddu gd',
+    place: 'tkkd gddu gd',
+    point: 'tkkd gddu gd',
+    plan: 'tkkd gddu gd mkt',
+    content: 'mkt gddu gd'
+  };
+  var SECTION_NAME = {
+    overview: 'Tổng quan', place: 'Điểm liên kết vùng', point: 'Điểm bán hàng',
+    plan: 'Mặt bằng', content: 'Nội dung bán hàng được duyệt'
+  };
+  function canEditSection(kind, role) {
+    return (SECTION_ROLES[kind] || '').split(' ').indexOf(role) >= 0;
+  }
+
   /* Nhãn của cấp cha để chặn nới lỏng: thư mục con nếu có, không thì nhãn mặc định của nhánh. */
   function parentLabel(pj, branch, folderId) {
     var f = folderId && find('folders', folderId);
@@ -574,6 +629,7 @@
     fileSize: fileSize, fileKind: fileKind, checkFile: checkFile, iconFor: iconFor,
     imgSrc: imgSrc, todayVN: todayVN, stamp: stamp, lifeFrom: lifeFrom,
     canUpload: canUpload, uploadRoles: uploadRoles, parentLabel: parentLabel,
+    SECTION_ROLES: SECTION_ROLES, SECTION_NAME: SECTION_NAME, canEditSection: canEditSection,
     isFull: isFull,
     persistent: USE_SS
   };

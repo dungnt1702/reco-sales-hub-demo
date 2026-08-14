@@ -157,7 +157,47 @@ var CASES = [
   ['chia-se', 'hcns', 'HCNS va Ke toan không tạo được đường dẫn ở trạng thái rỗng',
    function (d) { return emptyShare(d).hidden; }, true],
   ['chia-se', 'nvbh', 'Nhân viên bán hàng tạo được đường dẫn ở trạng thái rỗng',
-   function (d) { return !emptyShare(d).hidden; }, true]
+   function (d) { return !emptyShare(d).hidden; }, true],
+
+  /* --- Đợt bổ sung: cây thư mục mặc định, quản lý kịch bản, sửa thành phần trang dự án --- */
+
+  ['trang-dau', 'nvbh', 'Muc Tai lieu tren thanh dieu huong mo thang vao cay thu muc',
+   function (d) { return d.querySelector('.nav a[href*="cay-thu-muc"]') !== null; }, true],
+  ['cay-thu-muc', 'nvbh', 'Man cay thu muc co nut chuyen sang danh sach',
+   function (d) { return d.querySelector('.seg a[href*="thu-vien-tai-lieu"]') !== null; }, true],
+  ['thu-vien-tai-lieu', 'nvbh', 'Man danh sach co nut quay ve cay thu muc',
+   function (d) { return d.querySelector('.seg a[href*="cay-thu-muc"]') !== null; }, true],
+
+  ['quan-tri', 'gddu', 'Giám đốc dự án thấy tab Kịch bản',
+   function (d) { return d.querySelector('#t-kb').hidden; }, false],
+  ['quan-tri', 'hcns', 'HCNS va Ke toan không thấy tab Kịch bản',
+   function (d) { return d.querySelector('#t-kb').hidden; }, true],
+  ['quan-tri', 'mkt', 'Marketing soạn được kịch bản dùng chung',
+   function (d) { return d.querySelector('#kb-new').hidden; }, false],
+  ['quan-tri', 'tkkd', 'Thư ký kinh doanh không soạn kịch bản dùng chung',
+   function (d) { return d.querySelector('#kb-new').hidden; }, true],
+  ['quan-tri', 'gddu', 'Kịch bản cá nhân của người khác không lọt vào danh sách quản trị',
+   function (d) { return d.querySelector('#kb-list').innerHTML.indexOf('Cách mình mở đầu') >= 0; }, false],
+
+  ['du-an-chi-tiet', 'tkkd', 'Thư ký kinh doanh sửa được phần Tổng quan',
+   function (d) { return d.querySelector('#kv1-edit').hidden; }, false],
+  ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng không sửa được phần Tổng quan',
+   function (d) { return d.querySelector('#kv1-edit').hidden; }, true],
+  ['du-an-chi-tiet', 'mkt', 'Marketing thêm được nội dung bán hàng nhưng không thêm điểm bán',
+   function (d) {
+     return d.querySelector('[data-sec-new="content"]').hidden === false &&
+            d.querySelector('[data-sec-new="point"]').hidden === true;
+   }, true],
+  ['du-an-chi-tiet', 'tkkd', 'Thư ký kinh doanh thêm được điểm bán nhưng không thêm nội dung bán hàng',
+   function (d) {
+     return d.querySelector('[data-sec-new="point"]').hidden === false &&
+            d.querySelector('[data-sec-new="content"]').hidden === true;
+   }, true],
+  ['du-an-chi-tiet', 'qlkd', 'Quản lý kinh doanh không sửa được thành phần nào của trang dự án',
+   function (d) {
+     return Array.prototype.every.call(d.querySelectorAll('[data-sec-new], [data-sec-edit]'),
+       function (b) { return b.hidden; });
+   }, true]
 ];
 
 function emptyShare(d) {

@@ -111,11 +111,12 @@
             <span class="lb lb-public">Công khai</span>
             <span class="sec-act row-tight">
               <button class="btn btn-outline btn-sm" data-roles="tkkd gddu gd" data-open="m-capnhat">Cập nhật</button>
+              <button class="btn btn-outline btn-sm" id="kv1-edit" data-sec-edit="" data-roles="tkkd gddu gd">Sửa tổng quan</button>
               <button class="btn btn-outline btn-sm" data-roles="nvbh qlkd" data-open="m-denghi">Gửi đề nghị sửa</button>
             </span>
           </div>
           <div class="card card-pad">
-            <p>Khu căn hộ ven sông tại Long Biên, gồm bốn tòa cao 27 tầng trên tổng diện tích 6,4 ha, bàn giao theo ba đợt từ quý II/2027. Sản phẩm hướng tới nhóm khách gia đình trẻ và khách đầu tư cho thuê dài hạn.</p>
+            <p id="kv1-body"></p>
             <div class="kv kv-3 mt-3" id="kv1-grid"></div>
             <div class="mt-3">
               <div class="spread mb-1"><span class="micro muted">Mức độ đầy đủ tài liệu</span><span class="micro" style="font-weight:700;color:var(--verified)">100%</span></div>
@@ -126,48 +127,35 @@
 
         <!-- 2. Vị trí -->
         <section class="sec" id="kv2">
-          <div class="sec-head"><span class="n">KHU VỰC 02</span><h2>Vị trí và liên kết vùng</h2><span class="lb lb-public">Công khai</span></div>
+          <div class="sec-head"><span class="n">KHU VỰC 02</span><h2>Vị trí và liên kết vùng</h2><span class="lb lb-public">Công khai</span>
+            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="place" data-roles="tkkd gddu gd">+ Thêm điểm liên kết</button></span>
+          </div>
           <div class="card card-pad">
             <div class="map-ph mb-3"><span class="pin-dot"></span><span class="micro muted">Bản đồ vị trí dự án</span></div>
-            <div class="kv kv-3">
-              <div><div class="k">Cầu Vĩnh Tuy</div><div class="v">2,1 km · 5 phút</div></div>
-              <div><div class="k">Hồ Hoàn Kiếm</div><div class="v">7,4 km · 18 phút</div></div>
-              <div><div class="k">Vành đai 3</div><div class="v">3,6 km · 8 phút</div></div>
-              <div><div class="k">Bệnh viện Tâm Anh</div><div class="v">1,8 km · 4 phút</div></div>
-              <div><div class="k">Trường liên cấp Vinschool</div><div class="v">1,2 km · 3 phút</div></div>
-              <div><div class="k">Sân bay Nội Bài</div><div class="v">26 km · 38 phút</div></div>
-            </div>
+            <div class="kv kv-3" id="kv2-grid"></div>
           </div>
         </section>
 
         <!-- 3. Điểm chính -->
         <section class="sec" id="kv3">
           <div class="sec-head"><span class="n">KHU VỰC 03</span><h2>Điểm chính của sản phẩm</h2>
-            <span class="sec-act"><span class="open-q" title="DX-018 — cách biểu diễn điểm bán hàng còn chờ RECO chốt">Cần RECO xác nhận</span></span>
+            <span class="sec-act row-tight">
+              <span class="open-q" title="DX-018 — cách biểu diễn điểm bán hàng còn chờ RECO chốt">Cần RECO xác nhận</span>
+              <button class="btn btn-outline btn-sm" data-sec-new="point" data-roles="tkkd gddu gd">+ Thêm điểm bán</button>
+            </span>
           </div>
           <div class="card card-pad">
             <p class="small muted mb-2">Mỗi điểm bán hàng mang nhãn quyền riêng — chỉ điểm mang nhãn Công khai mới được đưa vào trang gửi khách.</p>
-            <div class="bullet"><span class="bi">1</span><div><b>Ba mặt view sông Hồng</b><div class="small muted">Tòa C và D có 62% số căn nhìn trực diện sông.</div></div><span class="lb lb-public">Công khai</span></div>
-            <div class="bullet"><span class="bi">2</span><div><b>Bàn giao nội thất liền tường</b><div class="small muted">Bếp, tủ âm, thiết bị vệ sinh thương hiệu châu Âu.</div></div><span class="lb lb-public">Công khai</span></div>
-            <div class="bullet"><span class="bi">3</span><div><b>Hỗ trợ lãi suất 0% trong 18 tháng</b><div class="small muted">Áp dụng cho đợt 3, ngân hàng liên kết.</div></div><span class="lb lb-public">Công khai</span></div>
-            <div class="bullet"><span class="bi">4</span><div><b>Chiết khấu thanh toán sớm 95%</b><div class="small muted">Mức chiết khấu chưa công bố ra ngoài, chỉ dùng khi tư vấn trực tiếp.</div></div><span class="lb lb-internal">Nội bộ</span></div>
-            <!-- Chính sách hoa hồng: chỉ Tổng giám đốc, Giám đốc dự án, Quản lý kinh doanh
-                 và HCNS & Kế toán được xem (QD-027). Nhân viên bán hàng, Thư ký kinh doanh
-                 và Marketing không thấy dòng này. -->
-            <div class="bullet" data-roles="gd gddu qlkd hcns"><span class="bi">5</span><div><b>Chính sách hoa hồng đợt 3</b><div class="small muted">Chỉ vai trò được chỉ định xem được nội dung này.</div></div><span class="lb lb-restricted">Nội bộ hạn chế</span></div>
-            <div class="bullet" data-roles="nvbh tkkd mkt"><span class="bi">5</span><div><b>Một điểm bán hàng bị ẩn</b><div class="small muted">Nội dung mang nhãn Nội bộ hạn chế, vai trò của anh/chị không được xem.</div></div><span class="lb lb-restricted">Nội bộ hạn chế</span></div>
+            <div id="kv3-list"></div>
           </div>
         </section>
 
         <!-- 4. Mặt bằng -->
         <section class="sec" id="kv4">
-          <div class="sec-head"><span class="n">KHU VỰC 04</span><h2>Mặt bằng</h2><span class="lb lb-public">Công khai</span></div>
-          <div class="gal">
-            <figure><img src="assets/img/celestine.jpg" alt="Mặt bằng tầng điển hình tòa A" loading="lazy"><span class="lb lb-public">Công khai</span></figure>
-            <figure><img src="assets/img/la-perle.webp" alt="Mặt bằng căn 2 phòng ngủ" loading="lazy"><span class="lb lb-public">Công khai</span></figure>
-            <figure><img src="assets/img/palmy.jpg" alt="Mặt bằng căn 3 phòng ngủ" loading="lazy"><span class="lb lb-public">Công khai</span></figure>
-            <figure><img src="assets/img/thien-duong.jpg" alt="Mặt bằng tổng thể khu" loading="lazy"><span class="lb lb-internal">Nội bộ</span></figure>
+          <div class="sec-head"><span class="n">KHU VỰC 04</span><h2>Mặt bằng</h2><span class="lb lb-public">Công khai</span>
+            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="plan" data-roles="tkkd gddu gd mkt">+ Thêm mặt bằng</button></span>
           </div>
+          <div class="gal" id="kv4-gal"></div>
           <p class="micro muted mt-2">Tệp gốc nằm ở nhánh <a href="cay-thu-muc.html">Tài liệu bán hàng</a>. Tải xuống luôn là bản PDF có dấu nhận diện người tải.</p>
         </section>
 
@@ -324,28 +312,12 @@
         <!-- 8. Nội dung bán hàng được duyệt -->
         <section class="sec" id="kv8">
           <div class="sec-head"><span class="n">KHU VỰC 08</span><h2>Nội dung bán hàng được duyệt</h2><span class="lb lb-public">Công khai</span>
-            <span class="sec-act"><a class="btn btn-primary btn-sm" href="soan-noi-dung.html">Chuẩn bị nội dung</a></span>
+            <span class="sec-act row-tight">
+              <button class="btn btn-outline btn-sm" data-sec-new="content" data-roles="mkt gddu gd">+ Thêm nội dung</button>
+              <a class="btn btn-primary btn-sm" href="soan-noi-dung.html">Chuẩn bị nội dung</a>
+            </span>
           </div>
-          <div class="grid g-3">
-            <div class="card card-pad">
-              <span class="chip mb-1">Mẫu chung</span>
-              <h3 style="font-size:1rem">Giới thiệu dự án — bản ngắn</h3>
-              <p class="small muted mt-1">Khoảng 90 từ, kèm 4 ảnh đã duyệt. Dùng cho mọi kênh, nhân viên tự cắt gọt khi đăng.</p>
-              <div class="row-tight mt-2"><span class="lb lb-public">Công khai</span><span class="micro muted">Duyệt 09/08/2026</span></div>
-            </div>
-            <div class="card card-pad">
-              <span class="chip mb-1">Mẫu chung</span>
-              <h3 style="font-size:1rem">Chính sách đợt 3 — bản gửi khách</h3>
-              <p class="small muted mt-1">Chỉ nêu phần chính sách được phép công bố, không có chiết khấu nội bộ.</p>
-              <div class="row-tight mt-2"><span class="lb lb-public">Công khai</span><span class="micro muted">Duyệt 11/08/2026</span></div>
-            </div>
-            <div class="card card-pad">
-              <span class="chip mb-1">Mẫu chung</span>
-              <h3 style="font-size:1rem">Bộ ảnh căn mẫu 2PN</h3>
-              <p class="small muted mt-1">12 ảnh đã duyệt, có thể tải hoặc chèn thẳng vào nội dung đăng.</p>
-              <div class="row-tight mt-2"><span class="lb lb-public">Công khai</span><span class="micro muted">Duyệt 05/08/2026</span></div>
-            </div>
-          </div>
+          <div class="grid g-3" id="kv8-grid"></div>
         </section>
 
         <!-- 9. Nội bộ Marketing & Kinh doanh -->
@@ -551,6 +523,37 @@
   </div>
 </div>
 
+<!-- KV-01 → KV-04, KV-08 · thêm và sửa thành phần của trang dự án -->
+<div class="modal" id="m-thanhphan" hidden role="dialog" aria-modal="true" aria-labelledby="m-tp-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow" id="m-tp-kv">Thành phần trang dự án</span><h3 id="m-tp-t">Sửa nội dung</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="tp-form">
+      <label class="field" id="tp-wrap-title"><span class="lab" id="tp-lab-title">Tiêu đề</span>
+        <input class="inp" type="text" id="tp-title" data-required data-msg="Nhập tiêu đề."></label>
+      <label class="field"><span class="lab" id="tp-lab-body">Nội dung</span>
+        <textarea class="inp" id="tp-body" rows="3" data-required data-msg="Nhập nội dung."></textarea></label>
+      <label class="field" id="tp-wrap-img" hidden><span class="lab">Ảnh mặt bằng</span>
+        <select class="inp" id="tp-img"></select>
+        <span class="hint">Ảnh lấy từ thư viện ảnh của bản mô phỏng. Tệp gốc nằm ở nhánh Tài liệu bán hàng.</span></label>
+      <label class="field"><span class="lab">Nhãn quyền</span>
+        <select class="inp" id="tp-label"></select>
+        <span class="hint" id="tp-hint"></span></label>
+      <div class="note note-navy" id="tp-note"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" id="tp-del" data-roles="gddu gd">Xóa</button>
+      <span style="flex:1 1 auto"></span>
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="tp-save">Lưu</button>
+    </div>
+  </div>
+</div>
+
 <!-- KV-09 · thêm và sửa kịch bản -->
 <div class="modal" id="m-kichban" hidden role="dialog" aria-modal="true" aria-labelledby="m-kichban-t">
   <div class="modal-box">
@@ -670,6 +673,182 @@ document.addEventListener('DOMContentLoaded', function () {
     var lead = document.querySelector('.pj-hero .lead');
     if (lead) lead.textContent = p.place + ' · ' + p.typeName + ' · ' + p.struct;
   }
+
+  /* ============ Thành phần trang dự án · khu vực 01-04 và 08 ============
+     Năm khối này trước đây viết cứng trong đánh dấu nên không ai sửa được.
+     Nay lấy từ kho `sections`, phân loại bằng `kind`, dùng chung một hộp soạn. */
+  var SEC_ROLES = S.SECTION_ROLES;
+  /* Chuỗi vai trò xem được nhãn Nội bộ hạn chế — giữ đúng trật tự đang dùng ở nơi khác. */
+  var SEE_RESTRICTED = 'gd gddu qlkd hcns';
+  var HIDDEN_RESTRICTED = 'nvbh tkkd mkt';
+
+  function secs(kind) {
+    return S.get('sections').filter(function (s) { return s.pj === PJ && s.kind === kind; });
+  }
+  function editBtn(s) {
+    return '<button type="button" class="btn btn-quiet btn-sm" data-sec-edit="' + esc(s.id) + '"' +
+      ' data-roles="' + SEC_ROLES[s.kind] + '">Sửa</button>';
+  }
+
+  function paintSections() {
+    /* 01 · Tổng quan — một khối văn bản */
+    var ov = secs('overview')[0];
+    id('kv1-body').textContent = ov ? ov.body : 'Chưa có phần tổng quan cho dự án này.';
+    var ovAct = id('kv1-edit');
+    if (ovAct) ovAct.setAttribute('data-sec-edit', ov ? ov.id : '');
+
+    /* 02 · Vị trí và liên kết vùng */
+    id('kv2-grid').innerHTML = secs('place').map(function (s) {
+      return '<div><div class="k">' + esc(s.title) + '</div>' +
+        '<div class="v">' + esc(s.body) + ' ' + editBtn(s) + '</div></div>';
+    }).join('') || '<p class="small muted">Chưa khai báo điểm liên kết vùng nào.</p>';
+
+    /* 03 · Điểm bán hàng — nhãn Nội bộ hạn chế ẩn cả dòng, thay bằng dòng báo bị ẩn */
+    var pts = secs('point');
+    id('kv3-list').innerHTML = pts.map(function (s, i) {
+      var row = '<div class="bullet"' + (s.label === 'restricted' ? ' data-roles="' + SEE_RESTRICTED + '"' : '') + '>' +
+        '<span class="bi">' + (i + 1) + '</span>' +
+        '<div><b>' + esc(s.title) + '</b><div class="small muted">' + esc(s.body) + '</div></div>' +
+        S.label(s.label) + editBtn(s) + '</div>';
+      if (s.label !== 'restricted') return row;
+      return row + '<div class="bullet" data-roles="' + HIDDEN_RESTRICTED + '"><span class="bi">' + (i + 1) + '</span>' +
+        '<div><b>Một điểm bán hàng bị ẩn</b><div class="small muted">Nội dung mang nhãn Nội bộ hạn chế, vai trò của anh/chị không được xem.</div></div>' +
+        '<span class="lb lb-restricted">Nội bộ hạn chế</span></div>';
+    }).join('') || '<p class="small muted">Chưa có điểm bán hàng nào.</p>';
+
+    /* 04 · Mặt bằng */
+    id('kv4-gal').innerHTML = secs('plan').filter(function (s) { return S.canSee(s.label, RECO.role); })
+      .map(function (s) {
+        return '<figure><img src="' + RECO.asset(s.img) + '" alt="' + esc(s.title) + '" loading="lazy">' +
+          S.label(s.label) + editBtn(s) + '</figure>';
+      }).join('') || '<p class="small muted">Chưa có mặt bằng nào cho dự án này.</p>';
+
+    /* 08 · Nội dung bán hàng được duyệt */
+    id('kv8-grid').innerHTML = secs('content').filter(function (s) { return S.canSee(s.label, RECO.role); })
+      .map(function (s) {
+        return '<div class="card card-pad"><span class="chip mb-1">Mẫu chung</span>' +
+          '<h3 style="font-size:1rem">' + esc(s.title) + '</h3>' +
+          '<p class="small muted mt-1">' + esc(s.body) + '</p>' +
+          '<div class="row-tight mt-2">' + S.label(s.label) +
+          '<span class="micro muted">Duyệt ' + esc(s.at || S.TODAY) + '</span>' + editBtn(s) + '</div></div>';
+      }).join('') || '<p class="small muted">Chưa có nội dung nào được duyệt.</p>';
+
+    RECO.applyRoles(id('kv2-grid'));
+    RECO.applyRoles(id('kv3-list'));
+    RECO.applyRoles(id('kv4-gal'));
+    RECO.applyRoles(id('kv8-grid'));
+  }
+
+  /* ---- Hộp soạn dùng chung cho cả năm loại ---- */
+  var tpForm = id('tp-form'), tpSave = id('tp-save'), tpDel = id('tp-del');
+  var editingSec = null, newKind = null;
+  var TP_LAB = {
+    overview: { title: null, body: 'Đoạn giới thiệu dự án' },
+    place: { title: 'Địa điểm', body: 'Khoảng cách và thời gian' },
+    point: { title: 'Điểm bán hàng', body: 'Diễn giải ngắn' },
+    plan: { title: 'Tên mặt bằng', body: 'Ghi chú' },
+    content: { title: 'Tiêu đề nội dung', body: 'Mô tả ngắn' }
+  };
+
+  function tpOpen(kind, s) {
+    editingSec = s || null;
+    newKind = kind;
+    var lab = TP_LAB[kind];
+    id('m-tp-kv').textContent = S.SECTION_NAME[kind];
+    id('m-tp-t').textContent = (s ? 'Sửa ' : 'Thêm ') + S.SECTION_NAME[kind].toLowerCase();
+    id('tp-wrap-title').hidden = !lab.title;
+    if (lab.title) {
+      id('tp-lab-title').textContent = lab.title;
+      id('tp-title').setAttribute('data-required', '');
+    } else {
+      id('tp-title').removeAttribute('data-required');   /* validate quét cả ô đang ẩn */
+    }
+    id('tp-lab-body').textContent = lab.body;
+    id('tp-title').value = s && s.title ? s.title : '';
+    id('tp-body').value = s && s.body ? s.body : '';
+
+    id('tp-wrap-img').hidden = kind !== 'plan';
+    if (kind === 'plan') {
+      var imgs = S.get('media').filter(function (m) { return m.img; });
+      id('tp-img').innerHTML = imgs.map(function (m) {
+        return '<option value="' + esc(m.img) + '"' + (s && s.img === m.img ? ' selected' : '') + '>' + esc(m.name) + '</option>';
+      }).join('');
+    }
+
+    id('tp-label').innerHTML = Object.keys(S.LABELS).map(function (k) {
+      if (!S.canGrant(k, RECO.role)) return '';
+      return '<option value="' + k + '"' + (s && s.label === k ? ' selected' : '') + '>' + S.LABELS[k].text + '</option>';
+    }).join('');
+    id('tp-hint').innerHTML = RECO.role === 'gddu'
+      ? 'Nhãn <strong>Nội bộ hạn chế</strong> ẩn cả dòng với vai trò không được xem.'
+      : 'Nhãn <strong>Nội bộ hạn chế</strong> chỉ Giám đốc dự án cấp được (QD-027).';
+    id('tp-note').innerHTML = kind === 'content'
+      ? 'Nội dung mang nhãn <strong>Công khai</strong> ra tới trang gửi khách, không cần đăng nhập.'
+      : 'Chỉ phần mang nhãn <strong>Công khai</strong> mới được đưa vào trang gửi khách.';
+    tpDel.hidden = !s;
+    tpForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    tpForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    RECO.openModal('m-thanhphan');
+  }
+
+  /* Ủy quyền ở #page chứ không ở document: bản gói dựng lại #page mỗi lần đổi màn,
+     nhờ vậy trình nghe chết theo màn cũ thay vì tích lũy. */
+  id('page').addEventListener('click', function (e) {
+    var add = e.target.closest('[data-sec-new]');
+    if (add) { tpOpen(add.getAttribute('data-sec-new'), null); return; }
+    var ed = e.target.closest('[data-sec-edit]');
+    if (!ed) return;
+    var sid = ed.getAttribute('data-sec-edit');
+    var s = sid && S.find('sections', sid);
+    if (s) tpOpen(s.kind, s);
+  });
+
+  tpSave.addEventListener('click', function () {
+    if (!RECO.validate(tpForm)) return;
+    var kind = editingSec ? editingSec.kind : newKind;
+    var patch = { body: id('tp-body').value.trim(), label: id('tp-label').value };
+    if (TP_LAB[kind].title) patch.title = id('tp-title').value.trim();
+    if (kind === 'plan') patch.img = id('tp-img').value;
+    if (kind === 'content') patch.at = today();
+    RECO.busy(tpSave, 'Đang lưu…', 800, function () {
+      RECO.closeModal('m-thanhphan');
+      if (editingSec) {
+        S.update('sections', editingSec.id, patch);
+        RECO.toast('Đã lưu ' + S.SECTION_NAME[kind].toLowerCase());
+      } else {
+        patch.pj = PJ; patch.kind = kind;
+        S.add('sections', patch, true);
+        RECO.toast('Đã thêm ' + S.SECTION_NAME[kind].toLowerCase() + ' vào trang dự án');
+      }
+      editingSec = null;
+      paintSections();
+    });
+  });
+
+  tpDel.addEventListener('click', function () {
+    if (!editingSec) return;
+    var s = editingSec, btn = this;
+    RECO.confirm({
+      eyebrow: S.SECTION_NAME[s.kind],
+      title: 'Xóa khỏi trang dự án?',
+      body: '<p class="small" style="font-weight:700;margin-bottom:6px">' + esc(s.title || s.body.slice(0, 60)) + '</p>' +
+            '<p class="small muted">Khối này biến mất khỏi màn Chi tiết dự án và khỏi trang gửi khách nếu đang mang nhãn Công khai.</p>',
+      okText: 'Xóa',
+      danger: true,
+      onOk: function () {
+        RECO.busy(btn, 'Đang xóa…', 700, function () {
+          RECO.closeModal('m-thanhphan');
+          S.remove('sections', s.id);
+          editingSec = null;
+          paintSections();
+          RECO.toast('Đã xóa khỏi trang dự án', {
+            danger: true,
+            undo: function () { S.add('sections', s, true); paintSections(); }
+          });
+        });
+      }
+    });
+  });
 
   function fillCapNhat() {
     var p = project();
@@ -1291,6 +1470,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ================= Dựng lần đầu + theo dõi kho ================= */
   kv1();
+  paintSections();
+  watch('sections', paintSections);
   fillUnitFilters(); paintUnits();
   fillUnitPicker(); calc(); paintPhieu();
   paintQA(); paintDuyetQA();

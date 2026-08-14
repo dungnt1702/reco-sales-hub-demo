@@ -38,8 +38,8 @@ Trạng thái nằm trong URL (`?role=…&dev=m&bare=1`) nên gửi đường d�
 | `trang-dau.html` | MH-02 Trang đầu |
 | `du-an.html` | MH-03 Tìm kiếm và danh sách dự án |
 | `du-an-chi-tiet.html` | MH-04 Chi tiết dự án (+ MH-06 hỏi đáp, MH-12 kịch bản, MH-13 gửi đề nghị) |
-| `thu-vien-tai-lieu.html` | MH-05 Thư viện tài liệu |
-| `cay-thu-muc.html` | MH-11 Cây thư mục tài liệu |
+| `cay-thu-muc.html` | MH-11 Cây thư mục tài liệu — **chế độ xem mặc định của mục Tài liệu** |
+| `thu-vien-tai-lieu.html` | MH-05 Thư viện tài liệu — danh sách phẳng có bộ lọc, đổi qua lại bằng cặp nút ở đầu màn |
 | `soan-noi-dung.html` | MH-07 Chuẩn bị nội dung bán hàng |
 | `trang-gui-khach.html` | MH-08 Trang công khai gửi khách |
 | `link-het-han.html` | MH-14 Đường dẫn hết hiệu lực hoặc bị thu hồi |
@@ -79,6 +79,11 @@ Bốn lối thêm nội dung, đều ghi bản ghi thật vào kho nên màn kh�
 | Thêm ảnh vào thư viện | Cây thư mục, nhánh 5 | Marketing, Giám đốc dự án, Tổng giám đốc |
 | Thêm căn/lô vào bảng hàng | Quản trị, tab Dự án và nội dung | Thư ký kinh doanh, Giám đốc dự án, Tổng giám đốc |
 | Thêm câu hỏi đáp | Chi tiết dự án, khu vực 07 | Thư ký kinh doanh, Marketing, Giám đốc dự án, Tổng giám đốc |
+| Sửa thành phần trang dự án | Chi tiết dự án, khu vực 01–04 và 08 — nút Sửa ngay trên từng khối | Tổng quan, Vị trí, Điểm bán: Thư ký kinh doanh, GĐDA, TGĐ · Mặt bằng: thêm Marketing · Nội dung được duyệt: Marketing, GĐDA, TGĐ |
+| Soạn và duyệt kịch bản | Quản trị, tab Kịch bản | Soạn bản dùng chung: Marketing, GĐDA, TGĐ · Duyệt đề xuất nâng lên chung: GĐDA, TGĐ |
+
+Kịch bản **cá nhân** của nhân viên không hiện nội dung ở màn Quản trị — chỉ đếm số lượng, đúng quy tắc
+"chỉ chủ sở hữu xem được" (QD-032).
 
 Ai **không** phải người duyệt cuối thì nội dung vừa tạo dừng ở trạng thái chờ duyệt (QD-006) và rơi vào hàng
 chờ ở màn Quản trị — bấm Duyệt ở đó lật luôn bản ghi gốc, chip "Chưa duyệt" biến mất trước mắt người xem.
@@ -122,7 +127,7 @@ sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiế
 | Bộ | Kiểm gì |
 | --- | --- |
 | `_check.html` | Tràn ngang ở 360/390/768/1440 và liên kết hỏng trên cả 14 trang |
-| `_check-roles.html` | 54 trường hợp ẩn/hiện theo vai trò |
+| `_check-roles.html` | 67 trường hợp ẩn/hiện theo vai trò |
 | `_check-actions.html` | **Bấm thử từng phần tử** trên mọi màn, so nội dung trước/sau. Đạt khi DOM đổi, hoặc mở hộp thoại, hoặc phần tử mang `data-gd2`. Toast không tính — nó nằm ngoài vùng so sánh. Kiểm thêm: hành động khó hoàn tác có hỏi lại không, ô nhập có phản hồi không, còn liên kết cụt `href="#"` không, và biểu mẫu tải tài liệu có chặn lỗi rồi ghi thật vào kho không |
 | `_check-bundle.html` | Bản một tệp: dựng màn, tràn ngang, liên kết, ảnh và phông nhúng sẵn, phân quyền, mã riêng từng màn |
 

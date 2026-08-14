@@ -43,6 +43,8 @@
         <button role="tab" id="t-duan" aria-controls="p-duan" aria-selected="true">Dự án và nội dung</button>
         <button role="tab" id="t-duyet" aria-controls="p-duyet" aria-selected="false" tabindex="-1">Chờ duyệt</button>
         <button role="tab" id="t-nhan" aria-controls="p-nhan" aria-selected="false" tabindex="-1">Nhãn quyền và hiệu lực</button>
+        <!-- HCNS &amp; Kế toán không đụng nội dung dự án nên không thấy tab này -->
+        <button role="tab" id="t-kb" aria-controls="p-kb" aria-selected="false" tabindex="-1" data-roles="gd gddu tkkd mkt">Kịch bản</button>
         <!-- Thư ký kinh doanh không có quyền xem báo cáo theo ma trận -->
         <button role="tab" id="t-bc" aria-controls="p-bc" aria-selected="false" tabindex="-1" data-roles="gd gddu mkt hcns">Báo cáo vận hành</button>
       </div>
@@ -147,6 +149,34 @@
 
         <div class="card" style="box-shadow:none" id="dq-list"></div>
         <div id="dq-rong" hidden></div>
+      </div>
+
+      <!-- Kịch bản kinh doanh -->
+      <div role="tabpanel" id="p-kb" aria-labelledby="t-kb" class="card-body" hidden>
+        <div class="note note-navy mb-3">
+          <strong>Kịch bản dùng chung</strong> áp cho cả đội, do người được phân quyền soạn.
+          <strong>Kịch bản cá nhân</strong> là của riêng từng nhân viên bán hàng — màn này chỉ đếm, không đọc được nội dung.
+          Nhân viên muốn đưa kịch bản riêng thành bản chung thì gửi <strong>đề xuất</strong>, Giám đốc dự án duyệt hoặc từ chối kèm lý do (QD-032).
+        </div>
+
+        <div class="spread mb-3">
+          <div class="filterbar" style="flex:1 1 auto">
+            <select class="inp" id="kb-pj" aria-label="Lọc theo dự án"><option value="">Mọi dự án</option></select>
+            <select class="inp" id="kb-scope" aria-label="Lọc theo loại kịch bản">
+              <option value="">Mọi loại</option>
+              <option value="shared">Dùng chung</option>
+              <option value="proposal">Đề xuất nâng lên chung</option>
+              <option value="mine">Cá nhân</option>
+            </select>
+            <button type="button" class="btn btn-quiet btn-sm" id="kb-reset">Xóa lọc</button>
+          </div>
+          <button class="btn btn-primary btn-sm" id="kb-new" data-roles="gd gddu mkt">+ Kịch bản dùng chung</button>
+        </div>
+
+        <p class="small muted mb-2" id="kb-count" style="margin:0"></p>
+        <div class="card" style="box-shadow:none" id="kb-list"></div>
+        <div id="kb-rong" hidden></div>
+        <p class="micro muted mt-2" id="kb-mine-note"></p>
       </div>
 
       <!-- Nhãn quyền và hiệu lực -->
@@ -322,6 +352,51 @@
     <div class="modal-foot">
       <button class="btn btn-outline" data-close="1">Hủy</button>
       <button class="btn btn-primary" id="un-save">Thêm vào bảng hàng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Thêm hoặc sửa kịch bản dùng chung -->
+<div class="modal" id="m-kb" hidden role="dialog" aria-modal="true" aria-labelledby="m-kb-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Kịch bản kinh doanh</span><h3 id="m-kb-t">Kịch bản dùng chung mới</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="kb-form">
+      <label class="field"><span class="lab">Dự án</span><select class="inp" id="kb-f-pj"></select></label>
+      <label class="field"><span class="lab">Tiêu đề</span>
+        <input class="inp" type="text" id="kb-f-title" data-required data-msg="Đặt tiêu đề để cả đội tìm được kịch bản."
+               placeholder="Ví dụ: Xử lý phản đối về giá so với dự án lân cận"></label>
+      <label class="field"><span class="lab">Nội dung</span>
+        <textarea class="inp" id="kb-f-body" rows="4" data-required data-msg="Nhập nội dung kịch bản."></textarea></label>
+      <label class="field"><span class="lab">Nhãn quyền</span>
+        <select class="inp" id="kb-f-label"></select>
+        <span class="hint" id="kb-f-hint"></span></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="kb-f-save">Lưu kịch bản</button>
+    </div>
+  </div>
+</div>
+
+<!-- Từ chối đề xuất nâng lên bản chung -->
+<div class="modal" id="m-kb-tuchoi" hidden role="dialog" aria-modal="true" aria-labelledby="m-kbtc-t">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-head">
+      <div><span class="eyebrow">Đề xuất nâng lên bản chung</span><h3 id="m-kbtc-t">Từ chối đề xuất</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="kbtc-form">
+      <p class="small muted mb-2" id="kbtc-ctx"></p>
+      <label class="field"><span class="lab">Lý do từ chối</span>
+        <textarea class="inp" id="kbtc-ly" rows="3" data-required data-msg="Nhập lý do — người gửi cần biết phải sửa gì (QD-047)."></textarea>
+        <span class="hint">Lý do hiện lại cho người gửi ở khu vực 09 màn Chi tiết dự án.</span></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="kbtc-ok">Từ chối kèm lý do</button>
     </div>
   </div>
 </div>
@@ -692,6 +767,188 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   S.on('units', function () { if (bhqPj) bhqRender(); });
+
+  /* ================= Tab · Kịch bản kinh doanh ================= */
+  var kbList = document.getElementById('kb-list'), kbRong = document.getElementById('kb-rong'),
+      kbCount = document.getElementById('kb-count'), kbMineNote = document.getElementById('kb-mine-note'),
+      kbPj = document.getElementById('kb-pj'), kbScope = document.getElementById('kb-scope');
+  var kbForm = document.getElementById('kb-form'), kbSave = document.getElementById('kb-f-save');
+  var kbFPj = document.getElementById('kb-f-pj'), kbFTitle = document.getElementById('kb-f-title'),
+      kbFBody = document.getElementById('kb-f-body'), kbFLabel = document.getElementById('kb-f-label');
+  var editingKb = null, refusing = null;
+  var SCOPE = { shared: 'Dùng chung', mine: 'Cá nhân', proposal: 'Đề xuất nâng lên chung' };
+
+  var pjOpts = S.get('projects').map(function (p) {
+    return '<option value="' + p.id + '">' + esc(p.name) + '</option>';
+  }).join('');
+  kbPj.insertAdjacentHTML('beforeend', pjOpts);
+  kbFPj.innerHTML = pjOpts;
+
+  function kbLabelOpts(sel) {
+    kbFLabel.innerHTML = Object.keys(S.LABELS).map(function (k) {
+      if (!S.canGrant(k, RECO.role)) return '';
+      return '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + S.LABELS[k].text + '</option>';
+    }).join('');
+    document.getElementById('kb-f-hint').innerHTML = RECO.role === 'gddu'
+      ? 'Kịch bản mang nhãn <strong>Nội bộ hạn chế</strong> chỉ vai trò được chỉ định đọc được.'
+      : 'Nhãn <strong>Nội bộ hạn chế</strong> chỉ Giám đốc dự án cấp được (QD-027).';
+  }
+
+  /* Kịch bản cá nhân chỉ chủ sở hữu đọc được — màn quản trị chỉ đếm, không hiện nội dung. */
+  function kbMatched() {
+    return S.get('scripts').filter(function (s) {
+      if (s.scope === 'mine') return false;
+      return (!kbPj.value || s.pj === kbPj.value) && (!kbScope.value || s.scope === kbScope.value);
+    });
+  }
+  function kbRow(s) {
+    var acts = '';
+    if (s.scope === 'proposal' && s.state === 'pending') {
+      acts = '<button class="btn btn-outline btn-sm" data-kb="tuchoi" data-id="' + s.id + '" data-roles="gddu gd">Từ chối</button>' +
+             '<button class="btn btn-primary btn-sm" data-kb="duyet" data-id="' + s.id + '" data-roles="gddu gd">Duyệt thành bản chung</button>' +
+             '<span class="chip" data-roles="tkkd mkt">Chờ Giám đốc dự án duyệt</span>';
+    } else if (s.scope === 'shared') {
+      acts = '<button class="btn btn-outline btn-sm" data-kb="sua" data-id="' + s.id + '" data-roles="gd gddu mkt">Sửa</button>' +
+             '<span class="chip" data-roles="tkkd">Chỉ xem</span>';
+    } else {
+      acts = '<span class="chip">' + (s.state === 'rejected' ? 'Đã từ chối' : 'Đã xử lý') + '</span>';
+    }
+    return '<div class="frow">' +
+      '<span class="fico">' + RECO.svg('file') + '</span>' +
+      '<div class="fmeta"><div class="fname">' + esc(s.title) + '</div>' +
+        '<div class="fsub"><span class="chip">' + SCOPE[s.scope] + '</span>' + S.label(s.label) +
+          '<span>' + esc(S.projectName(s.pj)) + '</span><span>' + esc(s.by) + ' · ' + esc(s.at) + '</span></div>' +
+        '<div class="micro muted mt-1">' + esc(s.body) + '</div>' +
+        (s.reason ? '<div class="micro muted mt-1">Lý do đề xuất: ' + esc(s.reason) + '</div>' : '') +
+        (s.refuse ? '<div class="micro mt-1" style="color:var(--danger)">Đã từ chối: ' + esc(s.refuse) + '</div>' : '') +
+      '</div>' +
+      '<div class="fend">' + acts + '</div></div>';
+  }
+  function kbRender() {
+    var list = kbMatched();
+    var none = list.length === 0;
+    kbList.hidden = none;
+    kbRong.hidden = !none;
+    if (none) {
+      kbRong.innerHTML = RECO_DATA.empty('Không có kịch bản nào khớp bộ lọc',
+        'Thử bỏ bớt điều kiện, hoặc soạn kịch bản dùng chung đầu tiên cho đội.');
+    } else {
+      kbList.innerHTML = list.map(kbRow).join('');
+    }
+    var cho = list.filter(function (s) { return s.scope === 'proposal' && s.state === 'pending'; }).length;
+    kbCount.textContent = (none ? 'Không có kịch bản nào khớp bộ lọc' : 'Đang hiển thị ' + list.length + ' kịch bản') +
+      (cho ? ' · ' + cho + ' đề xuất chờ duyệt' : '');
+
+    var mine = S.get('scripts').filter(function (s) {
+      return s.scope === 'mine' && (!kbPj.value || s.pj === kbPj.value);
+    });
+    var who = mine.map(function (s) { return s.by; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+    kbMineNote.textContent = mine.length
+      ? mine.length + ' kịch bản cá nhân của ' + who.length + ' nhân viên — nội dung chỉ chủ sở hữu xem được, màn này không hiển thị.'
+      : 'Chưa có kịch bản cá nhân nào trong phạm vi đang lọc.';
+    RECO.applyRoles(none ? kbRong : kbList);
+  }
+  [kbPj, kbScope].forEach(function (el) { el.addEventListener('change', kbRender); });
+  document.getElementById('kb-reset').addEventListener('click', function () {
+    kbPj.value = ''; kbScope.value = ''; kbRender();
+  });
+
+  function kbOpen(s) {
+    editingKb = s || null;
+    document.getElementById('m-kb-t').textContent = s ? 'Sửa kịch bản dùng chung' : 'Kịch bản dùng chung mới';
+    kbSave.textContent = s ? 'Lưu thay đổi' : 'Lưu kịch bản';
+    kbFPj.value = s ? s.pj : (kbPj.value || S.get('projects')[0].id);
+    kbFTitle.value = s ? s.title : '';
+    kbFBody.value = s ? s.body : '';
+    kbLabelOpts(s ? s.label : 'internal');
+    kbForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    kbForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    RECO.openModal('m-kb');
+  }
+  document.getElementById('kb-new').addEventListener('click', function () { kbOpen(null); });
+
+  kbSave.addEventListener('click', function () {
+    if (!RECO.validate(kbForm)) return;
+    var patch = {
+      pj: kbFPj.value, title: kbFTitle.value.trim(), body: kbFBody.value.trim(),
+      label: kbFLabel.value
+    };
+    RECO.busy(kbSave, 'Đang lưu…', 900, function () {
+      RECO.closeModal('m-kb');
+      if (editingKb) {
+        S.update('scripts', editingKb.id, patch);
+        RECO.toast('Đã lưu kịch bản “' + patch.title + '”');
+      } else {
+        patch.scope = 'shared';
+        patch.by = RECO.current.who;
+        patch.at = S.todayVN();
+        S.add('scripts', patch);
+        RECO.toast('Đã thêm kịch bản dùng chung — cả đội thấy ở khu vực 09 màn Chi tiết dự án');
+      }
+      editingKb = null;
+      kbRender();
+    });
+  });
+
+  kbList.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-kb]');
+    if (!b) return;
+    var s = S.find('scripts', b.getAttribute('data-id'));
+    if (!s) return;
+    var act = b.getAttribute('data-kb');
+    if (act === 'sua') { kbOpen(s); return; }
+    if (act === 'tuchoi') {
+      refusing = s;
+      document.getElementById('kbtc-ctx').textContent = '“' + s.title + '” — ' + s.by + ' gửi ngày ' + s.at + '.';
+      document.getElementById('kbtc-ly').value = '';
+      document.getElementById('kbtc-form').querySelectorAll('.err').forEach(function (x) { x.remove(); });
+      RECO.openModal('m-kb-tuchoi');
+      return;
+    }
+    if (act === 'duyet') {
+      RECO.confirm({
+        eyebrow: 'Đề xuất nâng lên bản chung',
+        title: 'Duyệt “' + esc(s.title) + '” thành kịch bản dùng chung?',
+        body: '<div class="note note-navy small">' + esc(s.body) + '</div>' +
+              '<p class="micro muted mt-2">' + esc(s.by) + ' gửi ngày ' + esc(s.at) +
+              '. Sau khi duyệt, cả đội dùng được kịch bản này ở khu vực 09 màn Chi tiết dự án.</p>',
+        okText: 'Duyệt thành bản chung',
+        onOk: function () {
+          RECO.busy(b, 'Đang duyệt…', 900, function () {
+            S.update('scripts', s.id, { scope: 'shared', state: 'approved' });
+            S.add('notifications', {
+              kind: 'ok', title: 'Đề xuất kịch bản được duyệt',
+              body: '“' + s.title + '” nay là kịch bản dùng chung của cả đội.',
+              at: 'vừa xong', read: false, go: 'du-an-chi-tiet.html'
+            });
+            kbRender();
+            RECO.toast('Đã duyệt “' + s.title + '” thành kịch bản dùng chung');
+          });
+        }
+      });
+    }
+  });
+
+  document.getElementById('kbtc-ok').addEventListener('click', function () {
+    var box = document.getElementById('kbtc-form');
+    if (!RECO.validate(box) || !refusing) return;
+    var ly = document.getElementById('kbtc-ly').value.trim();
+    RECO.busy(this, 'Đang gửi…', 800, function () {
+      RECO.closeModal('m-kb-tuchoi');
+      S.update('scripts', refusing.id, { state: 'rejected', refuse: ly });
+      S.add('notifications', {
+        kind: 'req', title: 'Đề xuất kịch bản bị từ chối',
+        body: '“' + refusing.title + '” — lý do: ' + ly,
+        at: 'vừa xong', read: false, go: 'du-an-chi-tiet.html'
+      });
+      RECO.toast('Đã từ chối kèm lý do — người gửi nhận được thông báo', { danger: true });
+      refusing = null;
+      kbRender();
+    });
+  });
+
+  S.on('scripts', kbRender);
+  kbRender();
   [pjQ, pjType, pjStatus].forEach(function (el) {
     el.addEventListener('input', pjRender); el.addEventListener('change', pjRender);
   });

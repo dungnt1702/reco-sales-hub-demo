@@ -140,12 +140,14 @@
   var NAV = [
     { href: 'trang-dau.html', label: 'Trang đầu', key: 'trang-dau', icon: 'home' },
     { href: 'du-an.html', label: 'Dự án', key: 'du-an', icon: 'layers' },
-    { href: 'thu-vien-tai-lieu.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
+    /* Tài liệu mở thẳng vào cây thư mục — đó là cách RECO tổ chức tài liệu thật.
+       Danh sách phẳng là chế độ xem thứ hai, đổi bằng cặp nút ở đầu màn. */
+    { href: 'cay-thu-muc.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
     { href: 'chia-se.html', label: 'Chia sẻ', key: 'chia-se', icon: 'share' },
     { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns' }
   ];
   var MORE = [
-    { href: 'cay-thu-muc.html', label: 'Cây thư mục dự án' },
+    { href: 'thu-vien-tai-lieu.html', label: 'Danh sách tài liệu · tìm theo bộ lọc' },
     { href: 'soan-noi-dung.html', label: 'Chuẩn bị nội dung bán hàng', roles: 'gd gddu tkkd qlkd nvbh mkt' },
     { href: 'de-nghi-sua.html', label: 'Đề nghị sửa nội dung' },
     { href: 'nguoi-dung.html', label: 'Người dùng và quyền', roles: 'gd hcns' },
