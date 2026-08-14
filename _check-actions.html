@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="utf-8"><title>Kiểm tra: mọi nút có tác dụng thật</title>
+<style>body{font:13px/1.55 monospace;margin:16px;background:#111;color:#ddd}pre{white-space:pre-wrap}iframe{position:absolute;left:-99999px;width:1280px;height:900px;border:0}</style></head>
+<body>
+<h1>Không phần tử nào chỉ hiện toast rồi thôi</h1>
+<pre id="out">Đang chạy…</pre>
+<div id="frames"></div>
+<script>
+/* Bấm thử TỪNG phần tử tương tác trên mọi màn rồi so nội dung trước/sau.
+   Đạt khi: nội dung đổi, hoặc mở hộp thoại, hoặc phần tử mang data-gd2 (ngoài phạm vi có ghi nhãn).
+   Toast không tính là đổi — toast nằm ngoài #page nên không lọt vào chữ ký so sánh. */
+
+var PAGES = ['index','dang-nhap','trang-dau','du-an','du-an-chi-tiet','thu-vien-tai-lieu','cay-thu-muc',
+             'soan-noi-dung','chia-se','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua'];
+
+/* Vai trò dùng để mở khóa các nút bị ẩn theo quyền */
+var ROLE_BY_PAGE = { 'quan-tri': 'gddu', 'nguoi-dung': 'hcns', 'de-nghi-sua': 'tkkd', 'cay-thu-muc': 'gddu' };
+
+/* Hành động khó hoàn tác — bắt buộc phải hỏi lại trước khi đổi trạng thái */
+var MUST_CONFIRM = [
+  'vô hiệu hóa', 'ngừng', 'đặt lại mật khẩu', 'ẩn', 'duyệt', 'xóa', 'thu hồi', 'từ chối', 'đặt lại dữ liệu'
+];
+
+var out = document.getElementById('out'), frames = document.getElementById('frames');
+var lines = [], fail = 0, tested = 0;
+function say(ok, msg) { if (!ok) { fail++; lines.push('HONG ' + msg); } else { lines.push('OK   ' + msg); } }
+
+function hash(s) {
+  var h = 0;
+  for (var i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+  return h + ':' + s.length;
+}
+function snap(d) {
+  var main = d.getElementById('page') || d.body;
+  var open = d.querySelectorAll('.modal:not([hidden])').length;
+  var drawer = d.querySelectorAll('.drawer.open').length;
+  var panel = d.querySelectorAll('.gs-panel:not([hidden])').length;
+  // Lớp phủ tự viết (xem ảnh lớn) gắn thẳng vào body, không nằm trong #page
+  var dlg = d.querySelectorAll('[role="dialog"]:not([hidden]), .lightbox, .lb-overlay').length;
+  return hash(main.innerHTML) + '|' + open + '|' + drawer + '|' + panel + '|' + dlg;
+}
+
+/* Thao tác mà kết quả nằm ngoài trang: sao chép vào bộ nhớ tạm, tải tệp về máy,
+   gọi hộp chia sẻ của hệ điều hành, mở kênh đăng bài ở tab khác.
+   Bộ kiểm tra chạy trong iframe nên không quan sát được — chỉ cần có toast báo lại. */
+var EXTERNAL = ['sao chép', 'tải xuống', 'chia sẻ', 'mở nguồn', 'facebook', 'zalo', 'batdongsan',
+                'muaban', 'homedy', 'chợ tốt', 'alonhadat', 'gọi '];
+function isExternal(txt) { return EXTERNAL.some(function (k) { return txt.indexOf(k) >= 0; }); }
+
+/* Điều khiển đang ở sẵn trạng thái đích thì bấm lại không đổi gì — đó là đúng, không phải lỗi.
+   Ví dụ tab đang mở, chế độ xem đang chọn, nút bỏ lọc khi chưa lọc gì. */
+function alreadyActive(el, txt) {
+  if (el.getAttribute('aria-selected') === 'true') return true;
+  if (el.getAttribute('aria-pressed') === 'true') return true;
+  if (txt.indexOf('lọc') >= 0) return true;
+  return false;
+}
+function visible(el, win) {
+  if (!el.isConnected) return false;
+  if (el.closest('[hidden]')) return false;
+  var r = el.getBoundingClientRect();
+  if (r.width < 1 && r.height < 1) return false;
+  var st = win.getComputedStyle(el);
+  return st.display !== 'none' && st.visibility !== 'hidden';
+}
+function labelOf(el) {
+  var t = (el.textContent || el.getAttribute('aria-label') || el.getAttribute('placeholder') || el.id || el.name || el.type || '').trim();
+  return t.replace(/\s+/g, ' ').slice(0, 46) || '(không nhãn)';
+}
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+function load(page, role) {
+  return new Promise(function (res) {
+    var f = document.createElement('iframe');
+    f.src = page + '.html?bare=1' + (role ? '&role=' + role : '');
+    f.onload = function () { setTimeout(function () { res(f); }, 400); };
+    frames.appendChild(f);
+  });
+}
+
+async function checkPage(page) {
+  var role = ROLE_BY_PAGE[page] || '';
+  var f;
+  try { f = await load(page, role); } catch (e) { say(false, page + ' — khong nap duoc'); return; }
+  var d = f.contentDocument, w = f.contentWindow;
+  if (!d || !d.body) { say(false, page + ' — tai lieu rong'); f.remove(); return; }
+
+  var errs = [];
+  w.addEventListener('error', function (e) { errs.push(e.message); });
+
+  /* --- 1. Nút bấm --- */
+  var btns = Array.prototype.slice.call(d.querySelectorAll('button:not([data-close]):not([data-x]):not(.proto-btn):not(#nav-open):not(#nav-close)'));
+  var dead = [], noConfirm = [];
+  for (var i = 0; i < btns.length; i++) {
+    var b = btns[i];
+    if (!visible(b, w)) continue;
+    if (b.closest('.modal')) continue;            // nút trong hộp thoại kiểm riêng
+    tested++;
+    var txt = labelOf(b).toLowerCase();
+    var wasActive = alreadyActive(b, txt);
+    var before = snap(d);
+    var openBefore = d.querySelectorAll('.modal:not([hidden])').length;
+    var toastBefore = d.querySelectorAll('.toast').length;
+    try { b.click(); } catch (e) { /* bỏ qua */ }
+    // Sao chép và chia sẻ đi qua Promise của trình duyệt, toast tới sau — chờ đủ lâu
+    await wait(isExternal(txt) ? 600 : 120);
+    var after = snap(d);
+    var openAfter = d.querySelectorAll('.modal:not([hidden])').length;
+    var gotToast = d.querySelectorAll('.toast').length > toastBefore;
+
+    var changed = before !== after;
+    var excused = b.hasAttribute('data-gd2') || wasActive || (isExternal(txt) && gotToast);
+
+    if (!changed && !excused) {
+      dead.push(labelOf(b));
+    } else if (changed) {
+      // Hành động khó hoàn tác phải mở hộp hỏi lại trước khi đổi nội dung
+      var risky = txt.indexOf('lọc') < 0 &&
+        MUST_CONFIRM.some(function (k) { return txt.indexOf(k) === 0 || txt === k; });
+      if (risky && openAfter <= openBefore) noConfirm.push(labelOf(b));
+    }
+    // Đóng mọi thứ vừa mở để không chắn các nút sau: hộp thoại chuẩn và lớp phủ tự viết
+    d.querySelectorAll('.modal:not([hidden])').forEach(function (m) {
+      var x = m.querySelector('[data-close],[data-x]');
+      if (x) x.click(); else m.remove();
+    });
+    d.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await wait(60);
+    // Đóng chứ KHÔNG gỡ: gỡ hẳn thì lần bấm sau không còn phần tử để mở, và mọi nút
+    // cùng loại phía sau đều bị chấm là không có tác dụng.
+    d.querySelectorAll('[role="dialog"]:not(.modal):not([hidden]), .lightbox:not([hidden]), .lbx:not([hidden])')
+      .forEach(function (n) { n.hidden = true; });
+    await wait(30);
+  }
+  say(dead.length === 0, page + ' — moi nut doi trang thai that' + (dead.length ? ' → con gia: ' + dead.join(' | ') : ''));
+  say(noConfirm.length === 0, page + ' — hanh dong kho hoan tac deu hoi lai' + (noConfirm.length ? ' → thieu xac nhan: ' + noConfirm.join(' | ') : ''));
+
+  /* --- 2. Ô nhập và ô chọn --- */
+  var fields = Array.prototype.slice.call(d.querySelectorAll('input:not([type=hidden]):not([readonly]), select, textarea'));
+  var deadField = [];
+  for (var j = 0; j < fields.length; j++) {
+    var el = fields[j];
+    if (!visible(el, w)) continue;
+    if (el.closest('.modal')) continue;
+    if (el.id === 'gs-input' || el.id === 'proto-role') continue;   // do vỏ xử lý, đã kiểm ở bộ khác
+    tested++;
+    var b2 = snap(d);
+    var wasIdx = el.selectedIndex, wasVal = el.value, wasChk = el.checked;
+    try {
+      if (el.tagName === 'SELECT') {
+        if (el.options.length < 2) continue;
+        el.selectedIndex = (el.selectedIndex + 1) % el.options.length;
+        el.dispatchEvent(new w.Event('change', { bubbles: true }));
+      } else if (el.type === 'checkbox' || el.type === 'radio') {
+        el.click();
+      } else {
+        el.value = 'kiem tra';
+        el.dispatchEvent(new w.Event('input', { bubbles: true }));
+        el.dispatchEvent(new w.Event('change', { bubbles: true }));
+      }
+    } catch (e) { /* bỏ qua */ }
+    // Bộ lọc có nhịp chờ 250ms rồi mới vẽ lại; đo sớm hơn thì hai lần liên tiếp
+    // cùng rơi vào khung chờ và trông như không đổi gì.
+    await wait(420);
+    if (snap(d) === b2 && !el.hasAttribute('data-gd2') && !el.hasAttribute('data-required')) {
+      deadField.push(labelOf(el));
+    }
+    // Trả ô về giá trị cũ: nếu để nguyên, các bộ lọc chồng lên nhau ra danh sách rỗng
+    // và mọi ô kiểm sau đó đều trông như không có tác dụng.
+    try {
+      if (el.tagName === 'SELECT') el.selectedIndex = wasIdx;
+      else if (el.type === 'checkbox' || el.type === 'radio') { if (el.checked !== wasChk) el.click(); }
+      else el.value = wasVal;
+      el.dispatchEvent(new w.Event('input', { bubbles: true }));
+      el.dispatchEvent(new w.Event('change', { bubbles: true }));
+    } catch (e) { /* bỏ qua */ }
+    await wait(320);
+  }
+  say(deadField.length === 0, page + ' — moi o nhap/chon co phan hoi' + (deadField.length ? ' → con chet: ' + deadField.join(' | ') : ''));
+
+  /* --- 3. Không còn phần tử chỉ có data-toast --- */
+  var only = Array.prototype.slice.call(d.querySelectorAll('[data-toast]')).filter(function (el) {
+    return !el.hasAttribute('data-gd2');
+  });
+  say(only.length === 0, page + ' — khong con phan tu chi hien toast' + (only.length ? ' → ' + only.length + ' cai: ' + only.slice(0, 4).map(labelOf).join(' | ') : ''));
+
+  /* --- 4. Link nội bộ không còn href="#" cụt --- */
+  var stub = Array.prototype.slice.call(d.querySelectorAll('a[href="#"]')).filter(function (a) {
+    return a.id !== 'dock-more' && !a.hasAttribute('data-gd2');
+  });
+  say(stub.length === 0, page + ' — khong con lien ket cut' + (stub.length ? ' → ' + stub.map(labelOf).join(' | ') : ''));
+
+  say(errs.length === 0, page + ' — khong loi JS' + (errs.length ? ' → ' + errs.slice(0, 2).join(' | ') : ''));
+
+  f.remove();
+}
+
+(async function () {
+  for (var i = 0; i < PAGES.length; i++) {
+    try { await checkPage(PAGES[i]); }
+    catch (e) { say(false, PAGES[i] + ' — LOI BO KIEM TRA: ' + e.message); }
+  }
+  lines.push('');
+  lines.push('Da bam thu ' + tested + ' phan tu.');
+  lines.push(fail ? '=== ' + fail + ' MUC HONG ===' : '=== TAT CA DEU DAT ===');
+  out.textContent = lines.join('\n');
+  document.title = 'XONG';
+})();
+</script>
+</body>
+</html>

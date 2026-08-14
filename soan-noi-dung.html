@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chuẩn bị nội dung bán hàng · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/reco.css">
+<script defer src="assets/reco.js"></script>
+<script defer src="assets/store.js"></script>
+<script defer src="assets/data.js"></script>
+<style>
+  .compose { display: grid; gap: 20px; }
+  @media (min-width: 1024px) { .compose { grid-template-columns: minmax(0,1fr) 400px; gap: 28px; align-items: start; } }
+  .preview { position: sticky; top: calc(var(--proto-h) + var(--header-h) + 16px); }
+  body.proto-off .preview { top: calc(var(--header-h) + 16px); }
+  @media (max-width: 1023px) { .preview { position: static; } }
+  .compose > div > .card { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
+  body.proto-off .compose > div > .card { scroll-margin-top: calc(var(--header-h) + 16px); }
+  .steps .step { position: relative; }
+  .steps .step:hover { border-color: var(--navy); }
+  .step-btn { border: 0; background: transparent; padding: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+  .step-btn::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); }
+  .step-btn:focus-visible::after { outline: 2px solid var(--orange-button); outline-offset: 2px; }
+  .pick { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
+  .pick label { position: relative; cursor: pointer; border-radius: var(--radius-md); overflow: hidden; aspect-ratio: 1; display: block; }
+  .pick img { width: 100%; height: 100%; object-fit: cover; }
+  .pick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .pick .mark { position: absolute; right: 5px; top: 5px; width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.9); display: flex; align-items: center; justify-content: center; color: transparent; }
+  .pick input:checked ~ .mark { background: var(--orange-button); color: #fff; }
+  .pick input:checked ~ .mark svg { width: 12px; height: 12px; }
+  .pick label::after { content: ''; position: absolute; inset: 0; border: 2px solid transparent; border-radius: var(--radius-md); }
+  .pick input:checked ~ .mark, .pick input:focus-visible ~ .mark { outline: none; }
+  .pick input:focus-visible ~ .mark { box-shadow: 0 0 0 3px color-mix(in srgb, var(--orange) 45%, transparent); }
+  .pick input:checked + img { filter: none; }
+  .channels { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  @media (min-width: 640px) { .channels { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+  .ch { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border: 1px solid var(--line); border-radius: var(--radius-md); background: #fff; font-size: .78rem; font-weight: 700; color: var(--navy); text-decoration: none; text-align: center; }
+  .ch:hover { border-color: var(--navy); color: var(--navy); }
+  .ch i { width: 30px; height: 30px; border-radius: 50%; background: var(--soft); display: inline-flex; align-items: center; justify-content: center; font-style: normal; font-family: var(--font-display); font-size: .8rem; }
+  .post { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+  .post .ptxt { padding: 14px 16px; font-size: .92rem; line-height: 1.6; white-space: pre-wrap; }
+  .post .pimgs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; }
+  .post .pimgs[hidden] { display: none; }
+  .post .pimgs img { aspect-ratio: 1; object-fit: cover; width: 100%; }
+</style>
+</head>
+<body data-shell="app" data-page="chia-se">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="mb-3">
+      <span class="eyebrow">MH-07 · Chuẩn bị nội dung bán hàng</span>
+      <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Chuẩn bị nội dung — The Celestine Riverside</h1>
+      <p class="lead mt-1" style="font-size:.98rem;max-width:72ch" data-roles="gd gddu tkkd qlkd nvbh mkt">
+        Giai đoạn 1 dùng <strong>một mẫu nội dung chung cho mọi kênh</strong>. Anh/chị tự cắt gọt cho phù hợp với kênh sẽ đăng, rồi mở đúng kênh để hoàn tất thủ công.
+      </p>
+    </div>
+
+    <div class="note note-danger" data-roles="hcns">
+      <strong>Vai trò HCNS &amp; Kế toán không soạn nội dung bán hàng.</strong>
+      Màn này dành cho Marketing, đội kinh doanh và người duyệt nội dung của dự án.
+      Anh/chị vẫn xem được số liệu và hồ sơ nhân sự ở các màn được phân quyền.
+    </div>
+
+    <div data-roles="gd gddu tkkd qlkd nvbh mkt">
+
+      <div class="steps mb-4" id="steps">
+        <div class="step"><span class="sn"></span><h4><button type="button" class="step-btn" data-step="1">Chọn mẫu</button></h4><p class="small muted mt-1">Theo mục đích, không phân theo kênh.</p></div>
+        <div class="step"><span class="sn"></span><h4><button type="button" class="step-btn" data-step="2">Chọn ảnh đã duyệt</button></h4><p class="small muted mt-1">Chỉ ảnh mang nhãn Công khai.</p></div>
+        <div class="step"><span class="sn"></span><h4><button type="button" class="step-btn" data-step="3">Xem trước và cắt gọt</button></h4><p class="small muted mt-1">Không sửa được thông tin chính thức.</p></div>
+        <div class="step"><span class="sn"></span><h4><button type="button" class="step-btn" data-step="4">Sao chép và mở kênh</button></h4><p class="small muted mt-1">Nhân viên đăng bài thủ công.</p></div>
+      </div>
+
+      <div class="compose">
+
+        <div>
+          <div class="card mb-3" id="s1">
+            <div class="card-head"><h3>1. Mẫu nội dung</h3><span class="chip">Mẫu chung · đã duyệt</span></div>
+            <div class="card-body">
+              <label class="field"><span class="lab">Chọn theo mục đích</span>
+                <select class="inp" id="tpl"></select>
+                <span class="hint" id="tpl-meta"></span>
+              </label>
+              <div class="note note-navy">
+                <strong>Không sửa được phần thông tin chính thức.</strong> Anh/chị chỉ bổ sung lời giới thiệu và thông tin liên hệ cá nhân —
+                nội dung do RECO cung cấp trong mẫu giữ nguyên.
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3" data-roles="mkt gd gddu">
+            <div class="card-head">
+              <div><h3>Quản lý mẫu nội dung</h3><p class="small muted mt-1">Một mẫu dùng chung cho mọi kênh (QD-041).</p></div>
+              <button class="btn btn-outline btn-sm" id="tpl-add">Thêm mẫu</button>
+            </div>
+            <div class="card-body">
+              <div class="tbl-wrap" id="tpl-list"></div>
+              <p class="micro muted mt-2">Mẫu do Marketing tạo hoặc sửa sẽ chuyển sang <strong>chờ Giám đốc dự án duyệt</strong> và tạm thời không dùng để gửi khách.</p>
+            </div>
+          </div>
+
+          <div class="card mb-3" id="s2">
+            <div class="card-head">
+              <div><h3>2. Ảnh đã được duyệt</h3><p class="small muted mt-1" id="pick-count">Đang tải ảnh…</p></div>
+              <span class="lb lb-public">Công khai</span>
+            </div>
+            <div class="card-body">
+              <div class="pick" id="pick"></div>
+              <p class="micro muted mt-2">Chỉ ảnh mang nhãn Công khai và đã được duyệt mới xuất hiện ở đây.</p>
+              <p class="micro muted mt-1" id="pick-note" hidden></p>
+            </div>
+          </div>
+
+          <div class="card mb-3" id="s3">
+            <div class="card-head"><h3>3. Lời giới thiệu của anh/chị</h3><span class="chip">Phần được phép sửa</span></div>
+            <div class="card-body">
+              <label class="field"><span class="lab">Lời mở đầu</span>
+                <textarea class="inp" id="intro" style="min-height:80px">Em gửi anh/chị thông tin dự án ven sông tại Long Biên đang mở bán đợt 3, còn căn 2 phòng ngủ view sông. Anh/chị xem giúp em nhé ạ.</textarea>
+              </label>
+              <label class="check"><input type="checkbox" id="contact" checked> <span>Gắn thông tin liên hệ của tôi vào cuối bài</span></label>
+            </div>
+          </div>
+
+          <div class="card" id="s4">
+            <div class="card-head"><h3>4. Mở kênh để đăng thủ công</h3></div>
+            <div class="card-body">
+              <div class="channels">
+                <a class="ch" data-ch="Facebook" href="https://www.facebook.com/" target="_blank" rel="noopener"><i>f</i>Facebook</a>
+                <a class="ch" data-ch="Zalo" href="https://chat.zalo.me/" target="_blank" rel="noopener"><i>Z</i>Zalo</a>
+                <a class="ch" data-ch="Batdongsan.com.vn" href="https://batdongsan.com.vn/dang-tin" target="_blank" rel="noopener"><i>B</i>Batdongsan</a>
+                <a class="ch" data-ch="Muaban.net" href="https://muaban.net/dang-tin" target="_blank" rel="noopener"><i>M</i>Muaban.net</a>
+                <a class="ch" data-ch="Homedy" href="https://homedy.com/dang-tin" target="_blank" rel="noopener"><i>H</i>Homedy</a>
+                <a class="ch" data-ch="Chợ Tốt Nhà" href="https://nha.chotot.com/dang-tin" target="_blank" rel="noopener"><i>C</i>Chợ Tốt</a>
+                <a class="ch" data-ch="Alonhadat" href="https://alonhadat.com.vn/dang-tin.html" target="_blank" rel="noopener"><i>A</i>Alonhadat</a>
+                <a class="ch" href="chia-se.html"><i>↗</i>Tạo link gửi khách</a>
+              </div>
+              <p class="micro muted mt-2">Hệ thống chỉ mở đúng kênh anh/chị chọn — không giới hạn số kênh, không tự đăng thay.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Xem trước -->
+        <div class="preview">
+          <div class="spread mb-2">
+            <h3 style="font-size:1.05rem">Xem trước nội dung</h3>
+            <span class="chip">Bản dùng cho mọi kênh</span>
+          </div>
+          <div class="post">
+            <div class="pimgs" id="pv-imgs"></div>
+            <p class="ptxt micro muted" id="pv-noimg" hidden>Chưa chọn ảnh nào — bài đăng sẽ chỉ có phần chữ.</p>
+            <div class="ptxt" id="pv-text"></div>
+            <div class="card-foot" id="pv-foot">
+              <div class="people">
+                <span class="avatar sm" id="pv-ini">GĐDA</span>
+                <span class="who"><b id="pv-name">Hoàng Anh Tuấn</b><span id="pv-sub">RECO Group</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <button class="btn btn-primary" id="btn-copy">Sao chép nội dung</button>
+            <button class="btn btn-outline" id="btn-download">Tải xuống</button>
+            <button class="btn btn-outline" id="btn-share">Chia sẻ</button>
+          </div>
+
+          <div class="gd2-band mt-3" data-gd2>
+            <div class="row-tight mb-1"><span class="chip-gd2">Giai đoạn 2 · ngoài báo giá</span></div>
+            <strong>Mẫu riêng theo từng kênh, lịch đăng bài, theo dõi tương tác</strong>
+            <p class="small muted mt-1">
+              Giai đoạn 1 chỉ có một mẫu dùng chung cho mọi kênh và việc đăng bài do nhân viên làm thủ công (QD-041, BR-CS-06).
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Thêm / sửa mẫu nội dung -->
+<div class="modal" id="m-tpl" hidden role="dialog" aria-modal="true" aria-labelledby="m-tpl-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Mẫu nội dung dùng chung</span><h3 id="m-tpl-t">Thêm mẫu nội dung</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <label class="field"><span class="lab">Tên mẫu</span>
+        <input class="inp" type="text" id="tp-name" data-required data-msg="Đặt tên để đội kinh doanh nhận ra mẫu này." placeholder="Giới thiệu dự án — bản ngắn">
+      </label>
+      <label class="field"><span class="lab">Nội dung mẫu</span>
+        <textarea class="inp" id="tp-body" style="min-height:190px" data-required data-msg="Nội dung mẫu không được để trống." placeholder="THE CELESTINE RIVERSIDE — …"></textarea>
+        <span class="hint">Không đưa chiết khấu hay giá nội bộ vào mẫu gửi khách.</span>
+      </label>
+      <div class="note note-navy" id="tp-note" hidden>
+        Mẫu do <strong>Marketing</strong> lưu sẽ ở trạng thái chờ Giám đốc dự án duyệt, chưa xuất hiện trong danh sách mẫu để gửi khách.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="tp-save">Lưu mẫu</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cách chia sẻ khi trình duyệt không có bảng chia sẻ của thiết bị -->
+<div class="modal" id="m-chiase" hidden role="dialog" aria-modal="true" aria-labelledby="m-chiase-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Chia sẻ nội dung</span><h3 id="m-chiase-t">Cách chia sẻ nội dung này</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted">Trình duyệt trên máy này không mở được bảng chia sẻ của thiết bị. Anh/chị chọn một trong ba cách sau.</p>
+      <div class="stack mt-3">
+        <button class="btn btn-primary btn-block" id="sh-copy">Sao chép nội dung vào bộ nhớ tạm</button>
+        <button class="btn btn-outline btn-block" id="sh-download">Tải xuống tệp nội dung</button>
+        <a class="btn btn-outline btn-block" href="chia-se.html">Tạo đường dẫn gửi khách</a>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Khung điện thoại thay nội dung màn bằng iframe — bản ngoài không có gì để dựng.
+  if (!document.getElementById('steps')) return;
+
+  var S = RECO.store, E = RECO_DATA.esc;
+  var PJ = 'celestine';
+  var TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>';
+
+  /* Sao chép thật, có phương án dự phòng khi trình duyệt chặn API bộ nhớ tạm */
+  /* Dùng bản chung của RECO — có hạn chờ nên không bao giờ treo im lặng */
+  var copyText = RECO.copy;
+
+  /* ---------- Người đang soạn ---------- */
+  var me = S.get('users').filter(function (u) { return u.role === RECO.role && u.state === 'on'; })[0] || {
+    name: RECO.current.who, roleName: RECO.current.name, phone: '0934 524 445', ini: RECO.current.short
+  };
+
+  /* ---------- Bốn bước ---------- */
+  var stepsBox = document.getElementById('steps');
+  var stepBtns = Array.prototype.slice.call(stepsBox.querySelectorAll('.step-btn'));
+  var cur = 1, done = {};
+  function paintSteps() {
+    stepBtns.forEach(function (b) {
+      var n = Number(b.getAttribute('data-step')), card = b.closest('.step');
+      card.classList.toggle('done', !!done[n]);
+      card.classList.toggle('on', n === cur);
+      if (n === cur) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+    });
+  }
+  function reach(n) {
+    for (var i = 1; i < n; i++) done[i] = true;
+    if (n > cur) cur = n;
+    paintSteps();
+  }
+  function finish(n) { done[n] = true; paintSteps(); }
+  stepBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var n = Number(b.getAttribute('data-step'));
+      cur = n;
+      paintSteps();
+      var target = document.getElementById('s' + n);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  paintSteps();
+
+  /* ---------- Mẫu nội dung (kho templates) ---------- */
+  var tplSel = document.getElementById('tpl'), tplMeta = document.getElementById('tpl-meta');
+  function approvedTemplates() {
+    return S.get('templates').filter(function (t) { return t.pj === PJ && t.state === 'approved'; });
+  }
+  function currentTpl() { return S.find('templates', tplSel.value); }
+  function renderTplSelect() {
+    var list = approvedTemplates(), keep = tplSel.value;
+    if (!list.length) {
+      tplSel.innerHTML = '<option value="">Chưa có mẫu nào được duyệt cho dự án này</option>';
+      tplSel.disabled = true;
+      tplMeta.textContent = 'Marketing soạn mẫu, Giám đốc dự án duyệt rồi mẫu mới xuất hiện ở đây.';
+      return;
+    }
+    tplSel.disabled = false;
+    tplSel.innerHTML = list.map(function (t) {
+      return '<option value="' + E(t.id) + '">' + E(t.name) + '</option>';
+    }).join('');
+    tplSel.value = list.some(function (t) { return t.id === keep; }) ? keep : list[0].id;
+    syncTplMeta();
+  }
+  function syncTplMeta() {
+    var t = currentTpl();
+    tplMeta.textContent = t ? 'Mẫu đã duyệt · cập nhật ' + t.at : '';
+  }
+
+  /* ---------- Ảnh đã duyệt (kho media) ---------- */
+  var pick = document.getElementById('pick'), pickCount = document.getElementById('pick-count'),
+      pickNote = document.getElementById('pick-note');
+  function pickable() {
+    return S.get('media').filter(function (m) { return m.pj === PJ && m.state === 'approved' && m.label === 'public'; });
+  }
+  function chosen() { return pickable().filter(function (m) { return m.on; }); }
+  function renderPick() {
+    var list = pickable();
+    pick.innerHTML = list.map(function (m) {
+      return '<label><input type="checkbox" data-mid="' + E(m.id) + '"' + (m.on ? ' checked' : '') +
+        ' aria-label="' + E(m.name) + '"><img src="' + RECO.asset(m.img) + '" alt="' + E(m.name) +
+        '" loading="lazy"><span class="mark">' + TICK + '</span></label>';
+    }).join('');
+    var hidden = S.get('media').filter(function (m) {
+      return m.pj === PJ && (m.state !== 'approved' || m.label !== 'public');
+    }).length;
+    pickNote.hidden = !hidden;
+    if (hidden) {
+      pickNote.textContent = hidden + ' ảnh khác của dự án mang nhãn Nội bộ hoặc chưa được duyệt nên không dùng để gửi khách.';
+    }
+  }
+  function syncCount() {
+    var all = pickable().length;
+    pickCount.textContent = 'Đã chọn ' + chosen().length + ' trong ' + all + ' ảnh.';
+  }
+
+  /* ---------- Khung xem trước ---------- */
+  var intro = document.getElementById('intro'), contact = document.getElementById('contact'),
+      pvImgs = document.getElementById('pv-imgs'), pvNoImg = document.getElementById('pv-noimg'),
+      pvText = document.getElementById('pv-text'), pvFoot = document.getElementById('pv-foot');
+
+  function postText() {
+    var parts = [], t = currentTpl(), lead = intro.value.trim();
+    if (lead) parts.push(lead);
+    if (t) parts.push(t.body);
+    if (contact.checked) parts.push(me.name + ' · ' + me.roleName + ' · RECO Group\n' + me.phone);
+    return parts.join('\n\n');
+  }
+  function renderPreview() {
+    var imgs = chosen();
+    pvImgs.innerHTML = imgs.map(function (m) {
+      return '<img src="' + RECO.asset(m.img) + '" alt="' + E(m.name) + '" loading="lazy">';
+    }).join('');
+    pvImgs.hidden = !imgs.length;
+    pvNoImg.hidden = !!imgs.length;
+
+    var t = currentTpl(), lead = intro.value.trim();
+    pvText.textContent = [lead, t ? t.body : ''].filter(Boolean).join('\n\n');
+    pvFoot.hidden = !contact.checked;
+    syncCount();
+  }
+
+  document.getElementById('pv-name').textContent = me.name;
+  document.getElementById('pv-sub').textContent = me.roleName + ' · RECO Group · ' + me.phone;
+  var ini = document.getElementById('pv-ini');
+  if (me.img) ini.innerHTML = '<img src="' + RECO.asset(me.img) + '" alt="">';
+  else ini.textContent = me.ini || RECO.current.short;
+
+  tplSel.addEventListener('change', function () { syncTplMeta(); renderPreview(); reach(2); });
+  intro.addEventListener('input', function () { renderPreview(); reach(3); });
+  contact.addEventListener('change', renderPreview);
+  pick.addEventListener('change', function (e) {
+    var box = e.target.closest('input[data-mid]');
+    if (!box) return;
+    S.update('media', box.getAttribute('data-mid'), { on: box.checked });
+    renderPreview();
+    reach(3);
+  });
+
+  /* ---------- Sao chép · tải xuống · chia sẻ ---------- */
+  function afterAction() { reach(4); }
+
+  function doCopy(btn) {
+    var text = postText();
+    if (!text) { RECO.toast('Chưa có nội dung để sao chép', { danger: true }); return; }
+    copyText(text).then(function (ok) {
+      RECO.toast(ok
+        ? 'Đã sao chép nội dung vào bộ nhớ tạm'
+        : 'Trình duyệt chặn sao chép tự động — anh/chị bôi đen nội dung trong khung xem trước rồi sao chép thủ công',
+        { danger: !ok });
+      if (btn) btn.focus();
+    });
+    afterAction();
+  }
+  /* Dùng bản chung của RECO: chạy trên máy thì tạo tệp thẳng, chạy trong khung xem
+     Artifact thì đi qua khả năng tải tệp của khung — nơi mà thẻ <a download> bị chặn. */
+  function doDownload() {
+    var t = currentTpl(), text = postText();
+    if (!text) { RECO.toast('Chưa có nội dung để tải xuống', { danger: true }); return; }
+    RECO.downloadWithToast(
+      'noi-dung-' + (t ? t.id : 'reco') + '.txt',
+      text,
+      'Đã tải tệp nội dung — ảnh anh/chị tải riêng từ thư viện ảnh dự án'
+    );
+    afterAction();
+  }
+
+  document.getElementById('btn-copy').addEventListener('click', function () { doCopy(this); });
+  document.getElementById('btn-download').addEventListener('click', doDownload);
+  document.getElementById('sh-copy').addEventListener('click', function () { RECO.closeModal('m-chiase'); doCopy(); });
+  document.getElementById('sh-download').addEventListener('click', function () { RECO.closeModal('m-chiase'); doDownload(); });
+
+  document.getElementById('btn-share').addEventListener('click', function () {
+    var t = currentTpl();
+    var payload = { title: t ? t.name : 'Nội dung dự án', text: postText() };
+    if (navigator.share) {
+      navigator.share(payload).then(function () {
+        RECO.toast('Đã gửi nội dung sang ứng dụng anh/chị chọn');
+        afterAction();
+      }, function (err) {
+        if (err && err.name === 'AbortError') return;
+        RECO.openModal('m-chiase');
+      });
+      return;
+    }
+    RECO.openModal('m-chiase');
+  });
+
+  /* ---------- Mở kênh để đăng thủ công ---------- */
+  document.querySelectorAll('.ch[data-ch]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var name = a.getAttribute('data-ch');
+      window.open(a.getAttribute('href'), '_blank', 'noopener');
+      copyText(postText()).then(function (ok) {
+        RECO.toast(ok
+          ? 'Đã mở ' + name + ' và sao chép nội dung — anh/chị dán vào ô đăng bài'
+          : 'Đã mở ' + name + ' — trình duyệt chặn sao chép tự động, anh/chị bấm Sao chép nội dung rồi dán',
+          { danger: !ok });
+      });
+      reach(4);
+      finish(4);
+    });
+  });
+
+  /* ---------- Thêm và sửa mẫu (Marketing, Giám đốc dự án, Tổng giám đốc) ---------- */
+  var tplList = document.getElementById('tpl-list'), tpName = document.getElementById('tp-name'),
+      tpBody = document.getElementById('tp-body'), tpSave = document.getElementById('tp-save'),
+      tpNote = document.getElementById('tp-note'), tpTitle = document.getElementById('m-tpl-t');
+  var editing = null;
+
+  function today() {
+    var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear();
+  }
+  function renderTplList() {
+    var list = S.get('templates').filter(function (t) { return t.pj === PJ; });
+    if (!list.length) {
+      tplList.innerHTML = '<div class="frow"><div class="fmeta"><div class="fsub">Chưa có mẫu nào cho dự án này.</div></div></div>';
+      return;
+    }
+    tplList.innerHTML = list.map(function (t) {
+      var wait = t.state !== 'approved';
+      return '<div class="frow">' +
+        '<span class="fico">' + RECO.svg('file') + '</span>' +
+        '<div class="fmeta"><div class="fname">' + E(t.name) + '</div>' +
+          '<div class="fsub"><span class="st ' + (wait ? 'st-wait' : 'st-live') + '">' +
+          (wait ? 'Chờ duyệt' : 'Đã duyệt') + '</span><span>cập nhật ' + E(t.at) + '</span></div></div>' +
+        '<div class="fend"><button class="btn btn-quiet btn-sm" data-edit="' + E(t.id) + '">Sửa</button></div>' +
+      '</div>';
+    }).join('');
+  }
+  function openTpl(t) {
+    editing = t ? t.id : null;
+    tpTitle.textContent = t ? 'Sửa mẫu nội dung' : 'Thêm mẫu nội dung';
+    tpName.value = t ? t.name : '';
+    tpBody.value = t ? t.body : '';
+    tpNote.hidden = RECO.role !== 'mkt';
+    RECO.openModal('m-tpl');
+  }
+  document.getElementById('tpl-add').addEventListener('click', function () { openTpl(null); });
+  tplList.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-edit]');
+    if (b) openTpl(S.find('templates', b.getAttribute('data-edit')));
+  });
+  tpSave.addEventListener('click', function () {
+    if (!RECO.validate(document.getElementById('m-tpl'))) return;
+    var wait = RECO.role === 'mkt';
+    var patch = {
+      name: tpName.value.trim(), body: tpBody.value,
+      state: wait ? 'pending' : 'approved', at: today()
+    };
+    RECO.busy(tpSave, 'Đang lưu mẫu…', 800, function () {
+      if (editing) S.update('templates', editing, patch);
+      else S.add('templates', Object.assign({ pj: PJ }, patch), true);
+      RECO.closeModal('m-tpl');
+      RECO.toast(wait
+        ? 'Đã lưu mẫu — chờ Giám đốc dự án duyệt trước khi dùng gửi khách'
+        : 'Đã lưu mẫu và cho phép dùng ngay');
+    });
+  });
+
+  S.on('templates', function () { renderTplSelect(); renderTplList(); renderPreview(); });
+
+  renderTplSelect();
+  renderTplList();
+  renderPick();
+  renderPreview();
+});
+</script>
+</body>
+</html>

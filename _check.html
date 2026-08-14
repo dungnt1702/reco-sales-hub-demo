@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Kiểm tra prototype</title>
+<style>body{font:14px/1.5 monospace;margin:16px;background:#111;color:#ddd}pre{white-space:pre-wrap}iframe{position:absolute;left:-99999px;top:0;border:0}b{color:#ff9}.bad{color:#f77}.ok{color:#7f7}</style>
+</head>
+<body>
+<h1>Kiểm tra tràn ngang + liên kết hỏng</h1>
+<pre id="out">Đang chạy…</pre>
+<div id="frames"></div>
+<script>
+var PAGES = ['index','dang-nhap','trang-dau','du-an','du-an-chi-tiet','thu-vien-tai-lieu','cay-thu-muc',
+             'soan-noi-dung','chia-se','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua'];
+var WIDTHS = [360, 390, 768, 1440];
+var out = document.getElementById('out'), frames = document.getElementById('frames');
+var lines = [], allHrefs = {};
+
+function load(page, w) {
+  return new Promise(function (res) {
+    var f = document.createElement('iframe');
+    f.style.width = w + 'px';
+    f.style.height = '900px';
+    f.src = page + '.html?bare=1';
+    f.onload = function () {
+      var r;
+      try {
+        var d = f.contentDocument, e = d.documentElement;
+        // body có overflow-x:hidden nên scrollWidth bị kẹp — phải đo từng phần tử.
+        var over = [];
+        d.querySelectorAll('body *').forEach(function (el) {
+          var b = el.getBoundingClientRect();
+          if (b.width < 1 && b.height < 1) return;
+          if (b.right > w + 1) {
+            var st = f.contentWindow.getComputedStyle(el);
+            if (st.position === 'fixed') return;
+            // Bỏ qua drawer đóng (đẩy ra ngoài bằng transform) và nội dung nằm trong
+            // vùng cuộn ngang có chủ đích như thanh tab.
+            if (el.closest('.drawer, .scrim, .modal')) return;
+            for (var a = el.parentElement; a && a !== d.body; a = a.parentElement) {
+              var as = f.contentWindow.getComputedStyle(a);
+              if (as.overflowX === 'auto' || as.overflowX === 'scroll') return;
+            }
+            var cls = (el.className && typeof el.className === 'string') ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : '';
+            over.push(el.tagName.toLowerCase() + cls + ' [rộng ' + Math.round(b.width) + ', mép phải ' + Math.round(b.right) + ']');
+          }
+        });
+        r = { sw: e.scrollWidth, cw: e.clientWidth, over: over.slice(0, 8), n: over.length };
+        if (w === 1440) {
+          allHrefs[page] = Array.prototype.slice.call(d.querySelectorAll('a[href]')).map(function (a) { return a.getAttribute('href'); });
+        }
+      } catch (err) { r = { err: String(err) }; }
+      f.remove();
+      res(r);
+    };
+    frames.appendChild(f);
+  });
+}
+
+(async function () {
+  for (var i = 0; i < PAGES.length; i++) {
+    for (var j = 0; j < WIDTHS.length; j++) {
+      var w = WIDTHS[j];
+      var r = await load(PAGES[i], w);
+      if (r.err) { lines.push('LOI  ' + PAGES[i] + ' @' + w + ' → ' + r.err); continue; }
+      if (r.n) {
+        lines.push('TRAN ' + PAGES[i] + ' @' + w + ' → ' + r.n + ' phần tử vượt mép phải');
+        r.over.forEach(function (o) { lines.push('       ↳ ' + o); });
+      } else {
+        lines.push('OK   ' + PAGES[i] + ' @' + w);
+      }
+    }
+  }
+  // kiểm tra liên kết
+  var known = PAGES.map(function (p) { return p + '.html'; });
+  lines.push('');
+  lines.push('--- LIEN KET ---');
+  var bad = 0;
+  Object.keys(allHrefs).forEach(function (p) {
+    allHrefs[p].forEach(function (h) {
+      if (!h || h.charAt(0) === '#' || /^(https?:|mailto:|tel:)/.test(h)) return;
+      var base = h.split('?')[0].split('#')[0];
+      if (known.indexOf(base) < 0) { lines.push('HONG ' + p + ' → ' + h); bad++; }
+    });
+  });
+  if (!bad) lines.push('OK   moi lien ket noi bo deu tro toi trang co that');
+  lines.push('');
+  lines.push('=== XONG ===');
+  out.textContent = lines.join('\n');
+  document.title = 'DONE';
+})();
+</script>
+</body>
+</html>

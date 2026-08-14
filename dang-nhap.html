@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đăng nhập · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/reco.css">
+<script defer src="assets/reco.js"></script>
+<script defer src="assets/store.js"></script>
+<style>
+  .login { display: grid; min-height: 100vh; }
+  @media (min-width: 900px) { .login { grid-template-columns: 1.05fr 1fr; } }
+  .login-art {
+    position: relative; color: #fff; padding: 34px var(--gutter);
+    background: linear-gradient(105deg, rgba(5,31,53,.97), rgba(9,49,82,.86)), url('assets/img/reco-banner.jpg') center/cover;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 28px;
+  }
+  @media (min-width: 900px) { .login-art { padding: 48px 52px; } }
+  .login-form { display: flex; align-items: center; justify-content: center; padding: 34px var(--gutter) 60px; }
+  .login-form .inner { width: 100%; max-width: 400px; }
+  .login-art h2, .login-art h3 { color: #fff; }
+  .login-art .pt { display: flex; gap: 12px; align-items: flex-start; }
+  .login-art .pt i {
+    flex: none; width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(255,255,255,.14); display: inline-flex; align-items: center; justify-content: center;
+    font-style: normal; font-family: var(--font-display); font-weight: 700; font-size: .72rem;
+  }
+</style>
+</head>
+<body data-shell="plain" data-page="dang-nhap">
+
+<main id="page">
+<div class="login">
+
+  <section class="login-art">
+    <a class="brand" href="index.html" style="color:#fff">
+      <b style="color:#fff">RECO</b><span style="color:rgba(255,255,255,.72)">Sales Hub</span>
+    </a>
+    <div>
+      <span class="eyebrow light">Nền tảng bán hàng nội bộ</span>
+      <h2 style="max-width:16ch">Một nơi duy nhất cho mọi thông tin dự án</h2>
+      <p class="lead mt-2" style="max-width:44ch">
+        Thông tin tập trung, có nguồn và có ngày hiệu lực — để đội bán hàng tư vấn nhanh hơn và nói cùng một thông tin.
+      </p>
+      <div class="stack mt-3" style="max-width:44ch">
+        <div class="pt"><i>1</i><div><b>Dữ liệu</b><div class="small" style="color:rgba(255,255,255,.7)">Dự án, bảng hàng, tài liệu, ảnh và chính sách được sắp xếp theo bảy nhánh cố định.</div></div></div>
+        <div class="pt"><i>2</i><div><b>Truy xuất</b><div class="small" style="color:rgba(255,255,255,.7)">Tìm đúng thứ cần dùng ngay khi đang ngồi với khách.</div></div></div>
+        <div class="pt"><i>3</i><div><b>Chia sẻ</b><div class="small" style="color:rgba(255,255,255,.7)">Gửi khách một trang công khai gắn đúng tên nhân viên phụ trách.</div></div></div>
+      </div>
+    </div>
+    <p class="micro" style="color:rgba(255,255,255,.55);margin:0">Công ty Cổ phần Nhà Ở Ngay RECO · Hệ thống dành cho nhân sự nội bộ</p>
+  </section>
+
+  <section class="login-form">
+    <div class="inner">
+      <span class="eyebrow">Đăng nhập</span>
+      <h1 style="font-size:clamp(1.7rem,3.4vw,2.2rem)">Chào anh/chị</h1>
+      <p class="lead mt-1" style="font-size:.98rem">Đăng nhập bằng số điện thoại hoặc email do RECO cấp.</p>
+
+      <div class="note note-danger mt-3" id="login-err" role="alert" hidden>
+        <strong id="login-err-t">Không đăng nhập được</strong>
+        <span id="login-err-b"></span>
+      </div>
+
+      <form class="mt-3" id="login-form" novalidate>
+        <label class="field">
+          <span class="lab">Số điện thoại hoặc email</span>
+          <input class="inp" type="text" name="identifier" id="li-id" value="0912 345 678" autocomplete="username"
+                 placeholder="0912 345 678 hoặc ten@nhaongayreco.vn"
+                 data-required
+                 data-pattern="^((0|\+84)[\s.]?(\d[\s.]?){9}|[^@\s]+@[^@\s]+\.[A-Za-z]{2,})$"
+                 data-msg="Nhập số điện thoại Việt Nam (ví dụ 0912 345 678) hoặc email do RECO cấp (ví dụ ten@nhaongayreco.vn).">
+          <span class="hint">Hệ thống tự nhận diện đúng định dạng, anh/chị không cần chọn kiểu đăng nhập.</span>
+        </label>
+
+        <label class="field">
+          <span class="lab">Mật khẩu</span>
+          <input class="inp" type="password" name="password" id="li-pw" value="reco-demo-2026" autocomplete="current-password"
+                 data-required data-msg="Nhập mật khẩu RECO đã cấp cho anh/chị.">
+        </label>
+
+        <label class="check mt-2"><input type="checkbox" id="li-remember" checked> <span>Ghi nhớ thiết bị này</span></label>
+
+        <button class="btn btn-primary btn-block mt-3" type="submit" id="li-go">Đăng nhập</button>
+      </form>
+
+      <div class="note note-navy mt-3">
+        <strong>Quên mật khẩu?</strong> Giai đoạn 1 không có luồng tự đặt lại qua mã xác thực.
+        Anh/chị liên hệ người quản trị chung để được cấp lại — cũng chính là người cấp tài khoản mới.
+      </div>
+
+      <div class="card card-pad mt-3">
+        <h4>Chính sách phiên đăng nhập</h4>
+        <ul class="small muted mt-1" style="margin:0;padding-left:18px">
+          <li id="li-policy">Hết hạn sau 7 ngày không sử dụng, tối đa 30 ngày.</li>
+          <li>Phiên cũ hơn 12 giờ sẽ hỏi lại mật khẩu khi mở nội dung <span class="lb lb-restricted">Nội bộ hạn chế</span>, duyệt hoặc công bố nội dung, tạo đường dẫn gửi khách, hoặc vào màn quản lý người dùng.</li>
+        </ul>
+      </div>
+
+      <p class="micro muted mt-3">
+        Đây là bản mô phỏng — bấm <strong>Đăng nhập</strong> để vào thẳng Trang đầu, không cần mật khẩu thật.
+        <a href="index.html">Về bản đồ prototype</a>
+      </p>
+
+      <div class="note mt-3">
+        <strong>Ghi chú cho người trình bày.</strong> Ba trạng thái lỗi diễn được ngay tại đây:
+        gõ <code>abc</code> vào ô đầu để thấy lỗi sai định dạng;
+        đổi mật khẩu khác <code>reco-demo-2026</code> để thấy lỗi sai mật khẩu;
+        gõ <code>0000000000</code> — hoặc số của một tài khoản vừa bị Ngừng ở màn Người dùng — để thấy lỗi tài khoản đã ngừng.
+      </div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  /* Chế độ xem điện thoại thay toàn bộ nội dung màn bằng khung iframe — không còn gì để dựng. */
+  var form = document.getElementById('login-form');
+  if (!form) return;
+
+  var id = document.getElementById('li-id'), pw = document.getElementById('li-pw');
+  var remember = document.getElementById('li-remember'), policy = document.getElementById('li-policy');
+  var box = document.getElementById('login-err'),
+      boxT = document.getElementById('login-err-t'), boxB = document.getElementById('login-err-b');
+  var DEMO_PW = 'reco-demo-2026';
+
+  /* Ghi nhớ thiết bị đổi hẳn thời hạn phiên — người xem thử phải thấy hệ quả, không chỉ một ô tích. */
+  function paintPolicy() {
+    policy.textContent = remember.checked
+      ? 'Đang bật Ghi nhớ thiết bị này — phiên giữ tới 30 ngày, hết hạn sau 7 ngày không sử dụng.'
+      : 'Không ghi nhớ thiết bị — phiên kết thúc khi đóng trình duyệt, tối đa 12 giờ.';
+  }
+  remember.addEventListener('change', paintPolicy);
+  paintPolicy();
+
+  function fail(title, body) {
+    boxT.textContent = title;
+    boxB.textContent = ' ' + body;
+    box.hidden = false;
+    box.scrollIntoView({ block: 'nearest' });
+  }
+  function clearFail() { box.hidden = true; }
+
+  /* Chỉ giữ chữ số để so được '0966 808 404' với '0966808404' và '+84966808404' */
+  function digits(s) {
+    var d = String(s).replace(/\D/g, '');
+    if (d.length === 11 && d.indexOf('84') === 0) d = '0' + d.slice(2);
+    return d;
+  }
+  function findUser(v) {
+    var d = digits(v);
+    var list = RECO.store.get('users');
+    for (var i = 0; i < list.length; i++) {
+      if (d && digits(list[i].phone) === d) return list[i];
+    }
+    return null;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearFail();
+    if (!RECO.validate(form)) {
+      fail('Thông tin đăng nhập chưa hợp lệ', 'Anh/chị xem lại ô được đánh dấu đỏ bên dưới.');
+      return;
+    }
+    var who = findUser(id.value);
+    if (digits(id.value) === '0000000000' || (who && who.state === 'off')) {
+      fail('Tài khoản đã bị ngừng',
+        'Tài khoản' + (who ? ' của ' + who.name : '') + ' đã được người quản trị chung ngừng hoạt động, mọi phiên đăng nhập đã bị hủy. ' +
+        'Anh/chị liên hệ người quản trị chung để mở lại.');
+      return;
+    }
+    if (pw.value !== DEMO_PW) {
+      fail('Sai mật khẩu',
+        'Mật khẩu không đúng. Giai đoạn 1 không gửi mã xác thực — nhập sai 5 lần thì tài khoản tạm khóa 15 phút, ' +
+        'anh/chị liên hệ người quản trị chung để được cấp lại mật khẩu.');
+      pw.focus();
+      pw.select();
+      return;
+    }
+    RECO.busy(document.getElementById('li-go'), 'Đang đăng nhập…', 900, function () {
+      location.href = RECO.link('trang-dau.html');
+    });
+  });
+});
+</script>
+</body>
+</html>

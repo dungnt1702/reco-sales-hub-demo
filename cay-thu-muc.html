@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cây thư mục tài liệu · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/reco.css">
+<script defer src="assets/reco.js"></script>
+<script defer src="assets/store.js"></script>
+<script defer src="assets/data.js"></script>
+<style>
+  .tree-grid { display: grid; gap: 20px; }
+  @media (min-width: 1024px) { .tree-grid { grid-template-columns: 340px minmax(0,1fr); gap: 28px; align-items: start; } }
+  .tree-panel { position: sticky; top: calc(var(--proto-h) + var(--header-h) + 16px); }
+  body.proto-off .tree-panel { top: calc(var(--header-h) + 16px); }
+  @media (max-width: 1023px) { .tree-panel { position: static; } }
+  /* Dấu kế thừa nhãn từ thư mục cha */
+  .chip-inherit {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 9px; border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--navy) 6%, var(--white));
+    border: 1px solid color-mix(in srgb, var(--navy) 16%, transparent);
+    color: var(--navy-2); font-size: 0.7rem; font-weight: 700; white-space: nowrap;
+  }
+</style>
+</head>
+<body data-shell="app" data-page="tai-lieu">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">MH-11 · Cây thư mục tài liệu</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)" id="tree-title">Cây thư mục</h1>
+        <p class="lead mt-1" style="font-size:.98rem;max-width:70ch">
+          Mỗi dự án dùng chung <strong>bảy nhánh chính cố định</strong>. Không ai được tạo thêm, đổi tên, di chuyển hay xóa bảy nhánh này — nhờ đó mọi dự án có cùng một cấu trúc.
+        </p>
+      </div>
+      <select class="inp" style="max-width:260px" id="f-pj" aria-label="Chọn dự án"></select>
+    </div>
+
+    <div class="tree-grid">
+
+      <!-- Cây -->
+      <div class="tree-panel">
+        <div class="card">
+          <div class="card-head" style="padding-block:13px">
+            <h3 style="font-size:.98rem">Bảy nhánh cố định</h3>
+            <button class="btn btn-outline btn-sm" id="add-top" data-roles="tkkd gddu mkt gd">+ Thư mục con</button>
+          </div>
+          <div class="card-body" style="padding:10px">
+            <div class="tree" id="tree"></div>
+          </div>
+        </div>
+
+        <div class="note note-navy mt-2 micro" data-roles="nvbh">
+          Vai trò <strong>Nhân viên bán hàng</strong> xem cây ở chế độ chỉ đọc, không tạo được thư mục con, và không thấy nhánh 7.
+        </div>
+      </div>
+
+      <!-- Nội dung thư mục -->
+      <div id="pane"></div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Tạo thư mục con -->
+<div class="modal" id="m-tmc" hidden role="dialog" aria-modal="true" aria-labelledby="m-tmc-t">
+  <div class="modal-box" style="max-width:540px">
+    <div class="modal-head">
+      <div><span class="eyebrow">QD-019 · Bảy nhánh cố định</span><h3 id="m-tmc-t">Thêm thư mục con</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted mb-2" id="m-tmc-ctx"></p>
+      <label class="field"><span class="lab">Tên thư mục con</span>
+        <input class="inp" type="text" id="m-tmc-ten" data-required data-msg="Nhập tên thư mục con." placeholder="Ví dụ: Hồ sơ pháp lý bổ sung">
+      </label>
+      <label class="field"><span class="lab">Nhãn quyền</span>
+        <select class="inp" id="m-tmc-nhan"></select>
+      </label>
+      <div class="note note-navy micro" id="m-tmc-hint"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="m-tmc-ok">Tạo thư mục con</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var S = RECO.store, esc = RECO_DATA.esc;
+
+  /* Nhãn mặc định của từng nhánh cố định — nhánh 7 không bao giờ có phần Công khai */
+  var BRANCH_LABEL = ['public', 'internal', 'internal', 'public', 'public', 'public', 'restricted'];
+  var RANK = { public: 0, internal: 1, restricted: 2 };
+  var BR7_ROLES = 'gd gddu tkkd qlkd hcns mkt';      /* nhánh 7 ẩn với Nhân viên bán hàng */
+  var ADD_ROLES = 'tkkd gddu mkt gd';                /* QD-035: nhân viên bán hàng không tạo thư mục con */
+
+  var pjSel = document.getElementById('f-pj'), title = document.getElementById('tree-title'),
+      tree = document.getElementById('tree'), pane = document.getElementById('pane');
+
+  var PJ = RECO_DATA.projects();
+  pjSel.innerHTML = PJ.map(function (p) { return '<option value="' + p.id + '">' + esc(p.name) + '</option>'; }).join('');
+
+  var pj = PJ[0].id;
+  var sel = { branch: 1, folder: null };
+  var expanded = { 1: true };
+  var opened = {};
+
+  function canSee(x) { return S.canSee(x.label, RECO.role); }
+  function folders(branch) {
+    return S.get('folders').filter(function (f) { return f.pj === pj && f.branch === branch; });
+  }
+  function docs(branch, folder) {
+    return S.get('documents').filter(function (d) {
+      return d.pj === pj && d.branch === branch && (folder === undefined || (d.folder || null) === folder);
+    });
+  }
+  function seen(list) { return list.filter(canSee); }
+
+  /* ---------- Cây ---------- */
+  var ICO = { pdf: ['fico pdf', 'file'], xls: ['fico xls', 'sheet'], img: ['fico img', 'image'], link: ['fico', 'link'], warn: ['fico', 'alert'] };
+  function ico(d) {
+    var m = ICO[d.icon] || ICO.pdf;
+    var style = d.icon === 'warn' ? ' style="background:color-mix(in srgb,var(--danger) 9%,#fff);color:var(--danger)"' : '';
+    return '<span class="' + m[0] + '"' + style + '>' + RECO.svg(m[1]) + '</span>';
+  }
+  var LOCK = '<span class="lock" title="Nhánh cố định — không đổi tên, di chuyển hoặc xóa">' + RECO.svg('lock') + '</span>';
+
+  function treeHtml() {
+    return '<ul>' + S.BRANCHES.map(function (name, i) {
+      var b = i + 1;
+      var subs = folders(b).filter(canSee);
+      var open = !!expanded[b];
+      var kids = subs.map(function (f) {
+        return '<li><button type="button" class="tnode' + (sel.folder === f.id ? ' sel' : '') + '" data-folder="' + f.id + '" data-branch="' + b + '">' +
+          '<span style="width:14px"></span>' + RECO.svg('folder', 'ficon') +
+          '<span class="tname">' + esc(f.name) + '</span>' + S.label(f.label) + '</button></li>';
+      }).join('');
+      return '<li' + (b === 7 ? ' data-roles="' + BR7_ROLES + '"' : '') + '>' +
+        '<button type="button" class="tnode root' + (sel.branch === b && !sel.folder ? ' sel' : '') + '" data-branch="' + b + '"' +
+          (subs.length ? ' aria-expanded="' + open + '"' : '') + '>' +
+          (subs.length ? '<span class="caret">' + RECO.svg('caret') + '</span>' : '<span style="width:14px"></span>') +
+          RECO.svg('folder', 'ficon') +
+          '<span class="tname">' + b + '. ' + esc(name) + '</span>' + LOCK +
+        '</button>' +
+        (subs.length ? '<ul' + (open ? '' : ' hidden') + '>' + kids + '</ul>' : '') +
+        '</li>';
+    }).join('') + '</ul>';
+  }
+
+  function paintTree() {
+    tree.innerHTML = treeHtml();
+    RECO.applyRoles(tree);
+  }
+
+  /* ---------- Dòng tệp và thư mục ---------- */
+  function inherit(d, parentLabel, parentName) {
+    return d.label === parentLabel
+      ? '<span class="chip-inherit" title="Nhãn lấy theo ' + esc(parentName) + '">Kế thừa nhãn từ thư mục cha</span>'
+      : '';
+  }
+
+  function fileRow(d, parentLabel, parentName) {
+    var act;
+    if (d.src === 'broken') {
+      act = '<a class="btn btn-quiet btn-sm" href="thu-vien-tai-lieu.html">Xem ở thư viện</a>';
+    } else if (d.src === 'drive') {
+      act = '<button type="button" class="btn btn-outline btn-sm" data-act="mo" data-id="' + d.id + '">Mở nguồn</button>';
+    } else if (d.state === 'draft') {
+      act = '<span class="chip">Chưa duyệt — chờ Giám đốc dự án</span>';
+    } else {
+      act = '<button type="button" class="btn btn-outline btn-sm" data-act="tai" data-id="' + d.id + '" title="Tải bản có dấu nhận diện">Tải</button>';
+    }
+    var src = d.src === 'reco' ? '<span class="src src-reco">Tệp RECO</span>'
+      : d.src === 'drive' ? '<span class="src src-drive">Liên kết sống · chỉ xem</span>'
+      : '<span class="src src-broken">Liên kết hỏng</span>';
+    return '<div class="frow" data-doc="' + d.id + '">' + ico(d) +
+      '<div class="fmeta"><div class="fname">' + esc(d.name) + '</div><div class="fsub">' +
+        src + S.label(d.label) + inherit(d, parentLabel, parentName) +
+        (opened[d.id] ? '<span class="micro muted">Đã mở nguồn lúc ' + opened[d.id] + '</span>' : '') +
+      '</div></div>' +
+      '<div class="fend">' + act + '</div></div>';
+  }
+
+  function folderRow(f) {
+    var n = seen(docs(f.branch, f.id)).length;
+    return '<div class="frow"><span class="fico">' + RECO.svg('folder') + '</span>' +
+      '<div class="fmeta"><div class="fname">' + esc(f.name) + '</div>' +
+      '<div class="fsub"><span>Thư mục con · ' + n + ' tệp</span>' + S.label(f.label) + '</div></div>' +
+      '<div class="fend"><button type="button" class="btn btn-quiet btn-sm" data-act="open" data-id="' + f.id + '">Mở</button></div></div>';
+  }
+
+  /* ---------- Khung nội dung bên phải ---------- */
+  function paneHtml() {
+    var b = sel.branch, bName = S.BRANCHES[b - 1], bLabel = BRANCH_LABEL[b - 1];
+    var addBtn = '<button type="button" class="btn btn-outline btn-sm" data-act="addsub" data-roles="' + ADD_ROLES + '">+ Thư mục con</button>';
+
+    if (sel.folder) {
+      var f = S.find('folders', sel.folder);
+      if (!f) { sel.folder = null; return paneHtml(); }
+      var list = seen(docs(b, f.id));
+      return '<div class="card">' +
+        '<div class="card-head"><div>' +
+          '<span class="eyebrow">Nhánh ' + b + ' · ' + esc(bName) + '</span><h3>' + esc(f.name) + '</h3>' +
+          '<div class="row-tight mt-1">' + S.label(f.label) + '<span class="chip">' + list.length + ' tệp</span></div></div>' +
+          '<button type="button" class="btn btn-quiet btn-sm" data-act="up">← Về nhánh ' + b + '</button>' +
+        '</div>' +
+        (list.length
+          ? '<div>' + list.map(function (d) { return fileRow(d, f.label, f.name); }).join('') + '</div>'
+          : '<div style="padding:14px">' + RECO_DATA.empty('Thư mục con này chưa có tệp',
+              'Tệp đưa vào đây tự mang nhãn ' + S.LABELS[f.label].text + ' của thư mục cha.') + '</div>') +
+        '</div>' +
+        '<div class="note mt-3"><strong>Nhãn quyền kế thừa xuống.</strong> Thư mục con mang nhãn ' +
+          S.LABELS[f.label].text + ' trong khi nhánh cha là ' + S.LABELS[bLabel].text +
+          ' — nội dung con chỉ được siết chặt hơn, không bao giờ được nới lỏng hơn nội dung cha.</div>';
+    }
+
+    var subs = folders(b).filter(canSee);
+    var here = seen(docs(b, null));
+    var total = seen(docs(b)).length;
+    var body = subs.map(folderRow).join('') + here.map(function (d) { return fileRow(d, bLabel, 'nhánh ' + b); }).join('');
+
+    return '<div class="card">' +
+      '<div class="card-head"><div>' +
+        '<span class="eyebrow">Nhánh ' + b + '</span><h3>' + esc(bName) + '</h3>' +
+        '<div class="row-tight mt-1">' + S.label(bLabel) +
+        '<span class="chip">' + subs.length + ' thư mục con · ' + total + ' tệp</span></div></div>' +
+        addBtn +
+      '</div>' +
+      (body
+        ? '<div>' + body + '</div>'
+        : '<div style="padding:14px">' + RECO_DATA.empty('Nhánh này chưa có tài liệu nào',
+            'Bảy nhánh cố định luôn tồn tại ở mọi dự án, kể cả khi chưa có tệp. Tạo thư mục con để sắp xếp trước khi Chủ đầu tư gửi tài liệu.',
+            '<button type="button" class="btn btn-primary" data-act="addsub" data-roles="' + ADD_ROLES + '">+ Thư mục con</button>') + '</div>') +
+      '</div>' +
+      (b === 2 ? '<div class="note note-navy mt-3">Tài liệu thuộc <strong>liên kết sống</strong> do Chủ đầu tư sở hữu — RECO chỉ xem, không sửa được trong Sales Hub.</div>' : '') +
+      (b === 7 ? '<div class="note note-navy mt-3">Nhánh này <strong>không bao giờ có phần Công khai</strong> và không có chức năng chia sẻ ra ngoài. Nhân viên bán hàng không có quyền trên nhánh này, trừ kịch bản cá nhân do chính mình tạo.</div>' : '');
+  }
+
+  function paintPane() {
+    pane.innerHTML = paneHtml();
+    RECO.applyRoles(pane);
+  }
+
+  function paintAll() {
+    title.textContent = 'Cây thư mục — ' + S.projectName(pj);
+    paintTree();
+    paintPane();
+  }
+
+  /* ---------- Chọn nhánh / thư mục ---------- */
+  tree.addEventListener('click', function (e) {
+    var n = e.target.closest('.tnode');
+    if (!n) return;
+    var b = parseInt(n.getAttribute('data-branch'), 10);
+    var fid = n.getAttribute('data-folder');
+    if (fid) {
+      sel = { branch: b, folder: fid };
+    } else {
+      if (n.hasAttribute('aria-expanded')) expanded[b] = !expanded[b];
+      sel = { branch: b, folder: null };
+    }
+    paintAll();
+  });
+
+  pjSel.addEventListener('change', function () {
+    pj = pjSel.value;
+    sel = { branch: 1, folder: null };
+    expanded = { 1: true };
+    paintAll();
+  });
+
+  /* ---------- Thao tác trên tệp ---------- */
+  pane.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b || !pane.contains(b)) return;
+    var act = b.getAttribute('data-act');
+    if (act === 'open') { sel.folder = b.getAttribute('data-id'); expanded[sel.branch] = true; paintAll(); return; }
+    if (act === 'up') { sel.folder = null; paintAll(); return; }
+    if (act === 'addsub') { moTaoThuMuc(); return; }
+    var d = S.find('documents', b.getAttribute('data-id'));
+    if (!d) return;
+    if (act === 'tai') {
+      RECO.busy(b, 'Đang tạo bản có dấu nhận diện…', 1400, function () {
+        RECO.toast(d.icon === 'xls' || d.kind === 'banghang'
+          ? 'Đã chuyển sang PDF có dấu nhận diện ' + RECO.current.who + ' — không phát bản Excel gốc (QD-031)'
+          : 'Đã tạo bản có dấu nhận diện ' + RECO.current.who + ' — ' + d.name);
+      });
+      return;
+    }
+    if (act === 'mo') {
+      window.open('https://drive.google.com', '_blank', 'noopener');
+      var t = new Date();
+      opened[d.id] = ('0' + t.getHours()).slice(-2) + ':' + ('0' + t.getMinutes()).slice(-2);
+      paintPane();
+      RECO.toast('Đang mở liên kết sống trên Google Drive — tệp do Chủ đầu tư sở hữu, RECO chỉ xem');
+    }
+  });
+
+  /* ---------- Thêm thư mục con ---------- */
+  var ten = document.getElementById('m-tmc-ten'), nhan = document.getElementById('m-tmc-nhan'),
+      ctx = document.getElementById('m-tmc-ctx'), hint = document.getElementById('m-tmc-hint');
+
+  function moTaoThuMuc() {
+    var b = sel.branch, parent = BRANCH_LABEL[b - 1];
+    ctx.textContent = 'Thư mục con sẽ nằm trong Nhánh ' + b + ' — ' + S.BRANCHES[b - 1] +
+      ' (nhãn nhánh cha: ' + S.LABELS[parent].text + ').';
+    /* Quy tắc kế thừa: nghiêm ngặt nhất thắng, nhãn con không được nới lỏng hơn nhãn cha.
+       Nhãn Nội bộ hạn chế chỉ Giám đốc dự án cấp được. */
+    nhan.innerHTML = Object.keys(S.LABELS).map(function (k) {
+      if (k === 'restricted' && RECO.role !== 'gddu') return '';
+      var loose = RANK[k] < RANK[parent];
+      return '<option value="' + k + '"' + (loose ? ' disabled' : '') + (k === parent ? ' selected' : '') + '>' +
+        S.LABELS[k].text + (loose ? ' — không được nới lỏng hơn nhánh cha' : '') + '</option>';
+    }).join('');
+    hint.innerHTML = 'Nhãn nhánh cha là <strong>' + S.LABELS[parent].text + '</strong>. Thư mục con chỉ được giữ nguyên hoặc siết chặt hơn — ' +
+      'quy tắc nghiêm ngặt nhất luôn thắng.' +
+      (RECO.role !== 'gddu' ? ' Nhãn <strong>Nội bộ hạn chế</strong> chỉ Giám đốc dự án cấp được.' : '');
+    ten.value = '';
+    ten.removeAttribute('aria-invalid');
+    RECO.openModal('m-tmc');
+  }
+  document.getElementById('add-top').addEventListener('click', moTaoThuMuc);
+
+  document.getElementById('m-tmc-ok').addEventListener('click', function () {
+    var box = document.getElementById('m-tmc');
+    if (!RECO.validate(box)) return;
+    var b = sel.branch, parent = BRANCH_LABEL[b - 1], key = nhan.value;
+    if (RANK[key] < RANK[parent]) {
+      RECO.toast('Nhãn ' + S.LABELS[key].text + ' nới lỏng hơn nhánh cha — không tạo được', { danger: true });
+      return;
+    }
+    var f = S.add('folders', { pj: pj, branch: b, name: ten.value.trim(), label: key });
+    expanded[b] = true;
+    sel = { branch: b, folder: f.id };
+    paintAll();
+    RECO.closeModal(box);
+    RECO.toast('Đã tạo thư mục con ' + f.name + ' trong nhánh ' + b);
+  });
+
+  S.on('documents', paintPane);
+
+  paintAll();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# Ảnh chụp màn hình sinh lại bằng shot.ps1 — nặng hơn 10 MB và đổi mỗi lần chạy.
+screenshots/
+
+# Rác của hệ điều hành và trình soạn thảo
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

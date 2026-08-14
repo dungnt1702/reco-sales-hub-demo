@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Celestine Riverside — thông tin dự án | RECO</title>
+<meta name="theme-color" content="#09263c">
+<meta name="description" content="Thông tin dự án The Celestine Riverside do chuyên viên RECO gửi tới quý khách.">
+<link rel="icon" href="assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/reco.css">
+<script defer src="assets/reco.js"></script>
+<script defer src="assets/store.js"></script>
+<script defer src="assets/data.js"></script>
+<style>
+  .pub-hero {
+    position: relative; color: #fff; min-height: 340px; display: flex; align-items: flex-end;
+    background:
+      linear-gradient(0deg, rgba(4,25,44,.95) 6%, rgba(4,25,44,.42) 62%, rgba(4,25,44,.22)),
+      linear-gradient(90deg, rgba(4,25,44,.5), rgba(4,25,44,.08) 55%),
+      url('assets/img/celestine.jpg') center/cover;
+    padding: 26px var(--gutter);
+  }
+  @media (min-width: 768px) { .pub-hero { min-height: 460px; padding: 44px 0; } }
+  .pub-hero h1 { color: #fff; font-size: clamp(1.8rem,4vw,3rem); }
+  .pub-sec { padding-block: 34px; border-bottom: 1px solid var(--line); }
+  .pub-sec:last-of-type { border-bottom: 0; }
+  .pub-gal { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (min-width: 768px) { .pub-gal { grid-template-columns: repeat(4, 1fr); } }
+  .pub-gal img { aspect-ratio: 4/3; object-fit: cover; width: 100%; border-radius: var(--radius-md); display: block; }
+  .pub-gal button { border: 0; padding: 0; background: none; cursor: zoom-in; border-radius: var(--radius-md); display: block; width: 100%; }
+  .pub-gal button:focus-visible { outline: 2px solid var(--orange-button); outline-offset: 3px; }
+  .agent-wrap { display: grid; gap: 18px; }
+  @media (min-width: 900px) { .agent-wrap { grid-template-columns: minmax(0,1fr) 340px; align-items: start; } }
+
+  /* Xem ảnh lớn — tự viết, không dùng thư viện ngoài */
+  .lbx[hidden] { display: none; }
+  .lbx {
+    position: fixed; inset: 0; z-index: 90; background: rgba(4,16,26,.93);
+    display: flex; align-items: center; justify-content: center; padding: 60px 12px 44px;
+  }
+  .lbx img { max-width: min(1100px, 100%); max-height: 100%; object-fit: contain; border-radius: var(--radius-md); }
+  .lbx-bar { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 14px; justify-content: space-between; padding: 12px 14px; }
+  .lbx-cap { font-size: .88rem; color: rgba(255,255,255,.86); min-width: 0; }
+  .lbx-btn, .lbx-nav {
+    flex: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+    border: 1px solid rgba(255,255,255,.34); background: rgba(255,255,255,.1); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .lbx-btn:hover, .lbx-nav:hover { background: rgba(255,255,255,.22); }
+  .lbx-btn svg, .lbx-nav svg { width: 20px; height: 20px; }
+  .lbx-nav { position: absolute; top: 50%; transform: translateY(-50%); }
+  .lbx-nav.prev { left: 12px; }
+  .lbx-nav.next { right: 12px; }
+  .lbx-count { position: absolute; bottom: 14px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.72); font-size: .8rem; }
+</style>
+</head>
+<body data-shell="public" data-page="">
+
+<div id="page">
+
+  <!-- Thanh trên: KHÔNG có điều hướng nội bộ, không có ô tìm kiếm, không có cấu trúc kho tệp -->
+  <div class="pub-top">
+    <div class="in">
+      <span class="brand" style="color:#fff"><b style="color:#fff">RECO</b><span style="color:rgba(255,255,255,.7)">Group</span></span>
+      <span class="chip" id="valid-chip" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span id="valid-text">Trang còn hiệu lực 6 ngày</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="pub-wrap" id="expired-bar" hidden style="padding-top:14px">
+    <div class="note note-danger">
+      <strong>Đường dẫn này không còn hiệu lực.</strong>
+      Quý khách vui lòng liên hệ chuyên viên phụ trách bên dưới để nhận đường dẫn mới với thông tin cập nhật.
+    </div>
+  </div>
+
+  <section class="pub-hero">
+    <div class="pub-wrap" style="width:100%">
+      <span class="eyebrow light">Thông tin dự án · RECO gửi quý khách</span>
+      <h1 id="pj-name">The Celestine Riverside</h1>
+      <p class="lead mt-1" id="pj-sub" style="color:rgba(255,255,255,.86)">Long Biên, Hà Nội · Căn hộ chung cư · Bàn giao dự kiến quý II/2027</p>
+    </div>
+  </section>
+
+  <div class="pub-wrap">
+
+    <section class="pub-sec">
+      <div class="agent-wrap">
+        <div>
+          <span class="eyebrow">Tổng quan</span>
+          <h2 style="font-size:1.5rem">Khu căn hộ ven sông tại Long Biên</h2>
+          <p class="mt-2">Bốn tòa cao 27 tầng trên tổng diện tích 6,4 ha, gồm 1.248 căn hộ từ một đến ba phòng ngủ. Dự án hướng tới gia đình trẻ và khách đầu tư cho thuê dài hạn, bàn giao nội thất liền tường theo ba đợt từ quý II/2027.</p>
+          <div class="kv kv-2 mt-3">
+            <div><div class="k">Quy mô</div><div class="v" id="pj-struct">4 tòa · 27 tầng · 1.248 căn</div></div>
+            <div><div class="k">Diện tích căn</div><div class="v" id="pj-size">58 – 112 m²</div></div>
+            <div><div class="k">Chủ đầu tư</div><div class="v" id="pj-owner">Công ty CP Đầu tư Celestine</div></div>
+            <div><div class="k">Đơn vị phân phối</div><div class="v">RECO Group</div></div>
+          </div>
+        </div>
+
+        <!-- Nhân viên phụ trách -->
+        <aside class="agent-card">
+          <span class="eyebrow">Chuyên viên phụ trách</span>
+          <div class="people mt-2">
+            <span class="avatar lg" id="agent-ava">HT</span>
+            <span class="who"><b style="font-size:1.05rem" id="agent-name">Hoàng Anh Tuấn</b><span id="agent-role">Giám đốc dự án · RECO Group</span></span>
+          </div>
+          <div class="stack mt-3">
+            <a class="btn btn-primary btn-block" id="agent-call" href="tel:+84934524445">Gọi 0934 524 445</a>
+            <a class="btn btn-outline btn-block" id="agent-zalo" href="https://zalo.me/0934524445" target="_blank" rel="noopener">Nhắn Zalo</a>
+          </div>
+          <p class="micro muted mt-3">Đường dẫn này gắn đúng chuyên viên đã gửi cho quý khách. Quý khách có thể chia sẻ tiếp cho người thân.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="pub-sec">
+      <span class="eyebrow">Điểm nổi bật</span>
+      <h2 style="font-size:1.5rem">Vì sao khách hàng chọn dự án này</h2>
+      <div class="grid g-3 mt-3">
+        <div class="card card-pad"><h3 style="font-size:1rem">Ba mặt view sông Hồng</h3><p class="small muted mt-1">Tòa C và D có 62% số căn nhìn trực diện sông.</p></div>
+        <div class="card card-pad"><h3 style="font-size:1rem">Bàn giao nội thất liền tường</h3><p class="small muted mt-1">Bếp, tủ âm và thiết bị vệ sinh thương hiệu châu Âu.</p></div>
+        <div class="card card-pad"><h3 style="font-size:1rem">Hỗ trợ lãi suất 0% trong 18 tháng</h3><p class="small muted mt-1">Áp dụng cho đợt mở bán hiện tại qua ngân hàng liên kết.</p></div>
+      </div>
+    </section>
+
+    <section class="pub-sec">
+      <span class="eyebrow">Vị trí</span>
+      <h2 style="font-size:1.5rem">Liên kết vùng</h2>
+      <div class="kv kv-3 mt-3">
+        <div><div class="k">Cầu Vĩnh Tuy</div><div class="v">2,1 km · 5 phút</div></div>
+        <div><div class="k">Hồ Hoàn Kiếm</div><div class="v">7,4 km · 18 phút</div></div>
+        <div><div class="k">Vành đai 3</div><div class="v">3,6 km · 8 phút</div></div>
+        <div><div class="k">Bệnh viện Tâm Anh</div><div class="v">1,8 km · 4 phút</div></div>
+        <div><div class="k">Trường liên cấp</div><div class="v">1,2 km · 3 phút</div></div>
+        <div><div class="k">Sân bay Nội Bài</div><div class="v">26 km · 38 phút</div></div>
+      </div>
+    </section>
+
+    <section class="pub-sec">
+      <span class="eyebrow">Hình ảnh và mặt bằng</span>
+      <h2 style="font-size:1.5rem">Dự án qua hình ảnh</h2>
+      <div class="pub-gal mt-3" id="gal">
+        <img src="assets/img/celestine.jpg" alt="Phối cảnh tổng thể dự án" loading="lazy">
+        <img src="assets/img/reco-banner.jpg" alt="Khu tiện ích nội khu" loading="lazy">
+        <img src="assets/img/la-perle.webp" alt="Mặt bằng căn hai phòng ngủ" loading="lazy">
+        <img src="assets/img/palmy.jpg" alt="Cảnh quan ven sông" loading="lazy">
+      </div>
+      <p class="micro muted mt-2">Hình ảnh do Chủ đầu tư cung cấp, mang tính minh họa. Quý khách bấm vào ảnh để xem cỡ lớn.</p>
+    </section>
+
+    <!-- Phiếu tính giá đã duyệt — chỉ đọc, không có ô nhập -->
+    <section class="pub-sec">
+      <span class="eyebrow">Phiếu tính giá</span>
+      <h2 style="font-size:1.5rem" id="u-title">Căn A-12.05 · 2 phòng ngủ + 1</h2>
+      <p class="lead mt-1" style="font-size:.98rem">Phiếu do RECO lập và đã được duyệt cho quý khách. Đây là kết quả sẵn có, không phải công cụ để quý khách tự tính.</p>
+      <div class="card mt-3">
+        <div class="card-body">
+          <div class="kv kv-3">
+            <div><div class="k">Diện tích thông thủy</div><div class="v" id="u-area">72,4 m²</div></div>
+            <div><div class="k">Hướng ban công</div><div class="v" id="u-dir">Đông Nam</div></div>
+            <div><div class="k">Tình trạng</div><div class="v" id="u-state">Còn hàng</div></div>
+          </div>
+          <hr>
+          <table class="tbl">
+            <tbody>
+              <tr><td data-l="Khoản">Giá bán niêm yết</td><td data-l="Số tiền" class="r"><b id="u-list">4.860.000.000 đ</b></td></tr>
+              <tr><td data-l="Khoản">Chiết khấu đợt 3 (3%)</td><td data-l="Số tiền" class="r">− <span id="u-disc">145.800.000 đ</span></td></tr>
+              <tr><td data-l="Khoản">Giá sau chiết khấu</td><td data-l="Số tiền" class="r"><b id="u-net">4.714.200.000 đ</b></td></tr>
+              <tr><td data-l="Khoản">Thanh toán đợt 1 khi ký hợp đồng (30%)</td><td data-l="Số tiền" class="r"><b id="u-first">1.414.260.000 đ</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-foot">
+          <span class="micro muted">Phiếu lập ngày 14/08/2026, có hiệu lực 7 ngày. Giá và chính sách có thể thay đổi theo thông báo của Chủ đầu tư.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="pub-sec">
+      <span class="eyebrow">Chính sách được công bố</span>
+      <h2 style="font-size:1.5rem">Chính sách bán hàng đợt 3</h2>
+      <ul class="mt-2" style="padding-left:18px">
+        <li>Hỗ trợ lãi suất 0% trong 18 tháng, ân hạn gốc 18 tháng.</li>
+        <li>Vay tối đa 70% giá trị căn hộ qua ngân hàng liên kết.</li>
+        <li>Tiến độ thanh toán chuẩn 30 – 70.</li>
+        <li>Áp dụng cho hợp đồng ký trước 30/09/2026.</li>
+      </ul>
+      <p class="micro muted mt-2">Trang này chỉ hiển thị phần chính sách được phép công bố.</p>
+    </section>
+
+    <section class="pub-sec">
+      <div class="band">
+        <span class="eyebrow light">Bước tiếp theo</span>
+        <h2>Quý khách muốn xem căn mẫu?</h2>
+        <p class="lead mt-1">Chuyên viên phụ trách sẽ sắp lịch và gửi thêm mặt bằng chi tiết.</p>
+        <div class="row mt-3">
+          <a class="btn btn-light" id="band-call" href="tel:+84934524445">Gọi chuyên viên</a>
+          <a class="btn btn-ghost" id="band-zalo" href="https://zalo.me/0934524445" target="_blank" rel="noopener">Nhắn Zalo</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="pub-foot">
+    <div class="pub-wrap">
+      <b style="color:#fff">RECO Group</b>
+      <p class="mt-1" style="max-width:60ch">Công ty Cổ phần Nhà Ở Ngay RECO · 19–21 Vũ Trọng Phụng, Thanh Xuân Trung, Hà Nội · cskh@nhaongayreco.vn</p>
+      <p class="micro mt-2" style="color:rgba(255,255,255,.5)">
+        Thông tin trên trang do RECO tổng hợp từ tài liệu chính thức của Chủ đầu tư và được cập nhật liên tục.
+        Trang này không hiển thị nội dung nội bộ và không chứa liên kết tài liệu do Chủ đầu tư sở hữu.
+      </p>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Xem ảnh lớn -->
+<div class="lbx" id="lbx" hidden role="dialog" aria-modal="true" aria-label="Xem ảnh cỡ lớn" tabindex="-1">
+  <div class="lbx-bar">
+    <span class="lbx-cap" id="lbx-cap"></span>
+    <button type="button" class="lbx-btn" id="lbx-close" aria-label="Đóng ảnh">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <button type="button" class="lbx-nav prev" id="lbx-prev" aria-label="Ảnh trước">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
+  <img id="lbx-img" alt="">
+  <button type="button" class="lbx-nav next" id="lbx-next" aria-label="Ảnh sau">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>
+  </button>
+  <span class="lbx-count" id="lbx-count"></span>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Khung điện thoại thay nội dung màn bằng iframe — bản ngoài không có gì để dựng.
+  if (!document.getElementById('gal')) return;
+
+  var S = RECO.store, E = RECO_DATA.esc;
+  var PJ = 'celestine';
+
+  /* ---------- Nội dung dự án ---------- */
+  var p = S.find('projects', PJ);
+  if (p) {
+    document.getElementById('pj-name').textContent = p.name;
+    document.getElementById('pj-sub').textContent = p.place + ' · ' + p.typeName + ' · Bàn giao dự kiến ' + p.handover;
+    document.getElementById('pj-struct').textContent = p.struct;
+    document.getElementById('pj-size').textContent = p.sizeText;
+    document.getElementById('pj-owner').textContent = p.owner;
+  }
+
+  /* ---------- Chuyên viên phụ trách theo vai trò đang xem ---------- */
+  var me = S.get('users').filter(function (u) { return u.role === RECO.role && u.state === 'on'; })[0] || {
+    name: RECO.current.who, roleName: RECO.current.name, phone: '0934 524 445', ini: RECO.current.short
+  };
+  var digits = String(me.phone).replace(/\D/g, '');
+  document.getElementById('agent-name').textContent = me.name;
+  document.getElementById('agent-role').textContent = me.roleName + ' · RECO Group';
+  var ava = document.getElementById('agent-ava');
+  if (me.img) ava.innerHTML = '<img src="' + RECO.asset(me.img) + '" alt="">';
+  else ava.textContent = me.ini || RECO.current.short;
+
+  var call = 'tel:+84' + digits.replace(/^0/, '');
+  var zalo = 'https://zalo.me/' + digits;
+  var callBtn = document.getElementById('agent-call');
+  callBtn.href = call;
+  callBtn.textContent = 'Gọi ' + me.phone;
+  document.getElementById('agent-zalo').href = zalo;
+  document.getElementById('band-call').href = call;
+  document.getElementById('band-zalo').href = zalo;
+
+  /* ---------- Hiệu lực của đường dẫn ---------- */
+  var links = S.get('shareLinks').filter(function (l) {
+    return l.pj === PJ && l.state === 'live' && (l.days === null || l.days === undefined || l.days > 0);
+  });
+  var best = links.filter(function (l) { return l.kind === 'gia'; })[0] || links[0];
+  var validText = document.getElementById('valid-text');
+  if (!best) {
+    validText.textContent = 'Đường dẫn đã hết hiệu lực';
+    document.getElementById('expired-bar').hidden = false;
+  } else if (best.days === null || best.days === undefined) {
+    validText.textContent = 'Trang còn hiệu lực khi dự án còn hoạt động';
+  } else {
+    validText.textContent = 'Trang còn hiệu lực ' + best.days + ' ngày';
+  }
+
+  /* ---------- Phiếu tính giá đã duyệt (chỉ đọc — QD-028) ---------- */
+  var u = S.find('units', 'A-12.05');
+  if (u) {
+    // Bảng hàng nội bộ viết tắt "2PN + 1" — trang gửi khách phải viết đủ chữ
+    document.getElementById('u-title').textContent = 'Căn ' + u.id + ' · ' + u.kind.replace(/(\d+)\s*PN/, '$1 phòng ngủ');
+    document.getElementById('u-area').textContent = u.area.toLocaleString('vi-VN') + ' m²';
+    document.getElementById('u-dir').textContent = u.dir;
+    document.getElementById('u-state').textContent = (S.UNIT_STATE[u.state] || {}).text || '—';
+    var net = u.price * 0.97;
+    document.getElementById('u-list').textContent = S.money(u.price);
+    document.getElementById('u-disc').textContent = S.money(u.price * 0.03);
+    document.getElementById('u-net').textContent = S.money(net);
+    document.getElementById('u-first').textContent = S.money(net * 0.3);
+  }
+
+  /* ---------- Thư viện ảnh: chỉ ảnh đã duyệt mang nhãn Công khai ---------- */
+  var gal = document.getElementById('gal');
+  var shots = S.get('media').filter(function (m) {
+    return m.pj === PJ && m.state === 'approved' && m.label === 'public';
+  }).slice(0, 4);
+  if (shots.length) {
+    gal.innerHTML = shots.map(function (m, i) {
+      return '<button type="button" data-i="' + i + '" aria-label="Xem ảnh lớn: ' + E(m.name) + '">' +
+        '<img src="' + RECO.asset(m.img) + '" alt="' + E(m.name) + '" loading="lazy"></button>';
+    }).join('');
+  }
+
+  /* ---------- Xem ảnh lớn ---------- */
+  var lbx = document.getElementById('lbx'), lbxImg = document.getElementById('lbx-img'),
+      lbxCap = document.getElementById('lbx-cap'), lbxCount = document.getElementById('lbx-count'),
+      lbxClose = document.getElementById('lbx-close'), lbxPrev = document.getElementById('lbx-prev'),
+      lbxNext = document.getElementById('lbx-next');
+  var stops = [lbxClose, lbxPrev, lbxNext];
+  var at = 0, opener = null;
+
+  function show(i) {
+    if (!shots.length) return;
+    at = (i + shots.length) % shots.length;
+    var m = shots[at];
+    lbxImg.src = RECO.asset(m.img);
+    lbxImg.alt = m.name;
+    lbxCap.textContent = m.name;
+    lbxCount.textContent = 'Ảnh ' + (at + 1) + ' trên ' + shots.length;
+  }
+  function openLbx(i, from) {
+    opener = from || null;
+    show(i);
+    lbx.hidden = false;
+    document.body.style.overflow = 'hidden';
+    lbxClose.focus();
+  }
+  function closeLbx() {
+    lbx.hidden = true;
+    lbxImg.removeAttribute('src');
+    document.body.style.overflow = '';
+    if (opener && opener.isConnected) opener.focus();
+  }
+
+  gal.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-i]');
+    if (b) openLbx(Number(b.getAttribute('data-i')), b);
+  });
+  lbxClose.addEventListener('click', closeLbx);
+  lbxPrev.addEventListener('click', function () { show(at - 1); });
+  lbxNext.addEventListener('click', function () { show(at + 1); });
+  lbx.addEventListener('click', function (e) { if (e.target === lbx) closeLbx(); });
+  lbx.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeLbx(); return; }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(at - 1); return; }
+    if (e.key === 'ArrowRight') { e.preventDefault(); show(at + 1); return; }
+    if (e.key !== 'Tab') return;
+    // Bẫy focus: chỉ ba nút trong khung xem ảnh
+    var i = stops.indexOf(document.activeElement);
+    e.preventDefault();
+    if (i < 0) { stops[0].focus(); return; }
+    stops[(i + (e.shiftKey ? -1 : 1) + stops.length) % stops.length].focus();
+  });
+});
+</script>
+</body>
+</html>

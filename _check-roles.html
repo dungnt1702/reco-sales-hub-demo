@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="utf-8"><title>Kiểm tra phân quyền</title>
+<style>body{font:14px/1.6 monospace;margin:16px;background:#111;color:#ddd}iframe{position:absolute;left:-99999px;width:1280px;height:900px;border:0}</style></head>
+<body>
+<h1>Kiểm tra đổi vai trò</h1>
+<pre id="out">Đang chạy…</pre>
+<div id="frames"></div>
+<script>
+/* Mỗi dòng: [trang, vai trò, mô tả, hàm kiểm tra, kỳ vọng] */
+var CASES = [
+  ['du-an-chi-tiet', 'gddu', 'khu vực 9 đầy đủ hiện với Giám đốc dự án',
+   function (d) { return !d.querySelector('#kv9 [data-roles*="mkt"]').hidden; }, true],
+  ['du-an-chi-tiet', 'nvbh', 'khu vực 9 đầy đủ ẩn với Nhân viên bán hàng',
+   function (d) { return d.querySelector('#kv9 [data-roles*="mkt"]').hidden; }, true],
+  ['du-an-chi-tiet', 'nvbh', 'nhân viên bán hàng chỉ thấy Kịch bản của tôi',
+   function (d) { return !d.querySelector('#kv9 [data-roles="nvbh"]').hidden; }, true],
+  ['du-an-chi-tiet', 'nvbh', 'nút nổi Gửi đề nghị sửa hiện với Nhân viên bán hàng',
+   function (d) { return !d.querySelector('.fab').hidden; }, true],
+  ['du-an-chi-tiet', 'gddu', 'nút nổi Gửi đề nghị sửa ẩn với Giám đốc dự án',
+   function (d) { return d.querySelector('.fab').hidden; }, true],
+  ['du-an-chi-tiet', 'tkkd', 'Thư ký kinh doanh thấy nút Cập nhật ở khu vực 1',
+   function (d) { return !d.querySelector('#kv1 [data-roles="tkkd gddu gd"]').hidden; }, true],
+  ['thu-vien-tai-lieu', 'nvbh', 'Nhân viên bán hàng không tải được tài liệu Nội bộ hạn chế',
+   function (d) { return d.querySelector('[data-roles="gd gddu qlkd hcns"]').hidden; }, true],
+  ['thu-vien-tai-lieu', 'qlkd', 'Quản lý kinh doanh tải được Chính sách hoa hồng',
+   function (d) { return !d.querySelector('[data-roles="gd gddu qlkd hcns"]').hidden; }, true],
+  ['cay-thu-muc', 'nvbh', 'Nhân viên bán hàng không thấy nhánh 7',
+   function (d) { return d.querySelector('[data-roles="gd gddu tkkd qlkd hcns mkt"]').hidden; }, true],
+  ['cay-thu-muc', 'nvbh', 'Nhân viên bán hàng không có nút tạo thư mục con',
+   function (d) { return d.querySelector('[data-roles="tkkd gddu mkt gd"]').hidden; }, true],
+  ['quan-tri', 'nvbh', 'menu Quản trị không hiện với Nhân viên bán hàng',
+   function (d) { return !/quan-tri/.test(d.querySelector('.nav').innerHTML); }, true],
+  ['quan-tri', 'gddu', 'menu Quản trị hiện với Giám đốc dự án',
+   function (d) { return /quan-tri/.test(d.querySelector('.nav').innerHTML); }, true],
+  ['chia-se', 'nvbh', 'Nhân viên bán hàng không vô hiệu hóa được đường dẫn',
+   function (d) { return d.querySelector('[data-roles="gd gddu"]').hidden; }, true],
+  ['chia-se', 'gddu', 'Giám đốc dự án vô hiệu hóa được đường dẫn',
+   function (d) { return !d.querySelector('[data-roles="gd gddu"]').hidden; }, true],
+  ['de-nghi-sua', 'nvbh', 'Nhân viên bán hàng không cập nhật được dữ liệu gốc',
+   function (d) { return d.querySelector('.card-foot[data-roles="tkkd gddu gd mkt"]').hidden; }, true],
+  ['trang-dau', 'nvbh', 'Nhân viên bán hàng không thấy hàng chờ duyệt',
+   function (d) { return d.querySelector('section[data-roles="gd gddu tkkd mkt"]').hidden; }, true],
+
+  /* Ba trường hợp bổ sung sau đợt rà đối kháng — đều là chỗ bộ kiểm tra cũ bỏ sót */
+  ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng không thấy Chính sách hoa hồng ở khu vực 3',
+   function (d) { return d.querySelector('#kv3 [data-roles="gd gddu qlkd hcns"]').hidden; }, true],
+  ['du-an-chi-tiet', 'qlkd', 'Quản lý kinh doanh xem được Chính sách hoa hồng ở khu vực 3',
+   function (d) { return !d.querySelector('#kv3 [data-roles="gd gddu qlkd hcns"]').hidden; }, true],
+  ['quan-tri', 'nvbh', 'Vào thẳng địa chỉ màn Quản trị vẫn bị chặn ở cấp màn',
+   function (d) {
+     return !d.querySelector('.state-error[data-roles="nvbh qlkd"]').hidden &&
+            d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns"]').hidden;
+   }, true],
+  ['quan-tri', 'tkkd', 'Thư ký kinh doanh không thấy tab Báo cáo vận hành',
+   function (d) { return d.querySelector('#t-bc').hidden; }, true],
+  ['quan-tri', 'gddu', 'Giám đốc dự án vẫn vào được màn Quản trị',
+   function (d) { return !d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns"]').hidden; }, true]
+];
+
+var out = document.getElementById('out'), frames = document.getElementById('frames'), lines = [], fail = 0;
+
+function run(c) {
+  return new Promise(function (res) {
+    var f = document.createElement('iframe');
+    f.src = c[0] + '.html?bare=1&role=' + c[1];
+    f.onload = function () {
+      var got;
+      try { got = c[3](f.contentDocument); } catch (e) { got = 'LOI: ' + e.message; }
+      var ok = got === c[4];
+      if (!ok) fail++;
+      lines.push((ok ? 'OK   ' : 'HONG ') + '[' + c[1] + '] ' + c[2] + (ok ? '' : ' → nhan duoc: ' + got));
+      f.remove(); res();
+    };
+    frames.appendChild(f);
+  });
+}
+
+(async function () {
+  for (var i = 0; i < CASES.length; i++) await run(CASES[i]);
+  lines.push('');
+  lines.push(fail ? '=== ' + fail + ' TRUONG HOP HONG ===' : '=== TAT CA ' + CASES.length + ' TRUONG HOP DEU DUNG ===');
+  out.textContent = lines.join('\n');
+})();
+</script>
+</body>
+</html>

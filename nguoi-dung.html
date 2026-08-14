@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Người dùng và quyền · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/reco.css">
+<script defer src="assets/reco.js"></script>
+<script defer src="assets/store.js"></script>
+<script defer src="assets/data.js"></script>
+</head>
+<body data-shell="app" data-page="quan-tri">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">MH-10 · Quản lý người dùng và quyền</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Người dùng và quyền</h1>
+        <p class="lead mt-1" style="font-size:.98rem;max-width:70ch">
+          Người quản trị chung là người duy nhất cấp tài khoản, gán vai trò, gán dự án hoặc vùng và đặt lại mật khẩu.
+        </p>
+      </div>
+      <button class="btn btn-primary" id="u-new" data-roles="gd hcns">+ Tài khoản mới</button>
+    </div>
+
+    <div class="note note-navy mb-3" data-roles="gd gddu tkkd qlkd nvbh mkt">
+      Màn này chỉ dành cho <strong>người quản trị chung</strong> (thuộc HCNS &amp; Kế toán hoặc vai trò kỹ thuật do RECO chỉ định).
+      Vai trò hiện tại của anh/chị đang xem ở chế độ tham khảo.
+    </div>
+
+    <div class="filterbar mb-3">
+      <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="u-q" placeholder="Tìm theo tên hoặc số điện thoại" aria-label="Tìm người dùng">
+      </div>
+      <select class="inp" id="u-role" aria-label="Vai trò">
+        <option value="">Mọi vai trò</option>
+        <option value="gd">Tổng giám đốc</option><option value="gddu">Giám đốc dự án</option><option value="tkkd">Thư ký kinh doanh</option>
+        <option value="qlkd">Quản lý kinh doanh</option><option value="nvbh">Nhân viên bán hàng</option><option value="hcns">HCNS &amp; Kế toán</option><option value="mkt">Marketing</option>
+      </select>
+      <select class="inp" id="u-state" aria-label="Trạng thái">
+        <option value="">Mọi trạng thái</option><option value="on">Đang hoạt động</option><option value="off">Đã ngừng</option>
+      </select>
+      <button type="button" class="btn btn-quiet btn-sm" id="u-reset">Xóa lọc</button>
+    </div>
+
+    <p class="small muted mb-2" id="u-count" style="margin:0"></p>
+
+    <div class="tbl-wrap mb-4" id="u-wrap">
+      <table class="tbl">
+        <thead><tr><th>Người dùng</th><th>Vai trò</th><th>Phạm vi được xem</th><th>Trạng thái</th><th class="r">Thao tác</th></tr></thead>
+        <tbody id="u-body"></tbody>
+      </table>
+    </div>
+
+    <div id="u-rong" class="mb-4" hidden></div>
+
+
+    <section>
+      <div class="section-head">
+        <span class="eyebrow">Tham chiếu</span>
+        <h2 style="font-size:1.35rem">Bảy vai trò và quyền chính</h2>
+        <p class="lead" style="font-size:.96rem">Sau khi có thay đổi nhân sự, người quản trị chung kiểm tra lại quyền theo bảng này.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Vai trò</th><th>Sửa dữ liệu dự án</th><th>Duyệt / công bố</th><th>Chia sẻ trang công khai</th><th>Xem báo cáo</th></tr></thead>
+          <tbody>
+            <tr><td data-l="Vai trò"><b>Tổng giám đốc</b></td><td data-l="Sửa">Chỉ nội dung đặc biệt</td><td data-l="Duyệt">Chỉ nội dung đặc biệt</td><td data-l="Chia sẻ">Có</td><td data-l="Báo cáo">Toàn bộ</td></tr>
+            <tr><td data-l="Vai trò"><b>Giám đốc dự án</b></td><td data-l="Sửa">Trong dự án phụ trách</td><td data-l="Duyệt"><b>Người duyệt cuối</b></td><td data-l="Chia sẻ">Có</td><td data-l="Báo cáo">Dự án phụ trách</td></tr>
+            <tr><td data-l="Vai trò"><b>Thư ký kinh doanh</b></td><td data-l="Sửa">Giá, bảng hàng, chính sách, tài liệu</td><td data-l="Duyệt">Không — gửi GĐ dự án</td><td data-l="Chia sẻ">Có</td><td data-l="Báo cáo">Không</td></tr>
+            <tr><td data-l="Vai trò"><b>Quản lý kinh doanh</b></td><td data-l="Sửa">Chỉ gửi đề nghị</td><td data-l="Duyệt">Không</td><td data-l="Chia sẻ">Có</td><td data-l="Báo cáo">Đội phụ trách</td></tr>
+            <tr><td data-l="Vai trò"><b>Nhân viên bán hàng</b></td><td data-l="Sửa">Chỉ gửi đề nghị</td><td data-l="Duyệt">Không</td><td data-l="Chia sẻ">Có</td><td data-l="Báo cáo">Không</td></tr>
+            <tr><td data-l="Vai trò"><b>HCNS &amp; Kế toán</b></td><td data-l="Sửa">Không</td><td data-l="Duyệt">Không</td><td data-l="Chia sẻ">Không</td><td data-l="Báo cáo">Số liệu liên quan</td></tr>
+            <tr><td data-l="Vai trò"><b>Marketing</b></td><td data-l="Sửa">Mẫu, ảnh đã duyệt, chiến dịch</td><td data-l="Duyệt">Không — chờ duyệt</td><td data-l="Chia sẻ">Có</td><td data-l="Báo cáo">Hiệu quả nội dung</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="micro muted mt-2">Nguồn: <em>docs/07-security/role-permission-matrix.md</em> — xác nhận trong buổi làm việc ngày 13/08/2026.</p>
+    </section>
+
+  </div>
+</main>
+
+<div class="modal" id="m-taouser" hidden role="dialog" aria-modal="true" aria-labelledby="m-taouser-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Luồng 4 · quản lý quyền sử dụng</span><h3 id="m-taouser-t">Cấp tài khoản mới</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="u-form">
+      <label class="field"><span class="lab">Họ và tên</span>
+        <input class="inp" type="text" id="u-f-name" placeholder="Nguyễn Văn A"
+               data-required data-msg="Nhập họ và tên đầy đủ như trong hồ sơ nhân sự."></label>
+      <label class="field"><span class="lab">Số điện thoại</span>
+        <input class="inp" type="text" id="u-f-phone" placeholder="09xx xxx xxx" inputmode="tel"
+               data-required data-pattern="^(0|\+84)[\s.]?[35789][\s.]?(\d[\s.]?){8}$"
+               data-msg="Nhập số điện thoại Việt Nam, ví dụ 0912 345 678.">
+        <span class="hint">Dùng để đăng nhập. Có thể bổ sung email sau.</span></label>
+      <label class="field"><span class="lab">Vai trò</span>
+        <select class="inp" id="u-f-role"></select>
+      </label>
+      <label class="field"><span class="lab">Dự án hoặc vùng được xem</span>
+        <select class="inp" id="u-f-scope"></select>
+        <span class="hint" id="u-f-scope-hint">Vùng được hiểu là tỉnh hoặc thành phố nơi dự án tọa lạc.</span>
+      </label>
+      <div class="note" id="u-f-note">Giai đoạn 1 chưa gửi email tự động — người quản trị bàn giao mật khẩu ban đầu trực tiếp cho người dùng.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="u-save">Tạo tài khoản</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  /* Chế độ xem điện thoại thay toàn bộ nội dung màn bằng khung iframe — không còn gì để dựng. */
+  if (!document.getElementById('u-body')) return;
+
+  var S = RECO.store, esc = RECO_DATA.esc;
+  var body = document.getElementById('u-body'), wrap = document.getElementById('u-wrap'),
+      rong = document.getElementById('u-rong'), count = document.getElementById('u-count');
+  var q = document.getElementById('u-q'), fr = document.getElementById('u-role'), fs = document.getElementById('u-state');
+  var fName = document.getElementById('u-f-name'), fPhone = document.getElementById('u-f-phone'),
+      fRole = document.getElementById('u-f-role'), fScope = document.getElementById('u-f-scope'),
+      form = document.getElementById('u-form'), save = document.getElementById('u-save'),
+      title = document.getElementById('m-taouser-t'), note = document.getElementById('u-f-note');
+  var editing = null;
+
+  var TEAMS = ['Đội Miền Bắc', 'Đội Miền Trung', 'Đội Miền Nam'];
+
+  function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd'); }
+  function digits(s) { return String(s).replace(/\D/g, ''); }
+
+  /* ---------- Bảng ---------- */
+  function avatar(u) {
+    return u.img
+      ? '<span class="avatar sm"><img src="' + RECO.asset(u.img) + '" alt=""></span>'
+      : '<span class="avatar sm">' + esc(u.ini || '?') + '</span>';
+  }
+  function row(u) {
+    var on = u.state === 'on';
+    var acts = on
+      ? '<button class="btn btn-outline btn-sm" data-act="edit" data-id="' + u.id + '">Sửa</button>' +
+        '<button class="btn btn-quiet btn-sm" data-act="pw" data-id="' + u.id + '">Đặt lại mật khẩu</button>' +
+        '<button class="btn btn-quiet btn-sm" data-act="off" data-id="' + u.id + '">Ngừng</button>'
+      : '<button class="btn btn-outline btn-sm" data-act="edit" data-id="' + u.id + '">Sửa</button>' +
+        '<button class="btn btn-outline btn-sm" data-act="on" data-id="' + u.id + '">Mở lại</button>';
+    return '<tr>' +
+      '<td data-l="Người dùng"><div class="people">' + avatar(u) +
+        '<span class="who"><b>' + esc(u.name) + '</b><span>' + esc(u.phone) + '</span></span></div></td>' +
+      '<td data-l="Vai trò">' + esc(u.roleName) + '</td>' +
+      '<td data-l="Phạm vi">' + esc(u.scope) + '</td>' +
+      '<td data-l="Trạng thái"><span class="st ' + (on ? 'st-live">Đang hoạt động' : 'st-stop">Đã ngừng') + '</span></td>' +
+      '<td data-l="" class="r"><div class="row-tight" style="justify-content:flex-end">' +
+        '<span class="row-tight" data-roles="gd hcns">' + acts + '</span>' +
+        '<span class="chip" data-roles="gddu tkkd qlkd nvbh mkt">Chỉ xem</span>' +
+      '</div></td>' +
+    '</tr>';
+  }
+
+  function render() {
+    var t = norm(q.value.trim()), d = digits(q.value);
+    var list = S.get('users').filter(function (u) {
+      var hit = !t || norm(u.name).indexOf(t) >= 0 || (d && digits(u.phone).indexOf(d) >= 0);
+      return hit && (!fr.value || u.role === fr.value) && (!fs.value || u.state === fs.value);
+    });
+    var none = list.length === 0;
+    wrap.hidden = none;
+    rong.hidden = !none;
+    if (none) {
+      rong.innerHTML = RECO_DATA.empty('Không có tài khoản nào khớp bộ lọc',
+        'Thử bỏ bớt một điều kiện, hoặc tìm theo bốn số cuối của số điện thoại.',
+        '<button type="button" class="btn btn-primary" data-act="reset">Bỏ bộ lọc</button>');
+    } else {
+      body.innerHTML = list.map(row).join('');
+    }
+    count.textContent = none
+      ? 'Không có tài khoản nào khớp bộ lọc'
+      : 'Đang hiển thị ' + list.length + ' trên tổng ' + S.get('users').length + ' tài khoản';
+    RECO.applyRoles(none ? rong : body);
+  }
+
+  /* ---------- Biểu mẫu ---------- */
+  function scopeChoices(roleId) {
+    var pj = S.get('projects').filter(function (p) { return !p.hidden; }).map(function (p) { return p.name; });
+    if (roleId === 'gd') return ['Toàn bộ dự án'];
+    if (roleId === 'hcns') return ['Số liệu & hồ sơ nhân sự'];
+    if (roleId === 'qlkd') return TEAMS;
+    return ['Toàn bộ dự án'].concat(pj);
+  }
+  function fillScope(roleId, current) {
+    var opts = scopeChoices(roleId);
+    if (current && opts.indexOf(current) < 0) opts = [current].concat(opts);
+    fScope.innerHTML = opts.map(function (o) {
+      return '<option' + (o === current ? ' selected' : '') + '>' + esc(o) + '</option>';
+    }).join('');
+    document.getElementById('u-f-scope-hint').textContent = roleId === 'qlkd'
+      ? 'Quản lý kinh doanh nhìn theo đội, không theo từng dự án.'
+      : roleId === 'hcns'
+        ? 'HCNS & Kế toán chỉ xem số liệu và hồ sơ nhân sự, không xem nội dung bán hàng.'
+        : 'Vùng được hiểu là tỉnh hoặc thành phố nơi dự án tọa lạc.';
+  }
+  fRole.innerHTML = RECO.roles.map(function (r) {
+    return '<option value="' + r.id + '">' + esc(r.name) + '</option>';
+  }).join('');
+  fRole.value = 'nvbh';
+  fRole.addEventListener('change', function () { fillScope(fRole.value, null); });
+  fillScope(fRole.value, null);
+
+  function openForm(u) {
+    editing = u || null;
+    title.textContent = u ? 'Sửa hồ sơ người dùng' : 'Cấp tài khoản mới';
+    save.textContent = u ? 'Lưu thay đổi' : 'Tạo tài khoản';
+    note.hidden = !!u;
+    fName.value = u ? u.name : '';
+    fPhone.value = u ? u.phone : '';
+    fRole.value = u ? u.role : 'nvbh';
+    fillScope(fRole.value, u ? u.scope : null);
+    form.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    form.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    RECO.openModal('m-taouser');
+  }
+  document.getElementById('u-new').addEventListener('click', function () { openForm(null); });
+
+  /* Chữ viết tắt lấy hai từ cuối, đúng cách gọi tên trong nội bộ RECO */
+  function initials(name) {
+    var w = name.trim().split(/\s+/).slice(-2);
+    return w.map(function (x) { return x.charAt(0).toUpperCase(); }).join('');
+  }
+  function newPassword() {
+    var pool = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    var s = '';
+    for (var i = 0; i < 6; i++) s += pool.charAt(Math.floor(Math.random() * pool.length));
+    return 'Reco@' + s;
+  }
+
+  save.addEventListener('click', function () {
+    if (!RECO.validate(form)) return;
+    var r = RECO.roleOf(fRole.value);
+    var patch = { name: fName.value.trim(), phone: fPhone.value.trim(), role: r.id, roleName: r.name,
+                  scope: fScope.value, ini: initials(fName.value) };
+    RECO.busy(save, editing ? 'Đang lưu…' : 'Đang tạo…', 900, function () {
+      RECO.closeModal('m-taouser');
+      if (editing) {
+        S.update('users', editing.id, patch);
+        RECO.toast('Đã lưu hồ sơ ' + patch.name);
+      } else {
+        patch.state = 'on';
+        S.add('users', patch);
+        RECO.toast('Đã tạo tài khoản ' + patch.name + ' · mật khẩu ban đầu: ' + newPassword());
+      }
+      editing = null;
+      render();
+    });
+  });
+
+  /* ---------- Thao tác trên từng dòng ---------- */
+  function resetPassword(u, btn) {
+    RECO.confirm({
+      eyebrow: 'Đặt lại mật khẩu',
+      title: 'Đặt lại mật khẩu cho ' + esc(u.name) + '?',
+      body: '<p class="small">Mật khẩu cũ <strong>mất hiệu lực ngay</strong> và mọi phiên đang mở của người này bị hủy.</p>' +
+            '<p class="small muted mt-2">Giai đoạn 1 chưa gửi email tự động (QD-021) — hệ thống sinh mật khẩu ban đầu, ' +
+            'anh/chị bàn giao trực tiếp cho người dùng và nhắc họ đổi ngay khi đăng nhập.</p>',
+      okText: 'Đặt lại mật khẩu',
+      onOk: function () {
+        RECO.busy(btn, 'Đang đặt lại…', 900, function () {
+          RECO.toast('Mật khẩu ban đầu của ' + u.name + ': ' + newPassword() + ' — bàn giao trực tiếp, không gửi email.');
+        });
+      }
+    });
+  }
+  function stop(u, btn) {
+    RECO.confirm({
+      eyebrow: 'Ngừng tài khoản',
+      title: 'Ngừng tài khoản của ' + esc(u.name) + '?',
+      body: '<p class="small">Phiên đăng nhập của người này <strong>bị hủy ngay</strong>, kể cả trên điện thoại đang mở. ' +
+            'Người này không mở được tài liệu, không tạo được đường dẫn gửi khách.</p>' +
+            '<p class="small muted mt-2">Đường dẫn gửi khách người này đã tạo vẫn còn hiệu lực — nếu cần thu hồi thì làm ở màn Chia sẻ.</p>',
+      okText: 'Ngừng tài khoản',
+      danger: true,
+      onOk: function () {
+        RECO.busy(btn, 'Đang ngừng…', 700, function () {
+          S.update('users', u.id, { state: 'off' });
+          render();
+          RECO.toast('Đã ngừng tài khoản ' + u.name + ', phiên đăng nhập đã bị hủy', { danger: true });
+        });
+      }
+    });
+  }
+  function reopen(u, btn) {
+    RECO.confirm({
+      eyebrow: 'Mở lại tài khoản',
+      title: 'Mở lại tài khoản của ' + esc(u.name) + '?',
+      body: '<p class="small">Người này đăng nhập lại được với phạm vi <strong>' + esc(u.scope) + '</strong>. ' +
+            'Mật khẩu cũ không còn dùng được — anh/chị đặt lại mật khẩu rồi bàn giao trực tiếp.</p>',
+      okText: 'Mở lại',
+      onOk: function () {
+        RECO.busy(btn, 'Đang mở lại…', 700, function () {
+          S.update('users', u.id, { state: 'on' });
+          render();
+          RECO.toast('Đã mở lại tài khoản ' + u.name);
+        });
+      }
+    });
+  }
+
+  function onAct(e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var act = b.getAttribute('data-act');
+    if (act === 'reset') { reset(); return; }
+    var u = S.find('users', b.getAttribute('data-id'));
+    if (!u) return;
+    if (act === 'edit') openForm(u);
+    else if (act === 'pw') resetPassword(u, b);
+    else if (act === 'off') stop(u, b);
+    else if (act === 'on') reopen(u, b);
+  }
+  body.addEventListener('click', onAct);
+  rong.addEventListener('click', onAct);
+
+  function reset() { q.value = ''; fr.value = ''; fs.value = ''; render(); }
+  document.getElementById('u-reset').addEventListener('click', reset);
+  [q, fr, fs].forEach(function (el) { el.addEventListener('input', render); el.addEventListener('change', render); });
+  render();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="utf-8"><title>Khung chụp bản điện thoại</title>
+<style>html,body{margin:0;padding:0;background:#f8f7f3}iframe{display:block;border:0;background:#f8f7f3}</style></head>
+<body>
+<script>
+/* Chrome headless trên Windows không hạ được bề rộng cửa sổ xuống dưới ~500px,
+   nên chụp trực tiếp ở 390 sẽ ra ảnh bị cắt chứ không phải bố cục điện thoại thật.
+   Trang này nhúng màn cần chụp trong iframe đúng bề rộng để có viewport thật. */
+var q = new URLSearchParams(location.search);
+var page = (q.get('p') || 'index').replace(/[^a-z0-9-]/gi, '');
+var w = parseInt(q.get('w') || '390', 10);
+var h = parseInt(q.get('h') || '1600', 10);
+var f = document.createElement('iframe');
+f.src = page + '.html?bare=1' + (q.get('role') ? '&role=' + q.get('role').replace(/[^a-z]/g, '') : '');
+f.width = w; f.height = h;
+document.body.appendChild(f);
+</script>
+</body>
+</html>

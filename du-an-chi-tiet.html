@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Celestine Riverside · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/reco.css">
+<script defer src="assets/reco.js"></script>
+<script defer src="assets/store.js"></script>
+<script defer src="assets/data.js"></script>
+<style>
+  .pj-hero {
+    position: relative; border-radius: var(--radius-xl); overflow: hidden;
+    min-height: 260px; display: flex; align-items: flex-end; color: #fff;
+    background:
+      linear-gradient(90deg, rgba(4,25,44,.94) 0%, rgba(4,25,44,.72) 46%, rgba(4,25,44,.18) 82%),
+      linear-gradient(0deg, rgba(4,25,44,.9), rgba(4,25,44,.1) 68%),
+      url('assets/img/celestine.jpg') center/cover;
+    padding: 22px;
+  }
+  @media (min-width: 768px) { .pj-hero { min-height: 320px; padding: 32px; } }
+  .pj-hero h1 { color: #fff; font-size: clamp(1.7rem,3.4vw,2.6rem); }
+  .pj-actions { position: sticky; z-index: 20; }
+  .map-ph {
+    aspect-ratio: 16 / 9; border-radius: var(--radius-lg); overflow: hidden;
+    background:
+      repeating-linear-gradient(0deg, rgba(9,38,60,.06) 0 1px, transparent 1px 34px),
+      repeating-linear-gradient(90deg, rgba(9,38,60,.06) 0 1px, transparent 1px 34px),
+      var(--soft);
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .map-ph .pin-dot {
+    width: 16px; height: 16px; border-radius: 50%; background: var(--orange-button);
+    box-shadow: 0 0 0 7px rgba(242,118,34,.22); position: absolute; left: 46%; top: 44%;
+  }
+  .bullet { display: flex; gap: 11px; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .bullet:last-child { border-bottom: 0; }
+  .bullet .bi { width: 22px; height: 22px; flex: none; border-radius: 50%; background: var(--notice); color: var(--orange-text); display: inline-flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; font-family: var(--font-display); }
+  .fab {
+    position: fixed; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 35;
+    box-shadow: var(--shadow-float);
+  }
+  @media (min-width: 1024px) { .fab { bottom: 24px; } }
+  /* upick chứ không phải pick: bản gói gộp CSS của mọi màn, .pick đã bị màn soạn nội dung dùng */
+  /* Dưới 768px mỗi hàng là một thẻ, ô chọn phải rộng như các ô còn lại */
+  @media (min-width: 768px) { .tbl th.upick, .tbl td.upick { width: 36px; } }
+  .tbl td.upick input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--orange-button); flex: none; }
+  .cmp { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .cmp .card-pad { box-shadow: none; }
+  .cmp .k { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  /* .field đặt display:block nên phải nói rõ khi ẩn ô nhãn quyền */
+  #kb-label-field[hidden] { display: none; }
+</style>
+</head>
+<body data-shell="app" data-page="du-an">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <p class="small muted mb-2"><a href="du-an.html">Dự án</a> · The Celestine Riverside</p>
+
+    <!-- Ảnh bìa -->
+    <section class="pj-hero">
+      <div style="width:100%">
+        <div class="row-tight mb-2">
+          <span class="hot">Dự án nổi bật</span>
+          <span class="st st-live" style="background:rgba(43,133,105,.25);color:#a8e6cd">Đang bán</span>
+        </div>
+        <h1>The Celestine Riverside</h1>
+        <p class="lead mt-1" style="color:rgba(255,255,255,.85)">Long Biên, Hà Nội · Căn hộ chung cư · 4 tòa · 27 tầng · 1.248 căn</p>
+        <div class="row mt-3">
+          <a class="btn btn-primary" href="soan-noi-dung.html">Chuẩn bị nội dung gửi khách</a>
+          <a class="btn btn-ghost" href="thu-vien-tai-lieu.html">Thư viện tài liệu</a>
+          <button type="button" class="pin-btn" data-pj="celestine" aria-pressed="true" aria-label="Bỏ ghim dự án">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3.5 3.5H6.5L10 9Z"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="detail-grid mt-4">
+
+      <!-- Nav chín khu vực -->
+      <nav class="secnav" aria-label="Khu vực nội dung">
+        <p class="micro muted mb-1" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">Khu vực nội dung</p>
+        <ol>
+          <li><a href="#kv1" class="on">Tổng quan</a></li>
+          <li><a href="#kv2">Vị trí và liên kết vùng</a></li>
+          <li><a href="#kv3">Điểm chính của sản phẩm</a></li>
+          <li><a href="#kv4">Mặt bằng</a></li>
+          <li><a href="#kv5">Bảng hàng và phiếu tính giá</a></li>
+          <li><a href="#kv6">Ảnh, video và tài liệu</a></li>
+          <li><a href="#kv7">Hỏi đáp và tư vấn ngắn</a></li>
+          <li><a href="#kv8">Nội dung bán hàng được duyệt</a></li>
+          <li><a href="#kv9">Nội bộ Marketing &amp; Kinh doanh</a></li>
+        </ol>
+        <div class="note note-navy mt-3 micro">
+          Chín khu vực này là cách <strong>trình bày</strong> trên trang. Cách <strong>tổ chức</strong> tệp trong kho là
+          <!-- href dạng #màn: nav mục dính chỉ nhận liên kết trong trang, đường dẫn thật gắn ở mã của màn -->
+          <a href="#cay-thu-muc" data-page-link="cay-thu-muc.html">bảy nhánh cây thư mục</a> — hai cách phân loại tách biệt.
+        </div>
+      </nav>
+
+      <div>
+
+        <!-- 1. Tổng quan -->
+        <section class="sec" id="kv1">
+          <div class="sec-head"><span class="n">KHU VỰC 01</span><h2>Tổng quan</h2>
+            <span class="lb lb-public">Công khai</span>
+            <span class="sec-act row-tight">
+              <button class="btn btn-outline btn-sm" data-roles="tkkd gddu gd" data-open="m-capnhat">Cập nhật</button>
+              <button class="btn btn-outline btn-sm" data-roles="nvbh qlkd" data-open="m-denghi">Gửi đề nghị sửa</button>
+            </span>
+          </div>
+          <div class="card card-pad">
+            <p>Khu căn hộ ven sông tại Long Biên, gồm bốn tòa cao 27 tầng trên tổng diện tích 6,4 ha, bàn giao theo ba đợt từ quý II/2027. Sản phẩm hướng tới nhóm khách gia đình trẻ và khách đầu tư cho thuê dài hạn.</p>
+            <div class="kv kv-3 mt-3" id="kv1-grid"></div>
+            <div class="mt-3">
+              <div class="spread mb-1"><span class="micro muted">Mức độ đầy đủ tài liệu</span><span class="micro" style="font-weight:700;color:var(--verified)">100%</span></div>
+              <div class="bar ok"><i style="width:100%"></i></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Vị trí -->
+        <section class="sec" id="kv2">
+          <div class="sec-head"><span class="n">KHU VỰC 02</span><h2>Vị trí và liên kết vùng</h2><span class="lb lb-public">Công khai</span></div>
+          <div class="card card-pad">
+            <div class="map-ph mb-3"><span class="pin-dot"></span><span class="micro muted">Bản đồ vị trí dự án</span></div>
+            <div class="kv kv-3">
+              <div><div class="k">Cầu Vĩnh Tuy</div><div class="v">2,1 km · 5 phút</div></div>
+              <div><div class="k">Hồ Hoàn Kiếm</div><div class="v">7,4 km · 18 phút</div></div>
+              <div><div class="k">Vành đai 3</div><div class="v">3,6 km · 8 phút</div></div>
+              <div><div class="k">Bệnh viện Tâm Anh</div><div class="v">1,8 km · 4 phút</div></div>
+              <div><div class="k">Trường liên cấp Vinschool</div><div class="v">1,2 km · 3 phút</div></div>
+              <div><div class="k">Sân bay Nội Bài</div><div class="v">26 km · 38 phút</div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Điểm chính -->
+        <section class="sec" id="kv3">
+          <div class="sec-head"><span class="n">KHU VỰC 03</span><h2>Điểm chính của sản phẩm</h2>
+            <span class="sec-act"><span class="open-q" title="DX-018 — cách biểu diễn điểm bán hàng còn chờ RECO chốt">Cần RECO xác nhận</span></span>
+          </div>
+          <div class="card card-pad">
+            <p class="small muted mb-2">Mỗi điểm bán hàng mang nhãn quyền riêng — chỉ điểm mang nhãn Công khai mới được đưa vào trang gửi khách.</p>
+            <div class="bullet"><span class="bi">1</span><div><b>Ba mặt view sông Hồng</b><div class="small muted">Tòa C và D có 62% số căn nhìn trực diện sông.</div></div><span class="lb lb-public">Công khai</span></div>
+            <div class="bullet"><span class="bi">2</span><div><b>Bàn giao nội thất liền tường</b><div class="small muted">Bếp, tủ âm, thiết bị vệ sinh thương hiệu châu Âu.</div></div><span class="lb lb-public">Công khai</span></div>
+            <div class="bullet"><span class="bi">3</span><div><b>Hỗ trợ lãi suất 0% trong 18 tháng</b><div class="small muted">Áp dụng cho đợt 3, ngân hàng liên kết.</div></div><span class="lb lb-public">Công khai</span></div>
+            <div class="bullet"><span class="bi">4</span><div><b>Chiết khấu thanh toán sớm 95%</b><div class="small muted">Mức chiết khấu chưa công bố ra ngoài, chỉ dùng khi tư vấn trực tiếp.</div></div><span class="lb lb-internal">Nội bộ</span></div>
+            <!-- Chính sách hoa hồng: chỉ Tổng giám đốc, Giám đốc dự án, Quản lý kinh doanh
+                 và HCNS & Kế toán được xem (QD-027). Nhân viên bán hàng, Thư ký kinh doanh
+                 và Marketing không thấy dòng này. -->
+            <div class="bullet" data-roles="gd gddu qlkd hcns"><span class="bi">5</span><div><b>Chính sách hoa hồng đợt 3</b><div class="small muted">Chỉ vai trò được chỉ định xem được nội dung này.</div></div><span class="lb lb-restricted">Nội bộ hạn chế</span></div>
+            <div class="bullet" data-roles="nvbh tkkd mkt"><span class="bi">5</span><div><b>Một điểm bán hàng bị ẩn</b><div class="small muted">Nội dung mang nhãn Nội bộ hạn chế, vai trò của anh/chị không được xem.</div></div><span class="lb lb-restricted">Nội bộ hạn chế</span></div>
+          </div>
+        </section>
+
+        <!-- 4. Mặt bằng -->
+        <section class="sec" id="kv4">
+          <div class="sec-head"><span class="n">KHU VỰC 04</span><h2>Mặt bằng</h2><span class="lb lb-public">Công khai</span></div>
+          <div class="gal">
+            <figure><img src="assets/img/celestine.jpg" alt="Mặt bằng tầng điển hình tòa A" loading="lazy"><span class="lb lb-public">Công khai</span></figure>
+            <figure><img src="assets/img/la-perle.webp" alt="Mặt bằng căn 2 phòng ngủ" loading="lazy"><span class="lb lb-public">Công khai</span></figure>
+            <figure><img src="assets/img/palmy.jpg" alt="Mặt bằng căn 3 phòng ngủ" loading="lazy"><span class="lb lb-public">Công khai</span></figure>
+            <figure><img src="assets/img/thien-duong.jpg" alt="Mặt bằng tổng thể khu" loading="lazy"><span class="lb lb-internal">Nội bộ</span></figure>
+          </div>
+          <p class="micro muted mt-2">Tệp gốc nằm ở nhánh <a href="cay-thu-muc.html">Tài liệu bán hàng</a>. Tải xuống luôn là bản PDF có dấu nhận diện người tải.</p>
+        </section>
+
+        <!-- 5. Bảng hàng -->
+        <section class="sec" id="kv5">
+          <div class="sec-head"><span class="n">KHU VỰC 05</span><h2>Bảng hàng và phiếu tính giá</h2><span class="lb lb-internal">Nội bộ</span></div>
+
+          <div class="note mb-3">
+            <strong>Nguồn ngoài.</strong> Bảng hàng của dự án này là <em>liên kết sống</em> tới Google Drive do Chủ đầu tư sở hữu.
+            RECO chỉ xem, không sửa được trong Sales Hub, và liên kết này <strong>không bao giờ được nhúng vào trang gửi khách</strong>.
+          </div>
+
+          <div class="spread mb-2">
+            <div>
+              <h3 style="font-size:1.05rem">Bảng hàng đợt 3 · cập nhật 14/08/2026</h3>
+              <div class="row-tight mt-1">
+                <span class="src src-drive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>Liên kết Drive · chỉ xem</span>
+                <span class="chip">Chủ đầu tư sở hữu</span>
+                <span class="micro muted">Cập nhật lúc 09:15</span>
+              </div>
+            </div>
+            <a class="btn btn-outline btn-sm" href="https://drive.google.com" target="_blank" rel="noopener" data-src="Bảng hàng đợt 3">Mở nguồn</a>
+          </div>
+
+          <div class="filterbar mb-2">
+            <select class="inp" id="bh-block" aria-label="Lọc theo tòa"><option value="">Mọi tòa</option></select>
+            <select class="inp" id="bh-kind" aria-label="Lọc theo loại căn"><option value="">Mọi loại căn</option></select>
+            <select class="inp" id="bh-state" aria-label="Lọc theo tình trạng">
+              <option value="">Mọi tình trạng</option>
+              <option value="con">Còn hàng</option>
+              <option value="giu">Đang giữ chỗ</option>
+              <option value="ban">Đã bán</option>
+            </select>
+            <button type="button" class="btn btn-quiet btn-sm" id="bh-reset">Xóa lọc</button>
+          </div>
+
+          <div class="gd2-band mb-2" data-gd2>
+            <div class="row-tight mb-1"><b>Chọn nhiều căn</b><span class="chip-gd2">Giai đoạn 2 · ngoài báo giá</span></div>
+            <p class="small muted" style="margin:0">Tick ở cột đầu bảng để so sánh 2 – 3 căn cạnh nhau, hoặc gộp nhiều căn vào một đường dẫn gửi khách.</p>
+          </div>
+
+          <div id="bh-bulk"></div>
+
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr>
+                <th class="upick" data-gd2><span class="micro muted">Chọn</span></th>
+                <th>Mã căn</th><th>Tòa · tầng</th><th>Loại</th><th class="r">Diện tích</th><th class="r">Giá bán</th><th>Tình trạng</th>
+              </tr></thead>
+              <tbody id="bh-body"></tbody>
+            </table>
+          </div>
+          <p class="micro muted mt-2">
+            <span id="bh-count" role="status"></span>
+            <span class="open-q" title="DX-017 — bộ thông tin bắt buộc của từng căn/lô">Cần RECO xác nhận</span>
+          </p>
+
+          <div class="card card-pad mt-3">
+            <div class="spread mb-2">
+              <h3>Phiếu tính giá — công cụ nội bộ</h3>
+              <span class="lb lb-internal">Nội bộ</span>
+            </div>
+            <p class="small muted mb-3">Chỉ nhân viên dùng công cụ này. Trang gửi khách chỉ hiển thị <em>kết quả đã duyệt</em>, không có ô nhập để khách tự tính.</p>
+            <div class="grid g-3">
+              <label class="field" style="margin:0"><span class="lab">Căn hộ</span><select class="inp" id="pt-unit"></select></label>
+              <label class="field" style="margin:0"><span class="lab">Phương thức thanh toán</span>
+                <select class="inp" id="pt-method">
+                  <option value="chuan">Chuẩn 30 – 70</option>
+                  <option value="som">Sớm 95%</option>
+                  <option value="vay">Vay hỗ trợ lãi suất</option>
+                </select>
+              </label>
+              <label class="field" style="margin:0"><span class="lab">Chiết khấu áp dụng</span>
+                <select class="inp" id="pt-ck">
+                  <option value="3">Đợt 3 · 3%</option>
+                  <option value="0">Không áp dụng</option>
+                </select>
+              </label>
+            </div>
+            <div class="kv kv-3 mt-3" style="background:var(--soft);padding:14px;border-radius:var(--radius-md)">
+              <div><div class="k">Giá gốc</div><div class="v" id="pt-goc">—</div></div>
+              <div><div class="k">Sau chiết khấu</div><div class="v" id="pt-sau">—</div></div>
+              <div><div class="k" id="pt-dot1-k">Thanh toán đợt 1</div><div class="v" id="pt-dot1">—</div></div>
+            </div>
+            <p class="micro muted mt-2" id="pt-note" role="status"></p>
+            <div class="row mt-3">
+              <button type="button" class="btn btn-primary btn-sm" id="pt-tao">Tạo phiếu tính giá</button>
+              <span class="micro muted">Phiếu phải được duyệt mới xuất hiện trên trang gửi khách.</span>
+            </div>
+            <div class="stack mt-3" id="pt-list"></div>
+          </div>
+        </section>
+
+        <!-- 6. Ảnh, video, tài liệu -->
+        <section class="sec" id="kv6">
+          <div class="sec-head"><span class="n">KHU VỰC 06</span><h2>Ảnh, video và tài liệu</h2>
+            <span class="sec-act"><a class="btn btn-outline btn-sm" href="thu-vien-tai-lieu.html">Mở thư viện đầy đủ</a></span>
+          </div>
+          <div class="gal mb-3">
+            <figure><img src="assets/img/reco-banner.jpg" alt="Phối cảnh tổng thể" loading="lazy"><span class="lb lb-public">Công khai</span></figure>
+            <figure><img src="assets/img/reco-opening.jpg" alt="Lễ mở bán đợt 2" loading="lazy"><span class="lb lb-public">Công khai</span></figure>
+            <figure><img src="assets/img/reco-partnership.jpg" alt="Ký kết hợp tác phân phối" loading="lazy"><span class="lb lb-internal">Nội bộ</span></figure>
+            <figure><img src="assets/img/reco-team.jpg" alt="Đội ngũ kinh doanh dự án" loading="lazy"><span class="lb lb-internal">Nội bộ</span></figure>
+          </div>
+          <div class="card">
+            <div class="frow">
+              <span class="fico pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span>
+              <div class="fmeta"><div class="fname">Tài liệu giới thiệu dự án — bản v4</div>
+                <div class="fsub"><span class="src src-reco">Tệp RECO</span><span class="lb lb-public">Công khai</span><span>Hiệu lực tới 31/12/2026</span></div></div>
+              <div class="fend"><button type="button" class="btn btn-outline btn-sm" data-dl="Tài liệu giới thiệu dự án — bản v4">Tải bản có dấu nhận diện</button></div>
+            </div>
+            <div class="frow">
+              <span class="fico pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span>
+              <div class="fmeta"><div class="fname">Chính sách bán hàng tháng 8/2026</div>
+                <div class="fsub"><span class="src src-reco">Tệp RECO</span><span class="lb lb-internal">Nội bộ</span><span style="color:var(--orange-text);font-weight:700">Hết hiệu lực sau 6 ngày</span></div></div>
+              <div class="fend"><button type="button" class="btn btn-outline btn-sm" data-dl="Chính sách bán hàng tháng 8/2026">Tải</button></div>
+            </div>
+            <div class="frow">
+              <span class="fico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span>
+              <div class="fmeta"><div class="fname">Video giới thiệu căn mẫu 2PN</div>
+                <div class="fsub"><span class="src src-drive">Liên kết Drive · chỉ xem</span><span class="lb lb-public">Công khai</span></div></div>
+              <div class="fend"><a class="btn btn-outline btn-sm" href="https://drive.google.com" target="_blank" rel="noopener" data-src="Video giới thiệu căn mẫu 2PN">Mở nguồn</a></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. Hỏi đáp -->
+        <section class="sec" id="kv7">
+          <div class="sec-head"><span class="n">KHU VỰC 07</span><h2>Hỏi đáp và nội dung tư vấn ngắn</h2><span class="lb lb-public">Công khai</span></div>
+          <p class="small muted mb-2">Nội dung chuẩn do Giám đốc dự án duyệt. Giai đoạn 1 không tự sinh nội dung.</p>
+          <div class="filterbar mb-2">
+            <div class="searchbox" style="display:flex;flex:1 1 200px;min-width:0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="search" id="qa-q" placeholder="Tìm trong hỏi đáp" aria-label="Tìm trong hỏi đáp">
+            </div>
+            <div class="seg" role="group" aria-label="Lọc theo chủ đề" id="qa-seg">
+              <button type="button" data-topic="" aria-pressed="true">Tất cả</button>
+              <button type="button" data-topic="phaply" aria-pressed="false">Pháp lý</button>
+              <button type="button" data-topic="gia" aria-pressed="false">Giá và chính sách</button>
+              <button type="button" data-topic="tiendo" aria-pressed="false">Tiến độ</button>
+              <button type="button" data-topic="bangiao" aria-pressed="false">Bàn giao</button>
+            </div>
+          </div>
+          <div id="qa-list"></div>
+          <p class="micro muted mt-1" id="qa-count" role="status"></p>
+          <div class="row mt-2">
+            <button class="btn btn-outline btn-sm" data-roles="nvbh qlkd" data-open="m-denghi">Câu trả lời chưa đúng? Gửi đề nghị sửa</button>
+            <button class="btn btn-outline btn-sm" data-roles="gddu gd" data-open="m-duyetqa">Duyệt nội dung hỏi đáp</button>
+          </div>
+        </section>
+
+        <!-- 8. Nội dung bán hàng được duyệt -->
+        <section class="sec" id="kv8">
+          <div class="sec-head"><span class="n">KHU VỰC 08</span><h2>Nội dung bán hàng được duyệt</h2><span class="lb lb-public">Công khai</span>
+            <span class="sec-act"><a class="btn btn-primary btn-sm" href="soan-noi-dung.html">Chuẩn bị nội dung</a></span>
+          </div>
+          <div class="grid g-3">
+            <div class="card card-pad">
+              <span class="chip mb-1">Mẫu chung</span>
+              <h3 style="font-size:1rem">Giới thiệu dự án — bản ngắn</h3>
+              <p class="small muted mt-1">Khoảng 90 từ, kèm 4 ảnh đã duyệt. Dùng cho mọi kênh, nhân viên tự cắt gọt khi đăng.</p>
+              <div class="row-tight mt-2"><span class="lb lb-public">Công khai</span><span class="micro muted">Duyệt 09/08/2026</span></div>
+            </div>
+            <div class="card card-pad">
+              <span class="chip mb-1">Mẫu chung</span>
+              <h3 style="font-size:1rem">Chính sách đợt 3 — bản gửi khách</h3>
+              <p class="small muted mt-1">Chỉ nêu phần chính sách được phép công bố, không có chiết khấu nội bộ.</p>
+              <div class="row-tight mt-2"><span class="lb lb-public">Công khai</span><span class="micro muted">Duyệt 11/08/2026</span></div>
+            </div>
+            <div class="card card-pad">
+              <span class="chip mb-1">Mẫu chung</span>
+              <h3 style="font-size:1rem">Bộ ảnh căn mẫu 2PN</h3>
+              <p class="small muted mt-1">12 ảnh đã duyệt, có thể tải hoặc chèn thẳng vào nội dung đăng.</p>
+              <div class="row-tight mt-2"><span class="lb lb-public">Công khai</span><span class="micro muted">Duyệt 05/08/2026</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. Nội bộ Marketing & Kinh doanh -->
+        <section class="sec" id="kv9">
+
+          <!-- Bản đầy đủ: mọi vai trò trừ nhân viên bán hàng -->
+          <div data-roles="gd gddu tkkd qlkd hcns mkt">
+            <div class="sec-head"><span class="n">KHU VỰC 09</span><h2>Nội bộ dành cho Marketing và Kinh doanh</h2>
+              <span class="lb lb-restricted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Khu vực hạn chế</span>
+            </div>
+            <div class="note note-navy mb-3">
+              Khu vực này không bao giờ có phần Công khai và không có chức năng chia sẻ ra ngoài.
+              <strong>Nhân viên bán hàng không có quyền trên nhánh này</strong> — hãy đổi vai trò trên thanh demo để thấy khu vực biến mất.
+            </div>
+
+            <div class="card">
+              <div class="tabs" role="tablist" aria-label="Kịch bản kinh doanh">
+                <button role="tab" id="t-chung" aria-controls="p-chung" aria-selected="true">Kịch bản dùng chung</button>
+                <button role="tab" id="t-toi" aria-controls="p-toi" aria-selected="false" tabindex="-1">Kịch bản của tôi</button>
+                <button role="tab" id="t-ghichu" aria-controls="p-ghichu" aria-selected="false" tabindex="-1">Ghi chú nội bộ</button>
+                <button role="tab" id="t-dexuat" aria-controls="p-dexuat" aria-selected="false" tabindex="-1">Đề xuất nâng lên bản chung</button>
+              </div>
+
+              <div role="tabpanel" id="p-chung" aria-labelledby="t-chung" class="card-body">
+                <div class="spread mb-2">
+                  <p class="small muted" style="margin:0">Áp dụng cho cả đội. Do người được phân quyền tạo và cập nhật.</p>
+                  <button type="button" class="btn btn-outline btn-sm" data-roles="gd gddu mkt" data-new-kb="shared">Thêm kịch bản</button>
+                </div>
+                <div class="stack" id="kb-chung"></div>
+              </div>
+
+              <div role="tabpanel" id="p-toi" aria-labelledby="t-toi" class="card-body" hidden>
+                <div class="spread mb-2">
+                  <p class="small muted" style="margin:0">Kịch bản cá nhân chỉ chủ sở hữu xem được, không chia sẻ trực tiếp cho đồng nghiệp.</p>
+                  <button type="button" class="btn btn-outline btn-sm" data-new-kb="mine">Thêm kịch bản của tôi</button>
+                </div>
+                <div class="stack" id="kb-toi"></div>
+              </div>
+
+              <div role="tabpanel" id="p-ghichu" aria-labelledby="t-ghichu" class="card-body" hidden>
+                <div class="stack" id="kb-ghichu"></div>
+              </div>
+
+              <div role="tabpanel" id="p-dexuat" aria-labelledby="t-dexuat" class="card-body" hidden>
+                <p class="small muted mb-2">Đề xuất từ nhân viên bán hàng, chờ Giám đốc dự án duyệt hoặc từ chối.</p>
+                <div class="stack" id="kb-dexuat"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bản rút gọn cho nhân viên bán hàng -->
+          <div data-roles="nvbh">
+            <div class="sec-head"><span class="n">KHU VỰC 09</span><h2>Kịch bản của tôi</h2><span class="chip">Chỉ mình tôi xem</span></div>
+            <div class="note note-navy mb-3">
+              Khu vực <strong>Nội bộ dành cho Marketing và Kinh doanh</strong> không hiển thị với vai trò Nhân viên bán hàng.
+              Anh/chị chỉ thấy kịch bản cá nhân do chính mình tạo.
+            </div>
+            <div class="spread mb-2">
+              <p class="small muted" style="margin:0">Kịch bản do chính anh/chị tạo, chỉ mình anh/chị xem được.</p>
+              <button type="button" class="btn btn-outline btn-sm" data-new-kb="mine">Thêm kịch bản của tôi</button>
+            </div>
+            <div class="stack" id="kb-nvbh"></div>
+          </div>
+
+        </section>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Nút nổi: gửi đề nghị sửa (vai trò chỉ được gửi đề nghị) -->
+<button class="btn btn-primary fab" data-roles="nvbh qlkd" data-open="m-denghi">Gửi đề nghị sửa</button>
+
+<!-- MH-13 · gửi đề nghị sửa -->
+<div class="modal" id="m-denghi" hidden role="dialog" aria-modal="true" aria-labelledby="m-denghi-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">MH-13</span><h3 id="m-denghi-t">Gửi đề nghị sửa nội dung</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted mb-2">Nhân viên không sửa trực tiếp dữ liệu gốc. Đề nghị sẽ tới người phụ trách dữ liệu kiểm tra rồi cập nhật hoặc từ chối kèm lý do.</p>
+      <label class="field"><span class="lab">Nội dung liên quan</span>
+        <select class="inp" id="dn-area" data-required data-msg="Chọn phần nội dung cần sửa.">
+          <option value="">— Chọn nội dung —</option>
+          <option value="Khu vực 05 · Bảng hàng">The Celestine Riverside — Khu vực 05: Bảng hàng và phiếu tính giá</option>
+          <option value="Khu vực 07 · Hỏi đáp">The Celestine Riverside — Khu vực 07: Hỏi đáp</option>
+          <option value="Tài liệu · Chính sách bán hàng tháng 8/2026">Tài liệu: Chính sách bán hàng tháng 8/2026</option>
+        </select>
+      </label>
+      <label class="field"><span class="lab">Phần cần sửa</span>
+        <textarea class="inp" id="dn-body" data-required data-msg="Nêu rõ chỗ nào sai và nên sửa thành gì." placeholder="Ví dụ: diện tích căn A-12.05 đang ghi 72,4 m² nhưng hợp đồng mẫu ghi 74,2 m²."></textarea>
+      </label>
+      <label class="field"><span class="lab">Căn cứ (tùy chọn)</span><input class="inp" type="text" id="dn-ref" placeholder="Đường dẫn hoặc tên tài liệu đối chiếu"></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button type="button" class="btn btn-primary" id="dn-gui">Gửi đề nghị</button>
+    </div>
+  </div>
+</div>
+
+<!-- MH-12 · đề xuất nâng kịch bản -->
+<div class="modal" id="m-dexuat" hidden role="dialog" aria-modal="true" aria-labelledby="m-dexuat-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">MH-12</span><h3 id="m-dexuat-t">Đề xuất nâng thành bản dùng chung</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted mb-2">Giám đốc dự án sẽ xem và duyệt hoặc từ chối. Kịch bản cá nhân của anh/chị vẫn giữ nguyên.</p>
+      <label class="field"><span class="lab">Kịch bản</span><input class="inp" type="text" id="dx-title" value="" readonly></label>
+      <label class="field"><span class="lab">Lý do đề xuất</span>
+        <textarea class="inp" id="dx-reason" data-required data-msg="Nêu lý do để Giám đốc dự án có căn cứ duyệt." placeholder="Vì sao kịch bản này nên dùng cho cả đội?"></textarea>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button type="button" class="btn btn-primary" id="dx-gui">Gửi đề xuất</button>
+    </div>
+  </div>
+</div>
+
+<!-- KV-01 · cập nhật tổng quan dự án -->
+<div class="modal" id="m-capnhat" hidden role="dialog" aria-modal="true" aria-labelledby="m-capnhat-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Khu vực 01</span><h3 id="m-capnhat-t">Cập nhật tổng quan dự án</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted mb-2">Chỉ người phụ trách dữ liệu sửa được. Mọi thay đổi ghi lại người cập nhật và thời điểm.</p>
+      <label class="field"><span class="lab">Chủ đầu tư</span>
+        <input class="inp" type="text" id="cn-owner" data-required data-msg="Tên chủ đầu tư bắt buộc nhập.">
+      </label>
+      <label class="field"><span class="lab">Tình trạng bán</span>
+        <input class="inp" type="text" id="cn-status" data-required data-msg="Tình trạng bán bắt buộc nhập.">
+      </label>
+      <label class="field"><span class="lab">Quy mô</span>
+        <input class="inp" type="text" id="cn-struct" data-required data-msg="Quy mô bắt buộc nhập.">
+      </label>
+      <label class="field"><span class="lab">Bàn giao dự kiến</span>
+        <input class="inp" type="text" id="cn-handover" data-required data-msg="Mốc bàn giao bắt buộc nhập.">
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button type="button" class="btn btn-primary" id="cn-luu">Lưu cập nhật</button>
+    </div>
+  </div>
+</div>
+
+<!-- KV-07 · duyệt nội dung hỏi đáp -->
+<div class="modal" id="m-duyetqa" hidden role="dialog" aria-modal="true" aria-labelledby="m-duyetqa-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Khu vực 07</span><h3 id="m-duyetqa-t">Duyệt nội dung hỏi đáp</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted mb-2">Câu hỏi đáp chỉ hiển thị với nhân viên và trang gửi khách sau khi Giám đốc dự án duyệt.</p>
+      <div class="stack" id="dq-list"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- KV-09 · thêm và sửa kịch bản -->
+<div class="modal" id="m-kichban" hidden role="dialog" aria-modal="true" aria-labelledby="m-kichban-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">MH-12</span><h3 id="m-kichban-t">Thêm kịch bản</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted mb-2" id="kb-hint"></p>
+      <label class="field"><span class="lab">Tiêu đề</span>
+        <input class="inp" type="text" id="kb-title" data-required data-msg="Tiêu đề bắt buộc nhập." placeholder="Ví dụ: Xử lý phản đối về tiến độ">
+      </label>
+      <label class="field"><span class="lab">Nội dung</span>
+        <textarea class="inp" id="kb-body" data-required data-msg="Nội dung kịch bản bắt buộc nhập." placeholder="Tóm tắt cách nói, các ý bắt buộc và điều không được hứa với khách."></textarea>
+      </label>
+      <label class="field" id="kb-label-field"><span class="lab">Nhãn quyền</span>
+        <select class="inp" id="kb-label">
+          <option value="internal">Nội bộ</option>
+          <option value="restricted">Nội bộ hạn chế</option>
+        </select>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button type="button" class="btn btn-primary" id="kb-luu">Lưu kịch bản</button>
+    </div>
+  </div>
+</div>
+
+<!-- KV-09 · từ chối đề xuất kịch bản -->
+<div class="modal" id="m-tuchoi-kb" hidden role="dialog" aria-modal="true" aria-labelledby="m-tuchoi-kb-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><h3 id="m-tuchoi-kb-t">Từ chối đề xuất</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted mb-2">Lý do sẽ được gửi lại cho người đề xuất — bắt buộc nhập.</p>
+      <label class="field"><span class="lab">Kịch bản</span><input class="inp" type="text" id="tc-title" value="" readonly></label>
+      <label class="field"><span class="lab">Lý do từ chối</span>
+        <textarea class="inp" id="tc-reason" data-required data-msg="Lý do từ chối bắt buộc nhập." placeholder="Ví dụ: nội dung có nhắc mức chiết khấu nội bộ, không dùng cho cả đội được."></textarea>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button type="button" class="btn btn-danger" id="tc-gui">Từ chối kèm lý do</button>
+    </div>
+  </div>
+</div>
+
+<!-- KV-05 · so sánh căn (Giai đoạn 2) -->
+<div class="modal" id="m-sosanh" hidden role="dialog" aria-modal="true" aria-labelledby="m-sosanh-t">
+  <div class="modal-box" style="max-width:760px">
+    <div class="modal-head">
+      <div><span class="chip-gd2">Giai đoạn 2 · ngoài báo giá</span><h3 id="m-sosanh-t" class="mt-1">So sánh căn</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted mb-2">So sánh nhanh khi khách đang phân vân giữa vài căn. Số liệu lấy thẳng từ bảng hàng, không nhân thêm phép tính nào.</p>
+      <div class="cmp" id="ss-list"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var S = RECO.store, esc = RECO_DATA.esc, PJ = 'celestine';
+  var ME = RECO.current.who;
+  function id(x) { return document.getElementById(x); }
+
+  /* Khung điện thoại thay #page bằng iframe trỏ về chính màn này — bản ngoài không có nội dung để vẽ */
+  var root = id('kv1-grid');
+  if (!root) return;
+
+  /* Màn bị thay khi đổi trang ở bản gói — hủy đăng ký để không vẽ vào DOM đã biến mất */
+  var offs = [];
+  function watch(kho, fn) {
+    offs.push(S.on(kho, function () {
+      if (!document.body.contains(root)) { offs.forEach(function (f) { f(); }); offs = []; return; }
+      fn();
+    }));
+  }
+  function pad(v) { return (v < 10 ? '0' : '') + v; }
+  function today() { var d = new Date(); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }
+  function clock() { var d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+  function dong(trieu) { return Math.round(trieu * 1e6).toLocaleString('vi-VN') + ' đ'; }
+  function m2(v) { return v.toFixed(1).replace('.', ',') + ' m²'; }
+  function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd'); }
+  function project() { return S.find('projects', PJ); }
+
+  RECO.trackRecent(project().name, project().place + ' · ' + project().typeName, 'du-an-chi-tiet.html', 'layers');
+
+  document.querySelectorAll('[data-page-link]').forEach(function (a) {
+    a.setAttribute('href', RECO.link(a.getAttribute('data-page-link')));
+  });
+
+  /* ================= Khu vực 01 · Tổng quan ================= */
+  function kv1() {
+    var p = project();
+    function cell(k, v) { return '<div><div class="k">' + k + '</div><div class="v">' + esc(v) + '</div></div>'; }
+    id('kv1-grid').innerHTML =
+      cell('Chủ đầu tư', p.owner) +
+      cell('Đơn vị phân phối', 'RECO Group') +
+      cell('Tình trạng bán', p.statusText) +
+      cell('Quy mô', p.struct) +
+      cell('Bàn giao dự kiến', p.handover) +
+      cell('Cập nhật gần nhất', p.updated + (p.updatedBy ? ' · ' + p.updatedBy : ''));
+    var lead = document.querySelector('.pj-hero .lead');
+    if (lead) lead.textContent = p.place + ' · ' + p.typeName + ' · ' + p.struct;
+  }
+
+  function fillCapNhat() {
+    var p = project();
+    id('cn-owner').value = p.owner;
+    id('cn-status').value = p.statusText;
+    id('cn-struct').value = p.struct;
+    id('cn-handover').value = p.handover;
+  }
+  document.querySelectorAll('[data-open="m-capnhat"]').forEach(function (b) {
+    b.addEventListener('click', fillCapNhat);
+  });
+  id('cn-luu').addEventListener('click', function () {
+    var box = id('m-capnhat');
+    if (!RECO.validate(box)) return;
+    var btn = this;
+    RECO.busy(btn, 'Đang lưu…', 900, function () {
+      S.update('projects', PJ, {
+        owner: id('cn-owner').value.trim(),
+        statusText: id('cn-status').value.trim(),
+        struct: id('cn-struct').value.trim(),
+        handover: id('cn-handover').value.trim(),
+        updated: 'Hôm nay, ' + clock(),
+        updatedBy: ME
+      });
+      RECO.closeModal('m-capnhat');
+      RECO.toast('Đã cập nhật tổng quan dự án');
+    });
+  });
+
+  /* ================= Khu vực 05 · Bảng hàng ================= */
+  var picked = {};
+  function units() { return S.get('units').filter(function (u) { return u.pj === PJ; }); }
+  function totalUnits() {
+    var m = /([\d.]+)\s*(?:căn|lô)/.exec(project().struct || '');
+    return m ? m[1] : String(units().length);
+  }
+  function fillUnitFilters() {
+    function opts(sel, values, keep) {
+      var el = id(sel), first = el.options[0].outerHTML;
+      el.innerHTML = first + values.map(function (v) {
+        return '<option value="' + esc(v) + '">' + esc(v) + '</option>';
+      }).join('');
+      el.value = values.indexOf(keep) >= 0 ? keep : '';
+    }
+    function uniq(key) {
+      var out = [];
+      units().forEach(function (u) { if (out.indexOf(u[key]) < 0) out.push(u[key]); });
+      return out;
+    }
+    opts('bh-block', uniq('block'), id('bh-block').value);
+    opts('bh-kind', uniq('kind'), id('bh-kind').value);
+  }
+
+  function paintUnits() {
+    var fb = id('bh-block').value, fk = id('bh-kind').value, fs = id('bh-state').value;
+    var list = units().filter(function (u) {
+      return (!fb || u.block === fb) && (!fk || u.kind === fk) && (!fs || u.state === fs);
+    });
+
+    if (!list.length) {
+      id('bh-body').innerHTML = '<tr><td data-l="" colspan="7">' +
+        RECO_DATA.empty('Không có căn nào khớp bộ lọc', 'Anh/chị bỏ bớt một điều kiện để xem lại toàn bộ bảng hàng.',
+          '<button type="button" class="btn btn-primary" data-clear-bh>Xóa lọc</button>') + '</td></tr>';
+      id('bh-body').querySelector('[data-clear-bh]').addEventListener('click', clearUnitFilters);
+    } else {
+      id('bh-body').innerHTML = list.map(function (u) {
+        var st = S.UNIT_STATE[u.state] || S.UNIT_STATE.con;
+        return '<tr>' +
+          '<td class="upick" data-l="Chọn căn"><input type="checkbox" data-pick="' + esc(u.id) + '"' +
+            (picked[u.id] ? ' checked' : '') + ' aria-label="Chọn căn ' + esc(u.id) + '"></td>' +
+          '<td data-l="Mã căn"><b>' + esc(u.id) + '</b></td>' +
+          '<td data-l="Tòa · tầng">' + esc(u.block) + (u.floor ? ' · ' + pad(u.floor) : '') + '</td>' +
+          '<td data-l="Loại">' + esc(u.kind) + '</td>' +
+          '<td data-l="Diện tích" class="r">' + m2(u.area) + '</td>' +
+          '<td data-l="Giá bán" class="r"><b>' + S.billion(u.price) + '</b></td>' +
+          '<td data-l="Tình trạng"><span class="st ' + st.cls + '">' + st.text + '</span></td>' +
+        '</tr>';
+      }).join('');
+    }
+    id('bh-count').textContent = 'Hiển thị ' + list.length + ' trong ' + totalUnits() + ' căn · dữ liệu mẫu. ';
+    paintBulk();
+  }
+
+  function clearUnitFilters() {
+    id('bh-block').value = ''; id('bh-kind').value = ''; id('bh-state').value = '';
+    paintUnits();
+  }
+  ['bh-block', 'bh-kind', 'bh-state'].forEach(function (x) { id(x).addEventListener('change', paintUnits); });
+  id('bh-reset').addEventListener('click', clearUnitFilters);
+
+  id('bh-body').addEventListener('change', function (e) {
+    var cb = e.target.closest ? e.target.closest('[data-pick]') : null;
+    if (!cb) return;
+    var uid = cb.getAttribute('data-pick');
+    if (cb.checked) picked[uid] = true; else delete picked[uid];
+    paintBulk();
+  });
+
+  function pickedIds() { return Object.keys(picked); }
+
+  /* Chọn nhiều căn để so sánh hoặc gộp một đường dẫn — ngoài phạm vi Giai đoạn 1 */
+  function paintBulk() {
+    var ids = pickedIds(), box = id('bh-bulk');
+    if (!ids.length) { box.innerHTML = ''; return; }
+    box.innerHTML = '<div class="bulkbar" data-gd2>' +
+      '<b>Đã chọn ' + ids.length + ' căn</b>' +
+      '<span class="chip-gd2">Giai đoạn 2 · ngoài báo giá</span>' +
+      '<button type="button" class="btn btn-primary btn-sm" data-bulk="cmp">So sánh</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-bulk="share">Gửi một đường dẫn</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-bulk="clear">Bỏ chọn</button>' +
+    '</div>';
+    box.querySelector('[data-bulk="cmp"]').addEventListener('click', compare);
+    box.querySelector('[data-bulk="share"]').addEventListener('click', shareMany);
+    box.querySelector('[data-bulk="clear"]').addEventListener('click', function () {
+      picked = {}; paintUnits();
+    });
+  }
+
+  function compare() {
+    var ids = pickedIds();
+    if (ids.length < 2) { RECO.toast('Chọn ít nhất 2 căn để so sánh', { danger: true }); return; }
+    if (ids.length > 3) { RECO.toast('Chỉ so sánh tối đa 3 căn một lần', { danger: true }); return; }
+    id('ss-list').innerHTML = ids.map(function (uid) {
+      var u = S.find('units', uid);
+      if (!u) return '';
+      var st = S.UNIT_STATE[u.state] || S.UNIT_STATE.con;
+      return '<div class="card card-pad">' +
+        '<div class="row-tight mb-1"><b>' + esc(u.id) + '</b><span class="st ' + st.cls + '">' + st.text + '</span></div>' +
+        '<div class="k mt-2">Tòa · tầng</div><div>' + esc(u.block) + (u.floor ? ' · ' + pad(u.floor) : '') + '</div>' +
+        '<div class="k mt-2">Loại</div><div>' + esc(u.kind) + '</div>' +
+        '<div class="k mt-2">Diện tích</div><div>' + m2(u.area) + '</div>' +
+        '<div class="k mt-2">Hướng</div><div>' + esc(u.dir) + '</div>' +
+        '<div class="k mt-2">Giá bán</div><div><b>' + S.billion(u.price) + '</b></div>' +
+        '<div class="k mt-2">Giá trên m²</div><div>' + dong(u.price / u.area) + '</div>' +
+      '</div>';
+    }).join('');
+    RECO.openModal('m-sosanh');
+  }
+
+  function shareMany(e) {
+    var btn = e.currentTarget, ids = pickedIds();
+    RECO.confirm({
+      eyebrow: 'Giai đoạn 2 · ngoài báo giá',
+      title: 'Tạo một đường dẫn cho ' + ids.length + ' căn?',
+      body: '<p class="small muted">Khách nhận một trang duy nhất gồm các căn: <b>' + esc(ids.join(', ')) + '</b>.</p>' +
+            '<p class="micro muted mt-2">Trang gửi khách chỉ hiển thị nội dung mang nhãn Công khai. Đường dẫn còn hiệu lực 7 ngày, thu hồi được bất cứ lúc nào.</p>',
+      okText: 'Tạo đường dẫn',
+      onOk: function () {
+        RECO.busy(btn, 'Đang tạo đường dẫn…', 900, function () {
+          var link = S.add('shareLinks', {
+            slug: '/t/' + PJ + '-' + ids.length + 'can-' + Math.random().toString(36).slice(2, 6),
+            pj: PJ, kind: 'gia', note: 'Gộp ' + ids.length + ' căn: ' + ids.join(', '),
+            by: ME, at: today() + ' · ' + clock(), days: 7, state: 'live'
+          });
+          picked = {}; paintUnits();
+          RECO.toast('Đã tạo đường dẫn ' + link.slug + ' · Còn hiệu lực 7 ngày', {
+            undo: function () { S.remove('shareLinks', link.id); }
+          });
+        });
+      }
+    });
+  }
+
+  /* ================= Phiếu tính giá ================= */
+  var METHOD = {
+    chuan: { first: 0.30, extra: 0, text: 'Chuẩn 30 – 70' },
+    som: { first: 0.95, extra: 0.05, text: 'Sớm 95%' },
+    vay: { first: 0.30, extra: 0, text: 'Vay hỗ trợ lãi suất' }
+  };
+  function fillUnitPicker() {
+    var sel = id('pt-unit'), keep = sel.value;
+    var list = units();
+    sel.innerHTML = list.map(function (u) {
+      var st = S.UNIT_STATE[u.state] || S.UNIT_STATE.con;
+      return '<option value="' + esc(u.id) + '">' + esc(u.id) + ' · ' + m2(u.area) + ' · ' + st.text + '</option>';
+    }).join('');
+    if (keep && list.some(function (u) { return u.id === keep; })) sel.value = keep;
+  }
+  function calc() {
+    var u = S.find('units', id('pt-unit').value);
+    var m = METHOD[id('pt-method').value] || METHOD.chuan;
+    var ck = parseFloat(id('pt-ck').value) / 100;
+    var btn = id('pt-tao');
+    if (!u) {
+      id('pt-goc').textContent = id('pt-sau').textContent = id('pt-dot1').textContent = '—';
+      id('pt-note').textContent = 'Dự án chưa có căn nào trong bảng hàng.';
+      btn.setAttribute('aria-disabled', 'true');
+      return;
+    }
+    btn.removeAttribute('aria-disabled');
+    var off = ck + m.extra;
+    var sau = u.price * (1 - off);
+    id('pt-goc').textContent = dong(u.price);
+    id('pt-sau').textContent = dong(sau);
+    id('pt-dot1').textContent = dong(sau * m.first);
+    id('pt-dot1-k').textContent = 'Thanh toán đợt 1 (' + Math.round(m.first * 100) + '%)';
+    id('pt-note').textContent =
+      'Căn ' + u.id + ' · ' + m2(u.area) + ' · ' + (S.UNIT_STATE[u.state] || S.UNIT_STATE.con).text +
+      '. Chiết khấu áp dụng ' + Math.round(off * 100) + '%' +
+      (m.extra ? ' (đợt 3 ' + Math.round(ck * 100) + '% + thanh toán sớm ' + Math.round(m.extra * 100) + '%)' : '') +
+      '. ' + m.text + ' — phép tính cơ bản, không mô phỏng lịch trả nợ hay lãi vay.';
+  }
+  ['pt-unit', 'pt-method', 'pt-ck'].forEach(function (x) { id(x).addEventListener('change', calc); });
+
+  id('pt-tao').addEventListener('click', function () {
+    var btn = this;
+    var u = S.find('units', id('pt-unit').value);
+    if (!u) return;
+    var m = METHOD[id('pt-method').value] || METHOD.chuan;
+    var off = parseFloat(id('pt-ck').value) / 100 + m.extra;
+    RECO.busy(btn, 'Đang tạo phiếu…', 900, function () {
+      S.add('approvals', {
+        name: 'Phiếu tính giá căn ' + u.id, pj: PJ, kind: 'Phiếu tính giá',
+        by: ME, at: 'vừa xong', label: 'internal', state: 'pending', icon: 'xls',
+        preview: 'Căn ' + u.id + ' · ' + m2(u.area) + ' · ' + m.text +
+                 ' · chiết khấu ' + Math.round(off * 100) + '% · sau chiết khấu ' + dong(u.price * (1 - off)) +
+                 ' · đợt 1 ' + dong(u.price * (1 - off) * m.first) + '.'
+      });
+      RECO.toast('Đã tạo phiếu tính giá, chờ Giám đốc dự án duyệt trước khi gửi khách');
+    });
+  });
+
+  function paintPhieu() {
+    var list = S.get('approvals').filter(function (a) { return a.pj === PJ && a.kind === 'Phiếu tính giá'; });
+    id('pt-list').innerHTML = list.map(function (a) {
+      var done = a.state === 'approved';
+      return '<div class="card card-pad" style="box-shadow:none">' +
+        '<div class="spread"><h4 style="font-size:.95rem">' + esc(a.name) + '</h4>' +
+        '<span class="st ' + (done ? 'st-live' : 'st-wait') + '">' +
+          (done ? 'Đã duyệt' : 'Chờ Giám đốc dự án duyệt') + '</span></div>' +
+        '<p class="small muted mt-1">' + esc(a.preview) + '</p>' +
+        '<p class="micro muted mt-1">' + esc(a.by) + ' tạo · ' + esc(a.at) + '</p>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* ================= Khu vực 07 · Hỏi đáp ================= */
+  var topic = '';
+  var CAN_APPROVE_QA = ['gd', 'gddu'].indexOf(RECO.role) >= 0;
+  function paintQA() {
+    var t = norm(id('qa-q').value.trim());
+    var list = S.get('qas').filter(function (q) {
+      if (q.pj !== PJ || !S.canSee(q.label, RECO.role)) return false;
+      if (q.state !== 'approved' && !CAN_APPROVE_QA) return false;
+      if (topic && q.topic !== topic) return false;
+      return !t || norm(q.q + ' ' + q.a).indexOf(t) >= 0;
+    });
+
+    if (!list.length) {
+      id('qa-list').innerHTML = RECO_DATA.empty('Chưa có câu hỏi đáp nào khớp',
+        'Anh/chị đổi chủ đề hoặc xóa từ khóa để xem lại toàn bộ bộ hỏi đáp đã duyệt.',
+        '<button type="button" class="btn btn-primary" id="qa-clear">Xem tất cả</button>');
+      id('qa-clear').addEventListener('click', function () {
+        id('qa-q').value = ''; topic = '';
+        id('qa-seg').querySelectorAll('button').forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b.getAttribute('data-topic') === ''));
+        });
+        paintQA();
+      });
+      id('qa-count').textContent = '';
+      return;
+    }
+
+    id('qa-list').innerHTML = '<div class="qa">' + list.map(function (q, i) {
+      return '<details' + (i === 0 ? ' open' : '') + '>' +
+        '<summary>' + esc(q.q) + '</summary>' +
+        '<div class="qa-body"><p>' + esc(q.a) + '</p>' +
+          '<div class="row-tight mt-2">' +
+            (q.ref ? '<span class="chip">Tài liệu liên quan: ' + esc(q.ref) + '</span>' : '') +
+            S.label(q.label) +
+            (q.state === 'approved' ? '' : '<span class="st st-wait">Chờ duyệt</span>') +
+            '<span class="chip">' + esc(S.TOPICS[q.topic] || 'Khác') + '</span>' +
+          '</div>' +
+        '</div></details>';
+    }).join('') + '</div>';
+    id('qa-count').textContent = 'Hiển thị ' + list.length + ' câu' + (topic ? ' · chủ đề ' + S.TOPICS[topic] : '');
+  }
+  id('qa-q').addEventListener('input', paintQA);
+  id('qa-seg').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-topic]') : null;
+    if (!b) return;
+    topic = b.getAttribute('data-topic');
+    id('qa-seg').querySelectorAll('button').forEach(function (x) {
+      x.setAttribute('aria-pressed', String(x === b));
+    });
+    paintQA();
+  });
+
+  function paintDuyetQA() {
+    var list = S.get('qas').filter(function (q) { return q.pj === PJ && q.state !== 'approved'; });
+    if (!list.length) {
+      id('dq-list').innerHTML = RECO_DATA.empty('Không còn câu nào chờ duyệt',
+        'Mọi câu hỏi đáp của dự án này đã được duyệt và đang hiển thị cho nhân viên.');
+      return;
+    }
+    id('dq-list').innerHTML = list.map(function (q) {
+      return '<div class="card card-pad" style="box-shadow:none">' +
+        '<div class="spread"><h4 style="font-size:.95rem">' + esc(q.q) + '</h4><span class="st st-wait">Chờ duyệt</span></div>' +
+        '<p class="small muted mt-1">' + esc(q.a) + '</p>' +
+        '<div class="row mt-2"><button type="button" class="btn btn-primary btn-sm" data-qa-ok="' + esc(q.id) + '">Duyệt</button>' +
+          S.label(q.label) + '</div>' +
+      '</div>';
+    }).join('');
+    id('dq-list').querySelectorAll('[data-qa-ok]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var qid = b.getAttribute('data-qa-ok');
+        var q = S.find('qas', qid);
+        RECO.confirm({
+          eyebrow: 'Khu vực 07 · Hỏi đáp',
+          title: 'Duyệt câu hỏi đáp này?',
+          body: '<p class="small" style="font-weight:700;margin-bottom:6px">' + esc(q.q) + '</p>' +
+                '<div class="note note-navy small">' + esc(q.a) + '</div>' +
+                '<p class="micro muted mt-2">Sau khi duyệt, câu này hiển thị cho mọi vai trò được phép xem nhãn ' +
+                (S.LABELS[q.label] || S.LABELS.internal).text + '.</p>',
+          okText: 'Duyệt và công bố',
+          onOk: function () {
+            RECO.busy(b, 'Đang công bố…', 900, function () {
+              S.update('qas', qid, { state: 'approved' });
+              RECO.toast('Đã duyệt câu hỏi đáp', {
+                undo: function () { S.update('qas', qid, { state: 'pending' }); }
+              });
+            });
+          }
+        });
+      });
+    });
+  }
+
+  /* ================= Khu vực 09 · Kịch bản và ghi chú ================= */
+  function scriptCard(s, kind) {
+    var head = '<div class="spread"><h4>' + esc(s.title) + '</h4>' +
+      (kind === 'proposal'
+        ? '<span class="st ' + (s.state === 'rejected' ? 'st-stop' : 'st-wait') + '">' +
+          (s.state === 'rejected' ? 'Đã từ chối' : 'Chờ duyệt') + '</span>'
+        : kind === 'mine' ? '<span class="chip">Của tôi</span>' : S.label(s.label)) +
+      '</div>';
+
+    var meta = '<p class="small muted mt-1">' + esc(s.body) + '</p>' +
+      '<p class="micro muted mt-1">' + esc(s.by) + ' · ' + esc(s.at) +
+      (kind === 'proposal' && s.reason ? ' · “' + esc(s.reason) + '”' : '') + '</p>' +
+      (s.state === 'rejected' && s.rejectReason
+        ? '<div class="note note-danger small mt-2"><strong>Lý do từ chối:</strong> ' + esc(s.rejectReason) + '</div>' : '');
+
+    var act = '';
+    if (kind === 'shared') {
+      act = '<div class="row mt-2" data-roles="gd gddu mkt">' +
+        '<button type="button" class="btn btn-outline btn-sm" data-edit="' + esc(s.id) + '">Sửa</button></div>';
+    } else if (kind === 'mine') {
+      act = '<div class="row mt-2">' +
+        '<button type="button" class="btn btn-outline btn-sm" data-edit="' + esc(s.id) + '">Sửa</button>' +
+        (s.proposed
+          ? '<span class="chip">Đã gửi đề xuất · chờ duyệt</span>'
+          : '<button type="button" class="btn btn-primary btn-sm" data-propose="' + esc(s.id) + '">Đề xuất thành bản dùng chung</button>') +
+        '</div>';
+    } else if (kind === 'proposal' && s.state === 'pending') {
+      act = '<div class="row mt-2" data-roles="gddu gd">' +
+        '<button type="button" class="btn btn-primary btn-sm" data-approve="' + esc(s.id) + '">Duyệt thành bản chung</button>' +
+        '<button type="button" class="btn btn-outline btn-sm" data-reject="' + esc(s.id) + '">Từ chối</button></div>' +
+        '<p class="micro muted mt-2" data-roles="tkkd qlkd hcns mkt">Chỉ Giám đốc dự án duyệt được đề xuất này.</p>';
+    }
+    return '<div class="card card-pad" style="box-shadow:none">' + head + meta + act + '</div>';
+  }
+
+  function scripts(scope) {
+    return S.get('scripts').filter(function (s) {
+      if (s.pj !== PJ || s.scope !== scope) return false;
+      if (scope === 'shared') return S.canSee(s.label, RECO.role);
+      if (scope === 'mine') return s.by === ME;
+      return true;
+    });
+  }
+
+  function paintKB() {
+    var chung = scripts('shared'), toi = scripts('mine'), dexuat = scripts('proposal');
+
+    var boxChung = id('kb-chung');
+    boxChung.innerHTML = chung.length ? chung.map(function (s) { return scriptCard(s, 'shared'); }).join('')
+      : RECO_DATA.empty('Chưa có kịch bản dùng chung', 'Người được phân quyền tạo kịch bản đầu tiên cho cả đội dùng.');
+
+    var mineHtml = toi.length ? toi.map(function (s) { return scriptCard(s, 'mine'); }).join('')
+      : RECO_DATA.empty('Anh/chị chưa có kịch bản riêng', 'Kịch bản cá nhân chỉ mình anh/chị xem được, không chia sẻ trực tiếp cho đồng nghiệp.');
+    id('kb-toi').innerHTML = mineHtml;
+    if (id('kb-nvbh')) id('kb-nvbh').innerHTML = mineHtml;
+
+    var notes = S.get('notes').filter(function (n) { return n.pj === PJ; });
+    id('kb-ghichu').innerHTML = notes.length
+      ? notes.map(function (n) {
+          return '<div class="note note-navy"><strong>' + esc(n.at) + ' · ' + esc(n.by) + ':</strong> ' + esc(n.body) + '</div>';
+        }).join('')
+      : RECO_DATA.empty('Chưa có ghi chú nội bộ', 'Ghi chú dùng để nhắc cả đội những thay đổi chưa kịp vào tài liệu chính thức.');
+
+    id('kb-dexuat').innerHTML = dexuat.length ? dexuat.map(function (s) { return scriptCard(s, 'proposal'); }).join('')
+      : RECO_DATA.empty('Không có đề xuất nào đang chờ', 'Khi nhân viên đề xuất nâng kịch bản cá nhân lên bản dùng chung, mục sẽ hiện ở đây.');
+
+    ['kb-chung', 'kb-toi', 'kb-ghichu', 'kb-dexuat', 'kb-nvbh'].forEach(function (x) {
+      if (id(x)) RECO.applyRoles(id(x));
+    });
+    bindKB();
+  }
+
+  function bindKB() {
+    document.querySelectorAll('[data-edit]').forEach(function (b) {
+      b.addEventListener('click', function () { openKB('edit', null, b.getAttribute('data-edit')); });
+    });
+    document.querySelectorAll('[data-propose]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var s = S.find('scripts', b.getAttribute('data-propose'));
+        if (!s) return;
+        var box = id('m-dexuat');
+        box.setAttribute('data-kb', s.id);
+        id('dx-title').value = s.title;
+        id('dx-reason').value = '';
+        RECO.openModal('m-dexuat');
+      });
+    });
+    document.querySelectorAll('[data-approve]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var sid = b.getAttribute('data-approve');
+        var s = S.find('scripts', sid);
+        if (!s) return;
+        RECO.confirm({
+          eyebrow: 'Khu vực 09 · Kịch bản',
+          title: 'Duyệt thành bản dùng chung?',
+          body: '<p class="small" style="font-weight:700;margin-bottom:6px">' + esc(s.title) + '</p>' +
+                '<div class="note note-navy small">' + esc(s.body) + '</div>' +
+                '<p class="micro muted mt-2">' + esc(s.by) + ' đề xuất · ' + esc(s.at) +
+                '. Sau khi duyệt, kịch bản chuyển sang tab Kịch bản dùng chung và cả đội dùng được.</p>',
+          okText: 'Duyệt thành bản chung',
+          onOk: function () {
+            RECO.busy(b, 'Đang duyệt…', 900, function () {
+              S.update('scripts', sid, { scope: 'shared', state: 'approved', at: today() });
+              RECO.toast('Đã duyệt — kịch bản trở thành bản dùng chung', {
+                undo: function () { S.update('scripts', sid, { scope: 'proposal', state: 'pending' }); }
+              });
+            });
+          }
+        });
+      });
+    });
+    document.querySelectorAll('[data-reject]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var s = S.find('scripts', b.getAttribute('data-reject'));
+        if (!s) return;
+        var box = id('m-tuchoi-kb');
+        box.setAttribute('data-kb', s.id);
+        id('tc-title').value = s.title;
+        id('tc-reason').value = '';
+        RECO.openModal('m-tuchoi-kb');
+      });
+    });
+  }
+
+  function openKB(mode, scope, sid) {
+    var box = id('m-kichban');
+    box.setAttribute('data-mode', mode);
+    box.setAttribute('data-kb', sid || '');
+    var s = sid ? S.find('scripts', sid) : null;
+    var sc = s ? s.scope : scope;
+    box.setAttribute('data-scope', sc);
+    id('m-kichban-t').textContent = mode === 'edit' ? 'Sửa kịch bản' : (sc === 'mine' ? 'Thêm kịch bản của tôi' : 'Thêm kịch bản dùng chung');
+    id('kb-hint').textContent = sc === 'mine'
+      ? 'Kịch bản cá nhân chỉ mình anh/chị xem được. Muốn cả đội dùng thì gửi đề xuất để Giám đốc dự án duyệt.'
+      : 'Kịch bản dùng chung áp dụng cho cả đội ngay sau khi lưu.';
+    id('kb-title').value = s ? s.title : '';
+    id('kb-body').value = s ? s.body : '';
+    id('kb-label').value = s ? s.label : 'internal';
+    id('kb-label-field').hidden = sc === 'mine';
+    RECO.openModal('m-kichban');
+  }
+
+  document.querySelectorAll('[data-new-kb]').forEach(function (b) {
+    b.addEventListener('click', function () { openKB('new', b.getAttribute('data-new-kb'), null); });
+  });
+
+  id('kb-luu').addEventListener('click', function () {
+    var box = id('m-kichban'), btn = this;
+    if (!RECO.validate(box)) return;
+    var scope = box.getAttribute('data-scope') || 'shared';
+    var patch = {
+      title: id('kb-title').value.trim(),
+      body: id('kb-body').value.trim(),
+      label: scope === 'mine' ? 'internal' : id('kb-label').value,
+      at: today()
+    };
+    RECO.busy(btn, 'Đang lưu…', 900, function () {
+      if (box.getAttribute('data-mode') === 'edit') {
+        S.update('scripts', box.getAttribute('data-kb'), patch);
+        RECO.toast('Đã lưu kịch bản “' + patch.title + '”');
+      } else {
+        patch.pj = PJ; patch.scope = scope; patch.by = ME; patch.proposed = false;
+        S.add('scripts', patch);
+        RECO.toast('Đã thêm kịch bản “' + patch.title + '”');
+      }
+      RECO.closeModal('m-kichban');
+    });
+  });
+
+  id('dx-gui').addEventListener('click', function () {
+    var box = id('m-dexuat'), btn = this;
+    if (!RECO.validate(box)) return;
+    var s = S.find('scripts', box.getAttribute('data-kb'));
+    if (!s) return;
+    var reason = id('dx-reason').value.trim();
+    RECO.busy(btn, 'Đang gửi…', 900, function () {
+      S.add('scripts', {
+        pj: PJ, scope: 'proposal', title: s.title, body: s.body, label: s.label,
+        by: ME, at: today(), reason: reason, state: 'pending'
+      });
+      S.update('scripts', s.id, { proposed: true });
+      RECO.closeModal('m-dexuat');
+      RECO.toast('Đã gửi đề xuất tới Giám đốc dự án');
+    });
+  });
+
+  id('tc-gui').addEventListener('click', function () {
+    var box = id('m-tuchoi-kb'), btn = this;
+    if (!RECO.validate(box)) return;
+    var sid = box.getAttribute('data-kb');
+    var reason = id('tc-reason').value.trim();
+    RECO.busy(btn, 'Đang gửi…', 900, function () {
+      S.update('scripts', sid, { state: 'rejected', rejectReason: reason });
+      RECO.closeModal('m-tuchoi-kb');
+      RECO.toast('Đã từ chối kèm lý do gửi cho người đề xuất', { danger: true });
+    });
+  });
+
+  /* ================= Tải tệp và nguồn ngoài ================= */
+  document.querySelectorAll('[data-dl]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      RECO.busy(b, 'Đang tạo bản có dấu nhận diện…', 1400, function () {
+        RECO.toast('Đã tạo bản có dấu nhận diện của ' + ME + ' — ' + b.getAttribute('data-dl'));
+      });
+    });
+  });
+  document.querySelectorAll('[data-src]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      RECO.toast('Mở liên kết sống của Chủ đầu tư trong tab mới — RECO chỉ xem, không sửa được trong Sales Hub');
+    });
+  });
+
+  /* ================= MH-13 · gửi đề nghị sửa ================= */
+  document.querySelectorAll('[data-open="m-denghi"]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      id('dn-area').value = ''; id('dn-body').value = ''; id('dn-ref').value = '';
+      id('m-denghi').querySelectorAll('.err').forEach(function (x) { x.remove(); });
+      id('m-denghi').querySelectorAll('[aria-invalid]').forEach(function (x) { x.removeAttribute('aria-invalid'); });
+    });
+  });
+  id('dn-gui').addEventListener('click', function () {
+    var box = id('m-denghi'), btn = this;
+    if (!RECO.validate(box)) return;
+    var body = id('dn-body').value.trim();
+    var ref = id('dn-ref').value.trim();
+    var title = body.split(/[.\n]/)[0].trim();
+    if (title.length > 64) title = title.slice(0, 64).trim() + '…';
+    RECO.busy(btn, 'Đang gửi…', 900, function () {
+      var req = {
+        title: title, pj: PJ, area: id('dn-area').value,
+        by: ME, byRole: RECO.current.name, at: today() + ' ' + clock(),
+        state: 'new', body: body
+      };
+      if (ref) req.ref = ref;
+      S.add('requests', req);
+      RECO.closeModal('m-denghi');
+      RECO.toast('Đã gửi đề nghị sửa tới người phụ trách dữ liệu');
+    });
+  });
+
+  /* ================= Dựng lần đầu + theo dõi kho ================= */
+  kv1();
+  fillUnitFilters(); paintUnits();
+  fillUnitPicker(); calc(); paintPhieu();
+  paintQA(); paintDuyetQA();
+  paintKB();
+
+  watch('projects', kv1);
+  watch('units', function () { fillUnitFilters(); paintUnits(); fillUnitPicker(); calc(); });
+  watch('approvals', paintPhieu);
+  watch('qas', function () { paintQA(); paintDuyetQA(); });
+  watch('scripts', paintKB);
+});
+</script>
+
+</body>
+</html>

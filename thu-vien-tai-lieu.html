@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thư viện tài liệu · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/reco.css">
+<script defer src="assets/reco.js"></script>
+<script defer src="assets/store.js"></script>
+<script defer src="assets/data.js"></script>
+<style>
+  /* Khung xem trước: giả lập trang tài liệu, không phải tệp thật */
+  .prev-frame { background: var(--soft); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px; }
+  .prev-page {
+    background: var(--white); border: 1px solid var(--line); border-radius: 6px;
+    padding: 18px 20px; box-shadow: 0 6px 18px rgb(8 39 67 / 0.07);
+  }
+  .prev-page h4 { font-size: 0.96rem; margin-bottom: 12px; }
+  .prev-line { height: 9px; border-radius: 4px; background: var(--soft); margin-bottom: 9px; }
+  .prev-line.w88 { width: 88%; } .prev-line.w70 { width: 70%; } .prev-line.w45 { width: 45%; }
+  .prev-stamp {
+    margin-top: 14px; padding: 7px 10px; text-align: center;
+    border: 1px dashed color-mix(in srgb, var(--navy) 38%, transparent); border-radius: var(--radius-sm);
+    font-size: 0.72rem; font-weight: 700; color: var(--navy-2);
+  }
+</style>
+</head>
+<body data-shell="app" data-page="tai-lieu">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="mb-3">
+      <span class="eyebrow">MH-05 · Thư viện tài liệu</span>
+      <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Tài liệu</h1>
+      <p class="lead mt-1" style="font-size:.98rem;max-width:70ch">
+        Mỗi tài liệu hiển thị rõ nguồn: tệp RECO tự lưu trên kho của hệ thống, hoặc liên kết sống tới Google Drive do Chủ đầu tư sở hữu.
+      </p>
+    </div>
+
+    <div class="note mb-3">
+      <strong>Tải xuống luôn là bản có dấu nhận diện.</strong>
+      Tệp Excel và Word được chuyển sang PDF có dấu nhận diện người tải trước khi phát — hệ thống không phát bản gốc.
+    </div>
+
+    <div class="filterbar mb-3">
+      <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="f-q" placeholder="Tìm theo tên tài liệu" aria-label="Tìm tài liệu">
+      </div>
+      <select class="inp" id="f-pj" aria-label="Dự án">
+        <option value="">Mọi dự án</option>
+      </select>
+      <select class="inp" id="f-kind" aria-label="Loại tài liệu">
+        <option value="">Mọi loại</option>
+        <option value="gioithieu">Tài liệu giới thiệu</option>
+        <option value="banghang">Bảng hàng &amp; phiếu tính giá</option>
+        <option value="chinhsach">Chính sách</option>
+        <option value="matbang">Mặt bằng</option>
+        <option value="anhvideo">Ảnh và video</option>
+      </select>
+      <select class="inp" id="f-src" aria-label="Nguồn">
+        <option value="">Mọi nguồn</option>
+        <option value="reco">Tệp RECO tự lưu</option>
+        <option value="drive">Liên kết sống Google Drive</option>
+        <option value="broken">Liên kết hỏng</option>
+      </select>
+      <select class="inp" id="f-state" aria-label="Trạng thái hiệu lực">
+        <option value="">Mọi trạng thái</option>
+        <option value="live">Đang hiệu lực</option>
+        <option value="expiring">Sắp hết hiệu lực</option>
+        <option value="draft">Bản nháp chưa duyệt</option>
+        <option value="broken">Liên kết hỏng</option>
+      </select>
+      <select class="inp" id="f-label" aria-label="Nhãn quyền">
+        <option value="">Mọi nhãn quyền</option>
+        <option value="public">Công khai</option>
+        <option value="internal">Nội bộ</option>
+        <option value="restricted">Nội bộ hạn chế</option>
+      </select>
+      <button type="button" class="btn btn-quiet btn-sm" id="f-reset">Bỏ lọc</button>
+    </div>
+
+    <div class="spread mb-2">
+      <div>
+        <p class="small muted" id="count" style="margin:0">Đang hiển thị 0 tài liệu</p>
+        <p class="micro muted" id="f-sum" style="margin:2px 0 0" hidden></p>
+        <p class="micro muted" id="hid-note" style="margin:2px 0 0" hidden></p>
+      </div>
+      <a class="btn btn-quiet btn-sm" href="cay-thu-muc.html">Xem theo cây thư mục →</a>
+    </div>
+
+    <div class="card" id="ds"></div>
+
+    <div class="empty mt-3" id="rong" hidden>
+      <h3>Không có tài liệu nào khớp bộ lọc</h3>
+      <p class="lead mt-1">Thử bỏ bớt một điều kiện lọc.</p>
+      <button type="button" class="btn btn-primary mt-2" id="rong-reset">Bỏ bộ lọc</button>
+    </div>
+
+  </div>
+</main>
+
+<!-- Xem trước tài liệu -->
+<div class="modal" id="m-xem" hidden role="dialog" aria-modal="true" aria-labelledby="m-xem-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Xem trước</span><h3 id="m-xem-t">Xem trước tài liệu</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="m-xem-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Đóng</button>
+      <button class="btn btn-primary" id="m-xem-tai">Tải bản có dấu nhận diện</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gia hạn hiệu lực -->
+<div class="modal" id="m-giahan" hidden role="dialog" aria-modal="true" aria-labelledby="m-giahan-t">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-head">
+      <div><span class="eyebrow">Hiệu lực tài liệu</span><h3 id="m-giahan-t">Gia hạn ngày hiệu lực</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted mb-2" id="m-giahan-doc"></p>
+      <label class="field"><span class="lab">Ngày hiệu lực mới</span>
+        <input class="inp" type="date" id="m-giahan-ngay" data-required data-msg="Chọn ngày hiệu lực mới trước khi lưu.">
+      </label>
+      <p class="micro muted">Hệ thống nhắc lại khi tài liệu còn 7 ngày hiệu lực.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="m-giahan-ok">Lưu ngày hiệu lực</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var S = RECO.store, esc = RECO_DATA.esc;
+
+  /* Ai được xem nhãn Nội bộ hạn chế — suy từ chính quy tắc trong kho, không chép tay */
+  var SEE_RESTRICTED = RECO.roles.filter(function (r) { return S.canSee('restricted', r.id); })
+    .map(function (r) { return r.id; }).join(' ');
+
+  var q = document.getElementById('f-q'), fpj = document.getElementById('f-pj'),
+      fkind = document.getElementById('f-kind'), fsrc = document.getElementById('f-src'),
+      fstate = document.getElementById('f-state'), flab = document.getElementById('f-label');
+  var ds = document.getElementById('ds'), rong = document.getElementById('rong'),
+      count = document.getElementById('count'), hidNote = document.getElementById('hid-note'),
+      fsum = document.getElementById('f-sum');
+
+  /* Dự án lấy từ kho để danh sách lọc không lệch khi người quản trị ẩn một dự án */
+  fpj.insertAdjacentHTML('beforeend', RECO_DATA.projects().map(function (p) {
+    return '<option value="' + p.id + '">' + esc(p.name) + '</option>';
+  }).join(''));
+
+  /* Nguồn ngoài đã mở trong phiên này — ghi ngay trên dòng để thấy thao tác có tác dụng */
+  var opened = {};
+
+  var ICO = {
+    pdf: ['fico pdf', 'file'], xls: ['fico xls', 'sheet'], img: ['fico img', 'image'],
+    link: ['fico', 'link'], warn: ['fico', 'alert']
+  };
+  var SRC = {
+    reco: '<span class="src src-reco">Tệp RECO</span>',
+    drive: '<span class="src src-drive">Liên kết sống · chỉ xem</span>',
+    broken: '<span class="src src-broken">Liên kết hỏng</span>'
+  };
+  var KIND = {
+    gioithieu: 'Tài liệu giới thiệu', banghang: 'Bảng hàng &amp; phiếu tính giá',
+    chinhsach: 'Chính sách', matbang: 'Mặt bằng', anhvideo: 'Ảnh và video'
+  };
+  /* QD-031: bảng tính và văn bản không bao giờ phát bản gốc */
+  function isOffice(d) { return d.icon === 'xls' || d.kind === 'banghang'; }
+
+  function ico(d) {
+    var m = ICO[d.icon] || ICO.pdf;
+    var style = d.icon === 'warn' ? ' style="background:color-mix(in srgb,var(--danger) 9%,#fff);color:var(--danger)"' : '';
+    return '<span class="' + m[0] + '"' + style + '>' + RECO.svg(m[1]) + '</span>';
+  }
+
+  function stateBit(d) {
+    if (d.src === 'broken') {
+      return d.reported
+        ? '<span class="st st-off">Đã báo người phụ trách</span>'
+        : '<span style="color:var(--danger);font-weight:700">Đã tự gỡ khỏi mọi trang gửi khách</span>';
+    }
+    if (d.state === 'draft') return '<span class="st st-wait">Chưa duyệt</span>';
+    if (d.state === 'expiring') {
+      return '<span class="st st-wait">' +
+        (d.daysLeft > 0 ? 'Hết hiệu lực sau ' + d.daysLeft + ' ngày' : 'Hết hiệu lực hôm nay') + '</span>';
+    }
+    var bits = [];
+    if (d.ver && d.ver !== '—') bits.push('Bản ' + d.ver);
+    if (d.to) bits.push('hiệu lực tới ' + d.to);
+    else if (d.from) bits.push('cập nhật ' + d.from);
+    return bits.length ? '<span>' + bits.join(' · ') + '</span>' : '';
+  }
+
+  function btn(kind, act, id, text, roles) {
+    return '<button type="button" class="btn ' + kind + ' btn-sm" data-act="' + act + '" data-id="' + id + '"' +
+      (roles ? ' data-roles="' + roles + '"' : '') + '>' + text + '</button>';
+  }
+
+  function actions(d) {
+    if (d.src === 'broken') {
+      return d.reported
+        ? '<span class="chip">Giám đốc dự án đang đối chiếu với Chủ đầu tư</span>'
+        : btn('btn-outline', 'bao', d.id, 'Báo người phụ trách');
+    }
+    if (d.src === 'drive') return btn('btn-outline', 'mo', d.id, 'Mở nguồn');
+    if (d.state === 'draft') {
+      return btn('btn-outline', 'xem', d.id, 'Xem trước') +
+        btn('btn-primary', 'duyet', d.id, 'Duyệt', 'gddu gd') +
+        '<span class="chip" data-roles="nvbh qlkd hcns tkkd mkt">Chưa duyệt — không dùng để gửi khách</span>';
+    }
+    return (d.state === 'expiring' ? btn('btn-outline', 'giahan', d.id, 'Gia hạn', 'tkkd gddu gd') : '') +
+      btn('btn-outline', 'xem', d.id, 'Xem trước') +
+      '<button type="button" class="btn btn-primary btn-sm" data-act="tai" data-id="' + d.id + '"' +
+      ' title="Tải bản có dấu nhận diện">Tải</button>';
+  }
+
+  function row(d) {
+    /* Nhãn Nội bộ hạn chế: cả dòng ẩn với vai trò không được xem, không chỉ ẩn nút tải */
+    var gate = d.label === 'restricted' ? ' data-roles="' + SEE_RESTRICTED + '"' : '';
+    var sub = SRC[d.src] + S.label(d.label) + stateBit(d) +
+      (d.note ? '<span>' + esc(d.note) + '</span>' : '') +
+      (opened[d.id] ? '<span class="micro muted">Đã mở nguồn lúc ' + opened[d.id] + '</span>' : '');
+    return '<div class="frow"' + gate + ' data-doc="' + d.id + '">' + ico(d) +
+      '<div class="fmeta"><div class="fname">' + esc(d.name) + '</div>' +
+      '<div class="fsub">' + sub + '</div></div>' +
+      '<div class="fend">' + actions(d) + '</div></div>';
+  }
+
+  /* ---------- Lọc ---------- */
+  function visibleToMe(d) { return S.canSee(d.label, RECO.role); }
+
+  function matched() {
+    var t = RECO.norm(q.value.trim());
+    return S.get('documents').filter(function (d) {
+      return (!t || RECO.norm(d.name).indexOf(t) >= 0)
+        && (!fpj.value || d.pj === fpj.value)
+        && (!fkind.value || d.kind === fkind.value)
+        && (!fsrc.value || d.src === fsrc.value)
+        && (!fstate.value || d.state === fstate.value)
+        && (!flab.value || d.label === flab.value);
+    });
+  }
+
+  var SRC_TEXT = { reco: 'tệp RECO tự lưu', drive: 'liên kết sống Google Drive', broken: 'liên kết hỏng' };
+  var STATE_TEXT = { live: 'đang hiệu lực', expiring: 'sắp hết hiệu lực', draft: 'bản nháp chưa duyệt', broken: 'liên kết hỏng' };
+
+  /* Điều kiện lọc đang bật — hiện ngay lúc bấm, không chờ danh sách vẽ xong */
+  function paintSummary() {
+    var s = [];
+    if (q.value.trim()) s.push('tên chứa “' + q.value.trim() + '”');
+    if (fpj.value) s.push('dự án ' + S.projectName(fpj.value));
+    if (fkind.value) s.push('loại ' + fkind.options[fkind.selectedIndex].text);
+    if (fsrc.value) s.push('nguồn ' + SRC_TEXT[fsrc.value]);
+    if (fstate.value) s.push('trạng thái ' + STATE_TEXT[fstate.value]);
+    if (flab.value) s.push('nhãn ' + S.LABELS[flab.value].text);
+    fsum.hidden = s.length === 0;
+    fsum.textContent = 'Đang lọc theo: ' + s.join(' · ');
+  }
+
+  function render() {
+    var list = matched();
+    var hid = list.filter(function (d) { return !visibleToMe(d); }).length;
+    var n = list.length - hid;
+
+    paintSummary();
+    ds.innerHTML = list.map(row).join('');
+    RECO.applyRoles(ds);
+    ds.hidden = n === 0;
+    rong.hidden = n !== 0;
+    count.textContent = n ? 'Đang hiển thị ' + n + ' tài liệu' : 'Không có tài liệu nào khớp bộ lọc';
+    hidNote.hidden = hid === 0;
+    hidNote.textContent = hid + ' tài liệu mang nhãn Nội bộ hạn chế được ẩn với vai trò ' + RECO.current.name + '.';
+  }
+
+  /* Lọc chạm vào máy chủ nên hiện khung chờ ngay, rồi mới vẽ kết quả */
+  var timer = null;
+  function apply() {
+    if (timer) clearTimeout(timer);
+    ds.hidden = false; rong.hidden = true;
+    ds.innerHTML = '<div style="padding:10px"><div class="skeleton skeleton-row"></div>' +
+      '<div class="skeleton skeleton-row"></div><div class="skeleton skeleton-row"></div></div>';
+    count.textContent = 'Đang lọc…';
+    paintSummary();
+    timer = setTimeout(function () { timer = null; render(); }, 220);
+  }
+
+  [q, fpj, fkind, fsrc, fstate, flab].forEach(function (el) {
+    el.addEventListener('input', apply);
+    el.addEventListener('change', apply);
+  });
+  function reset() {
+    q.value = ''; fpj.value = ''; fkind.value = ''; fsrc.value = ''; fstate.value = ''; flab.value = '';
+    apply();
+  }
+  document.getElementById('f-reset').addEventListener('click', reset);
+  document.getElementById('rong-reset').addEventListener('click', reset);
+
+  /* ---------- Thao tác trên tài liệu ---------- */
+  function tai(d, b) {
+    RECO.busy(b, 'Đang tạo bản có dấu nhận diện…', 1400, function () {
+      RECO.toast(isOffice(d)
+        ? 'Đã chuyển sang PDF có dấu nhận diện ' + RECO.current.who + ' — không phát bản Excel gốc (QD-031)'
+        : 'Đã tạo bản có dấu nhận diện ' + RECO.current.who + ' — ' + d.name);
+    });
+  }
+
+  var xemId = null;
+  function xemTruoc(d) {
+    xemId = d.id;
+    document.getElementById('m-xem-t').textContent = d.name;
+    document.getElementById('m-xem-body').innerHTML =
+      '<div class="prev-frame mb-3"><div class="prev-page">' +
+        '<h4>' + esc(d.name) + '</h4>' +
+        '<div class="prev-line w88"></div><div class="prev-line"></div><div class="prev-line w70"></div>' +
+        '<div class="prev-line w88"></div><div class="prev-line w45"></div>' +
+        '<div class="prev-stamp">Bản xem trước · dấu nhận diện ' + esc(RECO.current.who) + ' · ' + esc(RECO.current.name) + '</div>' +
+      '</div></div>' +
+      '<div class="kv">' +
+        '<div><div class="k">Dự án</div><div class="v">' + esc(S.projectName(d.pj)) + '</div></div>' +
+        '<div><div class="k">Loại</div><div class="v">' + (KIND[d.kind] || d.kind) + '</div></div>' +
+        '<div><div class="k">Phiên bản</div><div class="v">' + esc(d.ver || '—') + '</div></div>' +
+        '<div><div class="k">Ngày hiệu lực</div><div class="v">' +
+          esc(d.from || '—') + (d.to ? ' → ' + esc(d.to) : ' → không giới hạn') + '</div></div>' +
+        '<div><div class="k">Nhãn quyền</div><div class="v">' + S.label(d.label) + '</div></div>' +
+      '</div>';
+    var taiBtn = document.getElementById('m-xem-tai');
+    taiBtn.hidden = d.src !== 'reco';
+    RECO.openModal('m-xem');
+  }
+  document.getElementById('m-xem-tai').addEventListener('click', function () {
+    var d = S.find('documents', xemId);
+    if (d) tai(d, this);
+  });
+
+  function moNguon(d) {
+    window.open('https://drive.google.com', '_blank', 'noopener');
+    var now = new Date();
+    opened[d.id] = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+    render();
+    RECO.toast('Đang mở liên kết sống trên Google Drive — tệp do Chủ đầu tư sở hữu, RECO chỉ xem');
+  }
+
+  function bao(d) {
+    RECO.confirm({
+      eyebrow: 'Liên kết hỏng',
+      title: 'Báo người phụ trách đối chiếu lại?',
+      body: '<p class="small muted">' + esc(d.name) + ' — liên kết Drive đã bị thu quyền nên tài liệu tự gỡ khỏi mọi trang gửi khách. ' +
+            'Tổng giám đốc, Giám đốc dự án và Thư ký kinh doanh sẽ nhận thông báo để hỏi lại Chủ đầu tư.</p>',
+      okText: 'Báo ngay',
+      onOk: function () {
+        S.add('notifications', {
+          kind: 'broken', title: 'Liên kết hỏng cần đối chiếu',
+          body: d.name + ' — ' + RECO.current.who + ' báo liên kết Drive không còn truy cập được.',
+          at: 'vừa xong', to: 'gd gddu tkkd', read: false, go: 'thu-vien-tai-lieu.html'
+        });
+        S.update('documents', d.id, { reported: true });
+        RECO.toast('Đã báo Giám đốc dự án đối chiếu lại với Chủ đầu tư');
+      }
+    });
+  }
+
+  var giahanId = null;
+  function giahan(d) {
+    giahanId = d.id;
+    document.getElementById('m-giahan-doc').textContent =
+      d.name + ' — hiệu lực hiện tại tới ' + (d.to || 'chưa đặt') + '.';
+    var inp = document.getElementById('m-giahan-ngay');
+    inp.value = '';
+    inp.removeAttribute('aria-invalid');
+    RECO.openModal('m-giahan');
+  }
+  document.getElementById('m-giahan-ok').addEventListener('click', function () {
+    var box = document.getElementById('m-giahan');
+    if (!RECO.validate(box)) return;
+    var d = S.find('documents', giahanId);
+    if (!d) return;
+    var v = document.getElementById('m-giahan-ngay').value.split('-');
+    var to = v[2] + '/' + v[1] + '/' + v[0];
+    S.update('documents', d.id, { to: to, state: 'live', daysLeft: null });
+    RECO.closeModal(box);
+    RECO.toast('Đã gia hạn ' + d.name + ' tới ' + to);
+  });
+
+  function duyet(d) {
+    RECO.confirm({
+      eyebrow: 'Duyệt và công bố',
+      title: 'Duyệt bản nháp này?',
+      body: '<div class="prev-frame mb-2"><div class="prev-page"><h4>' + esc(d.name) + '</h4>' +
+            '<div class="prev-line w88"></div><div class="prev-line w70"></div></div></div>' +
+            '<p class="small muted">Sau khi duyệt, tài liệu mang nhãn ' + S.label(d.label) +
+            ' và dùng được để gửi khách theo đúng nhãn quyền.</p>',
+      okText: 'Duyệt và công bố',
+      onOk: function () {
+        S.update('documents', d.id, { state: 'live', from: homNay() });
+        RECO.toast('Đã duyệt và công bố ' + d.name);
+      }
+    });
+  }
+  function homNay() {
+    var t = new Date();
+    return ('0' + t.getDate()).slice(-2) + '/' + ('0' + (t.getMonth() + 1)).slice(-2) + '/' + t.getFullYear();
+  }
+
+  var ACT = { tai: tai, xem: xemTruoc, mo: moNguon, bao: bao, giahan: giahan, duyet: duyet };
+  ds.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b || !ds.contains(b)) return;
+    var d = S.find('documents', b.getAttribute('data-id'));
+    if (!d) return;
+    ACT[b.getAttribute('data-act')](d, b);
+  });
+
+  /* Kho đổi ở màn khác (duyệt ở Quản trị chẳng hạn) thì danh sách này đổi theo */
+  S.on('documents', function () { if (!timer) render(); });
+
+  render();
+});
+</script>
+</body>
+</html>

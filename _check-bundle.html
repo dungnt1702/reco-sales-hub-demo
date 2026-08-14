@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="utf-8"><title>Kiểm tra bản gói một trang</title>
+<style>body{font:14px/1.6 monospace;margin:16px;background:#111;color:#ddd}pre{white-space:pre-wrap}iframe{position:absolute;left:-99999px;border:0}</style></head>
+<body>
+<h1>Kiểm tra dist/reco-sales-hub.html</h1>
+<pre id="out">Đang chạy…</pre>
+<div id="frames"></div>
+<script>
+var PAGES = ['index','dang-nhap','trang-dau','du-an','du-an-chi-tiet','thu-vien-tai-lieu','cay-thu-muc',
+             'soan-noi-dung','chia-se','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua'];
+var lines = [], fail = 0;
+var out = document.getElementById('out');
+function say(ok, msg) { if (!ok) fail++; lines.push((ok ? 'OK   ' : 'HONG ') + msg); }
+
+function frame(w, hash) {
+  return new Promise(function (res) {
+    var f = document.createElement('iframe');
+    f.style.width = w + 'px'; f.style.height = '900px';
+    f.src = 'dist/reco-sales-hub.html' + (hash || '');
+    f.onload = function () { setTimeout(function () { res(f); }, 300); };
+    document.getElementById('frames').appendChild(f);
+  });
+}
+function goto(f, hash) {
+  return new Promise(function (res) {
+    f.contentWindow.location.hash = hash;
+    setTimeout(function () { res(); }, 260);
+  });
+}
+function overflow(f, w) {
+  var d = f.contentDocument, bad = [];
+  d.querySelectorAll('body *').forEach(function (el) {
+    var b = el.getBoundingClientRect();
+    if (b.width < 1 && b.height < 1) return;
+    if (b.right <= w + 1) return;
+    var st = f.contentWindow.getComputedStyle(el);
+    if (st.position === 'fixed') return;
+    if (el.closest('.drawer, .scrim, .modal')) return;
+    for (var a = el.parentElement; a && a !== d.body; a = a.parentElement) {
+      var as = f.contentWindow.getComputedStyle(a);
+      if (as.overflowX === 'auto' || as.overflowX === 'scroll') return;
+    }
+    bad.push(el.tagName.toLowerCase() + '.' + (el.className || '').toString().split(' ')[0]);
+  });
+  return bad;
+}
+
+(async function () {
+  var errs = [];
+  window.addEventListener('error', function (e) { errs.push(e.message); });
+
+  // 1. Mọi màn dựng được, không tràn ngang
+  for (var w of [390, 1440]) {
+    var f = await frame(w);
+    f.contentWindow.addEventListener('error', function (e) { errs.push('[' + w + '] ' + e.message); });
+    for (var i = 0; i < PAGES.length; i++) {
+      await goto(f, '#' + PAGES[i]);
+      var d = f.contentDocument;
+      var app = d.getElementById('app');
+      say(app && app.children.length > 0, '[' + w + '] ' + PAGES[i] + ' — dựng được nội dung');
+      var bad = overflow(f, w);
+      say(bad.length === 0, '[' + w + '] ' + PAGES[i] + ' — không tràn ngang' + (bad.length ? ' → ' + bad.slice(0, 3).join(', ') : ''));
+    }
+    f.remove();
+  }
+
+  // 2. Điều hướng: mọi liên kết nội bộ trỏ tới màn có thật
+  var f2 = await frame(1280);
+  var seen = {};
+  for (var i = 0; i < PAGES.length; i++) {
+    await goto(f2, '#' + PAGES[i]);
+    var d = f2.contentDocument;
+    d.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      var h = a.getAttribute('href').slice(1).split('?')[0];
+      if (!h) return;
+      if (PAGES.indexOf(h) >= 0) return;               // link sang màn khác
+      if (d.getElementById(h)) return;                  // neo trong cùng màn
+      seen[PAGES[i] + ' → #' + h] = 1;
+    });
+  }
+  var broken = Object.keys(seen);
+  say(broken.length === 0, 'moi lien ket noi bo hop le' + (broken.length ? ' → ' + broken.join(', ') : ''));
+
+  // 3. Ảnh: mọi <img> đều có nguồn nhúng, không còn đường dẫn tương đối
+  var rel = [];
+  for (var i = 0; i < PAGES.length; i++) {
+    await goto(f2, '#' + PAGES[i]);
+    f2.contentDocument.querySelectorAll('img').forEach(function (im) {
+      var s = im.getAttribute('src') || '';
+      // Ảnh chỗ trống của lớp phủ xem ảnh lớn chưa có nguồn cho tới khi người dùng bấm — bỏ qua
+      if (!s) return;
+      if (s.indexOf('data:') !== 0) rel.push(PAGES[i] + ' → ' + s.slice(0, 40));
+    });
+  }
+  say(rel.length === 0, 'moi anh deu nhung san' + (rel.length ? ' → ' + rel.slice(0, 3).join(', ') : ''));
+
+  // 4. Phông chữ nhúng, không gọi ra mạng
+  var css = f2.contentDocument.querySelector('style').textContent;
+  say(css.indexOf('fonts/') < 0 && css.indexOf('data:font/woff2') > 0, 'phong chu nhung san, khong goi mang');
+  // http://www.w3.org/2000/svg trong data URI chỉ là không gian tên XML, không phải gọi mạng
+  var netCss = css.replace(/http:\/\/www\.w3\.org\/\S*?svg/g, '');
+  say(!/https?:\/\//.test(netCss), 'CSS khong tro toi may chu ngoai');
+  var docHtml = f2.contentDocument.documentElement.outerHTML;
+  var tags = docHtml.match(/(?:src|href)="https?:[^"]*"/g) || [];
+  say(tags.length === 0, 'tai lieu khong nap tai nguyen ngoai' + (tags.length ? ' → ' + tags.slice(0, 3).join(', ') : ''));
+
+  // 5. Đổi vai trò trên bản gói
+  await goto(f2, '#du-an-chi-tiet?role=nvbh');
+  var d2 = f2.contentDocument;
+  say(d2.querySelector('#kv9 [data-roles*="mkt"]').hidden, '[nvbh] khu vuc 9 day du bi an');
+  say(!d2.querySelector('#kv9 [data-roles="nvbh"]').hidden, '[nvbh] chi thay Kich ban cua toi');
+  say(!d2.querySelector('.fab').hidden, '[nvbh] nut Gui de nghi sua hien');
+  say(!/quan-tri/.test(d2.querySelector('.nav').innerHTML), '[nvbh] menu Quan tri bi an');
+  await goto(f2, '#du-an-chi-tiet?role=gddu');
+  d2 = f2.contentDocument;
+  say(!d2.querySelector('#kv9 [data-roles*="mkt"]').hidden, '[gddu] khu vuc 9 day du hien lai');
+  say(d2.querySelector('.fab').hidden, '[gddu] nut Gui de nghi sua bi an');
+
+  // 6. Mã riêng của màn có chạy (danh sách dự án được sinh động)
+  await goto(f2, '#du-an');
+  say(f2.contentDocument.querySelectorAll('#cards .pcard').length === 6, 'ma rieng cua man du-an chay (6 the du an)');
+  await goto(f2, '#trang-dau');
+  say(f2.contentDocument.querySelectorAll('#featured .pcard').length === 3, 'ma rieng cua man trang-dau chay (3 du an noi bat)');
+  await goto(f2, '#soan-noi-dung');
+  say((f2.contentDocument.getElementById('pv-text').textContent || '').length > 100, 'xem truoc noi dung duoc dung');
+
+  // 7. Neo tới một mục trong màn
+  await goto(f2, '#du-an-chi-tiet?at=kv7');
+  say(f2.contentDocument.getElementById('kv7') !== null, 'neo at=kv7 mo dung man');
+
+  say(errs.length === 0, 'khong co loi JS' + (errs.length ? ' → ' + errs.slice(0, 3).join(' | ') : ''));
+
+  lines.push('');
+  lines.push(fail ? '=== ' + fail + ' TRUONG HOP HONG ===' : '=== TAT CA ' + lines.length + ' TRUONG HOP DEU DUNG ===');
+  out.textContent = lines.join('\n');
+})();
+</script>
+</body>
+</html>
