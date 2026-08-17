@@ -4,8 +4,8 @@
 
 Bộ HTML tĩnh dựng 14 màn hình chính trong tài liệu *Yêu cầu các màn hình*
 (`docs/05-user-experience/screen-requirements.md` của repo nội bộ `reco-sales-hub`), cộng một màn xem trước
-Giai đoạn 2 và bốn màn danh mục tính năng kèm báo giá của cả hai giai đoạn —
-dùng để RECO xem và xác nhận thiết kế Giai đoạn 1 trước khi viết dòng mã đầu tiên, và để trình bày
+Giai đoạn 2, bốn màn danh mục tính năng kèm báo giá của cả hai giai đoạn, và một màn bản đồ hệ thống —
+tổng cộng 20 màn. Dùng để RECO xem và xác nhận thiết kế Giai đoạn 1 trước khi viết dòng mã đầu tiên, và để trình bày
 phạm vi cùng giá ngay trong buổi demo mà không phải mở Excel hay PDF ra riêng.
 
 Không cần cài đặt, không cần build. Mở `index.html` bằng trình duyệt là chạy — kể cả khi không có mạng.
@@ -14,6 +14,11 @@ Không cần cài đặt, không cần build. Mở `index.html` bằng trình du
 ## Bắt đầu từ đâu
 
 `index.html` là bản đồ màn hình, kèm kịch bản trình bày 10 phút và danh sách điểm còn chờ RECO xác nhận.
+
+`sitemap.html` là **bản đồ hệ thống**: đặt từng mục trong bộ mô tả `SaleHUB.pdf` RECO gửi ngày 17/08/2026
+cạnh chỗ nó nằm trong hệ thống — 8 nhóm quyền, 8 tính năng ưu tiên, 3 khối nội dung — mỗi dòng gắn trạng thái
+*Giai đoạn 1* / *Ngoài gói* / *Giai đoạn 2* và bấm được thẳng vào màn tương ứng. Đây là màn dùng khi cần
+chứng minh không có mục nào của RECO bị bỏ sót hay hiểu lệch.
 
 ## Ba nút trên thanh đen ở đầu trang
 
@@ -42,6 +47,7 @@ ghi rõ *cùng khu vực* hay *loại khác*. Ở khổ điện thoại nav mụ
 | Tệp | Màn hình |
 | --- | --- |
 | `index.html` | Bản đồ prototype, kịch bản demo, câu hỏi còn mở |
+| `sitemap.html` | Bản đồ hệ thống — đối chiếu từng mục `SaleHUB.pdf` với màn hình, kèm trạng thái giai đoạn |
 | `dang-nhap.html` | MH-01 Đăng nhập |
 | `trang-dau.html` | MH-02 Trang đầu |
 | `du-an.html` | MH-03 Tìm kiếm và danh sách dự án |
@@ -82,14 +88,26 @@ hộp xác nhận, trạng thái đang xử lý, kiểm tra biểu mẫu, tìm k
 ## Dữ liệu thật của RECO trong bản mô phỏng
 
 Từ 17/08/2026, dự án nổi bật của bản mô phỏng là **Le Parc Place — ParkCity Hanoi**, dựng theo bộ tài liệu
-RECO cung cấp: 4 tòa A/B/C/D, 802 căn, các loại căn thật, 32 câu hỏi đáp lấy từ mẫu kịch bản bán hàng,
-và 8 liên kết sống tới Google Drive của Chủ đầu tư. Sáu dự án hư cấu cũ vẫn giữ nguyên để minh họa các
-trạng thái khác (bản nháp, sắp hết hiệu lực, liên kết Drive hỏng).
+RECO cung cấp: 4 tòa A/B/C/D, 802 căn, các loại căn thật, **toàn bộ 88 câu hỏi đáp** của *Mẫu kịch bản bán
+hàng — Câu hỏi thường gặp* (bản 17/08/2026), và 8 liên kết sống tới Google Drive của Chủ đầu tư. Sáu dự án
+hư cấu cũ vẫn giữ nguyên để minh họa các trạng thái khác (bản nháp, sắp hết hiệu lực, liên kết Drive hỏng).
+
+Bộ 88 câu giữ đúng thứ tự và hai cấp nhóm của tài liệu: nhóm cấp 1 là phạm vi (A khu đô thị 10 câu ·
+B dự án 14 câu · C câu hỏi cụ thể 64 câu), cấp 2 là chủ đề (Nội thất 19 · Ngoại thất và khu chung 15 ·
+Tiện ích 14 · Tổng quan 17 · Đỗ xe 8 · Pháp lý 4 · An ninh 3 · Khu mái 3 · Giá và chính sách 2 ·
+Bàn giao 2 · Khác 1). Sáu bảng của tài liệu (hoàn thiện tường/sàn, cửa, sảnh tầng trệt, tiện ích ba tầng,
+chỗ đỗ theo loại căn) vào thẳng ô trả lời bằng trường `tbl`, danh sách dài dùng `bul`.
 
 Ba điểm đáng xem trên dữ liệu này:
 
-- `du-an-chi-tiet.html` khu vực 07 — hỏi đáp **hai cấp nhóm**, công tắc *Bản đầy đủ / Bản gửi khách*,
-  và hai câu mang nhãn **Chờ cập nhật** (mốc bàn giao, phí quản lý) mà Chủ đầu tư chưa công bố.
+- `du-an-chi-tiet.html` khu vực 07 — hỏi đáp **hai cấp nhóm** với khối chủ đề gập được (88 câu vẫn gọn
+  trong một khu vực), công tắc *Bản đầy đủ / Bản gửi khách*, hai câu mang nhãn **Chờ cập nhật** (mốc bàn
+  giao, phí quản lý) mà Chủ đầu tư chưa công bố, và 10 câu gắn chip **Cần Chủ đầu tư xác nhận** ở đúng
+  những chỗ tài liệu tự ghi lệch số (công viên 4,2 hay 5,2 ha; tiện ích tầng 5 7.000 hay 8.000 m²; cảnh
+  quan tầng 1 3.000 hay 3.200 m²; một hay hai phòng rác; SV01–SV05 hay SV01–SV13; số căn mỗi tầng).
+  **Cột *Chia sẻ* của tài liệu còn trống nên không câu nào của Le Parc Place có bản gửi khách** — màn nói
+  thẳng `0/88 câu`, bản rút gọn phải do RECO tự soạn. Muốn xem cơ chế hai bản trả lời thì mở
+  `?pj=celestine` (dự án hư cấu, 4/8 câu đã có bản gửi khách).
 - `du-an-chi-tiet.html` khu vực 05 — quy trình bán hàng và **thông tin tài khoản nhận cọc** kèm cú pháp
   nội dung chuyển khoản, bấm một cái là chép.
 - `trang-gui-khach.html` — nút **Nhận báo giá / quan tâm căn**. Đây là hạng mục **ngoài gói đã báo giá**
@@ -110,7 +128,7 @@ theo; gửi đề nghị sửa từ màn Chi tiết dự án thì nó xuất hi�
 thì bấm Xem sẽ ra màn Đường dẫn hết hiệu lực.
 
 Trạng thái lưu trong `sessionStorage`. Mở bằng `file://` thì trình duyệt chặn, kho tự lùi về bộ nhớ
-trong — bản gói một trang vẫn chạy đủ vì cả 19 màn nằm trong cùng một tài liệu.
+trong — bản gói một trang vẫn chạy đủ vì cả 20 màn nằm trong cùng một tài liệu.
 Nút **"Đặt lại dữ liệu demo"** trên thanh đen đưa mọi thứ về trạng thái ban đầu để diễn lại kịch bản.
 
 Sáu dự án phủ đúng ba nhóm bất động sản Giai đoạn 1: căn hộ chung cư, đất nền, nhà thấp tầng và biệt thự.
@@ -171,7 +189,7 @@ Ai code Giai đoạn 1 phải theo `docs/12-architecture/database-schema.md`, kh
 | `sections` `kind:'content'` | **`content_templates`** | Trùng vai trò với kho `templates` của màn Chuẩn bị nội dung — thật thì chỉ một bảng |
 | `sections` `kind:'place'` | `content_sections` (`branch_key='project_info'`) | Mỗi điểm liên kết là một dòng: `title` = tên địa điểm, `body` = "2,1 km · 5 phút". Giai đoạn 1 chỉ hiển thị nên chưa tách số; muốn lọc theo khoảng cách hay chấm lên bản đồ thì Giai đoạn 2 mới cần bảng riêng |
 | `media` | `documents` nhánh `media_library` | Schema không có bảng ảnh riêng |
-| `qas` | `faq_groups` + `faq_items` | Bản mô phỏng bỏ tầng nhóm hỏi đáp |
+| `qas` | `faq_groups` + `faq_items` | Bản mô phỏng gom hai cấp nhóm vào hai trường chuỗi `grp` + `topic`; hai trường `tbl` (bảng trong ô trả lời) và `bul` (gạch đầu dòng) là **nội dung định dạng của câu trả lời**, schema thật cần một kiểu lưu giữ được bảng chứ không phải hai cột riêng. `warn` là ghi chú "số liệu cần Chủ đầu tư xác nhận" gắn theo từng câu |
 | `scripts` | `sales_scripts` + `script_promotion_requests` | `scope` thật là `shared`/`personal`; đề xuất là **bảng riêng**, không phải `scope:'proposal'` |
 | `units` `state` `con/giu/ban/ngung` | `units.status` `available/hold/sold/stopped` | |
 | `zones` + `units.zone` | `zones` + `units.zone_id` | Phân khu → tòa/dãy → tầng; `block` và `floor` trong bản mô phỏng là giá trị suy ra để hiển thị, **không phải nguồn sự thật** |
@@ -189,7 +207,7 @@ Ba điểm nghiệp vụ dễ code sai, đã được bản mô phỏng thể hi
 node build-artifact.mjs      # → dist/reco-sales-hub.html (~3,1 MB)
 ```
 
-Gộp cả 19 màn, phông chữ và ảnh vào **một tệp HTML tự chứa**, không gọi ra máy chủ nào —
+Gộp cả 20 màn, phông chữ và ảnh vào **một tệp HTML tự chứa**, không gọi ra máy chủ nào —
 mở offline vẫn đủ. Điều hướng chuyển từ `du-an.html?role=nvbh` sang `#du-an?role=nvbh`,
 mọi thứ khác giữ nguyên: đổi vai trò, khung điện thoại, ẩn thanh demo đều chạy.
 
@@ -215,8 +233,8 @@ sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiế
 
 | Bộ | Kiểm gì |
 | --- | --- |
-| `_check.html` | Tràn ngang ở 360/390/768/1440 và liên kết hỏng trên cả 19 trang |
-| `_check-roles.html` | 82 trường hợp ẩn/hiện theo vai trò |
+| `_check.html` | Tràn ngang ở 360/390/768/1440 và liên kết hỏng trên cả 20 trang |
+| `_check-roles.html` | 90 trường hợp ẩn/hiện theo vai trò |
 | `_check-actions.html` | **Bấm thử từng phần tử** trên mọi màn, so nội dung trước/sau. Đạt khi DOM đổi, hoặc mở hộp thoại, hoặc phần tử mang `data-gd2`. Toast không tính — nó nằm ngoài vùng so sánh. Kiểm thêm: hành động khó hoàn tác có hỏi lại không, ô nhập có phản hồi không, còn liên kết cụt `href="#"` không, và biểu mẫu tải tài liệu có chặn lỗi rồi ghi thật vào kho không |
 | `_check-bundle.html` | Bản một tệp: dựng màn, tràn ngang, liên kết, ảnh và phông nhúng sẵn, phân quyền, mã riêng từng màn |
 | `_check-tim.html` | Tìm trong cây thư mục: con số trên chip phải bằng đúng số dòng người dùng với tới được, thư mục chứa tệp khớp phải hiện ra để bấm vào, ảnh cũng theo bộ lọc |

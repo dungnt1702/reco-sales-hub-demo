@@ -57,6 +57,33 @@
   .cmp .k { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
   /* .field đặt display:block nên phải nói rõ khi ẩn ô nhãn quyền */
   #kb-label-field[hidden] { display: none; }
+  /* Khối gập theo chủ đề của khu vực 07 — bộ hỏi đáp thật là 88 câu, không gập thì
+     một khu vực dài hơn cả tám khu vực còn lại cộng lại. */
+  .qa-grp { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--soft); margin-bottom: 8px; }
+  .qa-grp > summary {
+    padding: 10px 14px; cursor: pointer; list-style: none;
+    font-size: .82rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--navy); display: flex; align-items: center; gap: 9px;
+  }
+  .qa-grp > summary::-webkit-details-marker { display: none; }
+  .qa-grp > summary::after { content: '▾'; margin-left: auto; color: var(--orange-text); flex: none; }
+  .qa-grp[open] > summary::after { content: '▴'; }
+  .qa-grp > summary .n {
+    font-size: .72rem; padding: 1px 7px; border-radius: 999px; letter-spacing: 0;
+    background: var(--white); border: 1px solid var(--line); color: var(--muted);
+  }
+  .qa-grp > .qa { border-radius: 0 0 var(--radius-lg) var(--radius-lg); border-left: 0; border-right: 0; border-bottom: 0; }
+  .qa-ul { margin: 8px 0 0; padding-left: 20px; }
+  .qa-ul li { margin-bottom: 4px; }
+  /* Bảng trong ô trả lời phải cuộn trong khung của nó, không được đẩy cả trang kéo ngang */
+  .qa-tw { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--white); }
+  .qa-tbl { width: 100%; border-collapse: collapse; font-size: .86rem; min-width: 340px; }
+  .qa-tbl th {
+    text-align: left; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--muted); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  .qa-tbl td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .qa-tbl tbody tr:last-child td { border-bottom: 0; }
 </style>
 </head>
 <body data-shell="app" data-page="du-an">
@@ -64,7 +91,8 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
-    <p class="small muted mb-2"><a href="du-an.html">Dự án</a> · The Celestine Riverside</p>
+    <!-- Tên dự án do JS ghi theo ?pj=…; giá trị trong đánh dấu chỉ là chỗ giữ khi chưa chạy JS -->
+    <p class="small muted mb-2"><a href="du-an.html">Dự án</a> · <span id="pj-crumb">Le Parc Place — ParkCity Hanoi</span></p>
 
     <!-- Ảnh bìa -->
     <section class="pj-hero" id="pj-hero">
@@ -73,7 +101,7 @@
           <span class="hot">Dự án nổi bật</span>
           <span class="st st-live" style="background:rgba(43,133,105,.25);color:#a8e6cd">Đang bán</span>
         </div>
-        <h1 id="pj-title">The Celestine Riverside</h1>
+        <h1 id="pj-title">Le Parc Place — ParkCity Hanoi</h1>
         <p class="lead mt-1" style="color:rgba(255,255,255,.85)">Long Biên, Hà Nội · Căn hộ chung cư · 4 tòa · 27 tầng · 1.248 căn</p>
         <div class="row mt-3">
           <a class="btn btn-primary" href="soan-noi-dung.html">Chuẩn bị nội dung gửi khách</a>
@@ -127,22 +155,25 @@
         <section class="sec" id="kv1">
           <div class="sec-head"><span class="n">KHU VỰC 01</span><h2>Tổng quan</h2>
             <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv1" aria-label="Mục đích của khu vực Tổng quan">
-              <span class="itip-bub" id="tip-kv1" role="tooltip">Bảng nhận diện dự án: chủ đầu tư, quy mô, tình trạng bán, thời điểm bàn giao và liên kết tới website dự án. Nội dung mang nhãn Công khai nên được phép đưa vào trang gửi khách.</span>
+              <span class="itip-bub" id="tip-kv1" role="tooltip">Ảnh tóm tắt dự án đặt đầu khu vực, sau đó là bảng nhận diện: chủ đầu tư, quy mô, tình trạng bán, thời điểm bàn giao và liên kết tới website dự án. Nội dung mang nhãn Công khai nên được phép đưa vào trang gửi khách.</span>
             </button>
             <span class="lb lb-public">Công khai</span>
             <span class="sec-act row-tight">
-              <button class="btn btn-outline btn-sm" data-roles="tkkd gddu" data-open="m-capnhat">Cập nhật</button>
-              <button class="btn btn-outline btn-sm" id="kv1-edit" data-sec-edit="" data-roles="tkkd gddu">Sửa tổng quan</button>
+              <button class="btn btn-outline btn-sm" data-roles="tkkd gddu gd" data-open="m-capnhat">Cập nhật</button>
+              <button class="btn btn-outline btn-sm" id="kv1-edit" data-sec-edit="" data-roles="tkkd gddu gd">Sửa tổng quan</button>
               <button class="btn btn-outline btn-sm" data-roles="nvbh qlkd" data-open="m-denghi">Gửi đề nghị sửa</button>
             </span>
           </div>
           <div class="card card-pad">
+            <!-- Tóm tắt dự án dạng một ảnh — BR-DL-17, QD-065 -->
+            <figure id="kv1-sum" class="mb-3" style="margin:0"></figure>
             <p id="kv1-body"></p>
             <div class="kv kv-3 mt-3" id="kv1-grid"></div>
             <div id="kv1-web" class="mt-3" hidden></div>
+            <!-- Mức độ đầy đủ lấy từ chính dữ liệu dự án (`ready`), không viết cứng 100% -->
             <div class="mt-3">
-              <div class="spread mb-1"><span class="micro muted">Mức độ đầy đủ tài liệu</span><span class="micro" style="font-weight:700;color:var(--verified)">100%</span></div>
-              <div class="bar ok"><i style="width:100%"></i></div>
+              <div class="spread mb-1"><span class="micro muted">Mức độ đầy đủ tài liệu</span><span class="micro" style="font-weight:700" id="kv1-ready-n"></span></div>
+              <div class="bar" id="kv1-ready"><i></i></div>
             </div>
           </div>
         </section>
@@ -154,7 +185,7 @@
               <span class="itip-bub" id="tip-kv2" role="tooltip">Vị trí dự án và các điểm kết nối quanh khu vực, để nhân viên trả lời ngay câu hỏi “chỗ đó ở đâu, gần những gì”.</span>
             </button>
             <span class="lb lb-public">Công khai</span>
-            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="place" data-roles="tkkd gddu">+ Thêm điểm liên kết</button></span>
+            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="place" data-roles="tkkd gddu gd">+ Thêm điểm liên kết</button></span>
           </div>
           <div class="card card-pad">
             <div class="map-ph mb-3"><span class="pin-dot"></span><span class="micro muted">Bản đồ vị trí dự án</span></div>
@@ -170,7 +201,7 @@
             </button>
             <span class="sec-act row-tight">
               <span class="open-q" title="DX-018 — cách biểu diễn điểm bán hàng còn chờ RECO chốt">Cần RECO xác nhận</span>
-              <button class="btn btn-outline btn-sm" data-sec-new="point" data-roles="tkkd gddu">+ Thêm điểm bán</button>
+              <button class="btn btn-outline btn-sm" data-sec-new="point" data-roles="tkkd gddu gd">+ Thêm điểm bán</button>
             </span>
           </div>
           <div class="card card-pad">
@@ -186,7 +217,7 @@
               <span class="itip-bub" id="tip-kv4" role="tooltip">Mặt bằng tổng thể, mặt bằng tầng và mặt bằng căn để mở ngay khi khách hỏi bố trí. Tải xuống luôn là bản PDF có dấu nhận diện người tải.</span>
             </button>
             <span class="lb lb-public">Công khai</span>
-            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="plan" data-roles="tkkd gddu mkt">+ Thêm mặt bằng</button></span>
+            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="plan" data-roles="tkkd gddu gd mkt">+ Thêm mặt bằng</button></span>
           </div>
           <div class="gal" id="kv4-gal"></div>
           <p class="micro muted mt-2">Tệp gốc nằm ở nhánh <a href="cay-thu-muc.html">Tài liệu bán hàng</a>. Tải xuống luôn là bản PDF có dấu nhận diện người tải.</p>
@@ -314,32 +345,11 @@
             </button>
             <span class="sec-act"><a class="btn btn-outline btn-sm" href="thu-vien-tai-lieu.html">Mở thư viện đầy đủ</a></span>
           </div>
-          <div class="gal mb-3">
-            <figure><img src="assets/img/reco-banner.jpg" alt="Phối cảnh tổng thể" loading="lazy"><span class="lb lb-public">Công khai</span></figure>
-            <figure><img src="assets/img/reco-opening.jpg" alt="Lễ mở bán đợt 2" loading="lazy"><span class="lb lb-public">Công khai</span></figure>
-            <figure><img src="assets/img/reco-partnership.jpg" alt="Ký kết hợp tác phân phối" loading="lazy"><span class="lb lb-internal">Nội bộ</span></figure>
-            <figure><img src="assets/img/reco-team.jpg" alt="Đội ngũ kinh doanh dự án" loading="lazy"><span class="lb lb-internal">Nội bộ</span></figure>
-          </div>
-          <div class="card">
-            <div class="frow">
-              <span class="fico pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span>
-              <div class="fmeta"><div class="fname">Tài liệu giới thiệu dự án — bản v4</div>
-                <div class="fsub"><span class="src src-reco">Tệp RECO</span><span class="lb lb-public">Công khai</span><span>Hiệu lực tới 31/12/2026</span></div></div>
-              <div class="fend"><button type="button" class="btn btn-outline btn-sm" data-dl="Tài liệu giới thiệu dự án — bản v4">Tải bản có dấu nhận diện</button></div>
-            </div>
-            <div class="frow">
-              <span class="fico pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span>
-              <div class="fmeta"><div class="fname">Chính sách bán hàng tháng 8/2026</div>
-                <div class="fsub"><span class="src src-reco">Tệp RECO</span><span class="lb lb-internal">Nội bộ</span><span style="color:var(--orange-text);font-weight:700">Hết hiệu lực sau 6 ngày</span></div></div>
-              <div class="fend"><button type="button" class="btn btn-outline btn-sm" data-dl="Chính sách bán hàng tháng 8/2026">Tải</button></div>
-            </div>
-            <div class="frow">
-              <span class="fico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span>
-              <div class="fmeta"><div class="fname">Video giới thiệu căn mẫu 2PN</div>
-                <div class="fsub"><span class="src src-drive">Liên kết Drive · chỉ xem</span><span class="lb lb-public">Công khai</span></div></div>
-              <div class="fend"><a class="btn btn-outline btn-sm" href="https://drive.google.com" target="_blank" rel="noopener" data-src="Video giới thiệu căn mẫu 2PN">Mở nguồn</a></div>
-            </div>
-          </div>
+          <!-- Ảnh và tài liệu lấy theo đúng dự án đang mở: viết cứng thì đổi dự án vẫn
+               hiện y một bộ tệp, và tài liệu nguồn của khu vực 07 không có chỗ xuất hiện. -->
+          <div class="gal mb-3" id="kv6-gal"></div>
+          <div class="card" id="kv6-docs"></div>
+          <p class="micro muted mt-2" id="kv6-note"></p>
         </section>
 
         <!-- 7. Hỏi đáp -->
@@ -385,7 +395,7 @@
             </button>
             <span class="lb lb-public">Công khai</span>
             <span class="sec-act row-tight">
-              <button class="btn btn-outline btn-sm" data-sec-new="content" data-roles="mkt gddu">+ Thêm nội dung</button>
+              <button class="btn btn-outline btn-sm" data-sec-new="content" data-roles="mkt gddu gd">+ Thêm nội dung</button>
               <a class="btn btn-primary btn-sm" href="soan-noi-dung.html">Chuẩn bị nội dung</a>
             </span>
           </div>
@@ -794,11 +804,26 @@ document.addEventListener('DOMContentLoaded', function () {
       cell('Đơn vị phân phối', 'RECO Group') +
       cell('Tình trạng bán', p.statusText) +
       cell('Quy mô', p.struct) +
+      /* Hai ô chỉ hiện với dự án đã khai báo — dự án chưa có số thì bỏ ô, không hiện dấu gạch */
+      (p.land ? cell('Diện tích đất', p.land) : '') +
+      (p.tenure ? cell('Hình thức sở hữu', p.tenure) : '') +
       cell('Bàn giao dự kiến', p.handover) +
       cell('Cập nhật gần nhất', p.updated + (p.updatedBy ? ' · ' + p.updatedBy : ''));
     var lead = document.querySelector('.pj-hero .lead');
     if (lead) lead.textContent = p.place + ' · ' + p.typeName + ' · ' + p.struct;
     var title = id('pj-title'); if (title) title.textContent = p.name;
+    var crumb = id('pj-crumb'); if (crumb) crumb.textContent = p.name;
+
+    /* Thanh mức độ đầy đủ tài liệu đọc từ `ready` của chính dự án: viết cứng 100% thì mọi dự án
+       đều "đủ tài liệu", kể cả dự án đang thiếu — đúng loại số mà người xem tin ngay. */
+    var ready = typeof p.ready === 'number' ? Math.max(0, Math.min(100, p.ready)) : null;
+    var readyBar = id('kv1-ready'), readyNum = id('kv1-ready-n');
+    if (readyBar && readyNum) {
+      readyNum.textContent = ready === null ? '—' : ready + '%';
+      readyNum.style.color = ready !== null && ready >= 90 ? 'var(--verified)' : 'var(--orange-text)';
+      readyBar.className = 'bar' + (ready !== null && ready >= 90 ? ' ok' : '');
+      readyBar.querySelector('i').style.width = (ready === null ? 0 : ready) + '%';
+    }
     var pin = id('pj-pin');
     if (pin) {
       pin.setAttribute('data-pj', p.id);
@@ -814,6 +839,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     var bhTitle = id('bh-title');
     if (bhTitle) bhTitle.textContent = 'Bảng hàng ' + p.name.split(' — ')[0] + ' · cập nhật ' + p.updated.toLowerCase();
+
+    /* Tóm tắt dự án dạng một ảnh — nhân viên mở một tấm là nắm dự án khi đang ngồi trước mặt khách.
+       Ảnh do RECO tải lên; dự án chưa có ảnh thì hiện trạng thái trống chứ không để khoảng trắng. */
+    var sum = id('kv1-sum');
+    if (sum) {
+      sum.innerHTML = p.summary
+        ? '<img src="' + RECO.asset(p.summary) + '" alt="Ảnh tóm tắt dự án ' + esc(p.name) + '" ' +
+            'style="width:100%;height:230px;object-fit:cover;display:block;border-radius:var(--radius-md)">' +
+          '<figcaption class="micro muted mt-1">Ảnh tóm tắt dự án · nhãn Công khai, được phép đưa vào trang gửi khách. ' +
+            'Bản mô phỏng dùng ảnh phối cảnh thay chỗ — bản thật là tấm tóm tắt do RECO thiết kế và tải lên.</figcaption>'
+        : '<div class="empty">Dự án này chưa có ảnh tóm tắt. Người phụ trách dữ liệu tải một tấm lên ở màn Quản trị.</div>';
+    }
 
     /* Liên kết website hoặc trang giới thiệu dự án — nhân viên đang phải đi tìm trong tin nhắn nhóm */
     var web = id('kv1-web');
@@ -857,6 +894,54 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  /* ================= Khu vực 06 · Ảnh, video và tài liệu =================
+     Lấy theo đúng dự án đang mở, giới hạn 4 ảnh và 4 tài liệu — đây là bản xem nhanh,
+     xem đủ thì sang thư viện. Nhãn quyền lọc trước khi vẽ, không ẩn bằng CSS. */
+  var KV6_ICO = { pdf: ['fico pdf', 'file'], xls: ['fico xls', 'sheet'], img: ['fico img', 'image'],
+                  link: ['fico', 'link'], warn: ['fico', 'alert'] };
+  var KV6_SRC = { reco: '<span class="src src-reco">Tệp RECO</span>',
+                  drive: '<span class="src src-drive">Liên kết Drive · chỉ xem</span>',
+                  broken: '<span class="src src-broken">Liên kết hỏng</span>' };
+
+  function kv6() {
+    var anh = S.get('media').filter(function (m) {
+      return m.pj === PJ && m.state === 'approved' && S.canSee(m.label, RECO.role);
+    }).slice(0, 4);
+    var tep = S.get('documents').filter(function (d) {
+      return d.pj === PJ && S.canSee(d.label, RECO.role);
+    }).slice(0, 4);
+
+    id('kv6-gal').innerHTML = anh.map(function (m) {
+      return '<figure><img src="' + RECO.asset(m.img) + '" alt="' + esc(m.name) + '" loading="lazy">' +
+        S.label(m.label) + '</figure>';
+    }).join('');
+
+    id('kv6-docs').innerHTML = tep.map(function (d) {
+      var m = KV6_ICO[d.icon] || KV6_ICO.pdf;
+      var han = d.state === 'expired' ? '<span class="st st-off">Đã hết hiệu lực</span>'
+        : d.state === 'expiring'
+          ? '<span style="color:var(--orange-text);font-weight:700">' +
+            (d.daysLeft > 0 ? 'Hết hiệu lực sau ' + d.daysLeft + ' ngày' : 'Hết hiệu lực hôm nay') + '</span>'
+          : (d.to ? '<span>Hiệu lực tới ' + esc(d.to) + '</span>' : '');
+      /* Liên kết sống của Chủ đầu tư chỉ mở nguồn, không phát bản tải về (ADR-0003) */
+      var nut = d.src === 'drive'
+        ? '<a class="btn btn-outline btn-sm" href="https://drive.google.com" target="_blank" rel="noopener" ' +
+          'data-src="' + esc(d.name) + '">Mở nguồn</a>'
+        : '<button type="button" class="btn btn-outline btn-sm" data-dl="' + esc(d.name) + '">Tải bản có dấu nhận diện</button>';
+      return '<div class="frow"><span class="' + m[0] + '">' + RECO.svg(m[1]) + '</span>' +
+        '<div class="fmeta"><div class="fname">' + esc(d.name) + '</div>' +
+          '<div class="fsub">' + (KV6_SRC[d.src] || KV6_SRC.reco) + S.label(d.label) +
+          (d.ver && d.ver !== '—' ? '<span>Bản ' + esc(d.ver) + '</span>' : '') + han +
+          (d.note ? '<span>' + esc(d.note) + '</span>' : '') + '</div></div>' +
+        '<div class="fend">' + nut + '</div></div>';
+    }).join('');
+
+    /* Chỉ nói đúng phần đang hiện. Không in tổng số tài liệu của dự án ở đây: thẻ dự án ở
+       MH-03 lấy tổng từ `projects.docs` (bộ đếm vận hành), hai con số cạnh nhau sẽ lệch. */
+    id('kv6-note').textContent = 'Đang xem ' + tep.length + ' tài liệu và ' + anh.length +
+      ' ảnh mới nhất của dự án — mở thư viện đầy đủ để xem toàn bộ.';
+  }
+
   /* Bấm vào một dòng là chép luôn — thao tác này lặp lại mỗi lần chốt cọc */
   document.addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('[data-copy]') : null;
@@ -871,7 +956,7 @@ document.addEventListener('DOMContentLoaded', function () {
      Nay lấy từ kho `sections`, phân loại bằng `kind`, dùng chung một hộp soạn. */
   var SEC_ROLES = S.SECTION_ROLES;
   /* Chuỗi vai trò xem được nhãn Nội bộ hạn chế — giữ đúng trật tự đang dùng ở nơi khác. */
-  var SEE_RESTRICTED = 'gd gddu qlkd hcns';
+  var SEE_RESTRICTED = 'gd gddu qlkd hcns ktoan';
   var HIDDEN_RESTRICTED = 'nvbh tkkd mkt';
 
   function secs(kind) {
@@ -1326,29 +1411,74 @@ document.addEventListener('DOMContentLoaded', function () {
       order.map(function (k) { return chip(k, S.TOPICS[k] || 'Khác', dem[k]); }).join('');
   }
 
+  /* Ô tìm phải quét cả gạch đầu dòng và bảng: nhiều số liệu (pickleball, chỗ đỗ tandem,
+     diện tích lounge) chỉ nằm trong hai chỗ đó, không nằm trong đoạn trả lời. */
+  function qaHay(q) {
+    var s = q.q + ' ' + q.a + ' ' + (q.a2 || '');
+    if (q.bul) s += ' ' + q.bul.join(' ');
+    if (q.tbl) q.tbl.forEach(function (b) {
+      s += ' ' + (b.cap || '') + ' ' + b.head.join(' ');
+      b.body.forEach(function (r) { s += ' ' + r.join(' '); });
+    });
+    return norm(s);
+  }
+
+  /* Gạch đầu dòng và bảng chỉ thuộc bản đầy đủ: bản gửi khách là một đoạn rút gọn. */
+  function qaBody(q, out) {
+    var h = '<p>' + esc(out ? (q.a2 || q.a) : q.a) + '</p>';
+    if (out) return h;
+    if (q.bul && q.bul.length) {
+      h += '<ul class="qa-ul">' + q.bul.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+    }
+    if (q.tbl && q.tbl.length) {
+      h += q.tbl.map(function (b) {
+        return (b.cap ? '<p class="micro muted mt-2 mb-1" style="font-weight:700">' + esc(b.cap) + '</p>' : '') +
+          '<div class="qa-tw"><table class="qa-tbl"><thead><tr>' +
+          b.head.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') +
+          '</tr></thead><tbody>' +
+          b.body.map(function (r) {
+            return '<tr>' + r.map(function (c) { return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>';
+          }).join('') +
+          '</tbody></table></div>';
+      }).join('');
+    }
+    return h;
+  }
+
   function paintQA() {
     var t = norm(id('qa-q').value.trim());
     var out = qaVer === 'out';
-    var list = qaVisible().filter(function (q) {
+    var thay = qaVisible();
+    var list = thay.filter(function (q) {
       if (out && (!q.a2 || q.state === 'pending_info' || q.label !== 'public')) return false;
       if (topic && (q.topic || 'khac') !== topic) return false;
-      return !t || norm(q.q + ' ' + q.a + ' ' + (q.a2 || '')).indexOf(t) >= 0;
+      return !t || qaHay(q).indexOf(t) >= 0;
     });
 
+    /* Số câu đã có bản gửi khách nói thẳng phần việc còn lại: tài liệu RECO gửi để trống
+       cột Chia sẻ nên bản mô phỏng không tự soạn thay. */
+    var coA2 = thay.filter(function (q) { return q.a2; }).length;
     id('qa-ver-note').innerHTML = out
       ? 'Đang xem <strong>bản gửi khách</strong> — chỉ những câu có bản rút gọn đã duyệt. Câu đang <em>Chờ cập nhật</em> không bao giờ ra tới khách.'
-      : 'Đang xem <strong>bản đầy đủ</strong> dành cho nhân viên. Chuyển sang <strong>Bản gửi khách</strong> để thấy đúng phần khách sẽ đọc.';
+      : 'Đang xem <strong>bản đầy đủ</strong> dành cho nhân viên. <strong>' + coA2 + '/' + thay.length +
+        ' câu</strong> đã có bản gửi khách' +
+        (coA2 ? '' : ' — cột <em>Chia sẻ</em> trong tài liệu Chủ đầu tư gửi còn trống, bản rút gọn phải do RECO tự soạn') + '.';
 
     if (!list.length) {
-      id('qa-list').innerHTML = RECO_DATA.empty('Chưa có câu hỏi đáp nào khớp',
-        out ? 'Bản gửi khách chỉ có những câu đã được soạn phần rút gọn. Anh/chị xem Bản đầy đủ để đọc toàn bộ.'
-            : 'Anh/chị đổi chủ đề hoặc xóa từ khóa để xem lại toàn bộ bộ hỏi đáp đã duyệt.',
+      /* Nhắc lại đúng từ khóa và chủ đề đang lọc: bản gửi khách của dự án này rỗng sẵn
+         (chưa câu nào có bản rút gọn), nên nếu chỉ in một câu chung thì gõ gì cũng ra
+         cùng một màn hình và người dùng tưởng ô tìm không chạy. */
+      var vi = (out ? 'Bản gửi khách chỉ có những câu đã được soạn phần rút gọn. Anh/chị xem Bản đầy đủ để đọc toàn bộ.'
+                    : 'Anh/chị đổi chủ đề hoặc xóa từ khóa để xem lại toàn bộ bộ hỏi đáp đã duyệt.') +
+        (t ? ' Không có câu nào khớp từ khóa “' + esc(id('qa-q').value.trim()) + '”.' : '') +
+        (topic ? ' Đang lọc chủ đề ' + (S.TOPICS[topic] || 'Khác') + '.' : '');
+      id('qa-list').innerHTML = RECO_DATA.empty('Chưa có câu hỏi đáp nào khớp', vi,
         '<button type="button" class="btn btn-primary" id="qa-clear">Xem tất cả</button>');
       id('qa-clear').addEventListener('click', function () {
         id('qa-q').value = ''; topic = ''; qaVer = 'in';
         paintQAVerSeg(); paintQASeg(); paintQA();
       });
-      id('qa-count').textContent = '';
+      id('qa-count').textContent = 'Hiển thị 0/' + thay.length + ' câu' + (out ? ' · bản gửi khách' : '');
       return;
     }
 
@@ -1362,26 +1492,37 @@ document.addEventListener('DOMContentLoaded', function () {
       byGroup[g].by[k].push(q);
     });
 
-    var first = true;
+    /* Bộ hỏi đáp thật của một dự án là 88 câu — vẽ phẳng hết ra thì khu vực 07 dài gấp
+       mấy lần cả trang. Mỗi chủ đề thành một khối gập, mặc định chỉ mở khối đầu.
+       Đang tìm hoặc đang lọc chủ đề thì mở hết khối khớp, nếu không người dùng tìm ra
+       kết quả mà vẫn thấy một danh sách đóng. */
+    var dangLoc = !!t || !!topic;
+    var moCau = !!t && list.length <= 12;
+    var firstBox = true, firstItem = true;
+    var soChuDe = 0;
+
     id('qa-list').innerHTML = groups.map(function (g) {
       var n = 0;
       g.subs.forEach(function (k) { n += g.by[k].length; });
+      soChuDe += g.subs.length;
       return '<div class="mb-3">' +
         '<div class="spread mb-1"><h4 style="font-size:.95rem;margin:0">' + esc(g.name) + '</h4>' +
           '<span class="micro muted">' + n + ' câu</span></div>' +
         g.subs.map(function (k) {
-          return '<p class="micro muted mt-2 mb-1">' + esc(S.TOPICS[k] || 'Khác') + '</p>' +
+          var openBox = dangLoc || firstBox; firstBox = false;
+          return '<details class="qa-grp"' + (openBox ? ' open' : '') + '>' +
+            '<summary>' + esc(S.TOPICS[k] || 'Khác') + '<span class="n">' + g.by[k].length + '</span></summary>' +
             '<div class="qa">' + g.by[k].map(function (q) {
-              var open = first; first = false;
-              var body = out ? (q.a2 || q.a) : q.a;
+              var open = moCau || (firstItem && openBox); if (openBox) firstItem = false;
               return '<details' + (open ? ' open' : '') + '>' +
                 '<summary>' + esc(q.q) +
                   (q.state === 'pending_info' ? ' <span class="st st-wait">Chờ cập nhật</span>' : '') +
                 '</summary>' +
-                '<div class="qa-body"><p>' + esc(body) + '</p>' +
+                '<div class="qa-body">' + qaBody(q, out) +
                   (q.state === 'pending_info'
                     ? '<p class="small muted mt-1">Chủ đầu tư chưa công bố. Khi tư vấn, nói rõ là chưa có thông tin thay vì đưa ra con số dự đoán.</p>'
                     : '') +
+                  (!out && q.warn ? '<p class="small mt-2" style="color:var(--orange-text)">' + esc(q.warn) + '</p>' : '') +
                   (!out && q.a2 ? '<p class="micro muted mt-1">Bản gửi khách: ' + esc(q.a2) + '</p>' : '') +
                   (!out && !q.a2 && q.label === 'public' && q.state === 'approved'
                     ? '<p class="micro muted mt-1">Chưa có bản gửi khách — câu này không hiện trên trang công khai.</p>' : '') +
@@ -1389,16 +1530,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     (q.ref ? '<span class="chip">Tài liệu liên quan: ' + esc(q.ref) + '</span>' : '') +
                     S.label(q.label) +
                     (q.state === 'approved' || q.state === 'pending_info' ? '' : '<span class="st st-wait">Chờ duyệt</span>') +
+                    (!out && q.warn ? '<span class="open-q" title="' + esc(q.warn) + '">Cần Chủ đầu tư xác nhận</span>' : '') +
                     '<span class="chip">' + esc(S.TOPICS[q.topic] || 'Khác') + '</span>' +
                   '</div>' +
                 '</div></details>';
-            }).join('') + '</div>';
+            }).join('') + '</div></details>';
         }).join('') +
       '</div>';
     }).join('');
 
-    id('qa-count').textContent = 'Hiển thị ' + list.length + ' câu trong ' + groups.length + ' nhóm' +
-      (topic ? ' · chủ đề ' + S.TOPICS[topic] : '') + (out ? ' · bản gửi khách' : '');
+    id('qa-count').textContent = 'Hiển thị ' + list.length + '/' + thay.length + ' câu · ' +
+      groups.length + ' nhóm · ' + soChuDe + ' khối chủ đề' +
+      (topic ? ' · đang lọc chủ đề ' + S.TOPICS[topic] : '') + (out ? ' · bản gửi khách' : '');
   }
 
   function paintQAVerSeg() {
@@ -1474,7 +1617,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   function paintDuyetQA() {
-    var list = S.get('qas').filter(function (q) { return q.pj === PJ && q.state !== 'approved'; });
+    /* `pending_info` là "Chủ đầu tư chưa công bố thông tin", KHÔNG phải "chờ duyệt nội dung".
+       Xếp lẫn vào hàng chờ duyệt thì bấm Duyệt là xóa mất trạng thái Chờ cập nhật của câu đó. */
+    var list = S.get('qas').filter(function (q) {
+      return q.pj === PJ && q.state !== 'approved' && q.state !== 'pending_info';
+    });
     if (!list.length) {
       id('dq-list').innerHTML = RECO_DATA.empty('Không còn câu nào chờ duyệt',
         'Mọi câu hỏi đáp của dự án này đã được duyệt và đang hiển thị cho nhân viên.');
@@ -1520,15 +1667,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ================= Khu vực 09 · Kịch bản và ghi chú ================= */
-  function scriptCard(s, kind) {
-    var head = '<div class="spread"><h4>' + esc(s.title) + '</h4>' +
-      (kind === 'proposal'
-        ? '<span class="st ' + (s.state === 'rejected' ? 'st-stop' : s.state === 'accepted' ? 'st-live' : 'st-wait') + '">' +
-          (s.state === 'rejected' ? 'Đã từ chối' : s.state === 'accepted' ? 'Đã có bản dùng chung' : 'Chờ duyệt') + '</span>'
-        : kind === 'mine' ? '<span class="chip">Của tôi</span>' : S.label(s.label)) +
-      '</div>';
+  /* SaleHUB mô tả kịch bản tiếp khách "theo dạng toggle câu hỏi" — nên mỗi kịch bản là một
+     mục gấp/mở như bộ hỏi đáp, không phải thẻ phẳng. Danh sách được bọc bằng .qa ở paintKB. */
+  function scriptCard(s, kind, open) {
+    var badge = kind === 'proposal'
+      ? '<span class="st ' + (s.state === 'rejected' ? 'st-stop' : s.state === 'accepted' ? 'st-live' : 'st-wait') + '">' +
+        (s.state === 'rejected' ? 'Đã từ chối' : s.state === 'accepted' ? 'Đã có bản dùng chung' : 'Chờ duyệt') + '</span>'
+      : kind === 'mine' ? '<span class="chip">Của tôi</span>' : S.label(s.label);
 
-    var meta = '<p class="small muted mt-1">' + esc(s.body) + '</p>' +
+    var meta = '<p class="small muted">' + esc(s.body) + '</p>' +
       '<p class="micro muted mt-1">' + esc(s.by) + ' · ' + esc(s.at) +
       (kind === 'proposal' && s.reason ? ' · “' + esc(s.reason) + '”' : '') + '</p>' +
       (s.state === 'rejected' && s.rejectReason
@@ -1536,7 +1683,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var act = '';
     if (kind === 'shared') {
-      act = '<div class="row mt-2" data-roles="gddu tkkd">' +
+      act = '<div class="row mt-2" data-roles="gddu tkkd gd">' +
         '<button type="button" class="btn btn-outline btn-sm" data-edit="' + esc(s.id) + '">Sửa</button>' +
         '<button type="button" class="btn btn-quiet btn-sm" data-hide-kb="' + esc(s.id) + '">Ẩn khỏi đội</button></div>';
     } else if (kind === 'mine') {
@@ -1553,7 +1700,18 @@ document.addEventListener('DOMContentLoaded', function () {
         '<button type="button" class="btn btn-outline btn-sm" data-reject="' + esc(s.id) + '">Từ chối</button></div>' +
         '<p class="micro muted mt-2" data-roles="tkkd qlkd hcns ktoan mkt">Chỉ Giám đốc dự án duyệt được đề xuất này.</p>';
     }
-    return '<div class="card card-pad" style="box-shadow:none">' + head + meta + act + '</div>';
+    return '<details' + (open ? ' open' : '') + '>' +
+      '<summary>' + esc(s.title) + badge + '</summary>' +
+      '<div class="qa-body">' + meta + act + '</div>' +
+      '</details>';
+  }
+
+  /* Bọc danh sách kịch bản trong khung gấp/mở dùng chung với bộ hỏi đáp */
+  function kbList(list, kind, emptyTitle, emptyBody) {
+    if (!list.length) return RECO_DATA.empty(emptyTitle, emptyBody);
+    return '<div class="qa">' + list.map(function (s, i) {
+      return scriptCard(s, kind, i === 0);
+    }).join('') + '</div>';
   }
 
   function scripts(scope) {
@@ -1569,11 +1727,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var chung = scripts('shared'), toi = scripts('mine'), dexuat = scripts('proposal');
 
     var boxChung = id('kb-chung');
-    boxChung.innerHTML = chung.length ? chung.map(function (s) { return scriptCard(s, 'shared'); }).join('')
-      : RECO_DATA.empty('Chưa có kịch bản dùng chung', 'Người được phân quyền tạo kịch bản đầu tiên cho cả đội dùng.');
+    boxChung.innerHTML = kbList(chung, 'shared',
+      'Chưa có kịch bản dùng chung', 'Người được phân quyền tạo kịch bản đầu tiên cho cả đội dùng.');
 
-    var mineHtml = toi.length ? toi.map(function (s) { return scriptCard(s, 'mine'); }).join('')
-      : RECO_DATA.empty('Anh/chị chưa có kịch bản riêng', 'Kịch bản cá nhân chỉ mình anh/chị xem được, không chia sẻ trực tiếp cho đồng nghiệp.');
+    var mineHtml = kbList(toi, 'mine',
+      'Anh/chị chưa có kịch bản riêng', 'Kịch bản cá nhân chỉ mình anh/chị xem được, không chia sẻ trực tiếp cho đồng nghiệp.');
     if (id('kb-toi')) id('kb-toi').innerHTML = mineHtml;
     if (id('kb-nvbh')) id('kb-nvbh').innerHTML = mineHtml;
 
@@ -1584,8 +1742,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }).join('')
       : RECO_DATA.empty('Chưa có ghi chú nội bộ', 'Ghi chú dùng để nhắc cả đội những thay đổi chưa kịp vào tài liệu chính thức.');
 
-    id('kb-dexuat').innerHTML = dexuat.length ? dexuat.map(function (s) { return scriptCard(s, 'proposal'); }).join('')
-      : RECO_DATA.empty('Không có đề xuất nào đang chờ', 'Khi nhân viên đề xuất nâng kịch bản cá nhân lên bản dùng chung, mục sẽ hiện ở đây.');
+    id('kb-dexuat').innerHTML = kbList(dexuat, 'proposal',
+      'Không có đề xuất nào đang chờ', 'Khi nhân viên đề xuất nâng kịch bản cá nhân lên bản dùng chung, mục sẽ hiện ở đây.');
 
     ['kb-chung', 'kb-toi', 'kb-ghichu', 'kb-dexuat', 'kb-nvbh'].forEach(function (x) {
       if (id(x)) RECO.applyRoles(id(x));
@@ -1774,18 +1932,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  /* ================= Tải tệp và nguồn ngoài ================= */
-  document.querySelectorAll('[data-dl]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      RECO.busy(b, 'Đang tạo bản có dấu nhận diện…', 1400, function () {
-        RECO.toast('Đã tạo bản có dấu nhận diện của ' + ME + ' — ' + b.getAttribute('data-dl'));
-      });
+  /* ================= Tải tệp và nguồn ngoài =================
+     Khu vực 06 nay vẽ bằng JS và vẽ lại mỗi lần kho đổi, nên phải ủy quyền ở cấp trang:
+     gắn thẳng vào từng nút thì hàng tệp vẽ sau lúc nạp trang không có trình nghe nào. */
+  id('page').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-dl]') : null;
+    if (!b) return;
+    RECO.busy(b, 'Đang tạo bản có dấu nhận diện…', 1400, function () {
+      RECO.toast('Đã tạo bản có dấu nhận diện của ' + ME + ' — ' + b.getAttribute('data-dl'));
     });
   });
-  document.querySelectorAll('[data-src]').forEach(function (a) {
-    a.addEventListener('click', function () {
-      RECO.toast('Mở liên kết sống của Chủ đầu tư trong tab mới — RECO chỉ xem, không sửa được trong Sales Hub');
-    });
+  id('page').addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('[data-src]') : null;
+    if (!a) return;
+    RECO.toast('Mở liên kết sống của Chủ đầu tư trong tab mới — RECO chỉ xem, không sửa được trong Sales Hub');
   });
 
   /* ================= MH-13 · gửi đề nghị sửa ================= */
@@ -1819,8 +1979,11 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ================= Dựng lần đầu + theo dõi kho ================= */
   kv1();
   near();
+  kv6();
   paintSections();
   watch('sections', paintSections);
+  watch('media', kv6);
+  watch('documents', kv6);
   fillUnitFilters(); paintUnits();
   fillUnitPicker(); calc(); paintPhieu();
   paintQASeg(); paintQA(); paintDuyetQA();

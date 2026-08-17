@@ -20,13 +20,13 @@ var CASES = [
   ['du-an-chi-tiet', 'gddu', 'nút nổi Gửi đề nghị sửa ẩn với Giám đốc dự án',
    function (d) { return d.querySelector('.fab').hidden; }, true],
   ['du-an-chi-tiet', 'tkkd', 'Thư ký kinh doanh thấy nút Cập nhật ở khu vực 1',
-   function (d) { return !d.querySelector('#kv1 [data-roles="tkkd gddu"]').hidden; }, true],
+   function (d) { return !d.querySelector('#kv1 [data-roles="tkkd gddu gd"]').hidden; }, true],
   ['thu-vien-tai-lieu', 'nvbh', 'Nhân viên bán hàng không tải được tài liệu Nội bộ hạn chế',
-   function (d) { return d.querySelector('[data-roles="gd gddu qlkd hcns"]').hidden; }, true],
+   function (d) { return d.querySelector('[data-roles="gd gddu qlkd hcns ktoan"]').hidden; }, true],
   ['thu-vien-tai-lieu', 'qlkd', 'Quản lý kinh doanh tải được Chính sách hoa hồng',
-   function (d) { return !d.querySelector('[data-roles="gd gddu qlkd hcns"]').hidden; }, true],
+   function (d) { return !d.querySelector('[data-roles="gd gddu qlkd hcns ktoan"]').hidden; }, true],
   ['cay-thu-muc', 'nvbh', 'Nhân viên bán hàng không thấy nhánh 7',
-   function (d) { return d.querySelector('[data-roles="gd gddu tkkd qlkd hcns mkt"]').hidden; }, true],
+   function (d) { return d.querySelector('.tnode.root[data-branch="7"]').closest('li').hidden; }, true],
   ['cay-thu-muc', 'nvbh', 'Nhân viên bán hàng không có nút tạo thư mục con',
    function (d) { return d.querySelector('[data-roles="tkkd gddu mkt gd"]').hidden; }, true],
   ['quan-tri', 'nvbh', 'menu Quản trị không hiện với Nhân viên bán hàng',
@@ -44,18 +44,36 @@ var CASES = [
 
   /* Ba trường hợp bổ sung sau đợt rà đối kháng — đều là chỗ bộ kiểm tra cũ bỏ sót */
   ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng không thấy Chính sách hoa hồng ở khu vực 3',
-   function (d) { return d.querySelector('#kv3 [data-roles="gd gddu qlkd hcns"]').hidden; }, true],
+   function (d) { return d.querySelector('#kv3 [data-roles="gd gddu qlkd hcns ktoan"]').hidden; }, true],
   ['du-an-chi-tiet', 'qlkd', 'Quản lý kinh doanh xem được Chính sách hoa hồng ở khu vực 3',
-   function (d) { return !d.querySelector('#kv3 [data-roles="gd gddu qlkd hcns"]').hidden; }, true],
+   function (d) { return !d.querySelector('#kv3 [data-roles="gd gddu qlkd hcns ktoan"]').hidden; }, true],
   ['quan-tri', 'nvbh', 'Vào thẳng địa chỉ màn Quản trị vẫn bị chặn ở cấp màn',
    function (d) {
      return !d.querySelector('.state-error[data-roles="nvbh qlkd"]').hidden &&
             d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns ktoan"]').hidden;
    }, true],
-  ['quan-tri', 'tkkd', 'Thư ký kinh doanh không thấy tab Báo cáo vận hành',
-   function (d) { return d.querySelector('#t-bc').hidden; }, true],
+  ['quan-tri', 'tkkd', 'Thư ký kinh doanh thấy tab Báo cáo vận hành (QD-063)',
+   function (d) { return d.querySelector('#t-bc').hidden; }, false],
+  ['quan-tri', 'ktoan', 'Kế toán thấy tab Báo cáo vận hành',
+   function (d) { return d.querySelector('#t-bc').hidden; }, false],
+  ['quan-tri', 'qlkd', 'Quản lý kinh doanh vẫn bị chặn khỏi màn Quản trị',
+   function (d) { return d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns ktoan"]').hidden; }, true],
   ['quan-tri', 'gddu', 'Giám đốc dự án vẫn vào được màn Quản trị',
    function (d) { return !d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns ktoan"]').hidden; }, true],
+
+  /* --- Đợt đồng bộ ma trận quyền theo SaleHUB ngày 17/08/2026 (QD-060 đến QD-064) --- */
+  ['du-an-chi-tiet', 'gd', 'Tổng giám đốc sửa được nội dung khu vực 1 (QD-060)',
+   function (d) { return d.querySelector('#kv1 [data-roles="tkkd gddu gd"]').hidden; }, false],
+  ['cay-thu-muc', 'ktoan', 'Kế toán thấy nhánh 1 trong cây thư mục',
+   function (d) { return d.querySelector('.tnode.root[data-branch="1"]').closest('li').hidden; }, false],
+  ['cay-thu-muc', 'ktoan', 'Kế toán thấy phần số liệu ở nhánh 7',
+   function (d) { return d.querySelector('.tnode.root[data-branch="7"]').closest('li').hidden; }, false],
+  ['cay-thu-muc', 'ktoan', 'Kế toán không thấy nhánh 2 (Sản phẩm và Bảng hàng)',
+   function (d) { return d.querySelector('.tnode.root[data-branch="2"]').closest('li').hidden; }, true],
+  ['sitemap', 'khach', 'Vai trò Khách hàng bị chặn khỏi bản đồ hệ thống',
+   function (d) { return /chỉ dành cho nhân viên RECO/.test(d.body.textContent); }, true],
+  ['sitemap', 'nvbh', 'Nhân viên bán hàng xem được bản đồ hệ thống',
+   function (d) { return !!d.querySelector('#man-hinh'); }, true],
 
   /* --- Đợt bổ sung lối thêm nội dung. Bám id chứ không bám chuỗi data-roles nguyên văn:
          các ca cũ bám chuỗi nên mỗi lần sắp lại vai trò là một quả mìn. --- */
@@ -227,17 +245,18 @@ var CASES = [
 
   /* --- Bốn quyết định chốt ngày 14/08/2026 --- */
 
-  /* 1 · Tổng giám đốc xem toàn bộ và duyệt, không sửa nội dung, không cấp tài khoản */
-  ['du-an-chi-tiet', 'gd', 'Tổng giám đốc không sửa thành phần nào của trang dự án',
+  /* 1 · Tổng giám đốc xem toàn bộ, duyệt, và từ QD-060 sửa được toàn bộ nội dung.
+        Ranh giới còn lại (QD-061): không tạo, khoá hay mở lại tài khoản. */
+  ['du-an-chi-tiet', 'gd', 'Tổng giám đốc sửa được mọi thành phần của trang dự án (QD-060)',
    function (d) {
      return Array.prototype.every.call(d.querySelectorAll('[data-sec-new], [data-sec-edit]'),
-       function (b) { return b.hidden; });
+       function (b) { return !b.hidden; });
    }, true],
-  ['thu-vien-tai-lieu', 'gd', 'Tổng giám đốc không tải tài liệu lên',
-   function (d) { return d.querySelector('#tl-new').hidden; }, true],
-  ['quan-tri', 'gd', 'Tổng giám đốc không quản lý bảng hàng',
-   function (d) { return d.querySelector('#bhq-zone').hidden; }, true],
-  ['nguoi-dung', 'gd', 'Tổng giám đốc xem được danh sách nhưng không cấp tài khoản',
+  ['thu-vien-tai-lieu', 'gd', 'Tổng giám đốc tải tài liệu lên được (QD-060)',
+   function (d) { return d.querySelector('#tl-new').hidden; }, false],
+  ['quan-tri', 'gd', 'Tổng giám đốc quản lý được bảng hàng (QD-060)',
+   function (d) { return d.querySelector('#bhq-zone').hidden; }, false],
+  ['nguoi-dung', 'gd', 'Tổng giám đốc xem được danh sách nhưng không tạo tài khoản (QD-061)',
    function (d) { return !d.querySelector('#u-zone').hidden && d.querySelector('#u-new').hidden; }, true],
 
   /* 3 · HCNS & Kế toán chỉ thấy nhánh 1 và nhánh 7 */

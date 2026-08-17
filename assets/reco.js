@@ -3,7 +3,7 @@
 
    Chạy được ở hai chế độ:
    · nhiều trang — mỗi màn một file .html, trạng thái nằm ở query (?role=&dev=)
-   · một trang   — cả 14 màn gói vào một file (bản Artifact), trạng thái nằm ở hash (#trang?role=)
+   · một trang   — cả 20 màn gói vào một file (bản Artifact), trạng thái nằm ở hash (#trang?role=)
    Cả hai đều giữ trạng thái trong URL để chạy được khi mở bằng file:// — không phụ thuộc localStorage. */
 (function () {
   'use strict';
@@ -149,7 +149,7 @@
        Danh sách phẳng là chế độ xem thứ hai, đổi bằng cặp nút ở đầu màn. */
     { href: 'cay-thu-muc.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
     { href: 'chia-se.html', label: 'Chia sẻ', key: 'chia-se', icon: 'share' },
-    { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns' },
+    { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' },
     /* Danh mục tính năng và báo giá — nội dung thương mại nội bộ, vai trò Khách hàng không thấy.
        Đặt cuối NAV nên không lọt vào dock (dock chỉ lấy 4 mục đầu). */
     { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
@@ -159,6 +159,9 @@
     { href: 'soan-noi-dung.html', label: 'Chuẩn bị nội dung bán hàng', roles: 'gd gddu tkkd qlkd nvbh mkt' },
     { href: 'de-nghi-sua.html', label: 'Đề nghị sửa nội dung' },
     { href: 'nguoi-dung.html', label: 'Người dùng và quyền', roles: 'gd hcns' },
+    /* Bản đồ hệ thống đối chiếu từng mục SaleHUB của RECO với màn hình — nội dung nội bộ,
+       vai trò Khách hàng không thấy, giống mục Tính năng & báo giá. */
+    { href: 'sitemap.html', label: 'Bản đồ hệ thống · đối chiếu SaleHUB', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' },
     { href: 'index.html', label: 'Bản đồ prototype' }
   ];
   function allowed(item) { return !item.roles || item.roles.split(' ').indexOf(role) >= 0; }
@@ -279,12 +282,13 @@
     S.get('projects').forEach(function (p) {
       if (p.hidden) return;
       if (norm(p.name + ' ' + p.place + ' ' + p.typeName).indexOf(t) < 0) return;
-      push('Dự án', 'layers', p.name, p.place + ' · ' + p.typeName, 'du-an-chi-tiet.html');
+      push('Dự án', 'layers', p.name, p.place + ' · ' + p.typeName, 'du-an-chi-tiet.html?pj=' + p.id);
     });
     S.get('units').forEach(function (u) {
       if (norm(u.id + ' ' + u.kind).indexOf(t) < 0) return;
       push('Căn/lô', 'grid', u.id + ' · ' + u.kind,
-        S.projectName(u.pj) + ' · ' + u.area + ' m² · ' + S.UNIT_STATE[u.state].text, 'du-an-chi-tiet.html#kv5');
+        S.projectName(u.pj) + ' · ' + u.area + ' m² · ' + S.UNIT_STATE[u.state].text,
+        'du-an-chi-tiet.html?pj=' + u.pj + '#kv5');
     });
     S.get('documents').forEach(function (d) {
       if (!S.canSee(d.label, role)) return;
@@ -292,8 +296,14 @@
       push('Tài liệu', 'file', d.name, S.projectName(d.pj) + ' · ' + S.LABELS[d.label].text, 'thu-vien-tai-lieu.html');
     });
     S.get('qas').forEach(function (qa) {
+      /* Hỏi đáp cũng có ba cấp nhãn: câu Nội bộ (ví dụ so sánh với dự án đối thủ) không được
+         lọt ra ô tìm chung của vai trò không được phép xem, và câu chưa duyệt chưa phải nội dung
+         chính thức. Kèm `pj` vào đường dẫn, nếu không thì bấm câu của dự án khác vẫn mở dự án mặc định. */
+      if (!S.canSee(qa.label, role)) return;
+      if (qa.state !== 'approved' && qa.state !== 'pending_info') return;
       if (norm(qa.q + ' ' + qa.a).indexOf(t) < 0) return;
-      push('Hỏi đáp', 'file', qa.q, S.TOPICS[qa.topic] || '', 'du-an-chi-tiet.html#kv7');
+      push('Hỏi đáp', 'file', qa.q, S.projectName(qa.pj) + ' · ' + (S.TOPICS[qa.topic] || ''),
+        'du-an-chi-tiet.html?pj=' + qa.pj + '#kv7');
     });
     return out;
   }
@@ -917,8 +927,10 @@
     }
 
     /* Khách hàng chỉ thấy trang gửi khách. Chặn ngay ở đây, trước khi bất kỳ màn nội bộ nào
-       kịp vẽ nội dung — để lọt một lần là bản mô phỏng nói sai về mô hình quyền. */
-    if (role === 'khach' && shell === 'app') {
+       kịp vẽ nội dung — để lọt một lần là bản mô phỏng nói sai về mô hình quyền.
+       Hai trang bản đồ mang vỏ `plain` nhưng liệt kê mã màn hình và bảng đối chiếu nội bộ,
+       nên chặn theo tên trang chứ không chỉ theo vỏ. */
+    if (role === 'khach' && (shell === 'app' || active === 'index' || active === 'sitemap')) {
       body.insertAdjacentHTML('afterbegin', buildProto());
       var inner = document.getElementById('page');
       if (inner) inner.innerHTML = guestWall();
@@ -1065,7 +1077,7 @@
 
     // Mã riêng của từng màn — build ghi sẵn dưới dạng chuỗi, chạy sau khi DOM đã vào chỗ.
     // Ở chế độ khung điện thoại, mount() đã thay #page bằng iframe nên không còn phần tử
-    // nào cho mã trang bám vào — chạy sẽ ném lỗi ở cả 14 màn.
+    // nào cho mã trang bám vào — chạy sẽ ném lỗi ở cả 20 màn.
     if (P.js && !(device === 'm' && !bare)) {
       try { (new Function(expand(P.js)))(); }
       catch (e) { console.error('Lỗi mã của màn ' + page, e); }

@@ -52,7 +52,7 @@
         <!-- HCNS &amp; Kế toán không đụng nội dung dự án nên không thấy tab này -->
         <button role="tab" id="t-kb" aria-controls="p-kb" aria-selected="false" tabindex="-1" data-roles="gd gddu tkkd mkt">Kịch bản</button>
         <!-- Thư ký kinh doanh không có quyền xem báo cáo theo ma trận -->
-        <button role="tab" id="t-bc" aria-controls="p-bc" aria-selected="false" tabindex="-1" data-roles="gd gddu mkt hcns">Báo cáo vận hành</button>
+        <button role="tab" id="t-bc" aria-controls="p-bc" aria-selected="false" tabindex="-1" data-roles="gd gddu tkkd mkt hcns ktoan">Báo cáo vận hành</button>
       </div>
 
       <!-- Dự án và nội dung -->
@@ -100,7 +100,7 @@
 
         <!-- Bảng hàng tới cấp căn/lô. data-roles đặt ở lớp ngoài, còn hidden do JS điều khiển
              đặt ở lớp trong — để chung một phần tử thì applyRoles sẽ bung panel ra lúc nạp trang. -->
-        <section id="bhq-zone" class="mt-4" data-roles="gddu tkkd">
+        <section id="bhq-zone" class="mt-4" data-roles="gddu tkkd gd">
           <div id="bhq-panel" hidden>
             <div class="spread mb-2">
               <div>
@@ -188,7 +188,7 @@
             </select>
             <button type="button" class="btn btn-quiet btn-sm" id="kb-reset">Xóa lọc</button>
           </div>
-          <button class="btn btn-primary btn-sm" id="kb-new" data-roles="gddu tkkd">+ Kịch bản dùng chung</button>
+          <button class="btn btn-primary btn-sm" id="kb-new" data-roles="gddu tkkd gd">+ Kịch bản dùng chung</button>
         </div>
 
         <p class="small muted mb-2" id="kb-count" style="margin:0"></p>
@@ -257,7 +257,7 @@
       </div>
 
       <!-- Báo cáo vận hành -->
-      <div role="tabpanel" id="p-bc" aria-labelledby="t-bc" class="card-body" hidden data-roles="gd gddu mkt hcns">
+      <div role="tabpanel" id="p-bc" aria-labelledby="t-bc" class="card-body" hidden data-roles="gd gddu tkkd mkt hcns ktoan">
         <div class="note note-navy mb-3">
           <strong>Đúng mức tối thiểu theo QD-042.</strong> Bốn số liệu vận hành cơ bản và danh sách tài liệu sắp hết hiệu lực,
           trên một màn hình duy nhất — <em>không có bộ lọc, không xuất tệp</em>. Báo cáo Marketing của dự án chuyển sang Giai đoạn 2.

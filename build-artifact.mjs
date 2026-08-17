@@ -1,10 +1,10 @@
-/* Gộp 19 màn của prototype thành MỘT tệp HTML tự chứa, dùng để đăng lên Claude Artifact.
+/* Gộp 20 màn của prototype thành MỘT tệp HTML tự chứa, dùng để đăng lên Claude Artifact.
  *
  *   node build-artifact.mjs
  *   → dist/reco-sales-hub.html
  *
  * Artifact chặn mọi yêu cầu ra máy chủ ngoài, nên phông chữ và ảnh phải nhúng thẳng
- * dưới dạng data URI, và cả 19 màn phải nằm trong một tài liệu duy nhất.
+ * dưới dạng data URI, và cả 20 màn phải nằm trong một tài liệu duy nhất.
  */
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -19,7 +19,7 @@ const A = (...p) => path.join(root, 'assets', ...p);
 
 /* Thứ tự này là thứ tự trình bày trong buổi demo, không phải thứ tự bảng chữ cái. */
 const PAGES = [
-  'index', 'dang-nhap', 'trang-dau', 'du-an', 'du-an-chi-tiet',
+  'index', 'sitemap', 'dang-nhap', 'trang-dau', 'du-an', 'du-an-chi-tiet',
   'thu-vien-tai-lieu', 'cay-thu-muc', 'soan-noi-dung', 'chia-se',
   'trang-gui-khach', 'link-het-han', 'quan-tri', 'nguoi-dung', 'de-nghi-sua',
   'xem-truoc-gd2',
@@ -122,7 +122,7 @@ for (const p of Object.values(pages)) {
 const dataJs = data;   // data.js gọi RECO.asset(), không cần thay chuỗi
 
 const doc = `<title>RECO Sales Hub</title>
-<meta name="description" content="Bản mô phỏng giao diện 14 màn hình Giai đoạn 1 của RECO Data-SalesHub.">
+<meta name="description" content="Bản mô phỏng giao diện 20 màn Giai đoạn 1 của RECO Data-SalesHub.">
 <style>
 ${css}
 </style>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RECO Data-SalesHub — Bản mô phỏng giao diện Giai đoạn 1</title>
 <meta name="theme-color" content="#09263c">
-<meta name="description" content="Bản mô phỏng giao diện 14 màn hình chính của RECO Data-SalesHub, dùng để RECO xem và xác nhận thiết kế Giai đoạn 1.">
+<meta name="description" content="Bản mô phỏng giao diện 20 màn của RECO Data-SalesHub, dùng để RECO xem và xác nhận thiết kế Giai đoạn 1.">
 <link rel="icon" href="assets/img/reco-logo.png">
 <link rel="stylesheet" href="assets/reco.css">
 <script defer src="assets/reco.js"></script>
@@ -25,13 +25,14 @@
       </p>
       <div class="row mt-3">
         <a class="btn btn-primary" href="trang-dau.html">Bắt đầu từ Trang đầu</a>
+        <a class="btn btn-ghost" href="sitemap.html">Bản đồ hệ thống · đối chiếu SaleHUB</a>
         <a class="btn btn-ghost" href="#ban-do">Xem toàn bộ màn hình</a>
       </div>
       <div class="row mt-4" style="gap:26px">
-        <div><div class="num" style="font-size:1.55rem">14</div><div class="micro" style="color:rgba(255,255,255,.7)">màn hình</div></div>
-        <div><div class="num" style="font-size:1.55rem">7</div><div class="micro" style="color:rgba(255,255,255,.7)">vai trò đổi trực tiếp</div></div>
+        <div><div class="num" style="font-size:1.55rem">20</div><div class="micro" style="color:rgba(255,255,255,.7)">màn trong bản mô phỏng</div></div>
+        <div><div class="num" style="font-size:1.55rem">9</div><div class="micro" style="color:rgba(255,255,255,.7)">vai trò đổi trực tiếp</div></div>
         <div><div class="num" style="font-size:1.55rem">3</div><div class="micro" style="color:rgba(255,255,255,.7)">cấp nhãn quyền</div></div>
-        <div><div class="num" style="font-size:1.55rem">6</div><div class="micro" style="color:rgba(255,255,255,.7)">dự án mẫu</div></div>
+        <div><div class="num" style="font-size:1.55rem">7</div><div class="micro" style="color:rgba(255,255,255,.7)">dự án mẫu</div></div>
       </div>
     </section>
 
@@ -44,7 +45,7 @@
       <div class="grid g-3">
         <div class="card card-pad">
           <h3>Đổi vai trò</h3>
-          <p class="small muted mt-1">Chọn một trong 7 vai trò của RECO. Nội dung, nút bấm và khu vực nội bộ trên mọi màn sẽ đổi theo đúng ma trận quyền đã chốt ngày 13/08/2026.</p>
+          <p class="small muted mt-1">Chọn một trong 9 vai trò của RECO. Nội dung, nút bấm và khu vực nội bộ trên mọi màn sẽ đổi theo đúng ma trận quyền chốt ngày 13/08/2026, đã đồng bộ theo mô tả SaleHUB ngày 17/08/2026.</p>
           <p class="small mt-1"><strong>Thử ngay:</strong> mở <a href="du-an-chi-tiet.html">Chi tiết dự án</a>, đổi sang <em>Nhân viên bán hàng</em> — khu vực 9 (Nội bộ Marketing &amp; Kinh doanh) biến mất.</p>
         </div>
         <div class="card card-pad">
@@ -97,8 +98,8 @@
     <section class="mt-4" id="ban-do">
       <div class="section-head">
         <span class="eyebrow">Bản đồ màn hình</span>
-        <h2>14 màn hình theo tài liệu yêu cầu</h2>
-        <p class="lead">Mã màn hình khớp với <em>docs/05-user-experience/screen-requirements.md</em>.</p>
+        <h2>Hai mươi màn trong bản mô phỏng</h2>
+        <p class="lead">Mười bốn màn mang mã MH khớp với <em>docs/05-user-experience/screen-requirements.md</em>. Để xem từng mục trong bộ mô tả SaleHUB của RECO nằm ở đâu, mở <a href="sitemap.html">Bản đồ hệ thống</a>.</p>
       </div>
 
       <h3 class="mt-3 mb-2">Tiếp cận và truy xuất</h3>
@@ -135,8 +136,15 @@
       <h3 class="mt-4 mb-2">Tính năng và báo giá</h3>
       <div class="grid g-3">
         <a class="map-card" href="tinh-nang-gd1.html"><span class="mh">GĐ1</span><h3>Cây tính năng Giai đoạn 1</h3><p>Mười tám hạng mục của gói 198.800.000 VNĐ xếp theo sáu nhánh, kèm nhánh ba hạng mục bổ sung. Bấm một hạng mục để đọc mô tả đầy đủ và chi phí.</p></a>
+        <a class="map-card" href="chi-tiet-gd1.html"><span class="mh">GĐ1</span><h3>Chi tiết và báo giá Giai đoạn 1</h3><p>Mô tả đầy đủ từng hạng mục trong mười tám hạng mục, và chuỗi tính từ ngày công ra giá thanh toán.</p></a>
         <a class="map-card" href="tinh-nang-gd2.html"><span class="mh">GĐ2</span><h3>Cây tính năng Giai đoạn 2</h3><p>Sáu phân hệ dựng từ bộ mô tả và ba tệp Excel vận hành RECO gửi ngày 17/08/2026, kèm tạm tính từng phân hệ và bốn cách chọn.</p></a>
+        <a class="map-card" href="chi-tiet-gd2.html"><span class="mh">GĐ2</span><h3>Chi tiết và báo giá Giai đoạn 2</h3><p>Phạm vi, rủi ro và tạm tính của từng phân hệ Giai đoạn 2.</p></a>
         <a class="map-card" href="xem-truoc-gd2.html"><span class="mh">GĐ2</span><h3>Xem trước báo cáo giao dịch và hoa hồng</h3><p>Dựng theo bảy báo cáo tuần và bảng kê hoa hồng RECO đang làm trên Excel. Toàn bộ số liệu là số giả; phân hệ này chưa nằm trong gói 198.800.000 VNĐ.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Bản đồ</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="sitemap.html"><span class="mh">—</span><h3>Bản đồ hệ thống</h3><p>Đối chiếu từng mục trong bộ mô tả SaleHUB của RECO với chỗ nó nằm trong hệ thống, kèm trạng thái Giai đoạn 1, ngoài gói hay Giai đoạn 2.</p></a>
       </div>
     </section>
 
@@ -157,7 +165,7 @@
     </section>
 
     <p class="small muted mt-4">
-      Bản mô phỏng · dựng theo bộ tài liệu RECO Data-SalesHub cập nhật 13/08/2026.
+      Bản mô phỏng · dựng theo bộ tài liệu RECO Data-SalesHub cập nhật 17/08/2026.
       Dữ liệu, tên dự án, ảnh và con số trong đây đều là dữ liệu mẫu dùng để minh họa giao diện.
     </p>
   </div>
