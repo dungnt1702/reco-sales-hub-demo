@@ -191,6 +191,41 @@
       <p class="micro muted mt-2">Trang này chỉ hiển thị phần chính sách được phép công bố.</p>
     </section>
 
+    <section class="pub-sec" id="yeu-cau">
+      <div class="card card-pad">
+        <div class="row-tight mb-1">
+          <b>Nhận báo giá / quan tâm căn</b>
+          <span class="chip-gd2">Hạng mục bổ sung · ngoài gói đã báo giá</span>
+        </div>
+        <p class="small muted">Quý khách để lại tên và số điện thoại, chuyên viên phụ trách sẽ gọi lại kèm phiếu tính giá của đúng căn quan tâm.</p>
+
+        <div id="yc-form" class="mt-3">
+          <div class="grid g-2">
+            <label class="field"><span class="lab">Họ và tên</span>
+              <input class="inp" type="text" id="yc-ten" data-required data-msg="Quý khách cho biết tên để chuyên viên tiện xưng hô."></label>
+            <label class="field"><span class="lab">Số điện thoại</span>
+              <input class="inp" type="tel" id="yc-sdt" data-required data-msg="Nhập số điện thoại để chuyên viên gọi lại."
+                     placeholder="Ví dụ: 0912 345 678"></label>
+          </div>
+          <label class="field"><span class="lab">Căn quan tâm</span>
+            <select class="inp" id="yc-can" data-gd2></select></label>
+          <label class="field"><span class="lab">Ghi chú</span>
+            <textarea class="inp" id="yc-note" rows="2" data-gd2 placeholder="Ví dụ: mong muốn xem căn mẫu cuối tuần"></textarea></label>
+          <div class="row mt-2">
+            <button type="button" class="btn btn-primary" id="yc-send">Gửi yêu cầu</button>
+          </div>
+          <p class="micro muted mt-2">
+            Quý khách <strong>không cần đăng nhập</strong> và trang này <strong>không tự tính giá</strong> — phiếu tính giá do chuyên viên lập và đã được duyệt (QD-010).
+          </p>
+        </div>
+
+        <div id="yc-done" hidden class="note mt-3">
+          <b>Đã nhận yêu cầu của quý khách.</b>
+          <p class="small mt-1" style="margin:0" id="yc-done-text"></p>
+        </div>
+      </div>
+    </section>
+
     <section class="pub-sec">
       <div class="band">
         <span class="eyebrow light">Bước tiếp theo</span>
@@ -237,12 +272,48 @@
 </div>
 
 <script>
+/* Khối gửi yêu cầu của khách — QD-055. Chỉ ghi tên, số điện thoại, căn quan tâm và ghi chú;
+   không có hồ sơ khách hàng, không chấm điểm, không phân bổ tự động (những thứ đó ở Giai đoạn 2). */
+document.addEventListener('DOMContentLoaded', function () {
+  var S = RECO.store, form = document.getElementById('yc-form');
+  if (form) {
+    var sel = document.getElementById('yc-can');
+    var h = location.hash, qi = h.indexOf('?');
+    var want = new URLSearchParams(qi >= 0 ? h.slice(qi + 1) : location.search).get('pj');
+    var pj = (want && S.find('projects', want)) ? want : 'leparc';
+    var units = S.get('units').filter(function (u) { return u.pj === pj && u.state !== 'ban'; });
+    sel.innerHTML = '<option value="">Chưa chọn căn cụ thể</option>' +
+      units.map(function (u) {
+        return '<option value="' + u.id + '">' + u.id + ' · ' + u.kind + ' · ' + u.area + ' m²</option>';
+      }).join('');
+
+    document.getElementById('yc-send').addEventListener('click', function () {
+      if (!RECO.validate(form)) return;
+      var ten = document.getElementById('yc-ten').value.trim();
+      var can = sel.value;
+      RECO.busy(this, 'Đang gửi…', 800, function () {
+        form.hidden = true;
+        var done = document.getElementById('yc-done');
+        done.hidden = false;
+        document.getElementById('yc-done-text').textContent =
+          'Cảm ơn ' + ten + '. Chuyên viên phụ trách đường dẫn này đã nhận thông báo' +
+          (can ? ' kèm căn ' + can : '') + ' và sẽ liên hệ lại trong hôm nay.';
+        RECO.toast('Đã gửi yêu cầu tới chuyên viên phụ trách');
+      });
+    });
+  }
+})
 document.addEventListener('DOMContentLoaded', function () {
   // Khung điện thoại thay nội dung màn bằng iframe — bản ngoài không có gì để dựng.
   if (!document.getElementById('gal')) return;
 
   var S = RECO.store, E = RECO_DATA.esc;
-  var PJ = 'celestine';
+  /* Trang khách dựng theo dự án đang được gửi — mặc định Le Parc Place, bộ dữ liệu thật */
+  var PJ = (function () {
+    var h = location.hash, i = h.indexOf('?');
+    var want = new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search).get('pj');
+    return (want && RECO.store.find('projects', want)) ? want : 'leparc';
+  })();
 
   /* ---------- Nội dung dự án ---------- */
   var p = S.find('projects', PJ);

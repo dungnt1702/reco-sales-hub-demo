@@ -56,7 +56,8 @@
       <select class="inp" id="u-role" aria-label="Vai trò">
         <option value="">Mọi vai trò</option>
         <option value="gd">Tổng giám đốc</option><option value="gddu">Giám đốc dự án</option><option value="tkkd">Thư ký kinh doanh</option>
-        <option value="qlkd">Quản lý kinh doanh</option><option value="nvbh">Nhân viên bán hàng</option><option value="hcns">HCNS &amp; Kế toán</option><option value="mkt">Marketing</option>
+        <option value="qlkd">Quản lý kinh doanh</option><option value="nvbh">Nhân viên bán hàng</option>
+        <option value="hcns">Hành chính nhân sự</option><option value="ktoan">Kế toán</option><option value="mkt">Marketing</option>
       </select>
       <select class="inp" id="u-state" aria-label="Trạng thái">
         <option value="">Mọi trạng thái</option><option value="on">Đang hoạt động</option><option value="off">Đã ngừng</option>
@@ -208,7 +209,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function scopeChoices(roleId) {
     var pj = S.get('projects').filter(function (p) { return !p.hidden; }).map(function (p) { return p.name; });
     if (roleId === 'gd') return ['Toàn bộ dự án'];
-    if (roleId === 'hcns') return ['Số liệu & hồ sơ nhân sự'];
+    if (roleId === 'hcns') return ['Tài khoản & hồ sơ nhân sự'];
+    if (roleId === 'ktoan') return ['Số liệu giao dịch & hoa hồng'];
     if (roleId === 'qlkd') return TEAMS;
     return ['Toàn bộ dự án'].concat(pj);
   }
@@ -221,11 +223,20 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('u-f-scope-hint').textContent = roleId === 'qlkd'
       ? 'Quản lý kinh doanh nhìn theo đội, không theo từng dự án.'
       : roleId === 'hcns'
-        ? 'HCNS & Kế toán chỉ xem số liệu và hồ sơ nhân sự, không xem nội dung bán hàng.'
-        : 'Vùng được hiểu là tỉnh hoặc thành phố nơi dự án tọa lạc.';
+        ? 'Hành chính nhân sự tạo tài khoản và gán các vai trò thường; vai trò quản lý do người quản trị chung gán (QD-054).'
+        : roleId === 'ktoan'
+          ? 'Kế toán chỉ xem số liệu giao dịch và hoa hồng, không xem nội dung bán hàng.'
+          : 'Vùng được hiểu là tỉnh hoặc thành phố nơi dự án tọa lạc.';
   }
-  fRole.innerHTML = RECO.roles.map(function (r) {
-    return '<option value="' + r.id + '">' + esc(r.name) + '</option>';
+  /* QD-054: Hành chính nhân sự gán được vai trò thường; Giám đốc dự án, Quản lý kinh doanh,
+     Tổng giám đốc và chính Hành chính nhân sự phải do người quản trị chung gán. Khoá ngay ở ô
+     chọn kèm lời giải thích, thay vì để người dùng bấm Lưu rồi mới báo lỗi. */
+  var ELEVATED = ['gd', 'gddu', 'qlkd', 'hcns'];
+  var CAN_ELEVATE = RECO.role === 'gd';
+  fRole.innerHTML = RECO.roles.filter(function (r) { return r.id !== 'khach'; }).map(function (r) {
+    var lock = !CAN_ELEVATE && ELEVATED.indexOf(r.id) >= 0;
+    return '<option value="' + r.id + '"' + (lock ? ' disabled' : '') + '>' +
+      esc(r.name) + (lock ? ' — người quản trị chung gán' : '') + '</option>';
   }).join('');
   fRole.value = 'nvbh';
   fRole.addEventListener('change', function () { fillScope(fRole.value, null); });

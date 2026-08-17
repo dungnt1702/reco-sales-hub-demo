@@ -21,7 +21,8 @@ const A = (...p) => path.join(root, 'assets', ...p);
 const PAGES = [
   'index', 'dang-nhap', 'trang-dau', 'du-an', 'du-an-chi-tiet',
   'thu-vien-tai-lieu', 'cay-thu-muc', 'soan-noi-dung', 'chia-se',
-  'trang-gui-khach', 'link-het-han', 'quan-tri', 'nguoi-dung', 'de-nghi-sua'
+  'trang-gui-khach', 'link-het-han', 'quan-tri', 'nguoi-dung', 'de-nghi-sua',
+  'xem-truoc-gd2'
 ];
 
 const kb = (n) => (n / 1024).toFixed(0) + ' KB';

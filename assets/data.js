@@ -19,7 +19,8 @@
     return '<button type="button" class="pin-btn" data-pj="' + p.id + '" aria-pressed="' + (p.pinned ? 'true' : 'false') +
       '" aria-label="' + (p.pinned ? 'Bỏ ghim ' : 'Ghim ') + esc(p.name) + '">' + RECO.svg('pin') + '</button>';
   }
-  function href(p) { return 'du-an-chi-tiet.html'; }
+  /* Màn chi tiết mở đúng dự án được bấm — trước đây mọi thẻ đều về một dự án cố định */
+  function href(p) { return 'du-an-chi-tiet.html?pj=' + p.id; }
 
   function card(p) {
     return '' +

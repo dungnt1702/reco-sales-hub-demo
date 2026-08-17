@@ -48,11 +48,20 @@
         <option value="">Mọi khu vực</option>
         <option>Hà Nội</option><option>Hưng Yên</option><option>Khánh Hòa</option>
       </select>
+      <!-- Năm loại hình và ba phân khúc lấy đúng danh mục RECO đang dùng trong báo cáo (QD-057) -->
       <select class="inp" id="f-type" aria-label="Loại sản phẩm">
         <option value="">Mọi loại sản phẩm</option>
-        <option value="canho">Căn hộ chung cư</option>
+        <option value="canho">Chung cư</option>
         <option value="datnen">Đất nền</option>
-        <option value="thaptang">Nhà thấp tầng, biệt thự</option>
+        <option value="thaptang">Biệt thự, nhà liền kề, shophouse</option>
+        <option value="chothue">Cho thuê</option>
+        <option value="thocu">Nhà đất thổ cư</option>
+      </select>
+      <select class="inp" id="f-seg" aria-label="Phân khúc giá">
+        <option value="">Mọi phân khúc</option>
+        <option value="thap">Giá thấp — dưới 25 triệu/m²</option>
+        <option value="trung">Trung cấp — 25–35 triệu/m²</option>
+        <option value="cao">Cao cấp — từ 35 triệu/m²</option>
       </select>
       <select class="inp" id="f-price" aria-label="Khoảng giá">
         <option value="">Mọi khoảng giá</option>
@@ -112,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var P = RECO_DATA.projects();
   var q = document.getElementById('f-q'), fa = document.getElementById('f-area'),
       ft = document.getElementById('f-type'), fp = document.getElementById('f-price'),
-      fs = document.getElementById('f-size');
+      fs = document.getElementById('f-size'), fg = document.getElementById('f-seg');
   var kq = document.getElementById('ket-qua'), rong = document.getElementById('rong'),
       count = document.getElementById('count'), tai = document.getElementById('dang-tai');
 
@@ -138,6 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return (!t || norm(p.name + ' ' + p.place + ' ' + p.typeName).indexOf(t) >= 0)
         && (!fa.value || p.area === fa.value)
         && (!ft.value || p.type === ft.value)
+        && (!fg.value || p.segment === fg.value)
         && inRange(p.price, fp.value)
         && inRange(p.size, fs.value);
     }).sort(function (a, b) { return (b.featured ? 1 : 0) - (a.featured ? 1 : 0); });
@@ -170,8 +180,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 250);
   }
 
-  [q, fa, ft, fp, fs].forEach(function (el) { el.addEventListener('input', apply); el.addEventListener('change', apply); });
-  function reset() { q.value = ''; fa.value = ''; ft.value = ''; fp.value = ''; fs.value = ''; apply(); }
+  [q, fa, ft, fg, fp, fs].forEach(function (el) { el.addEventListener('input', apply); el.addEventListener('change', apply); });
+  function reset() { q.value = ''; fa.value = ''; ft.value = ''; fg.value = ''; fp.value = ''; fs.value = ''; apply(); }
   document.getElementById('f-reset').addEventListener('click', reset);
   document.getElementById('rong-reset').addEventListener('click', reset);
 

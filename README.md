@@ -2,7 +2,7 @@
 
 **Xem trực tiếp: https://dungnt1702.github.io/reco-sales-hub-demo/**
 
-Bộ HTML tĩnh dựng 14 màn hình chính trong tài liệu *Yêu cầu các màn hình*
+Bộ HTML tĩnh dựng 14 màn hình chính trong tài liệu *Yêu cầu các màn hình*, cộng một màn xem trước Giai đoạn 2,
 (`docs/05-user-experience/screen-requirements.md` của repo nội bộ `reco-sales-hub`),
 dùng để RECO xem và xác nhận thiết kế Giai đoạn 1 trước khi viết dòng mã đầu tiên.
 
@@ -19,7 +19,7 @@ Thanh này chỉ phục vụ buổi trình bày, sản phẩm thật không có.
 
 | Nút | Tác dụng |
 | --- | --- |
-| **Đang xem với vai trò** | Đổi giữa 7 vai trò của RECO. Nội dung, nút bấm và khu vực nội bộ trên mọi màn đổi theo đúng ma trận quyền đã chốt (`docs/07-security/role-permission-matrix.md`, repo `reco-sales-hub`). |
+| **Đang xem với vai trò** | Đổi giữa 9 vai trò của RECO (QD-053 tách Kế toán khỏi Hành chính nhân sự và bổ sung Khách hàng). Nội dung, nút bấm và khu vực nội bộ trên mọi màn đổi theo đúng ma trận quyền đã chốt (`docs/07-security/role-permission-matrix.md`, repo `reco-sales-hub`). |
 | **Xem bản điện thoại** | Nhúng màn đang xem vào khung 390 × 780 để trình bày bản mobile mà không cần mở DevTools. |
 | **Ẩn thanh demo** | Ẩn thanh đen để xem hoặc chụp giao diện sạch. Bấm nút góc dưới phải để hiện lại. |
 
@@ -47,10 +47,31 @@ Trạng thái nằm trong URL (`?role=…&dev=m&bare=1`) nên gửi đường d�
 | `quan-tri.html` | MH-09 Quản trị dữ liệu, nội dung và báo cáo vận hành |
 | `nguoi-dung.html` | MH-10 Quản lý người dùng và quyền |
 | `de-nghi-sua.html` | MH-13 Đề nghị sửa nội dung |
+| `xem-truoc-gd2.html` | Xem trước Giai đoạn 2 — báo cáo giao dịch và hoa hồng, **số liệu giả**, ngoài gói đã báo giá |
 
 `assets/` chứa `reco.css` (design token kế thừa từ reco-main-web), `reco.js` (vỏ giao diện, đổi vai trò,
 hộp xác nhận, trạng thái đang xử lý, kiểm tra biểu mẫu, tìm kiếm toàn cục, chuông thông báo),
 `store.js` (kho dữ liệu sống), `data.js` (vẽ thẻ dự án), cùng phông chữ và ảnh cục bộ.
+
+## Dữ liệu thật của RECO trong bản mô phỏng
+
+Từ 17/08/2026, dự án nổi bật của bản mô phỏng là **Le Parc Place — ParkCity Hanoi**, dựng theo bộ tài liệu
+RECO cung cấp: 4 tòa A/B/C/D, 802 căn, các loại căn thật, 32 câu hỏi đáp lấy từ mẫu kịch bản bán hàng,
+và 8 liên kết sống tới Google Drive của Chủ đầu tư. Sáu dự án hư cấu cũ vẫn giữ nguyên để minh họa các
+trạng thái khác (bản nháp, sắp hết hiệu lực, liên kết Drive hỏng).
+
+Ba điểm đáng xem trên dữ liệu này:
+
+- `du-an-chi-tiet.html` khu vực 07 — hỏi đáp **hai cấp nhóm**, công tắc *Bản đầy đủ / Bản gửi khách*,
+  và hai câu mang nhãn **Chờ cập nhật** (mốc bàn giao, phí quản lý) mà Chủ đầu tư chưa công bố.
+- `du-an-chi-tiet.html` khu vực 05 — quy trình bán hàng và **thông tin tài khoản nhận cọc** kèm cú pháp
+  nội dung chuyển khoản, bấm một cái là chép.
+- `trang-gui-khach.html` — nút **Nhận báo giá / quan tâm căn**. Đây là hạng mục **ngoài gói đã báo giá**
+  (QD-055), có gắn chip để không ai hiểu nhầm là đã bao gồm trong giá.
+
+**Không có một con số giao dịch, hoa hồng hay nhân sự thật nào trong repo này.** Ba tệp Excel RECO gửi có
+họ tên khách hàng, thư điện tử nhân viên, hoa hồng từng người và thuế thu nhập cá nhân — chúng nằm ngoài
+repo, và mọi số liệu ở `xem-truoc-gd2.html` đều là số giả.
 
 ## Dữ liệu sống trong phiên
 

@@ -19,8 +19,12 @@
     { id: 'tkkd', name: 'Thư ký kinh doanh', short: 'TKKD', scope: '3 dự án phụ trách', who: 'Trịnh Mai Lan' },
     { id: 'qlkd', name: 'Quản lý kinh doanh', short: 'QLKD', scope: 'Đội Miền Bắc', who: 'Phạm Hải Đăng' },
     { id: 'nvbh', name: 'Nhân viên bán hàng', short: 'NVBH', scope: 'Nội dung được phép xem', who: 'Lê Thu Hà' },
-    { id: 'hcns', name: 'HCNS & Kế toán', short: 'HCNS', scope: 'Số liệu & hồ sơ nhân sự', who: 'Vũ Kim Chi' },
-    { id: 'mkt', name: 'Marketing', short: 'MKT', scope: 'Nội dung & dự án được giao', who: 'Đỗ Bảo Ngọc' }
+    { id: 'hcns', name: 'Hành chính nhân sự', short: 'HCNS', scope: 'Tài khoản & hồ sơ nhân sự', who: 'Vũ Kim Chi' },
+    { id: 'ktoan', name: 'Kế toán', short: 'KT', scope: 'Số liệu giao dịch & hoa hồng', who: 'Ngô Thanh Bình' },
+    { id: 'mkt', name: 'Marketing', short: 'MKT', scope: 'Nội dung & dự án được giao', who: 'Đỗ Bảo Ngọc' },
+    /* Vai trò thứ chín (QD-053) — tài khoản Khách hàng là hạng mục bổ sung ngoài gói đã báo giá.
+       Trong bản mô phỏng, chọn vai trò này chỉ mở đúng phần khách được phép thấy. */
+    { id: 'khach', name: 'Khách hàng', short: 'KH', scope: 'Nội dung được nhân viên chia sẻ', who: 'Khách của Lê Thu Hà', outside: true }
   ];
   var DEFAULT_ROLE = 'gddu';
 
@@ -854,6 +858,26 @@
     });
   }
 
+  /* Màn chặn dành cho vai trò Khách hàng — nêu rõ đây là hạng mục bổ sung ngoài gói */
+  function guestWall() {
+    return '' +
+      '<div class="wrap" style="padding:48px 0;max-width:640px">' +
+        '<div class="card card-pad">' +
+          '<span class="chip-gd2">Hạng mục bổ sung · ngoài gói đã báo giá</span>' +
+          '<h1 style="font-size:1.5rem;margin:.75rem 0 .5rem">Khu vực này chỉ dành cho nhân viên RECO</h1>' +
+          '<p class="small muted">Tài khoản Khách hàng chỉ xem được đúng phần nội dung mang nhãn Công khai mà ' +
+            'nhân viên bán hàng đã chia sẻ cho chính mình — không duyệt cây thư mục, không tìm trong kho tài liệu, ' +
+            'không thấy dự án chưa được chia sẻ.</p>' +
+          '<p class="small muted mt-2">Vai trò này và nút gửi yêu cầu trên trang công khai là hai hạng mục ' +
+            '<strong>ngoài gói 198.800.000 VNĐ</strong> — xem QD-053 và QD-055.</p>' +
+          '<div class="row mt-3">' +
+            '<a class="btn btn-primary" href="' + link('trang-gui-khach.html') + '">Mở trang khách nhận được</a>' +
+            '<a class="btn btn-outline" href="' + link('trang-dau.html', { role: 'nvbh' }) + '">Quay lại vai trò nhân viên</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
   /* ---------- Dựng vỏ cho màn đang xem ---------- */
   function mount() {
     var body = document.body;
@@ -872,6 +896,16 @@
       if (main) main.outerHTML = mobileFrame();
       bindProto();
       watchFrame();
+      return;
+    }
+
+    /* Khách hàng chỉ thấy trang gửi khách. Chặn ngay ở đây, trước khi bất kỳ màn nội bộ nào
+       kịp vẽ nội dung — để lọt một lần là bản mô phỏng nói sai về mô hình quyền. */
+    if (role === 'khach' && shell === 'app') {
+      body.insertAdjacentHTML('afterbegin', buildProto());
+      var inner = document.getElementById('page');
+      if (inner) inner.innerHTML = guestWall();
+      bindProto();
       return;
     }
 

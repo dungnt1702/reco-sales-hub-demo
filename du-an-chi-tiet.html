@@ -67,18 +67,18 @@
     <p class="small muted mb-2"><a href="du-an.html">Dự án</a> · The Celestine Riverside</p>
 
     <!-- Ảnh bìa -->
-    <section class="pj-hero">
+    <section class="pj-hero" id="pj-hero">
       <div style="width:100%">
         <div class="row-tight mb-2">
           <span class="hot">Dự án nổi bật</span>
           <span class="st st-live" style="background:rgba(43,133,105,.25);color:#a8e6cd">Đang bán</span>
         </div>
-        <h1>The Celestine Riverside</h1>
+        <h1 id="pj-title">The Celestine Riverside</h1>
         <p class="lead mt-1" style="color:rgba(255,255,255,.85)">Long Biên, Hà Nội · Căn hộ chung cư · 4 tòa · 27 tầng · 1.248 căn</p>
         <div class="row mt-3">
           <a class="btn btn-primary" href="soan-noi-dung.html">Chuẩn bị nội dung gửi khách</a>
           <a class="btn btn-ghost" href="thu-vien-tai-lieu.html">Thư viện tài liệu</a>
-          <button type="button" class="pin-btn" data-pj="celestine" aria-pressed="true" aria-label="Bỏ ghim dự án">
+          <button type="button" class="pin-btn" id="pj-pin" data-pj="celestine" aria-pressed="true" aria-label="Bỏ ghim dự án">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3.5 3.5H6.5L10 9Z"/></svg>
           </button>
         </div>
@@ -123,6 +123,7 @@
           <div class="card card-pad">
             <p id="kv1-body"></p>
             <div class="kv kv-3 mt-3" id="kv1-grid"></div>
+            <div id="kv1-web" class="mt-3" hidden></div>
             <div class="mt-3">
               <div class="spread mb-1"><span class="micro muted">Mức độ đầy đủ tài liệu</span><span class="micro" style="font-weight:700;color:var(--verified)">100%</span></div>
               <div class="bar ok"><i style="width:100%"></i></div>
@@ -175,7 +176,7 @@
 
           <div class="spread mb-2">
             <div>
-              <h3 style="font-size:1.05rem">Bảng hàng đợt 3 · cập nhật 14/08/2026</h3>
+              <h3 style="font-size:1.05rem" id="bh-title">Bảng hàng đợt 3 · cập nhật 14/08/2026</h3>
               <div class="row-tight mt-1">
                 <span class="src src-drive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>Liên kết Drive · chỉ xem</span>
                 <span class="chip">Chủ đầu tư sở hữu</span>
@@ -248,10 +249,29 @@
             <p class="micro muted mt-2" id="pt-note" role="status"></p>
             <div class="row mt-3">
               <button type="button" class="btn btn-primary btn-sm" id="pt-tao" data-roles="gddu tkkd qlkd nvbh">Tạo phiếu tính giá</button>
-              <span class="chip" data-roles="hcns mkt">Vai trò của anh/chị chỉ xem bảng hàng, không lập phiếu tính giá</span>
+              <span class="chip" data-roles="hcns ktoan mkt">Vai trò của anh/chị chỉ xem bảng hàng, không lập phiếu tính giá</span>
               <span class="micro muted">Phiếu phải được duyệt mới xuất hiện trên trang gửi khách.</span>
             </div>
             <div class="stack mt-3" id="pt-list"></div>
+          </div>
+
+          <!-- Quy trình bán hàng và hoàn thiện giao dịch — BR-TX-18 -->
+          <div class="card card-pad mt-3" id="kv5-flow" hidden>
+            <div class="spread mb-2">
+              <h3 style="font-size:1.05rem;margin:0">Quy trình bán hàng và hoàn thiện giao dịch</h3>
+              <span class="lb lb-internal">Nội bộ</span>
+            </div>
+            <ol class="small" id="kv5-flow-list" style="margin:0;padding-left:1.25rem;line-height:1.9"></ol>
+          </div>
+
+          <!-- Tài khoản nhận tiền đặt cọc — nội dung Công khai, được phép ra trang gửi khách -->
+          <div class="card card-pad mt-3" id="kv5-bank" hidden>
+            <div class="spread mb-2">
+              <h3 style="font-size:1.05rem;margin:0">Thông tin chuyển khoản đặt cọc</h3>
+              <span class="lb lb-public">Công khai</span>
+            </div>
+            <div class="kv kv-2" id="kv5-bank-grid"></div>
+            <p class="micro muted mt-2">Nhân viên bấm để sao chép từng dòng, tránh gõ tay sai số tài khoản hoặc sai cú pháp nội dung chuyển khoản.</p>
           </div>
         </section>
 
@@ -297,14 +317,15 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
               <input type="search" id="qa-q" placeholder="Tìm trong hỏi đáp" aria-label="Tìm trong hỏi đáp">
             </div>
-            <div class="seg" role="group" aria-label="Lọc theo chủ đề" id="qa-seg">
-              <button type="button" data-topic="" aria-pressed="true">Tất cả</button>
-              <button type="button" data-topic="phaply" aria-pressed="false">Pháp lý</button>
-              <button type="button" data-topic="gia" aria-pressed="false">Giá và chính sách</button>
-              <button type="button" data-topic="tiendo" aria-pressed="false">Tiến độ</button>
-              <button type="button" data-topic="bangiao" aria-pressed="false">Bàn giao</button>
+            <!-- Chủ đề dựng theo đúng những nhóm dự án này thật sự có, không cứng trong đánh dấu.
+                 Số chủ đề thay đổi theo dự án nên thanh này phải xuống dòng được, không kéo ngang. -->
+            <div class="seg" role="group" aria-label="Lọc theo chủ đề" id="qa-seg" style="flex-wrap:wrap"></div>
+            <div class="seg" role="group" aria-label="Chọn bản trả lời" id="qa-ver">
+              <button type="button" data-ver="in" aria-pressed="true">Bản đầy đủ</button>
+              <button type="button" data-ver="out" aria-pressed="false">Bản gửi khách</button>
             </div>
           </div>
+          <p class="micro muted mb-2" id="qa-ver-note"></p>
           <div id="qa-list"></div>
           <p class="micro muted mt-1" id="qa-count" role="status"></p>
           <div class="row mt-2">
@@ -330,7 +351,7 @@
         <section class="sec" id="kv9">
 
           <!-- Bản đầy đủ: mọi vai trò trừ nhân viên bán hàng -->
-          <div data-roles="gd gddu tkkd qlkd hcns mkt">
+          <div data-roles="gd gddu tkkd qlkd hcns ktoan mkt">
             <div class="sec-head"><span class="n">KHU VỰC 09</span><h2>Nội bộ dành cho Marketing và Kinh doanh</h2>
               <span class="lb lb-restricted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Khu vực hạn chế</span>
             </div>
@@ -508,8 +529,16 @@
       <label class="field"><span class="lab">Câu hỏi</span>
         <textarea class="inp" id="qa-f-q" rows="2" data-required data-msg="Nhập câu hỏi khách hay hỏi nhất."
                   placeholder="Ví dụ: Dự án đã có sổ hồng từng căn chưa?"></textarea></label>
-      <label class="field"><span class="lab">Câu trả lời chuẩn</span>
+      <label class="field"><span class="lab">Câu trả lời đầy đủ — dành cho nhân viên</span>
         <textarea class="inp" id="qa-f-a" rows="4" data-required data-msg="Nhập câu trả lời để cả đội nói giống nhau."></textarea></label>
+      <label class="field"><span class="lab">Bản gửi khách</span>
+        <textarea class="inp" id="qa-f-a2" rows="3"
+                  placeholder="Bản rút gọn được phép hiển thị trên trang gửi khách"></textarea>
+        <span class="hint">Không bắt buộc. Để trống thì câu này chỉ hiện trong nội bộ, không ra trang gửi khách kể cả khi mang nhãn Công khai.</span></label>
+      <label class="field"><span class="lab">Nhóm</span>
+        <input class="inp" type="text" id="qa-f-grp" list="qa-grp-list" placeholder="Ví dụ: C · Câu hỏi cụ thể về dự án">
+        <datalist id="qa-grp-list"></datalist>
+        <span class="hint">Nhóm cấp 1. Để trống thì câu rơi vào nhóm mặc định.</span></label>
       <label class="field"><span class="lab">Chủ đề</span>
         <select class="inp" id="qa-f-topic"></select></label>
       <label class="field"><span class="lab">Nhãn quyền</span>
@@ -635,7 +664,14 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  var S = RECO.store, esc = RECO_DATA.esc, PJ = 'celestine';
+  var S = RECO.store, esc = RECO_DATA.esc;
+  /* Màn này mở được nhiều dự án: ?pj=… ở bản nhiều trang, #du-an-chi-tiet?pj=… ở bản gói.
+     Mặc định là Le Parc Place — bộ dữ liệu thật RECO cung cấp ngày 17/08/2026. */
+  var PJ = (function () {
+    var h = location.hash, i = h.indexOf('?');
+    var want = new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search).get('pj');
+    return (want && RECO.store.find('projects', want)) ? want : 'leparc';
+  })();
   var ME = RECO.current.who;
   function id(x) { return document.getElementById(x); }
 
@@ -678,7 +714,73 @@ document.addEventListener('DOMContentLoaded', function () {
       cell('Cập nhật gần nhất', p.updated + (p.updatedBy ? ' · ' + p.updatedBy : ''));
     var lead = document.querySelector('.pj-hero .lead');
     if (lead) lead.textContent = p.place + ' · ' + p.typeName + ' · ' + p.struct;
+    var title = id('pj-title'); if (title) title.textContent = p.name;
+    var pin = id('pj-pin');
+    if (pin) {
+      pin.setAttribute('data-pj', p.id);
+      pin.setAttribute('aria-pressed', p.pinned ? 'true' : 'false');
+      pin.setAttribute('aria-label', p.pinned ? 'Bỏ ghim dự án' : 'Ghim dự án');
+    }
+    var hero = id('pj-hero');
+    if (hero && p.img) {
+      hero.style.backgroundImage =
+        'linear-gradient(90deg, rgba(4,25,44,.94) 0%, rgba(4,25,44,.72) 46%, rgba(4,25,44,.18) 82%),' +
+        'linear-gradient(0deg, rgba(4,25,44,.9), rgba(4,25,44,.1) 68%),' +
+        "url('" + RECO.asset(p.img) + "')";
+    }
+    var bhTitle = id('bh-title');
+    if (bhTitle) bhTitle.textContent = 'Bảng hàng ' + p.name.split(' — ')[0] + ' · cập nhật ' + p.updated.toLowerCase();
+
+    /* Liên kết website hoặc trang giới thiệu dự án — nhân viên đang phải đi tìm trong tin nhắn nhóm */
+    var web = id('kv1-web');
+    web.hidden = !p.web;
+    if (p.web) {
+      web.innerHTML = '<a class="btn btn-outline btn-sm" href="' + esc(p.web) + '" target="_blank" rel="noopener" ' +
+        'data-src="Trang giới thiệu dự án">Mở trang giới thiệu dự án</a>' +
+        '<span class="micro muted" style="margin-left:.5rem">' + esc(p.web) + '</span>';
+    }
+    paintFlowBank(p);
   }
+
+  /* Quy trình bán hàng và thông tin tài khoản nhận cọc — chỉ hiện với dự án đã khai báo (BR-TX-18) */
+  function paintFlowBank(p) {
+    var flowBox = id('kv5-flow');
+    flowBox.hidden = !(p.flow && p.flow.length);
+    if (!flowBox.hidden) {
+      id('kv5-flow-list').innerHTML = p.flow.map(function (step) {
+        return '<li>' + esc(step) + '</li>';
+      }).join('');
+    }
+
+    var bankBox = id('kv5-bank');
+    bankBox.hidden = !p.bank;
+    if (p.bank) {
+      var rows = [
+        ['Tên tài khoản', p.bank.holder],
+        ['Số tài khoản', p.bank.no],
+        ['Ngân hàng', p.bank.at],
+        ['Nội dung chuyển khoản', p.bank.memo]
+      ];
+      /* Giá trị để chữ tự xuống dòng — cú pháp nội dung chuyển khoản dài hơn bề ngang điện thoại,
+         nhét vào trong nút là trang bị kéo ngang. */
+      id('kv5-bank-grid').innerHTML = rows.map(function (r) {
+        return '<div><div class="k">' + esc(r[0]) + '</div>' +
+          '<div class="v" style="overflow-wrap:anywhere">' + esc(r[1]) +
+            ' <button type="button" class="btn btn-quiet btn-sm" data-copy="' + esc(r[1]) + '"' +
+            ' aria-label="Sao chép ' + esc(r[0]) + '">Sao chép</button>' +
+          '</div></div>';
+      }).join('');
+    }
+  }
+
+  /* Bấm vào một dòng là chép luôn — thao tác này lặp lại mỗi lần chốt cọc */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-copy]') : null;
+    if (!b) return;
+    var text = b.getAttribute('data-copy');
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text);
+    RECO.toast('Đã sao chép: ' + text);
+  });
 
   /* ============ Thành phần trang dự án · khu vực 01-04 và 08 ============
      Năm khối này trước đây viết cứng trong đánh dấu nên không ai sửa được.
@@ -1101,59 +1203,137 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('');
   }
 
-  /* ================= Khu vực 07 · Hỏi đáp ================= */
-  var topic = '';
+  /* ================= Khu vực 07 · Hỏi đáp =================
+     Hai cấp nhóm và hai bản trả lời theo BR-TX-17: nhóm cấp 1 là phạm vi (khu đô thị,
+     dự án, câu hỏi cụ thể), cấp 2 là chủ đề. Bản gửi khách chỉ hiện câu có `a2` —
+     câu chưa có bản rút gọn thì không được phép ra ngoài, kể cả khi mang nhãn Công khai. */
+  var topic = '', qaVer = 'in';
   var CAN_APPROVE_QA = ['gd', 'gddu'].indexOf(RECO.role) >= 0;
-  function paintQA() {
-    var t = norm(id('qa-q').value.trim());
-    var list = S.get('qas').filter(function (q) {
+
+  function qaGroup(q) { return q.grp || S.QA_GROUP_DEFAULT; }
+
+  /* Tập câu hỏi của dự án mà vai trò đang xem được phép thấy — dùng chung cho cả
+     thanh chủ đề lẫn danh sách, để hai chỗ không bao giờ lệch nhau. */
+  function qaVisible() {
+    return S.get('qas').filter(function (q) {
       if (q.pj !== PJ || !S.canSee(q.label, RECO.role)) return false;
       /* Người soạn phải thấy câu mình vừa gửi, nếu không bấm Lưu xong câu biến mất
          và nút trông như không có tác dụng. */
-      if (q.state !== 'approved' && !CAN_APPROVE_QA && q.by !== ME) return false;
-      if (topic && q.topic !== topic) return false;
-      return !t || norm(q.q + ' ' + q.a).indexOf(t) >= 0;
+      if (q.state !== 'approved' && q.state !== 'pending_info' && !CAN_APPROVE_QA && q.by !== ME) return false;
+      return true;
     });
+  }
+
+  function paintQASeg() {
+    var seen = {}, order = [];
+    qaVisible().forEach(function (q) {
+      var k = q.topic || 'khac';
+      if (!seen[k]) { seen[k] = true; order.push(k); }
+    });
+    if (order.indexOf(topic) < 0) topic = '';
+    id('qa-seg').innerHTML =
+      '<button type="button" data-topic="" aria-pressed="' + (topic === '') + '">Tất cả</button>' +
+      order.map(function (k) {
+        return '<button type="button" data-topic="' + k + '" aria-pressed="' + (topic === k) + '">' +
+          esc(S.TOPICS[k] || 'Khác') + '</button>';
+      }).join('');
+  }
+
+  function paintQA() {
+    var t = norm(id('qa-q').value.trim());
+    var out = qaVer === 'out';
+    var list = qaVisible().filter(function (q) {
+      if (out && (!q.a2 || q.state === 'pending_info' || q.label !== 'public')) return false;
+      if (topic && (q.topic || 'khac') !== topic) return false;
+      return !t || norm(q.q + ' ' + q.a + ' ' + (q.a2 || '')).indexOf(t) >= 0;
+    });
+
+    id('qa-ver-note').innerHTML = out
+      ? 'Đang xem <strong>bản gửi khách</strong> — chỉ những câu có bản rút gọn đã duyệt. Câu đang <em>Chờ cập nhật</em> không bao giờ ra tới khách.'
+      : 'Đang xem <strong>bản đầy đủ</strong> dành cho nhân viên. Chuyển sang <strong>Bản gửi khách</strong> để thấy đúng phần khách sẽ đọc.';
 
     if (!list.length) {
       id('qa-list').innerHTML = RECO_DATA.empty('Chưa có câu hỏi đáp nào khớp',
-        'Anh/chị đổi chủ đề hoặc xóa từ khóa để xem lại toàn bộ bộ hỏi đáp đã duyệt.',
+        out ? 'Bản gửi khách chỉ có những câu đã được soạn phần rút gọn. Anh/chị xem Bản đầy đủ để đọc toàn bộ.'
+            : 'Anh/chị đổi chủ đề hoặc xóa từ khóa để xem lại toàn bộ bộ hỏi đáp đã duyệt.',
         '<button type="button" class="btn btn-primary" id="qa-clear">Xem tất cả</button>');
       id('qa-clear').addEventListener('click', function () {
-        id('qa-q').value = ''; topic = '';
-        id('qa-seg').querySelectorAll('button').forEach(function (b) {
-          b.setAttribute('aria-pressed', String(b.getAttribute('data-topic') === ''));
-        });
-        paintQA();
+        id('qa-q').value = ''; topic = ''; qaVer = 'in';
+        paintQAVerSeg(); paintQASeg(); paintQA();
       });
       id('qa-count').textContent = '';
       return;
     }
 
-    id('qa-list').innerHTML = '<div class="qa">' + list.map(function (q, i) {
-      return '<details' + (i === 0 ? ' open' : '') + '>' +
-        '<summary>' + esc(q.q) + '</summary>' +
-        '<div class="qa-body"><p>' + esc(q.a) + '</p>' +
-          '<div class="row-tight mt-2">' +
-            (q.ref ? '<span class="chip">Tài liệu liên quan: ' + esc(q.ref) + '</span>' : '') +
-            S.label(q.label) +
-            (q.state === 'approved' ? '' : '<span class="st st-wait">Chờ duyệt</span>') +
-            '<span class="chip">' + esc(S.TOPICS[q.topic] || 'Khác') + '</span>' +
-          '</div>' +
-        '</div></details>';
-    }).join('') + '</div>';
-    id('qa-count').textContent = 'Hiển thị ' + list.length + ' câu' + (topic ? ' · chủ đề ' + S.TOPICS[topic] : '');
+    /* Gom hai cấp: nhóm cấp 1 giữ đúng thứ tự dữ liệu, bên trong gom tiếp theo chủ đề. */
+    var groups = [], byGroup = {};
+    list.forEach(function (q) {
+      var g = qaGroup(q);
+      if (!byGroup[g]) { byGroup[g] = { name: g, subs: [], by: {} }; groups.push(byGroup[g]); }
+      var k = q.topic || 'khac';
+      if (!byGroup[g].by[k]) { byGroup[g].by[k] = []; byGroup[g].subs.push(k); }
+      byGroup[g].by[k].push(q);
+    });
+
+    var first = true;
+    id('qa-list').innerHTML = groups.map(function (g) {
+      var n = 0;
+      g.subs.forEach(function (k) { n += g.by[k].length; });
+      return '<div class="mb-3">' +
+        '<div class="spread mb-1"><h4 style="font-size:.95rem;margin:0">' + esc(g.name) + '</h4>' +
+          '<span class="micro muted">' + n + ' câu</span></div>' +
+        g.subs.map(function (k) {
+          return '<p class="micro muted mt-2 mb-1">' + esc(S.TOPICS[k] || 'Khác') + '</p>' +
+            '<div class="qa">' + g.by[k].map(function (q) {
+              var open = first; first = false;
+              var body = out ? (q.a2 || q.a) : q.a;
+              return '<details' + (open ? ' open' : '') + '>' +
+                '<summary>' + esc(q.q) +
+                  (q.state === 'pending_info' ? ' <span class="st st-wait">Chờ cập nhật</span>' : '') +
+                '</summary>' +
+                '<div class="qa-body"><p>' + esc(body) + '</p>' +
+                  (q.state === 'pending_info'
+                    ? '<p class="small muted mt-1">Chủ đầu tư chưa công bố. Khi tư vấn, nói rõ là chưa có thông tin thay vì đưa ra con số dự đoán.</p>'
+                    : '') +
+                  (!out && q.a2 ? '<p class="micro muted mt-1">Bản gửi khách: ' + esc(q.a2) + '</p>' : '') +
+                  (!out && !q.a2 && q.label === 'public' && q.state === 'approved'
+                    ? '<p class="micro muted mt-1">Chưa có bản gửi khách — câu này không hiện trên trang công khai.</p>' : '') +
+                  '<div class="row-tight mt-2">' +
+                    (q.ref ? '<span class="chip">Tài liệu liên quan: ' + esc(q.ref) + '</span>' : '') +
+                    S.label(q.label) +
+                    (q.state === 'approved' || q.state === 'pending_info' ? '' : '<span class="st st-wait">Chờ duyệt</span>') +
+                    '<span class="chip">' + esc(S.TOPICS[q.topic] || 'Khác') + '</span>' +
+                  '</div>' +
+                '</div></details>';
+            }).join('') + '</div>';
+        }).join('') +
+      '</div>';
+    }).join('');
+
+    id('qa-count').textContent = 'Hiển thị ' + list.length + ' câu trong ' + groups.length + ' nhóm' +
+      (topic ? ' · chủ đề ' + S.TOPICS[topic] : '') + (out ? ' · bản gửi khách' : '');
   }
+
+  function paintQAVerSeg() {
+    id('qa-ver').querySelectorAll('button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-ver') === qaVer));
+    });
+  }
+
   id('qa-q').addEventListener('input', paintQA);
   id('qa-seg').addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('[data-topic]') : null;
     if (!b) return;
     topic = b.getAttribute('data-topic');
-    id('qa-seg').querySelectorAll('button').forEach(function (x) {
-      x.setAttribute('aria-pressed', String(x === b));
-    });
-    paintQA();
+    paintQASeg(); paintQA();
   });
+  id('qa-ver').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-ver]') : null;
+    if (!b) return;
+    qaVer = b.getAttribute('data-ver');
+    paintQAVerSeg(); paintQA();
+  });
+  paintQAVerSeg();
 
   /* Soạn câu hỏi đáp mới. Ai duyệt được thì công bố luôn, còn lại rơi vào hàng chờ (QD-006). */
   var qaForm = id('qa-form'), qaSave = id('qa-f-save');
@@ -1165,8 +1345,17 @@ document.addEventListener('DOMContentLoaded', function () {
     : 'Câu này <strong>chờ Giám đốc dự án duyệt</strong> trước khi nhân viên và khách nhìn thấy. Anh/chị vẫn thấy nó với chip “Chờ duyệt”.';
 
   document.getElementById('qa-new').addEventListener('click', function () {
-    id('qa-f-q').value = ''; id('qa-f-a').value = ''; id('qa-f-ref').value = '';
-    id('qa-f-topic').value = 'phaply'; id('qa-f-label').value = 'public';
+    id('qa-f-q').value = ''; id('qa-f-a').value = ''; id('qa-f-a2').value = ''; id('qa-f-ref').value = '';
+    id('qa-f-grp').value = ''; id('qa-f-topic').value = 'phaply'; id('qa-f-label').value = 'public';
+    /* Gợi ý đúng những nhóm dự án này đang dùng, để không sinh nhóm mới chỉ vì gõ khác dấu */
+    var seen = {}, opts = '';
+    S.get('qas').forEach(function (x) {
+      if (x.pj !== PJ) return;
+      var g = x.grp || S.QA_GROUP_DEFAULT;
+      if (seen[g]) return;
+      seen[g] = true; opts += '<option value="' + esc(g) + '"></option>';
+    });
+    id('qa-grp-list').innerHTML = opts;
     qaForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
     qaForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
   });
@@ -1174,12 +1363,13 @@ document.addEventListener('DOMContentLoaded', function () {
   qaSave.addEventListener('click', function () {
     if (!RECO.validate(qaForm)) return;
     var q = id('qa-f-q').value.trim(), a = id('qa-f-a').value.trim();
+    var a2 = id('qa-f-a2').value.trim(), grp = id('qa-f-grp').value.trim();
     var label = id('qa-f-label').value, ref = id('qa-f-ref').value.trim();
     RECO.busy(qaSave, 'Đang lưu…', 900, function () {
       RECO.closeModal('m-hoidap');
       var rec = S.add('qas', {
-        pj: PJ, topic: id('qa-f-topic').value, q: q, a: a,
-        ref: ref || undefined, label: label,
+        pj: PJ, grp: grp || undefined, topic: id('qa-f-topic').value, q: q, a: a,
+        a2: a2 || undefined, ref: ref || undefined, label: label,
         state: CAN_APPROVE_QA ? 'approved' : 'pending',
         by: ME, at: today()
       });
@@ -1274,7 +1464,7 @@ document.addEventListener('DOMContentLoaded', function () {
       act = '<div class="row mt-2" data-roles="gddu gd">' +
         '<button type="button" class="btn btn-primary btn-sm" data-approve="' + esc(s.id) + '">Duyệt thành bản chung</button>' +
         '<button type="button" class="btn btn-outline btn-sm" data-reject="' + esc(s.id) + '">Từ chối</button></div>' +
-        '<p class="micro muted mt-2" data-roles="tkkd qlkd hcns mkt">Chỉ Giám đốc dự án duyệt được đề xuất này.</p>';
+        '<p class="micro muted mt-2" data-roles="tkkd qlkd hcns ktoan mkt">Chỉ Giám đốc dự án duyệt được đề xuất này.</p>';
     }
     return '<div class="card card-pad" style="box-shadow:none">' + head + meta + act + '</div>';
   }
@@ -1545,13 +1735,13 @@ document.addEventListener('DOMContentLoaded', function () {
   watch('sections', paintSections);
   fillUnitFilters(); paintUnits();
   fillUnitPicker(); calc(); paintPhieu();
-  paintQA(); paintDuyetQA();
+  paintQASeg(); paintQA(); paintDuyetQA();
   paintKB();
 
   watch('projects', kv1);
   watch('units', function () { fillUnitFilters(); paintUnits(); fillUnitPicker(); calc(); });
   watch('approvals', paintPhieu);
-  watch('qas', function () { paintQA(); paintDuyetQA(); });
+  watch('qas', function () { paintQASeg(); paintQA(); paintDuyetQA(); });
   watch('scripts', paintKB);
 });
 </script>

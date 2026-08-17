@@ -50,12 +50,12 @@ var CASES = [
   ['quan-tri', 'nvbh', 'Vào thẳng địa chỉ màn Quản trị vẫn bị chặn ở cấp màn',
    function (d) {
      return !d.querySelector('.state-error[data-roles="nvbh qlkd"]').hidden &&
-            d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns"]').hidden;
+            d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns ktoan"]').hidden;
    }, true],
   ['quan-tri', 'tkkd', 'Thư ký kinh doanh không thấy tab Báo cáo vận hành',
    function (d) { return d.querySelector('#t-bc').hidden; }, true],
   ['quan-tri', 'gddu', 'Giám đốc dự án vẫn vào được màn Quản trị',
-   function (d) { return !d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns"]').hidden; }, true],
+   function (d) { return !d.querySelector('.card[data-roles="gd gddu tkkd mkt hcns ktoan"]').hidden; }, true],
 
   /* --- Đợt bổ sung lối thêm nội dung. Bám id chứ không bám chuỗi data-roles nguyên văn:
          các ca cũ bám chuỗi nên mỗi lần sắp lại vai trò là một quả mìn. --- */
@@ -257,12 +257,12 @@ var CASES = [
    function (d) {
      d.querySelector('#pj-body [data-act="units"]').click();
      return d.querySelectorAll('#bhq-tree [data-zone]').length;
-   }, 16],
+   }, 15],
   ['quan-tri', 'tkkd', 'Chọn một tòa thì bảng hàng lọc theo tòa đó',
    function (d) {
      d.querySelector('#pj-body [data-act="units"]').click();
      var truoc = d.querySelectorAll('#bhq-body tr').length;
-     d.querySelector('#bhq-tree [data-zone="z-cel-a1"]').click();
+     d.querySelector('#bhq-tree [data-zone="z-lpp-a"]').click();
      return d.querySelectorAll('#bhq-body tr').length < truoc;
    }, true]
 ];
