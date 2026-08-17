@@ -15,7 +15,12 @@ var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet',
              'tinh-nang-gd1','chi-tiet-gd1','tinh-nang-gd2','chi-tiet-gd2'];
 var WIDTHS = [360, 390, 768, 1440];
 var out = document.getElementById('out'), frames = document.getElementById('frames');
-var lines = [], allHrefs = {};
+var lines = [], allHrefs = {}, allIds = {};
+
+/* Trang dùng hash làm THAM SỐ chứ không phải mã neo — `link-het-han` đọc
+   `#thu-hoi` / `#het-han` để chọn lý do hiển thị cho khách, không có phần tử nào
+   mang id đó và cũng không cần. Neo trỏ tới các trang này được miễn soát. */
+var HASH_AS_PARAM = ['link-het-han'];
 
 function load(page, w) {
   return new Promise(function (res) {
@@ -49,6 +54,7 @@ function load(page, w) {
         r = { sw: e.scrollWidth, cw: e.clientWidth, over: over.slice(0, 8), n: over.length };
         if (w === 1440) {
           allHrefs[page] = Array.prototype.slice.call(d.querySelectorAll('a[href]')).map(function (a) { return a.getAttribute('href'); });
+          allIds[page] = Array.prototype.slice.call(d.querySelectorAll('[id]')).map(function (el) { return el.id; });
         }
       } catch (err) { r = { err: String(err) }; }
       f.remove();
@@ -81,10 +87,25 @@ function load(page, w) {
     allHrefs[p].forEach(function (h) {
       if (!h || h.charAt(0) === '#' || /^(https?:|mailto:|tel:)/.test(h)) return;
       var base = h.split('?')[0].split('#')[0];
-      if (known.indexOf(base) < 0) { lines.push('HONG ' + p + ' → ' + h); bad++; }
+      if (known.indexOf(base) < 0) { lines.push('HONG ' + p + ' → ' + h); bad++; return; }
+      /* Trang có thật chưa đủ: mã neo phải tồn tại ở trang đích, không thì bấm vào
+         chỉ nạp trang rồi đứng ở đầu — và bản gói cũng hỏng vì `at=` tra bằng
+         getElementById. Chỉ soát neo liên trang; neo cùng trang có vài chỗ cố tình
+         giả (`href="#..." data-page-link=...`) nên bỏ qua ở nhánh trên. */
+      var hash = h.indexOf('#');
+      if (hash < 0) return;
+      var frag = h.slice(hash + 1);
+      if (!frag) return;
+      var target = base.replace(/\.html$/, '');
+      if (HASH_AS_PARAM.indexOf(target) >= 0) return;
+      var ids = allIds[target] || [];
+      if (ids.indexOf(frag) < 0) {
+        lines.push('HONG ' + p + ' → ' + h + ' (trang co that nhung khong co id "' + frag + '")');
+        bad++;
+      }
     });
   });
-  if (!bad) lines.push('OK   moi lien ket noi bo deu tro toi trang co that');
+  if (!bad) lines.push('OK   moi lien ket noi bo deu tro toi trang va ma neo co that');
   lines.push('');
   lines.push('=== XONG ===');
   out.textContent = lines.join('\n');

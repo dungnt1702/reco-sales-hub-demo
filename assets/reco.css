@@ -771,6 +771,9 @@ a.tnode { text-decoration: none; align-items: flex-start; }
 .secnav ol a.on::before { color: var(--orange-text); }
 
 .sec { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
+/* Tiêu đề con cũng là đích của liên kết neo (BS-01…03 trong Phần A của chi tiết Giai đoạn 1)
+   — chừa đúng khoảng của .sec, không thì thanh trên cùng che mất dòng tiêu đề vừa nhảy tới. */
+h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
 .sec + .sec { margin-top: 26px; }
 .sec-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
 .sec-head .n {
