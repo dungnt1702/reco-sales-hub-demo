@@ -192,7 +192,8 @@ async function checkPage(page) {
 
   /* --- 4. Link nội bộ không còn href="#" cụt --- */
   var stub = Array.prototype.slice.call(d.querySelectorAll('a[href="#"]')).filter(function (a) {
-    return a.id !== 'dock-more' && !a.hasAttribute('data-gd2');
+    /* Nút phóng to/thu nhỏ của bản đồ là a[href="#"] theo thiết kế của Leaflet, và có tác dụng thật */
+    return a.id !== 'dock-more' && !a.hasAttribute('data-gd2') && !a.closest('.leaflet-control');
   });
   say(stub.length === 0, page + ' — khong con lien ket cut' + (stub.length ? ' → ' + stub.map(labelOf).join(' | ') : ''));
 

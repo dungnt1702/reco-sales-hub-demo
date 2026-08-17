@@ -63,6 +63,31 @@ async function imageDataUris() {
   return map;
 }
 
+/* ---------- Ô ảnh bản đồ ----------
+ * Đã là webp sẵn từ tools/fetch-tiles.mjs, chỉ cần đổi sang data URI và tra theo khoá
+ * 'z/x/y' lúc chạy — cùng cách làm với ảnh, để mỗi ô chỉ nằm đúng một lần trong tệp.
+ */
+async function tileDataUris() {
+  const dir = A('tiles');
+  const map = new Map();
+  let bytes = 0;
+  let zs;
+  try { zs = await readdir(dir); }
+  catch { console.log('   chưa có assets/tiles — chạy `node tools/fetch-tiles.mjs` trước'); return map; }
+  for (const z of zs) {
+    for (const x of await readdir(path.join(dir, z))) {
+      for (const f of await readdir(path.join(dir, z, x))) {
+        if (!f.endsWith('.webp')) continue;
+        const buf = await readFile(path.join(dir, z, x, f));
+        bytes += buf.length;
+        map.set(`${z}/${x}/${f.replace(/\.webp$/, '')}`, `data:image/webp;base64,${buf.toString('base64')}`);
+      }
+    }
+  }
+  console.log(`   ${String(map.size).padStart(4)} ô · ${kb(bytes)} trên đĩa`);
+  return map;
+}
+
 /* ---------- Tách một trang ---------- */
 function slice(html) {
   const title = (html.match(/<title>([\s\S]*?)<\/title>/) || [, ''])[1].trim();
@@ -87,13 +112,19 @@ console.log('· Nén ảnh');
 const img = await imageDataUris();
 console.log('· Nhúng phông chữ');
 const fonts = await fontDataUris();
+console.log('· Nhúng ô ảnh bản đồ');
+const tiles = await tileDataUris();
 
-let css = await readFile(A('reco.css'), 'utf8');
+/* leaflet.css đứng trước reco.css: phần bản đồ trong reco.css sửa lại mặc định của Leaflet */
+let css = await readFile(A('vendor', 'leaflet.css'), 'utf8') + '\n' + await readFile(A('reco.css'), 'utf8');
 for (const [name, uri] of fonts) css = css.replaceAll(`fonts/${name}`, uri);
 
 let runtime = await readFile(A('reco.js'), 'utf8');
 const store = await readFile(A('store.js'), 'utf8');
 const data = await readFile(A('data.js'), 'utf8');
+const leaflet = await readFile(A('vendor', 'leaflet.js'), 'utf8');
+const geo = await readFile(A('geo.js'), 'utf8');
+const recoMap = await readFile(A('reco-map.js'), 'utf8');
 
 console.log(`· Gộp ${PAGES.length} màn`);
 const pages = {};
@@ -130,7 +161,11 @@ ${css}
 <script>
 window.RECO_BUNDLE = true;
 window.RECO_IMG = ${JSON.stringify(Object.fromEntries(img))};
+window.RECO_TILES = ${JSON.stringify(Object.fromEntries(tiles))};
 window.RECO_PAGES = ${JSON.stringify(pages)};
+</script>
+<script>
+${leaflet}
 </script>
 <script>
 ${runtime}
@@ -140,6 +175,12 @@ ${store}
 </script>
 <script>
 ${dataJs}
+</script>
+<script>
+${geo}
+</script>
+<script>
+${recoMap}
 </script>
 `;
 

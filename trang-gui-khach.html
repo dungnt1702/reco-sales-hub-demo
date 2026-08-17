@@ -7,10 +7,14 @@
 <meta name="theme-color" content="#09263c">
 <meta name="description" content="Thông tin dự án The Celestine Riverside do chuyên viên RECO gửi tới quý khách.">
 <link rel="icon" href="assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/vendor/leaflet.css">
 <link rel="stylesheet" href="assets/reco.css">
 <script defer src="assets/reco.js"></script>
 <script defer src="assets/store.js"></script>
 <script defer src="assets/data.js"></script>
+<script defer src="assets/vendor/leaflet.js"></script>
+<script defer src="assets/geo.js"></script>
+<script defer src="assets/reco-map.js"></script>
 <style>
   .pub-hero {
     position: relative; color: #fff; min-height: 340px; display: flex; align-items: flex-end;
@@ -90,8 +94,8 @@
       <div class="agent-wrap">
         <div>
           <span class="eyebrow">Tổng quan</span>
-          <h2 style="font-size:1.5rem">Khu căn hộ ven sông tại Long Biên</h2>
-          <p class="mt-2">Bốn tòa cao 27 tầng trên tổng diện tích 6,4 ha, gồm 1.248 căn hộ từ một đến ba phòng ngủ. Dự án hướng tới gia đình trẻ và khách đầu tư cho thuê dài hạn, bàn giao nội thất liền tường theo ba đợt từ quý II/2027.</p>
+          <h2 style="font-size:1.5rem" id="pj-h2">Khu căn hộ ven sông tại Long Biên</h2>
+          <p class="mt-2" id="pj-overview">Bốn tòa cao 27 tầng trên tổng diện tích 6,4 ha, gồm 1.248 căn hộ từ một đến ba phòng ngủ. Dự án hướng tới gia đình trẻ và khách đầu tư cho thuê dài hạn, bàn giao nội thất liền tường theo ba đợt từ quý II/2027.</p>
           <div class="kv kv-2 mt-3">
             <div><div class="k">Quy mô</div><div class="v" id="pj-struct">4 tòa · 27 tầng · 1.248 căn</div></div>
             <div><div class="k">Diện tích căn</div><div class="v" id="pj-size">58 – 112 m²</div></div>
@@ -119,24 +123,18 @@
     <section class="pub-sec">
       <span class="eyebrow">Điểm nổi bật</span>
       <h2 style="font-size:1.5rem">Vì sao khách hàng chọn dự án này</h2>
-      <div class="grid g-3 mt-3">
-        <div class="card card-pad"><h3 style="font-size:1rem">Ba mặt view sông Hồng</h3><p class="small muted mt-1">Tòa C và D có 62% số căn nhìn trực diện sông.</p></div>
-        <div class="card card-pad"><h3 style="font-size:1rem">Bàn giao nội thất liền tường</h3><p class="small muted mt-1">Bếp, tủ âm và thiết bị vệ sinh thương hiệu châu Âu.</p></div>
-        <div class="card card-pad"><h3 style="font-size:1rem">Hỗ trợ lãi suất 0% trong 18 tháng</h3><p class="small muted mt-1">Áp dụng cho đợt mở bán hiện tại qua ngân hàng liên kết.</p></div>
-      </div>
+      <!-- Vẽ từ điểm bán hàng mang nhãn Công khai của đúng dự án đang gửi -->
+      <div class="grid g-3 mt-3" id="pub-points"></div>
     </section>
 
     <section class="pub-sec">
       <span class="eyebrow">Vị trí</span>
       <h2 style="font-size:1.5rem">Liên kết vùng</h2>
-      <div class="kv kv-3 mt-3">
-        <div><div class="k">Cầu Vĩnh Tuy</div><div class="v">2,1 km · 5 phút</div></div>
-        <div><div class="k">Hồ Hoàn Kiếm</div><div class="v">7,4 km · 18 phút</div></div>
-        <div><div class="k">Vành đai 3</div><div class="v">3,6 km · 8 phút</div></div>
-        <div><div class="k">Bệnh viện Tâm Anh</div><div class="v">1,8 km · 4 phút</div></div>
-        <div><div class="k">Trường liên cấp</div><div class="v">1,2 km · 3 phút</div></div>
-        <div><div class="k">Sân bay Nội Bài</div><div class="v">26 km · 38 phút</div></div>
-      </div>
+      <div id="pub-map" class="mt-3"></div>
+      <p class="micro muted mt-1">Nền bản đồ OpenStreetMap. Chỉ hiện các điểm đã được duyệt công khai.</p>
+      <!-- Vẽ từ kho theo đúng dự án đang được gửi: bảng ghi cứng trước đây là số liệu của
+           một dự án khác với ảnh và tên ở đầu trang. -->
+      <div class="kv kv-3 mt-3" id="pub-place"></div>
     </section>
 
     <section class="pub-sec">
@@ -315,7 +313,10 @@ document.addEventListener('DOMContentLoaded', function () {
     return (want && RECO.store.find('projects', want)) ? want : 'leparc';
   })();
 
-  /* ---------- Nội dung dự án ---------- */
+  /* ---------- Nội dung dự án ----------
+     Cả trang phải bám theo dự án đang được gửi. Trước đây tên và quy mô đọc từ kho nhưng
+     đoạn tổng quan, điểm nổi bật và ảnh lại ghi cứng của một dự án khác — mở đúng đường dẫn
+     là thấy chữ nói một tỉnh, bản đồ chỉ một tỉnh khác. */
   var p = S.find('projects', PJ);
   if (p) {
     document.getElementById('pj-name').textContent = p.name;
@@ -323,7 +324,47 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('pj-struct').textContent = p.struct;
     document.getElementById('pj-size').textContent = p.sizeText;
     document.getElementById('pj-owner').textContent = p.owner;
+    document.title = p.name + ' — thông tin dự án | RECO';
+    var hero = document.querySelector('.pub-hero');
+    if (hero) {
+      hero.style.backgroundImage =
+        'linear-gradient(0deg, rgba(4,25,44,.95) 6%, rgba(4,25,44,.42) 62%, rgba(4,25,44,.22)),' +
+        'linear-gradient(90deg, rgba(4,25,44,.5), rgba(4,25,44,.08) 55%),' +
+        'url("' + RECO.asset(p.summary || p.img) + '")';
+    }
   }
+
+  var ov = S.get('sections').filter(function (s) { return s.pj === PJ && s.kind === 'overview'; })[0];
+  if (ov) {
+    document.getElementById('pj-h2').textContent = 'Tổng quan ' + (p ? p.name : 'dự án');
+    document.getElementById('pj-overview').textContent = ov.body;
+  }
+
+  document.getElementById('pub-points').innerHTML = S.get('sections')
+    .filter(function (s) { return s.pj === PJ && s.kind === 'point' && s.label === 'public'; })
+    .slice(0, 3)
+    .map(function (s) {
+      return '<div class="card card-pad"><h3 style="font-size:1rem">' + E(s.title) + '</h3>' +
+        '<p class="small muted mt-1">' + E(s.body) + '</p></div>';
+    }).join('');
+
+  /* ---------- Vị trí và liên kết vùng ----------
+     Ưu tiên điểm ghim được lên bản đồ, rồi mới tới điểm ở xa khung bản đồ (sân bay, phố cổ). */
+  var place = S.get('sections')
+    .filter(function (s) { return s.pj === PJ && s.kind === 'place' && s.label === 'public'; })
+    .sort(function (a, b) {
+      var ga = RECO_GEO.pois[a.id], gb = RECO_GEO.pois[b.id];
+      return (gb && !gb.far ? 1 : 0) - (ga && !ga.far ? 1 : 0);
+    })
+    .slice(0, 6);
+  document.getElementById('pub-place').innerHTML = place.map(function (s) {
+    var g = RECO_GEO.pois[s.id];
+    return '<div' + (g && !g.far ? ' data-poi="' + E(s.id) + '"' : '') + '>' +
+      '<div class="k">' + E(s.title) + '</div><div class="v">' + E(s.body) + '</div></div>';
+  }).join('');
+
+  /* publicOnly: trang này là vùng công khai, chỉ ghim điểm mang nhãn Công khai */
+  if (window.RECO.map) RECO.map.project(document.getElementById('pub-map'), PJ, { publicOnly: true });
 
   /* ---------- Chuyên viên phụ trách ----------
      Trang thật đọc **bản chụp hồ sơ nhân viên đã lưu trên chính đường dẫn**
@@ -370,8 +411,10 @@ document.addEventListener('DOMContentLoaded', function () {
     validText.textContent = 'Trang còn hiệu lực ' + best.days + ' ngày';
   }
 
-  /* ---------- Phiếu tính giá đã duyệt (chỉ đọc — QD-028) ---------- */
-  var u = S.find('units', 'A-12.05');
+  /* ---------- Phiếu tính giá đã duyệt (chỉ đọc — QD-028) ----------
+     Lấy căn còn hàng của đúng dự án đang gửi, không viết cứng mã căn của một dự án khác. */
+  var u = S.get('units').filter(function (x) { return x.pj === PJ && x.state === 'con'; })[0] ||
+          S.get('units').filter(function (x) { return x.pj === PJ; })[0];
   if (u) {
     // Bảng hàng nội bộ viết tắt "2PN + 1" — trang gửi khách phải viết đủ chữ
     document.getElementById('u-title').textContent = 'Căn ' + u.id + ' · ' + u.kind.replace(/(\d+)\s*PN/, '$1 phòng ngủ');

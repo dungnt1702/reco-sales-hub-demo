@@ -43,9 +43,11 @@ function load(page, w) {
             // Bỏ qua drawer đóng (đẩy ra ngoài bằng transform) và nội dung nằm trong
             // vùng cuộn ngang có chủ đích như thanh tab.
             if (el.closest('.drawer, .scrim, .modal')) return;
+            // overflow:hidden cũng phải bỏ qua — ô ảnh và ghim của bản đồ luôn tràn ra
+            // ngoài khung rồi bị khung cắt, không phần nào lọt ra trang.
             for (var a = el.parentElement; a && a !== d.body; a = a.parentElement) {
               var as = f.contentWindow.getComputedStyle(a);
-              if (as.overflowX === 'auto' || as.overflowX === 'scroll') return;
+              if (as.overflowX === 'auto' || as.overflowX === 'scroll' || as.overflowX === 'hidden') return;
             }
             var cls = (el.className && typeof el.className === 'string') ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : '';
             over.push(el.tagName.toLowerCase() + cls + ' [rộng ' + Math.round(b.width) + ', mép phải ' + Math.round(b.right) + ']');
@@ -106,6 +108,61 @@ function load(page, w) {
     });
   });
   if (!bad) lines.push('OK   moi lien ket noi bo deu tro toi trang va ma neo co that');
+
+  /* --- BAN DO ---
+     Ô ảnh nằm sẵn trong assets/tiles nên bản đồ phải vẽ được không cần mạng. Bộ này canh
+     đúng chỗ dễ hỏng lặng: đổi cây thư mục tiles hoặc đổi id điểm trong geo.js/store.js. */
+  lines.push('');
+  lines.push('--- BAN DO ---');
+  function mapLoad(url, sel, ms) {
+    return new Promise(function (res) {
+      var f = document.createElement('iframe');
+      f.width = 1440; f.height = 900; f.style.cssText = 'position:absolute;left:-9999px;top:0';
+      f.src = url;
+      f.onload = function () {
+        setTimeout(function () {
+          var d = f.contentDocument, r;
+          try {
+            var host = d.querySelector(sel);
+            var hb = host.getBoundingClientRect();
+            var loaded = d.querySelectorAll(sel + ' img.leaflet-tile-loaded');
+            /* Leaflet nạp đệm thêm ô quanh khung nhìn; chỉ ô THẤY ĐƯỢC mới được phép trống */
+            var seen = Array.prototype.filter.call(loaded, function (im) {
+              var b = im.getBoundingClientRect();
+              return b.right > hb.left + 1 && b.left < hb.right - 1 && b.bottom > hb.top + 1 && b.top < hb.bottom - 1;
+            });
+            r = {
+              tiles: seen.length,
+              blank: seen.filter(function (im) { return (im.src || '').indexOf('data:image/svg') === 0; }).length,
+              self: d.querySelectorAll(sel + ' .rmap-self').length,
+              poi: d.querySelectorAll(sel + ' .rmap-poi').length,
+              bub: d.querySelectorAll(sel + ' .rmap-bub').length,
+              cells: d.querySelectorAll('[data-poi]').length,
+              attrib: /OpenStreetMap/.test((d.querySelector(sel + ' .leaflet-control-attribution') || {}).textContent || '')
+            };
+          } catch (err) { r = { err: String(err) }; }
+          f.remove(); res(r);
+        }, ms || 1200);
+      };
+      frames.appendChild(f);
+    });
+  }
+
+  var m = await mapLoad('du-an-chi-tiet.html?bare=1&pj=leparc', '#kv2-map');
+  lines.push((m.tiles >= 4 && !m.blank ? 'OK   ' : 'HONG ') + 'du-an-chi-tiet — ' + m.tiles + ' o anh tai duoc, ' + m.blank + ' o trong');
+  lines.push((m.self === 1 ? 'OK   ' : 'HONG ') + 'du-an-chi-tiet — ghim du an');
+  lines.push((m.poi >= 8 ? 'OK   ' : 'HONG ') + 'du-an-chi-tiet — ' + m.poi + ' ghim diem lien ket vung');
+  lines.push((m.cells >= 8 ? 'OK   ' : 'HONG ') + 'du-an-chi-tiet — ' + m.cells + ' o danh sach noi voi ban do (data-poi)');
+  lines.push((m.attrib ? 'OK   ' : 'HONG ') + 'du-an-chi-tiet — ghi cong OpenStreetMap');
+
+  var mp = await mapLoad('trang-gui-khach.html?bare=1', '#pub-map');
+  lines.push((mp.tiles >= 4 && !mp.blank ? 'OK   ' : 'HONG ') + 'trang-gui-khach — ' + mp.tiles + ' o anh tai duoc');
+  lines.push((mp.self === 1 && mp.poi >= 4 ? 'OK   ' : 'HONG ') + 'trang-gui-khach — ghim du an va ' + mp.poi + ' diem cong khai');
+
+  var mo = await mapLoad('xem-truoc-gd2.html?bare=1', '#gd2-map');
+  lines.push((mo.tiles >= 2 && !mo.blank ? 'OK   ' : 'HONG ') + 'xem-truoc-gd2 — ' + mo.tiles + ' o anh tai duoc');
+  lines.push((mo.bub === 4 ? 'OK   ' : 'HONG ') + 'xem-truoc-gd2 — 4 bong bong khu vuc (co ' + mo.bub + ')');
+
   lines.push('');
   lines.push('=== XONG ===');
   out.textContent = lines.join('\n');

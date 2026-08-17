@@ -6,10 +6,14 @@
 <title>Xem trước Giai đoạn 2 · RECO Sales Hub</title>
 <meta name="theme-color" content="#09263c">
 <link rel="icon" href="assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/vendor/leaflet.css">
 <link rel="stylesheet" href="assets/reco.css">
 <script defer src="assets/reco.js"></script>
 <script defer src="assets/store.js"></script>
 <script defer src="assets/data.js"></script>
+<script defer src="assets/vendor/leaflet.js"></script>
+<script defer src="assets/geo.js"></script>
+<script defer src="assets/reco-map.js"></script>
 <style>
   /* Nhãn gắn vào TỪNG thẻ. Gắn vào lưới thì nó neo ở góc lưới và đè lên thẻ cuối hàng. */
   .fake { position: relative; padding-top: 34px; }
@@ -69,6 +73,8 @@
           <h2 style="font-size:1.15rem">Theo khu vực địa lý</h2>
           <p class="micro muted">Năm khu vực phát sinh nhiều nhất trong kỳ.</p>
         </div>
+        <!-- Bong bóng theo doanh thu của bốn khu vực có toạ độ; "Khác" chỉ nằm ở bảng. -->
+        <div id="gd2-map" class="mt-2"></div>
         <div class="tbl-wrap mt-2">
           <table class="tbl">
             <thead><tr><th>Khu vực</th><th class="r">Số lượng</th><th class="r">Tiền hàng</th><th class="r">Doanh thu</th></tr></thead>
@@ -204,6 +210,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var box = document.getElementById('loaihinh');
   if (!box) return;   /* khung điện thoại thay #page bằng iframe */
   var E = RECO_DATA.esc;
+
+  if (window.RECO.map) RECO.map.overview(document.getElementById('gd2-map'));
 
   function bars(target, rows) {
     var max = rows.reduce(function (m, r) { return Math.max(m, r[1]); }, 0);

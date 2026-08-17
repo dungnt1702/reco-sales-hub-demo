@@ -67,6 +67,9 @@ ghi rõ *cùng khu vực* hay *loại khác*. Ở khổ điện thoại nav mụ
 | `tinh-nang-gd2.html` | Cây tính năng Giai đoạn 2 — sáu phân hệ và bốn cách RECO chọn |
 | `chi-tiet-gd2.html` | Mô tả chi tiết sáu phân hệ Giai đoạn 2 kèm phụ thuộc, rủi ro và tạm tính |
 
+Tệp dùng chung nằm trong `assets/`: `reco.js` (nền tảng), `store.js` (kho dữ liệu), `data.js` (thẻ dự án),
+`geo.js` + `reco-map.js` + `vendor/leaflet.js` + `tiles/` (bản đồ vị trí — xem mục dưới).
+
 Bốn màn tính năng/báo giá vào được từ mục **Tính năng & báo giá** trên thanh trên cùng (vai trò Khách hàng
 không thấy mục này). Hai màn cây dùng chung `.tree`/`.tnode` của cây thư mục; hai màn chi tiết dùng chung
 `.detail-grid`/`.secnav` của màn chi tiết dự án — node trên cây neo thẳng tới hạng mục tương ứng
@@ -201,10 +204,45 @@ Ba điểm nghiệp vụ dễ code sai, đã được bản mô phỏng thể hi
 - **Hạ nhãn xuống Công khai phải hỏi lại** (`RECO.guardLabel`) — MH-09. Còn nhãn con nới lỏng hơn cha thì **chặn hẳn**, không phải cảnh báo (ADR-0005).
 - **Bảng hàng nguồn liên kết sống Drive thì RECO chỉ đọc** — không thêm/sửa căn trong Sales Hub (ADR-0003). Màn Quản trị khóa nút và nói rõ lý do.
 
+## Bản đồ vị trí dự án
+
+Ba màn có bản đồ street thật: **chi tiết dự án** (khu vực 02 *Vị trí và liên kết vùng*),
+**trang gửi khách** (mục *Liên kết vùng*, chỉ ghim điểm mang nhãn Công khai) và
+**xem trước Giai đoạn 2** (báo cáo *Theo khu vực địa lý*, bong bóng theo doanh thu).
+Trỏ vào một ô trong danh sách liên kết vùng thì ghim tương ứng trên bản đồ nhảy lên, và ngược lại.
+
+**Ô ảnh bản đồ nằm sẵn trong repo** (`assets/tiles/{z}/{x}/{y}.webp`, 266 ô ≈ 2,7 MB). Bản đồ vì thế
+vẽ được trên GitHub Pages, khi mở bằng `file://` và trong bản một tệp gửi link — Artifact chặn mọi
+yêu cầu ra máy chủ ngoài nên **không** thể gọi máy chủ ô ảnh lúc chạy.
+
+```powershell
+node tools/geocode.mjs         # tra toạ độ bằng Nominatim, dán tay kết quả vào assets/geo.js
+node tools/fetch-tiles.mjs     # nướng ô ảnh vào assets/tiles (chạy lại được, bỏ qua ô đã có)
+```
+
+Đổi toạ độ hay mức phóng trong `assets/geo.js` thì phải chạy lại `fetch-tiles.mjs` rồi build lại bản gói.
+Mỗi mức phóng thêm vào là thêm chừng 24 ô cho một dự án, nên chỉ Le Parc Place có ba mức (z14–z16),
+Celestine hai mức, năm dự án còn lại một mức z15 (bản đồ không phóng được — nút phóng tự ẩn).
+
+**Nguồn và ghi công.** Ô ảnh lấy từ `tile.openstreetmap.fr/osmfr` (dịch vụ miễn phí của cộng đồng
+OSM France, kiểu nền OSM standard); dữ liệu © OpenStreetMap contributors, giấy phép ODbL — dòng ghi
+công hiện ở góc mỗi bản đồ. **Không dùng `tile.openstreetmap.org`**: máy chủ chính của OSM trả về ảnh
+*Access blocked* (mã 200, nội dung là ảnh thông báo) cho kiểu dùng lưu sẵn ô ảnh này, nên
+`fetch-tiles.mjs` có chốt tự dừng khi nhận nhiều ô nhiều chi tiết giống nhau từng byte.
+Đây là mức dùng của một bản mô phỏng (vài trăm ô, tải một lần). **Bản chạy thật của RECO phải tự dựng
+máy chủ ô ảnh hoặc dùng nhà cung cấp có hợp đồng** — đừng mang cách này lên sản phẩm.
+
+**Chỉ Le Parc Place — ParkCity Hanoi là dự án thật**, ghim đúng vị trí thật trong khu đô thị, các điểm
+liên kết vùng (LINC Mall, ParkCity Club, Trường Quốc tế, Aeon Mall Hà Đông, ga La Khê…) lấy toạ độ thật
+qua Nominatim. Sáu dự án còn lại là dữ liệu mô phỏng, được ghim vào một **vị trí thực hợp lý** trong đúng
+phường/huyện đã khai (Celestine ven sông Hồng phía Ngọc Thụy – Bồ Đề, Palmy Garden ở Văn Giang – Hưng Yên…).
+Điểm nào ở quá xa khung ô ảnh đã tải (sân bay Nội Bài, phố cổ) mang cờ `far: true` trong `geo.js`:
+vẫn hiện trong danh sách, không ghim lên bản đồ.
+
 ## Bản một tệp để gửi link (Claude Artifact)
 
 ```powershell
-node build-artifact.mjs      # → dist/reco-sales-hub.html (~3,1 MB)
+node build-artifact.mjs      # → dist/reco-sales-hub.html (~7,3 MB)
 ```
 
 Gộp cả 20 màn, phông chữ và ảnh vào **một tệp HTML tự chứa**, không gọi ra máy chủ nào —
@@ -213,7 +251,8 @@ mọi thứ khác giữ nguyên: đổi vai trò, khung điện thoại, ẩn th
 
 Ảnh được nén xuống WebP tối đa 1400px và **giữ đúng một bản** trong `window.RECO_IMG`;
 nếu nhúng data URI thẳng vào đánh dấu thì một tấm ảnh dùng ở năm màn sẽ bị chép năm lần
-và tệp phình từ 2,8 MB lên 6,8 MB.
+và tệp phình từ 2,8 MB lên 6,8 MB. Ô ảnh bản đồ đi theo cùng cách, trong `window.RECO_TILES`
+tra theo khoá `z/x/y` — riêng phần này chiếm khoảng 3,7 MB của tệp.
 
 `reco.js` chạy được cả hai chế độ, phân biệt qua `window.RECO_BUNDLE`. Sửa màn hình thì
 sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiếp trong `dist/`.
@@ -233,10 +272,10 @@ sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiế
 
 | Bộ | Kiểm gì |
 | --- | --- |
-| `_check.html` | Tràn ngang ở 360/390/768/1440 và liên kết hỏng trên cả 20 trang |
+| `_check.html` | Tràn ngang ở 360/390/768/1440, liên kết hỏng trên cả 20 trang, và bản đồ ba màn (ô ảnh tải được, không ô trống trong khung nhìn, đủ ghim, có ghi công) |
 | `_check-roles.html` | 90 trường hợp ẩn/hiện theo vai trò |
 | `_check-actions.html` | **Bấm thử từng phần tử** trên mọi màn, so nội dung trước/sau. Đạt khi DOM đổi, hoặc mở hộp thoại, hoặc phần tử mang `data-gd2`. Toast không tính — nó nằm ngoài vùng so sánh. Kiểm thêm: hành động khó hoàn tác có hỏi lại không, ô nhập có phản hồi không, còn liên kết cụt `href="#"` không, và biểu mẫu tải tài liệu có chặn lỗi rồi ghi thật vào kho không |
-| `_check-bundle.html` | Bản một tệp: dựng màn, tràn ngang, liên kết, ảnh và phông nhúng sẵn, phân quyền, mã riêng từng màn |
+| `_check-bundle.html` | Bản một tệp: dựng màn, tràn ngang, liên kết, ảnh/phông/ô ảnh bản đồ nhúng sẵn (không tải gì ra ngoài), phân quyền, mã riêng từng màn |
 | `_check-tim.html` | Tìm trong cây thư mục: con số trên chip phải bằng đúng số dòng người dùng với tới được, thư mục chứa tệp khớp phải hiện ra để bấm vào, ảnh cũng theo bộ lọc |
 | `_check-mh04.html` | Chi tiết dự án: khối dự án cùng loại (số dòng, cơ chế bù, tiêu đề, đường dẫn) trên ba loại hình; nav mục dính không bắt nhầm liên kết dự án; mười dấu (i) — bấm/Escape/bấm ra ngoài, không tràn ngang ở 390px; và thẻ mẹo Trang đầu không bị lớp `.itip` giẫm lên |
 

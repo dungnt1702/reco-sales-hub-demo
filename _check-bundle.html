@@ -38,9 +38,10 @@ function overflow(f, w) {
     var st = f.contentWindow.getComputedStyle(el);
     if (st.position === 'fixed') return;
     if (el.closest('.drawer, .scrim, .modal')) return;
+    // overflow:hidden cũng bỏ qua — ô ảnh và ghim bản đồ tràn khỏi khung rồi bị khung cắt
     for (var a = el.parentElement; a && a !== d.body; a = a.parentElement) {
       var as = f.contentWindow.getComputedStyle(a);
-      if (as.overflowX === 'auto' || as.overflowX === 'scroll') return;
+      if (as.overflowX === 'auto' || as.overflowX === 'scroll' || as.overflowX === 'hidden') return;
     }
     bad.push(el.tagName.toLowerCase() + '.' + (el.className || '').toString().split(' ')[0]);
   });
@@ -96,14 +97,33 @@ function overflow(f, w) {
   }
   say(rel.length === 0, 'moi anh deu nhung san' + (rel.length ? ' → ' + rel.slice(0, 3).join(', ') : ''));
 
+  /* 3b. Bản đồ vẽ được trong bản gói — đây là điều kiện sống còn: Artifact chặn mọi yêu cầu
+     ra máy chủ ngoài, nên ô ảnh phải nằm sẵn trong window.RECO_TILES. */
+  var nTiles = Object.keys(f2.contentWindow.RECO_TILES || {}).length;
+  say(nTiles > 100, 'co ' + nTiles + ' o anh ban do nhung san');
+  await goto(f2, '#du-an-chi-tiet?pj=leparc');
+  await new Promise(function (r) { setTimeout(r, 700); });
+  var dm = f2.contentDocument;
+  var tiles = dm.querySelectorAll('#kv2-map img.leaflet-tile');
+  var dataTiles = Array.prototype.filter.call(tiles, function (im) { return (im.src || '').indexOf('data:image/webp') === 0; });
+  say(tiles.length > 0 && dataTiles.length === tiles.length,
+    'ban do dung o anh nhung san (' + dataTiles.length + '/' + tiles.length + ')');
+  say(!!dm.querySelector('#kv2-map .rmap-self'), 'ghim du an hien tren ban do');
+  say(dm.querySelectorAll('#kv2-map .rmap-poi').length >= 8, 'ghim diem lien ket vung hien du');
+
   // 4. Phông chữ nhúng, không gọi ra mạng
   var css = f2.contentDocument.querySelector('style').textContent;
   say(css.indexOf('fonts/') < 0 && css.indexOf('data:font/woff2') > 0, 'phong chu nhung san, khong goi mang');
-  // http://www.w3.org/2000/svg trong data URI chỉ là không gian tên XML, không phải gọi mạng
-  var netCss = css.replace(/http:\/\/www\.w3\.org\/\S*?svg/g, '');
+  // http://www.w3.org/2000/svg trong data URI chỉ là không gian tên XML, không phải gọi mạng;
+  // chú thích trong CSS của thư viện ngoài (leaflet.css) có dẫn link bug tracker, cũng không tải gì.
+  var netCss = css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/http:\/\/www\.w3\.org\/\S*?svg/g, '');
   say(!/https?:\/\//.test(netCss), 'CSS khong tro toi may chu ngoai');
+  /* Chỉ tính thứ TẢI tài nguyên: src=, <link href=, @import. Liên kết trong thẻ a là điều
+     hướng người dùng (ghi công OpenStreetMap, mở Google Maps) — bản gói vẫn cho phép. */
   var docHtml = f2.contentDocument.documentElement.outerHTML;
-  var tags = docHtml.match(/(?:src|href)="https?:[^"]*"/g) || [];
+  var tags = (docHtml.match(/src="https?:[^"]*"/g) || [])
+    .concat(docHtml.match(/<link[^>]+href="https?:[^"]*"/g) || [])
+    .concat(docHtml.match(/@import[^;]*https?:[^;]*/g) || []);
   say(tags.length === 0, 'tai lieu khong nap tai nguyen ngoai' + (tags.length ? ' → ' + tags.slice(0, 3).join(', ') : ''));
 
   // 5. Đổi vai trò trên bản gói

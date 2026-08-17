@@ -6,10 +6,14 @@
 <title>The Celestine Riverside · RECO Sales Hub</title>
 <meta name="theme-color" content="#09263c">
 <link rel="icon" href="assets/img/reco-logo.png">
+<link rel="stylesheet" href="assets/vendor/leaflet.css">
 <link rel="stylesheet" href="assets/reco.css">
 <script defer src="assets/reco.js"></script>
 <script defer src="assets/store.js"></script>
 <script defer src="assets/data.js"></script>
+<script defer src="assets/vendor/leaflet.js"></script>
+<script defer src="assets/geo.js"></script>
+<script defer src="assets/reco-map.js"></script>
 <style>
   .pj-hero {
     position: relative; border-radius: var(--radius-xl); overflow: hidden;
@@ -23,18 +27,6 @@
   @media (min-width: 768px) { .pj-hero { min-height: 320px; padding: 32px; } }
   .pj-hero h1 { color: #fff; font-size: clamp(1.7rem,3.4vw,2.6rem); }
   .pj-actions { position: sticky; z-index: 20; }
-  .map-ph {
-    aspect-ratio: 16 / 9; border-radius: var(--radius-lg); overflow: hidden;
-    background:
-      repeating-linear-gradient(0deg, rgba(9,38,60,.06) 0 1px, transparent 1px 34px),
-      repeating-linear-gradient(90deg, rgba(9,38,60,.06) 0 1px, transparent 1px 34px),
-      var(--soft);
-    display: flex; align-items: center; justify-content: center; position: relative;
-  }
-  .map-ph .pin-dot {
-    width: 16px; height: 16px; border-radius: 50%; background: var(--orange-button);
-    box-shadow: 0 0 0 7px rgba(242,118,34,.22); position: absolute; left: 46%; top: 44%;
-  }
   .bullet { display: flex; gap: 11px; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid var(--line); }
   /* Nhãn và nút Sửa dồn về mép phải thành một cột, không bám đuôi câu chữ dài ngắn khác nhau */
   .bullet .bmeta { flex: 1 1 auto; min-width: 0; }
@@ -188,7 +180,8 @@
             <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="place" data-roles="tkkd gddu gd">+ Thêm điểm liên kết</button></span>
           </div>
           <div class="card card-pad">
-            <div class="map-ph mb-3"><span class="pin-dot"></span><span class="micro muted">Bản đồ vị trí dự án</span></div>
+            <div id="kv2-map" class="mb-2"></div>
+            <p class="micro muted mb-3">Nền bản đồ OpenStreetMap. Trỏ vào một điểm bên dưới để thấy vị trí trên bản đồ.</p>
             <div class="kv kv-3" id="kv2-grid"></div>
           </div>
         </section>
@@ -974,11 +967,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var ovAct = id('kv1-edit');
     if (ovAct) ovAct.setAttribute('data-sec-edit', ov ? ov.id : '');
 
-    /* 02 · Vị trí và liên kết vùng */
+    /* 02 · Vị trí và liên kết vùng — data-poi nối ô danh sách với ghim trên bản đồ.
+       Điểm do người dùng thêm trong lúc demo chưa có toạ độ trong geo.js nên chỉ nằm ở danh sách. */
     id('kv2-grid').innerHTML = secs('place').map(function (s) {
-      return '<div><div class="k">' + esc(s.title) + '</div>' +
+      var g = window.RECO_GEO && RECO_GEO.pois[s.id];
+      return '<div' + (g && !g.far ? ' data-poi="' + esc(s.id) + '" tabindex="0"' : '') + '>' +
+        '<div class="k">' + esc(s.title) + '</div>' +
         '<div class="v">' + esc(s.body) + ' ' + editBtn(s) + '</div></div>';
     }).join('') || '<p class="small muted">Chưa khai báo điểm liên kết vùng nào.</p>';
+    if (window.RECO.map) RECO.map.project(id('kv2-map'), PJ);
 
     /* 03 · Điểm bán hàng — nhãn Nội bộ hạn chế ẩn cả dòng, thay bằng dòng báo bị ẩn */
     var pts = secs('point');
