@@ -312,19 +312,22 @@
         <section class="sec" id="kv7">
           <div class="sec-head"><span class="n">KHU VỰC 07</span><h2>Hỏi đáp và nội dung tư vấn ngắn</h2><span class="lb lb-public">Công khai</span></div>
           <p class="small muted mb-2">Nội dung chuẩn do Giám đốc dự án duyệt. Giai đoạn 1 không tự sinh nội dung.</p>
+          <!-- Hàng trên: tìm kiếm và công tắc bản trả lời. Công tắc là ĐỔI CHẾ ĐỘ XEM,
+               không phải bộ lọc, nên đứng tách khỏi hàng chip chủ đề bên dưới. -->
           <div class="filterbar mb-2">
-            <div class="searchbox" style="display:flex;flex:1 1 200px;min-width:0">
+            <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
               <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
               <input type="search" id="qa-q" placeholder="Tìm trong hỏi đáp" aria-label="Tìm trong hỏi đáp">
             </div>
-            <!-- Chủ đề dựng theo đúng những nhóm dự án này thật sự có, không cứng trong đánh dấu.
-                 Số chủ đề thay đổi theo dự án nên thanh này phải xuống dòng được, không kéo ngang. -->
-            <div class="seg" role="group" aria-label="Lọc theo chủ đề" id="qa-seg" style="flex-wrap:wrap"></div>
+            <span class="micro muted" style="font-weight:700">Đang xem</span>
             <div class="seg" role="group" aria-label="Chọn bản trả lời" id="qa-ver">
               <button type="button" data-ver="in" aria-pressed="true">Bản đầy đủ</button>
               <button type="button" data-ver="out" aria-pressed="false">Bản gửi khách</button>
             </div>
           </div>
+          <!-- Chủ đề dựng theo đúng những nhóm dự án này thật sự có, không cứng trong
+               đánh dấu; số chủ đề đổi theo dự án nên hàng này phải xuống dòng được. -->
+          <div class="chipbar mb-2" role="group" aria-label="Lọc theo chủ đề" id="qa-seg"></div>
           <p class="micro muted mb-2" id="qa-ver-note"></p>
           <div id="qa-list"></div>
           <p class="micro muted mt-1" id="qa-count" role="status"></p>
@@ -1225,18 +1228,21 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function paintQASeg() {
-    var seen = {}, order = [];
+    /* Đếm luôn số câu mỗi chủ đề: người dùng biết trước bấm vào sẽ còn bao nhiêu câu,
+       và chủ đề rỗng không hiện ra để khỏi bấm vào một danh sách trống. */
+    var dem = {}, order = [], tong = 0;
     qaVisible().forEach(function (q) {
       var k = q.topic || 'khac';
-      if (!seen[k]) { seen[k] = true; order.push(k); }
+      if (!dem[k]) { dem[k] = 0; order.push(k); }
+      dem[k]++; tong++;
     });
     if (order.indexOf(topic) < 0) topic = '';
-    id('qa-seg').innerHTML =
-      '<button type="button" data-topic="" aria-pressed="' + (topic === '') + '">Tất cả</button>' +
-      order.map(function (k) {
-        return '<button type="button" data-topic="' + k + '" aria-pressed="' + (topic === k) + '">' +
-          esc(S.TOPICS[k] || 'Khác') + '</button>';
-      }).join('');
+    function chip(k, nhan, n) {
+      return '<button type="button" class="fchip" data-topic="' + k + '" aria-pressed="' +
+        (topic === k) + '">' + esc(nhan) + '<span class="n">' + n + '</span></button>';
+    }
+    id('qa-seg').innerHTML = chip('', 'Tất cả', tong) +
+      order.map(function (k) { return chip(k, S.TOPICS[k] || 'Khác', dem[k]); }).join('');
   }
 
   function paintQA() {
