@@ -714,11 +714,28 @@ select.inp { appearance: none; background-image: url("data:image/svg+xml,%3Csvg 
 
 /* ---------- Chi tiết dự án: nav mục dính ---------- */
 .detail-grid { display: grid; gap: 22px; }
-@media (min-width: 1024px) { .detail-grid { grid-template-columns: 232px minmax(0, 1fr); gap: 34px; align-items: start; } }
 .secnav { display: none; }
+/* Khổ hẹp: nav mục ẩn, nhưng danh sách dự án cùng loại vẫn dùng được —
+   đẩy cả cột trái xuống sau nội dung thay vì để nó chắn đầu trang. */
+@media (max-width: 1023px) { .detail-side { order: 2; } .detail-main { order: 1; } }
+/* Cột trái giữ hai khối: nav chín khu vực và danh sách dự án cùng loại.
+   Vế dính nằm ở khối bọc chứ không ở .secnav — nếu để riêng .secnav dính thì
+   danh sách dự án bị lưới đẩy xuống hàng hai, tức là tận đáy trang. */
 @media (min-width: 1024px) {
-  .secnav { display: block; position: sticky; top: calc(var(--proto-h) + var(--header-h) + 16px); }
-  body.proto-off .secnav { top: calc(var(--header-h) + 16px); }
+  .detail-grid { grid-template-columns: 232px minmax(0, 1fr); gap: 34px; align-items: start; }
+  /* Cột dính phải chặn chiều cao, không thì phần dưới nằm ngoài màn hình và không cuộn tới được.
+     Trên laptop 720–730px cao, cột chỉ được 564–574px, mà nav chín mục (443px) cộng khối dự án
+     (244px) là 713px — không cách nào vừa cả hai. Nên ghim khối dự án ở đáy cột (flex: none,
+     luôn thấy được) và để riêng nav co lại rồi cuộn bên trong. Màn cao từ ~1000px thì không
+     phần nào phải cuộn. */
+  .detail-side {
+    position: sticky; top: calc(var(--proto-h) + var(--header-h) + 16px);
+    max-height: calc(100vh - var(--proto-h) - var(--header-h) - 32px);
+    display: flex; flex-direction: column;
+  }
+  body.proto-off .detail-side { top: calc(var(--header-h) + 16px); max-height: calc(100vh - var(--header-h) - 32px); }
+  .secnav { display: block; flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+  .detail-side .pj-near { flex: none; margin-top: 0; padding-top: 18px; border-top: 1px solid var(--line); }
 }
 .secnav ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
 .secnav ol a {
@@ -744,6 +761,64 @@ select.inp { appearance: none; background-image: url("data:image/svg+xml,%3Csvg 
 }
 .sec-head h2 { font-size: 1.28rem; letter-spacing: -0.03em; }
 .sec-head .sec-act { margin-left: auto; }
+
+/* ---------- Dự án cùng loại (cột trái màn chi tiết) ---------- */
+.pj-near { margin-top: 26px; }
+@media (max-width: 1023px) { .pj-near { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--line); } }
+@media (min-width: 640px) and (max-width: 1023px) {
+  #pj-near-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  #pj-near-list .pj-near-all { grid-column: 1 / -1; }
+}
+.mini {
+  display: flex; gap: 10px; align-items: center;
+  padding: 7px 8px; border-radius: var(--radius-md);
+  border: 1px solid transparent; text-decoration: none; color: inherit;
+}
+.mini:hover { background: var(--soft); border-color: var(--line); color: inherit; }
+.mini img { width: 40px; height: 40px; flex: none; border-radius: var(--radius-sm); object-fit: cover; }
+.mini .mname { display: block; font-size: 0.82rem; font-weight: 700; color: var(--navy); letter-spacing: -0.015em; line-height: 1.3; }
+.mini .mmeta { display: block; font-size: 0.71rem; color: var(--muted); margin-top: 2px; }
+.pj-near-all { display: inline-block; margin-top: 8px; padding: 0 8px; font-size: 0.74rem; font-weight: 700; color: var(--navy); }
+
+/* ---------- Gợi ý (i) sau tiêu đề khu vực ---------- */
+/* Tên lớp phải riêng: .tip đã bị màn Trang đầu dùng cho thẻ "Mẹo và nội dung dùng ngay",
+   mà bản gói nối CSS của mọi màn vào một tệp — trùng tên là hai màn phá nhau. */
+.itip {
+  position: relative; flex: none; margin-left: -6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%;
+  background: transparent; color: var(--muted); cursor: help;
+}
+.itip svg { width: 16px; height: 16px; }
+.itip:hover, .itip[aria-expanded="true"] { color: var(--orange-text); background: color-mix(in srgb, var(--orange) 12%, transparent); }
+.itip:focus-visible { outline: 2px solid var(--orange-button); outline-offset: 2px; }
+/* Đóng bằng display:none chứ không phải visibility — phần tử chỉ ẩn bằng visibility
+   vẫn có khung, và bộ kiểm tràn ngang duyệt getBoundingClientRect() từng phần tử. */
+.itip-bub {
+  display: none;
+  position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  width: max-content; max-width: min(320px, calc(100vw - 32px));
+  padding: 9px 12px; border-radius: var(--radius-md); z-index: 35;
+  background: var(--navy); color: #eaf2f8;
+  font-size: 0.76rem; font-weight: 500; line-height: 1.45; text-align: left;
+  letter-spacing: 0; white-space: normal; text-transform: none;
+  box-shadow: var(--shadow-float);
+}
+.itip:hover .itip-bub, .itip:focus-visible .itip-bub, .itip[aria-expanded="true"] .itip-bub { display: block; }
+.itip-bub::before {
+  content: ''; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-bottom-color: var(--navy);
+}
+/* Khổ hẹp: neo bong bóng vào cả hàng tiêu đề chứ không vào nút (i).
+   Nút (i) đứng sau tiêu đề nên vị trí của nó tùy độ dài tiêu đề — ở 390px một bong bóng
+   320px neo vào đó chạy hẳn ra ngoài mép phải, mà body có overflow-x:hidden nên
+   chữ bị cắt mất chứ không cuộn được. Mũi tên bỏ đi vì không còn chỉ đúng vào nút. */
+@media (max-width: 639px) {
+  .sec-head { position: relative; }
+  .itip { position: static; }
+  .itip-bub { top: calc(100% + 8px); left: 0; right: 0; width: auto; max-width: none; transform: none; }
+  .itip-bub::before { display: none; }
+}
 
 /* ---------- Modal ---------- */
 .modal[hidden] { display: none; }

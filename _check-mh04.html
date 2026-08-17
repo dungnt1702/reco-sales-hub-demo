@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Kiểm tra MH-04: dự án cùng loại + gợi ý (i)</title>
+<style>body{font:14px/1.5 monospace;margin:16px;background:#111;color:#ddd}pre{white-space:pre-wrap}iframe{position:absolute;left:-99999px;top:0;border:0}</style>
+</head>
+<body>
+<h1>Kiểm tra MH-04</h1>
+<pre id="out">Đang chạy…</pre>
+<div id="frames"></div>
+<script>
+var out = document.getElementById('out'), frames = document.getElementById('frames'), lines = [];
+function say(s) { lines.push(s); out.textContent = lines.join('\n'); }
+function ok(c, s) { say((c ? 'DAT  ' : 'HONG ') + s); return c; }
+
+function load(url, w, h) {
+  return new Promise(function (res) {
+    var f = document.createElement('iframe');
+    f.style.width = w + 'px'; f.style.height = (h || 900) + 'px';
+    f.src = url;
+    f.onload = function () { setTimeout(function () { res(f); }, 300); };
+    frames.appendChild(f);
+  });
+}
+
+/* Kho dữ liệu dùng chung sessionStorage — mỗi lần đổi dự án phải nạp lại khung */
+var CASES = [
+  /* bù = số dòng không cùng loại hình; luôn bù cho đủ ba dòng */
+  { pj: 'leparc',   type: 'canho',    same: 3, bu: 0, tieu: 'Dự án cùng loại', all: 'Xem tất cả chung cư', href: 'type=canho' },
+  /* Không có dự án cùng loại thì link phải về danh sách đầy đủ, không phải bộ lọc chỉ còn chính nó */
+  { pj: 'palmy',    type: 'datnen',   same: 0, bu: 3, tieu: 'Dự án khác',      all: 'Xem tất cả dự án',   href: 'du-an' },
+  { pj: 'la-perle', type: 'thaptang', same: 1, bu: 2, tieu: 'Dự án cùng loại', all: 'Xem tất cả biệt thự, nhà liền kề, shophouse', href: 'type=thaptang' }
+];
+
+(async function () {
+  var bad = 0;
+
+  say('--- Danh sách dự án cùng loại (1440) ---');
+  for (var i = 0; i < CASES.length; i++) {
+    var c = CASES[i];
+    var f = await load('du-an-chi-tiet.html?bare=1&pj=' + c.pj, 1440);
+    var d = f.contentDocument;
+    var rows = d.querySelectorAll('#pj-near-list .mini');
+    var bu = d.querySelectorAll('#pj-near-list .mmeta');
+    var nBu = 0;
+    bu.forEach(function (m) { if (/cùng khu vực|loại khác/.test(m.textContent)) nBu++; });
+    var all = d.querySelector('#pj-near-list .pj-near-all');
+
+    if (!ok(rows.length === c.same + c.bu, c.pj + ': ' + rows.length + ' dòng (mong ' + (c.same + c.bu) + ')')) bad++;
+    if (!ok(nBu === c.bu, c.pj + ': ' + nBu + ' dòng có ghi lý do bù (mong ' + c.bu + ')')) bad++;
+    if (!ok(d.getElementById('pj-near-h').textContent === c.tieu, c.pj + ': tiêu đề khối "' + d.getElementById('pj-near-h').textContent + '"')) bad++;
+    if (!ok(!!all && all.textContent === c.all, c.pj + ': link "' + (all ? all.textContent : '—') + '"')) bad++;
+    if (!ok(!!all && all.getAttribute('href').indexOf(c.href) >= 0, c.pj + ': href → ' + (all ? all.getAttribute('href') : '—'))) bad++;
+    // Không dự án nào trùng chính nó
+    var self = 0;
+    rows.forEach(function (a) { if (a.getAttribute('href').indexOf('pj=' + c.pj) >= 0) self++; });
+    if (!ok(self === 0, c.pj + ': không tự trỏ về chính nó')) bad++;
+    f.remove();
+  }
+
+  say('');
+  say('--- Nav mục dính không bị bắt nhầm link dự án ---');
+  var f1 = await load('du-an-chi-tiet.html?bare=1&pj=leparc', 1440);
+  var d1 = f1.contentDocument;
+  /* Chỉ chín neo khu vực: liên kết cây thư mục đã được mã của màn đổi sang đường dẫn thật */
+  if (!ok(d1.querySelectorAll('.secnav a[href^="#"]').length === 9, 'secnav có đúng 9 neo trong trang')) bad++;
+  if (!ok(d1.querySelectorAll('#pj-near-list .on').length === 0, 'không dòng dự án nào bị gán class .on của nav')) bad++;
+  if (!ok(!d1.querySelector('.secnav #pj-near-list'), 'khối dự án nằm ngoài <nav class="secnav">')) bad++;
+
+  say('');
+  say('--- Gợi ý (i) ---');
+  /* Mười: chín khu vực cộng biến thể "Kịch bản của tôi" của khu vực 09 */
+  var tips = d1.querySelectorAll('.sec-head [data-tip]');
+  if (!ok(tips.length === 10, 'có ' + tips.length + ' nút (i) ở tiêu đề khu vực (mong 10)')) bad++;
+  var noSvg = 0, noText = 0, noLabel = 0;
+  tips.forEach(function (b) {
+    if (!b.querySelector('svg')) noSvg++;
+    var bub = b.querySelector('.itip-bub');
+    if (!bub || bub.textContent.trim().length < 40) noText++;
+    if (!b.getAttribute('aria-label')) noLabel++;
+  });
+  if (!ok(noSvg === 0, 'mọi nút (i) đều được nhét biểu tượng')) bad++;
+  if (!ok(noText === 0, 'mọi nút (i) đều có mô tả đủ dài')) bad++;
+  if (!ok(noLabel === 0, 'mọi nút (i) đều có aria-label')) bad++;
+
+  /* aria-label ghi đè nội dung bên trong, nên không có aria-describedby thì trình đọc
+     màn hình đọc được tên nút mà không đọc được câu giải thích */
+  var noDesc = 0, ids = {}, trung = 0;
+  tips.forEach(function (b) {
+    var ref = b.getAttribute('aria-describedby');
+    if (!ref || !d1.getElementById(ref)) { noDesc++; return; }
+    if (ids[ref]) trung++;
+    ids[ref] = 1;
+  });
+  if (!ok(noDesc === 0, 'mọi nút (i) đều trỏ aria-describedby tới đúng phần mô tả')) bad++;
+  if (!ok(trung === 0, 'không id mô tả nào bị trùng')) bad++;
+
+  /* Bấm thử từng phần tử chấm nhãn theo textContent, mà textContent của nút (i) là cả câu
+     giải thích. Câu nào mở đầu bằng từ trong danh sách hành động khó hoàn tác sẽ bị đòi hỏi lại. */
+  var NGUY = ['vô hiệu hóa', 'ngừng', 'đặt lại mật khẩu', 'ẩn', 'duyệt', 'xóa', 'thu hồi', 'từ chối', 'đặt lại dữ liệu'];
+  var xau = [];
+  tips.forEach(function (b) {
+    var s = b.textContent.trim().toLowerCase();
+    NGUY.forEach(function (k) { if (s.indexOf(k) === 0) xau.push(k); });
+  });
+  if (!ok(xau.length === 0, 'không câu giải thích nào mở đầu bằng từ hành động khó hoàn tác' + (xau.length ? ' → ' + xau.join(', ') : ''))) bad++;
+
+  // Bong bóng đóng thì không có khung để đo — điều kiện để bộ kiểm tràn ngang không báo sai
+  var bub0 = tips[0].querySelector('.itip-bub');
+  if (!ok(f1.contentWindow.getComputedStyle(bub0).display === 'none', 'bong bóng đóng dùng display:none')) bad++;
+
+  // Bấm để bật/tắt
+  tips[0].click();
+  if (!ok(tips[0].getAttribute('aria-expanded') === 'true', 'bấm lần 1 thì mở')) bad++;
+  if (!ok(f1.contentWindow.getComputedStyle(bub0).display !== 'none', 'mở rồi thì bong bóng hiện')) bad++;
+  tips[1].click();
+  if (!ok(tips[0].getAttribute('aria-expanded') === 'false' && tips[1].getAttribute('aria-expanded') === 'true', 'mở cái khác thì cái cũ đóng')) bad++;
+  tips[1].click();
+  if (!ok(tips[1].getAttribute('aria-expanded') === 'false', 'bấm lại thì đóng')) bad++;
+  tips[2].click();
+  d1.body.click();
+  if (!ok(tips[2].getAttribute('aria-expanded') === 'false', 'bấm ra ngoài thì đóng')) bad++;
+  tips[3].click();
+  d1.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  if (!ok(tips[3].getAttribute('aria-expanded') === 'false', 'phím Escape thì đóng')) bad++;
+  f1.remove();
+
+  say('');
+  say('--- Khổ hẹp 390: cột trái xuống cuối trang ---');
+  var f2 = await load('du-an-chi-tiet.html?bare=1&pj=leparc', 390);
+  var d2 = f2.contentDocument, w2 = f2.contentWindow;
+  var side = d2.querySelector('.detail-side'), main = d2.querySelector('.detail-main');
+  if (!ok(w2.getComputedStyle(d2.querySelector('.secnav')).display === 'none', 'nav chín khu vực ẩn')) bad++;
+  if (!ok(side.getBoundingClientRect().top > main.getBoundingClientRect().top, 'cột trái nằm SAU nội dung')) bad++;
+  if (!ok(w2.getComputedStyle(side).position !== 'sticky', 'cột trái không dính ở khổ hẹp')) bad++;
+  var near = d2.querySelector('.pj-near');
+  if (!ok(w2.getComputedStyle(near).display !== 'none' && d2.querySelectorAll('#pj-near-list .mini').length === 3, 'khối dự án cùng loại vẫn hiện, 3 dòng')) bad++;
+  // Mở gợi ý ở khổ hẹp rồi đo tràn ngang
+  var t2 = d2.querySelectorAll('.sec-head [data-tip]');
+  var over = [];
+  t2.forEach(function (b) {
+    b.click();
+    var r = b.querySelector('.itip-bub').getBoundingClientRect();
+    if (r.right > 391 || r.left < -1) over.push(b.getAttribute('aria-label') + ' [' + Math.round(r.left) + '…' + Math.round(r.right) + ']');
+    b.click();
+  });
+  if (!ok(over.length === 0, 'mở mọi gợi ý ở 390px không tràn ngang' + (over.length ? ' → ' + over.join(', ') : ''))) bad++;
+  f2.remove();
+
+  say('');
+  say('--- Khối dự án thấy được ngay trên laptop, không phải cuộn trong cột ---');
+  /* Cột trái dính bị chặn chiều cao. Nếu chặn cả cột thì nav chín mục ăn hết chỗ và khối
+     dự án tụt xuống dưới vùng cuộn — người dùng tưởng là không có. Đo trên các khổ cao thật. */
+  var CAO = [[1440, 900], [1440, 800], [1536, 730], [1280, 720]];
+  for (var k = 0; k < CAO.length; k++) {
+    var fk = await load('du-an-chi-tiet.html?bare=1&pj=leparc', CAO[k][0], CAO[k][1]);
+    var dk = fk.contentDocument;
+    var sd = dk.querySelector('.detail-side'), nr = dk.querySelector('.pj-near'), nv = dk.querySelector('.secnav');
+    var rows = dk.querySelectorAll('#pj-near-list .mini').length;
+    /* Khối dự án là con định vị của cột (offsetParent === .detail-side) nên offsetTop đã là
+       tọa độ trong cột — KHÔNG trừ sd.offsetTop, trừ là ra số vô nghĩa và báo xanh giả. */
+    if (!ok(nr.offsetParent === sd, CAO[k][0] + 'x' + CAO[k][1] + ': offsetParent của khối dự án đúng là cột')) bad++;
+    var day = nr.offsetTop + nr.offsetHeight;
+    var kin = day <= sd.clientHeight + 1;
+    if (!ok(kin && rows === 3, CAO[k][0] + 'x' + CAO[k][1] + ': khối dự án (' + rows + ' dòng) hết ở ' +
+      Math.round(day) + 'px, cột hiện ' + sd.clientHeight + 'px' + (kin ? '' : ' — PHẢI CUỘN'))) bad++;
+    /* Cột không được tự cuộn: phần chịu cuộn phải là nav, để khối dự án luôn nằm trong tầm nhìn */
+    if (!ok(sd.scrollHeight <= sd.clientHeight + 1, CAO[k][0] + 'x' + CAO[k][1] + ': cả cột không phải cuộn (' +
+      sd.scrollHeight + '/' + sd.clientHeight + 'px), phần cuộn nằm ở nav (' + nv.scrollHeight + '/' + nv.clientHeight + 'px)')) bad++;
+    fk.remove();
+  }
+
+  say('');
+  say('--- Không giẫm lên lớp .tip của Trang đầu ---');
+  /* Bản gói nối CSS mọi màn vào một tệp, nên tên lớp trùng là hai màn phá nhau.
+     Thẻ "Mẹo và nội dung dùng ngay" ở Trang đầu đã dùng .tip từ trước. */
+  var f3 = await load('trang-dau.html?bare=1', 1440);
+  var d3 = f3.contentDocument;
+  var cards = d3.querySelectorAll('.tips .tip');
+  var lun = 0;
+  cards.forEach(function (c) { if (c.getBoundingClientRect().width < 100) lun++; });
+  if (!ok(cards.length > 0, 'Trang đầu có ' + cards.length + ' thẻ mẹo để đo')) bad++;
+  if (!ok(lun === 0, 'thẻ mẹo Trang đầu không bị bóp nhỏ (' + lun + ' thẻ hẹp dưới 100px)')) bad++;
+  if (!ok(d3.querySelectorAll('.itip').length === 0, 'Trang đầu không dùng lớp .itip')) bad++;
+  f3.remove();
+
+  say('');
+  say('--- Bản gói một tệp ---');
+  /* Bộ kiểm bản gói không bao giờ mở gợi ý, nên nó không thấy được lỗi CSS trùng tên
+     giữa các màn. Kiểm thẳng ở đây: bong bóng phải mở ra đủ rộng, không bị cắt. */
+  var fg = await load('dist/reco-sales-hub.html#du-an-chi-tiet?pj=leparc', 1272, 900);
+  await new Promise(function (r) { setTimeout(r, 500); });
+  var dg = fg.contentDocument, Wg = fg.contentWindow;
+  var gRows = dg.querySelectorAll('#pj-near-list .mini');
+  var gTips = dg.querySelectorAll('.sec-head [data-tip]');
+  if (!ok(gRows.length === 3, 'bản gói: khối dự án có ' + gRows.length + ' dòng')) bad++;
+  if (!ok(gRows.length > 0 && gRows[0].getAttribute('href').indexOf('#du-an-chi-tiet?pj=') === 0,
+    'bản gói: link dòng dự án đúng dạng neo trong tệp')) bad++;
+  if (!ok(gTips.length === 10, 'bản gói: có ' + gTips.length + ' nút (i)')) bad++;
+  if (gTips.length) {
+    gTips[0].setAttribute('aria-expanded', 'true');
+    var gb = gTips[0].querySelector('.itip-bub'), gr = gb.getBoundingClientRect();
+    if (!ok(Wg.getComputedStyle(gb).display === 'block' && gr.width > 200 && gr.height > 30,
+      'bản gói: bong bóng mở ra ' + Math.round(gr.width) + 'x' + Math.round(gr.height) + 'px, không bị cắt')) bad++;
+  }
+  fg.remove();
+
+  say('');
+  say(bad === 0 ? '=== TAT CA DEU DAT ===' : '=== ' + bad + ' MUC HONG ===');
+})();
+</script>
+</body>
+</html>

@@ -29,6 +29,12 @@ Trạng thái nằm trong URL (`?role=…&dev=m&bare=1`) nên gửi đường d�
 (Nội bộ Marketing và Kinh doanh) biến mất, thay bằng phần Kịch bản cá nhân; đổi lại sang
 **Giám đốc dự án** thì khu vực 9 hiện đầy đủ kèm nút duyệt.
 
+Cũng ở màn đó: mỗi tiêu đề khu vực có dấu **(i)** — trỏ chuột, Tab tới hoặc chạm đều hiện câu
+giải thích khu vực đó dùng để làm gì. Cột trái bên dưới nav là danh sách **dự án cùng loại**,
+bấm vào là sang thẳng dự án khác. Mở `du-an-chi-tiet.html?pj=palmy` (đất nền — dự án duy nhất
+thuộc loại đó trong kho) để thấy cơ chế bù: khối đổi tiêu đề thành *Dự án khác* và mỗi dòng bù
+ghi rõ *cùng khu vực* hay *loại khác*. Ở khổ điện thoại nav mục ẩn đi, danh sách này xuống cuối trang.
+
 ## Bản đồ tệp
 
 | Tệp | Màn hình |
@@ -194,6 +200,7 @@ sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiế
 | `_check-actions.html` | **Bấm thử từng phần tử** trên mọi màn, so nội dung trước/sau. Đạt khi DOM đổi, hoặc mở hộp thoại, hoặc phần tử mang `data-gd2`. Toast không tính — nó nằm ngoài vùng so sánh. Kiểm thêm: hành động khó hoàn tác có hỏi lại không, ô nhập có phản hồi không, còn liên kết cụt `href="#"` không, và biểu mẫu tải tài liệu có chặn lỗi rồi ghi thật vào kho không |
 | `_check-bundle.html` | Bản một tệp: dựng màn, tràn ngang, liên kết, ảnh và phông nhúng sẵn, phân quyền, mã riêng từng màn |
 | `_check-tim.html` | Tìm trong cây thư mục: con số trên chip phải bằng đúng số dòng người dùng với tới được, thư mục chứa tệp khớp phải hiện ra để bấm vào, ảnh cũng theo bộ lọc |
+| `_check-mh04.html` | Chi tiết dự án: khối dự án cùng loại (số dòng, cơ chế bù, tiêu đề, đường dẫn) trên ba loại hình; nav mục dính không bắt nhầm liên kết dự án; mười dấu (i) — bấm/Escape/bấm ra ngoài, không tràn ngang ở 390px; và thẻ mẹo Trang đầu không bị lớp `.itip` giẫm lên |
 
 Ba cạm bẫy khi tự viết bộ kiểm tra cho bộ này, đã trả giá rồi mới biết:
 - Đổi hai bộ lọc liên tiếp trong nhịp chờ 250ms cho ra DOM y hệt nhau → tưởng ô lọc chết. Phải trả ô về giá trị cũ sau mỗi lần thử.

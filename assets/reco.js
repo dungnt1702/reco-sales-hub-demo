@@ -133,6 +133,7 @@
     phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
     desktop: '<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
     back: '<path d="m15 18-6-6 6-6"/>',
+    info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6h.01"/>',
     ext: '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>'
   };
   function svg(name, cls) {
@@ -792,12 +793,25 @@
      mà giờ hầu hết danh sách đều vẽ từ kho dữ liệu. */
   function initBits() {
     if (window.RECO_DATA) window.RECO_DATA.bindPins(document);
+    /* Biểu tượng gợi ý nhét bằng mã, không viết tay vào từng chỗ — mười khu vực dùng chung một hình */
+    document.querySelectorAll('[data-tip]').forEach(function (b) {
+      if (!b.querySelector('svg')) b.insertAdjacentHTML('afterbegin', svg('info'));
+    });
   }
 
   function installDelegation() {
     document.addEventListener('click', function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
+
+      /* Gợi ý (i): trỏ chuột là đủ trên máy tính, nhưng điện thoại không có trỏ chuột —
+         bấm để bật/tắt. Bấm ra chỗ khác thì đóng, nên phải xử lý trước mọi nhánh dưới. */
+      var tip = t.closest('[data-tip]');
+      var tipWasOn = !!tip && tip.getAttribute('aria-expanded') === 'true';
+      document.querySelectorAll('[data-tip][aria-expanded="true"]').forEach(function (x) {
+        x.setAttribute('aria-expanded', 'false');
+      });
+      if (tip) { e.preventDefault(); tip.setAttribute('aria-expanded', String(!tipWasOn)); return; }
 
       var view = t.closest('[data-view]');
       if (view) {
@@ -1100,11 +1114,14 @@
   });
 
   function boot() {
-    // Phím Escape đóng drawer và modal — gắn một lần cho cả phiên
+    // Phím Escape đóng drawer, modal và gợi ý (i) — gắn một lần cho cả phiên
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       closeDrawer();
       document.querySelectorAll('.modal:not([hidden])').forEach(function (m) { closeModal(m); });
+      document.querySelectorAll('[data-tip][aria-expanded="true"]').forEach(function (x) {
+        x.setAttribute('aria-expanded', 'false');
+      });
     });
 
     installDelegation();

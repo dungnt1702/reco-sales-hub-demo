@@ -87,6 +87,11 @@
 
     <div class="detail-grid mt-4">
 
+      <!-- Cột trái: nav chín khu vực + dự án cùng loại.
+           Danh sách dự án phải nằm NGOÀI <nav class="secnav"> — initSecnav quét mọi
+           a[href^="#"] trong đó, mà bản gói đổi href dự án thành #du-an-chi-tiet?pj=… -->
+      <div class="detail-side">
+
       <!-- Nav chín khu vực -->
       <nav class="secnav" aria-label="Khu vực nội dung">
         <p class="micro muted mb-1" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">Khu vực nội dung</p>
@@ -108,11 +113,22 @@
         </div>
       </nav>
 
-      <div>
+      <!-- Dự án cùng loại — chuyển nhanh khi tư vấn so sánh, khỏi quay về danh sách lọc lại -->
+      <aside class="pj-near" aria-labelledby="pj-near-h">
+        <p class="micro muted mb-1" id="pj-near-h" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">Dự án cùng loại</p>
+        <div id="pj-near-list"></div>
+      </aside>
+
+      </div>
+
+      <div class="detail-main">
 
         <!-- 1. Tổng quan -->
         <section class="sec" id="kv1">
           <div class="sec-head"><span class="n">KHU VỰC 01</span><h2>Tổng quan</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv1" aria-label="Mục đích của khu vực Tổng quan">
+              <span class="itip-bub" id="tip-kv1" role="tooltip">Bảng nhận diện dự án: chủ đầu tư, quy mô, tình trạng bán, thời điểm bàn giao và liên kết tới website dự án. Nội dung mang nhãn Công khai nên được phép đưa vào trang gửi khách.</span>
+            </button>
             <span class="lb lb-public">Công khai</span>
             <span class="sec-act row-tight">
               <button class="btn btn-outline btn-sm" data-roles="tkkd gddu" data-open="m-capnhat">Cập nhật</button>
@@ -133,7 +149,11 @@
 
         <!-- 2. Vị trí -->
         <section class="sec" id="kv2">
-          <div class="sec-head"><span class="n">KHU VỰC 02</span><h2>Vị trí và liên kết vùng</h2><span class="lb lb-public">Công khai</span>
+          <div class="sec-head"><span class="n">KHU VỰC 02</span><h2>Vị trí và liên kết vùng</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv2" aria-label="Mục đích của khu vực Vị trí và liên kết vùng">
+              <span class="itip-bub" id="tip-kv2" role="tooltip">Vị trí dự án và các điểm kết nối quanh khu vực, để nhân viên trả lời ngay câu hỏi “chỗ đó ở đâu, gần những gì”.</span>
+            </button>
+            <span class="lb lb-public">Công khai</span>
             <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="place" data-roles="tkkd gddu">+ Thêm điểm liên kết</button></span>
           </div>
           <div class="card card-pad">
@@ -145,6 +165,9 @@
         <!-- 3. Điểm chính -->
         <section class="sec" id="kv3">
           <div class="sec-head"><span class="n">KHU VỰC 03</span><h2>Điểm chính của sản phẩm</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv3" aria-label="Mục đích của khu vực Điểm chính của sản phẩm">
+              <span class="itip-bub" id="tip-kv3" role="tooltip">Các điểm bán hàng chính dùng khi tư vấn. Mỗi điểm mang nhãn quyền riêng — chỉ điểm Công khai mới được đưa vào trang gửi khách.</span>
+            </button>
             <span class="sec-act row-tight">
               <span class="open-q" title="DX-018 — cách biểu diễn điểm bán hàng còn chờ RECO chốt">Cần RECO xác nhận</span>
               <button class="btn btn-outline btn-sm" data-sec-new="point" data-roles="tkkd gddu">+ Thêm điểm bán</button>
@@ -158,7 +181,11 @@
 
         <!-- 4. Mặt bằng -->
         <section class="sec" id="kv4">
-          <div class="sec-head"><span class="n">KHU VỰC 04</span><h2>Mặt bằng</h2><span class="lb lb-public">Công khai</span>
+          <div class="sec-head"><span class="n">KHU VỰC 04</span><h2>Mặt bằng</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv4" aria-label="Mục đích của khu vực Mặt bằng">
+              <span class="itip-bub" id="tip-kv4" role="tooltip">Mặt bằng tổng thể, mặt bằng tầng và mặt bằng căn để mở ngay khi khách hỏi bố trí. Tải xuống luôn là bản PDF có dấu nhận diện người tải.</span>
+            </button>
+            <span class="lb lb-public">Công khai</span>
             <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="plan" data-roles="tkkd gddu mkt">+ Thêm mặt bằng</button></span>
           </div>
           <div class="gal" id="kv4-gal"></div>
@@ -167,7 +194,11 @@
 
         <!-- 5. Bảng hàng -->
         <section class="sec" id="kv5">
-          <div class="sec-head"><span class="n">KHU VỰC 05</span><h2>Bảng hàng và phiếu tính giá</h2><span class="lb lb-internal">Nội bộ</span></div>
+          <div class="sec-head"><span class="n">KHU VỰC 05</span><h2>Bảng hàng và phiếu tính giá</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv5" aria-label="Mục đích của khu vực Bảng hàng và phiếu tính giá">
+              <span class="itip-bub" id="tip-kv5" role="tooltip">Tra tình trạng từng căn hoặc lô và tính giá theo phương thức thanh toán khách chọn. Đây là khu vực Nội bộ; bảng hàng có thể là liên kết sống tới Google Drive của Chủ đầu tư và không bao giờ được nhúng vào trang gửi khách.</span>
+            </button>
+            <span class="lb lb-internal">Nội bộ</span></div>
 
           <div class="note mb-3">
             <strong>Nguồn ngoài.</strong> Bảng hàng của dự án này là <em>liên kết sống</em> tới Google Drive do Chủ đầu tư sở hữu.
@@ -278,6 +309,9 @@
         <!-- 6. Ảnh, video, tài liệu -->
         <section class="sec" id="kv6">
           <div class="sec-head"><span class="n">KHU VỰC 06</span><h2>Ảnh, video và tài liệu</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv6" aria-label="Mục đích của khu vực Ảnh, video và tài liệu">
+              <span class="itip-bub" id="tip-kv6" role="tooltip">Kho ảnh, video và tài liệu bán hàng của dự án, gom từ ba nhánh Thư viện ảnh và video, Tài liệu bán hàng, Pháp lý và Chính sách. Mỗi tệp hiển thị rõ nguồn và hạn hiệu lực.</span>
+            </button>
             <span class="sec-act"><a class="btn btn-outline btn-sm" href="thu-vien-tai-lieu.html">Mở thư viện đầy đủ</a></span>
           </div>
           <div class="gal mb-3">
@@ -310,7 +344,11 @@
 
         <!-- 7. Hỏi đáp -->
         <section class="sec" id="kv7">
-          <div class="sec-head"><span class="n">KHU VỰC 07</span><h2>Hỏi đáp và nội dung tư vấn ngắn</h2><span class="lb lb-public">Công khai</span></div>
+          <div class="sec-head"><span class="n">KHU VỰC 07</span><h2>Hỏi đáp và nội dung tư vấn ngắn</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv7" aria-label="Mục đích của khu vực Hỏi đáp và nội dung tư vấn ngắn">
+              <span class="itip-bub" id="tip-kv7" role="tooltip">Câu trả lời chuẩn đã được duyệt cho những câu khách hay hỏi. Mỗi câu có bản đầy đủ cho nhân viên và bản rút gọn được phép gửi khách.</span>
+            </button>
+            <span class="lb lb-public">Công khai</span></div>
           <p class="small muted mb-2">Nội dung chuẩn do Giám đốc dự án duyệt. Giai đoạn 1 không tự sinh nội dung.</p>
           <!-- Hàng trên: tìm kiếm và công tắc bản trả lời. Công tắc là ĐỔI CHẾ ĐỘ XEM,
                không phải bộ lọc, nên đứng tách khỏi hàng chip chủ đề bên dưới. -->
@@ -341,7 +379,11 @@
 
         <!-- 8. Nội dung bán hàng được duyệt -->
         <section class="sec" id="kv8">
-          <div class="sec-head"><span class="n">KHU VỰC 08</span><h2>Nội dung bán hàng được duyệt</h2><span class="lb lb-public">Công khai</span>
+          <div class="sec-head"><span class="n">KHU VỰC 08</span><h2>Nội dung bán hàng được duyệt</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv8" aria-label="Mục đích của khu vực Nội dung bán hàng được duyệt">
+              <span class="itip-bub" id="tip-kv8" role="tooltip">Bài đăng và nội dung quảng bá đã qua duyệt để nhân viên dùng lại nguyên văn, không tự viết mới.</span>
+            </button>
+            <span class="lb lb-public">Công khai</span>
             <span class="sec-act row-tight">
               <button class="btn btn-outline btn-sm" data-sec-new="content" data-roles="mkt gddu">+ Thêm nội dung</button>
               <a class="btn btn-primary btn-sm" href="soan-noi-dung.html">Chuẩn bị nội dung</a>
@@ -356,6 +398,9 @@
           <!-- Bản đầy đủ: mọi vai trò trừ nhân viên bán hàng -->
           <div data-roles="gd gddu tkkd qlkd hcns ktoan mkt">
             <div class="sec-head"><span class="n">KHU VỰC 09</span><h2>Nội bộ dành cho Marketing và Kinh doanh</h2>
+              <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv9" aria-label="Mục đích của khu vực Nội bộ dành cho Marketing và Kinh doanh">
+                <span class="itip-bub" id="tip-kv9" role="tooltip">Kịch bản kinh doanh và ghi chú nội bộ, chỉ hiện với vai trò được phép xem. Khu vực này không bao giờ có phần Công khai và không chia sẻ ra ngoài.</span>
+              </button>
               <span class="lb lb-restricted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Khu vực hạn chế</span>
             </div>
             <div class="note note-navy mb-3">
@@ -393,7 +438,11 @@
 
           <!-- Bản rút gọn cho nhân viên bán hàng -->
           <div data-roles="nvbh">
-            <div class="sec-head"><span class="n">KHU VỰC 09</span><h2>Kịch bản của tôi</h2><span class="chip">Chỉ mình tôi xem</span></div>
+            <div class="sec-head"><span class="n">KHU VỰC 09</span><h2>Kịch bản của tôi</h2>
+              <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv9b" aria-label="Mục đích của khu vực Kịch bản của tôi">
+                <span class="itip-bub" id="tip-kv9b" role="tooltip">Kịch bản do chính anh/chị tạo, chỉ mình anh/chị xem. Có thể đề nghị nâng thành kịch bản dùng chung cho cả đội.</span>
+              </button>
+              <span class="chip">Chỉ mình tôi xem</span></div>
             <div class="note note-navy mb-3">
               Khu vực <strong>Nội bộ dành cho Marketing và Kinh doanh</strong> không hiển thị với vai trò Nhân viên bán hàng.
               Anh/chị chỉ thấy kịch bản cá nhân do chính mình tạo.
@@ -703,6 +752,38 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('[data-page-link]').forEach(function (a) {
     a.setAttribute('href', RECO.link(a.getAttribute('data-page-link')));
   });
+
+  /* ================= Dự án cùng loại (cột trái) =================
+     Nhân viên hay so vài dự án cùng loại hình cho một khách. Trước đây phải quay về
+     danh sách rồi lọc lại; giờ nhảy thẳng từ đây. */
+  function near() {
+    var p = project();
+    var all = RECO_DATA.projects().filter(function (x) { return x.id !== PJ; });
+    var same = all.filter(function (x) { return x.type === p.type; });
+    var list = same.slice(0, 5);
+    /* Đất nền chỉ có đúng một dự án trong kho, nên chỉ lọc theo loại hình là khối rỗng.
+       Bù cho đủ ba dòng: cùng khu vực trước, rồi mới tới dự án khác — và ghi rõ lý do bù
+       ngay trên từng dòng để không ai hiểu nhầm là cùng loại hình. */
+    if (list.length < 3) {
+      var rest = all.filter(function (x) { return x.type !== p.type; });
+      var bu = rest.filter(function (x) { return x.area === p.area; })
+        .concat(rest.filter(function (x) { return x.area !== p.area; }));
+      list = list.concat(bu.slice(0, 3 - list.length));
+    }
+
+    id('pj-near-h').textContent = same.length ? 'Dự án cùng loại' : 'Dự án khác';
+    id('pj-near-list').innerHTML = list.map(function (x) {
+      var vi = x.type === p.type ? '' : (x.area === p.area ? ' · cùng khu vực' : ' · loại khác');
+      return '<a class="mini" href="' + RECO.link('du-an-chi-tiet.html?pj=' + x.id) + '">' +
+        '<img src="' + RECO.asset(x.img) + '" alt="" loading="lazy">' +
+        '<span><span class="mname">' + esc(x.name) + '</span>' +
+        '<span class="mmeta">' + esc(x.area) + ' · ' + esc(x.statusText) + vi + '</span></span></a>';
+    }).join('') +
+    /* Không có dự án cùng loại thì đừng dẫn về danh sách lọc chỉ còn đúng dự án đang xem */
+    (same.length
+      ? '<a class="pj-near-all" href="' + RECO.link('du-an.html?type=' + p.type) + '">Xem tất cả ' + esc(p.typeName.toLowerCase()) + '</a>'
+      : '<a class="pj-near-all" href="' + RECO.link('du-an.html') + '">Xem tất cả dự án</a>');
+  }
 
   /* ================= Khu vực 01 · Tổng quan ================= */
   function kv1() {
@@ -1737,6 +1818,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ================= Dựng lần đầu + theo dõi kho ================= */
   kv1();
+  near();
   paintSections();
   watch('sections', paintSections);
   fillUnitFilters(); paintUnits();
@@ -1744,7 +1826,7 @@ document.addEventListener('DOMContentLoaded', function () {
   paintQASeg(); paintQA(); paintDuyetQA();
   paintKB();
 
-  watch('projects', kv1);
+  watch('projects', function () { kv1(); near(); });
   watch('units', function () { fillUnitFilters(); paintUnits(); fillUnitPicker(); calc(); });
   watch('approvals', paintPhieu);
   watch('qas', function () { paintQASeg(); paintQA(); paintDuyetQA(); });

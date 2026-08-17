@@ -14,7 +14,8 @@ $suites = @(
   @{ key = 'actions'; file = '_check-actions.html'; label = 'Moi nut co tac dung that';     budget = 90000 },
   @{ key = 'bundle';  file = '_check-bundle.html';  label = 'Ban goi mot trang';            budget = 60000 },
   @{ key = 'tim';     file = '_check-tim.html';     label = 'Tim trong cay thu muc';        budget = 30000 },
-  @{ key = 'nhip';    file = '_check-nhip.html';    label = 'Nhip gian cach giua cac khoi';  budget = 40000 }
+  @{ key = 'nhip';    file = '_check-nhip.html';    label = 'Nhip gian cach giua cac khoi';  budget = 40000 },
+  @{ key = 'mh04';    file = '_check-mh04.html';    label = 'MH-04 du an cung loai + goi y'; budget = 40000 }
 )
 
 $bad = 0
