@@ -1,10 +1,10 @@
-/* Gộp 14 màn của prototype thành MỘT tệp HTML tự chứa, dùng để đăng lên Claude Artifact.
+/* Gộp 19 màn của prototype thành MỘT tệp HTML tự chứa, dùng để đăng lên Claude Artifact.
  *
  *   node build-artifact.mjs
  *   → dist/reco-sales-hub.html
  *
  * Artifact chặn mọi yêu cầu ra máy chủ ngoài, nên phông chữ và ảnh phải nhúng thẳng
- * dưới dạng data URI, và cả 14 màn phải nằm trong một tài liệu duy nhất.
+ * dưới dạng data URI, và cả 19 màn phải nằm trong một tài liệu duy nhất.
  */
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -22,7 +22,8 @@ const PAGES = [
   'index', 'dang-nhap', 'trang-dau', 'du-an', 'du-an-chi-tiet',
   'thu-vien-tai-lieu', 'cay-thu-muc', 'soan-noi-dung', 'chia-se',
   'trang-gui-khach', 'link-het-han', 'quan-tri', 'nguoi-dung', 'de-nghi-sua',
-  'xem-truoc-gd2'
+  'xem-truoc-gd2',
+  'tinh-nang-gd1', 'chi-tiet-gd1', 'tinh-nang-gd2', 'chi-tiet-gd2'
 ];
 
 const kb = (n) => (n / 1024).toFixed(0) + ' KB';

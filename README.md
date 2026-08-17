@@ -2,9 +2,11 @@
 
 **Xem trực tiếp: https://dungnt1702.github.io/reco-sales-hub-demo/**
 
-Bộ HTML tĩnh dựng 14 màn hình chính trong tài liệu *Yêu cầu các màn hình*, cộng một màn xem trước Giai đoạn 2,
-(`docs/05-user-experience/screen-requirements.md` của repo nội bộ `reco-sales-hub`),
-dùng để RECO xem và xác nhận thiết kế Giai đoạn 1 trước khi viết dòng mã đầu tiên.
+Bộ HTML tĩnh dựng 14 màn hình chính trong tài liệu *Yêu cầu các màn hình*
+(`docs/05-user-experience/screen-requirements.md` của repo nội bộ `reco-sales-hub`), cộng một màn xem trước
+Giai đoạn 2 và bốn màn danh mục tính năng kèm báo giá của cả hai giai đoạn —
+dùng để RECO xem và xác nhận thiết kế Giai đoạn 1 trước khi viết dòng mã đầu tiên, và để trình bày
+phạm vi cùng giá ngay trong buổi demo mà không phải mở Excel hay PDF ra riêng.
 
 Không cần cài đặt, không cần build. Mở `index.html` bằng trình duyệt là chạy — kể cả khi không có mạng.
 Đẩy lên nhánh `main` là GitHub Pages tự dựng lại bản công khai ở đường dẫn trên.
@@ -54,6 +56,24 @@ ghi rõ *cùng khu vực* hay *loại khác*. Ở khổ điện thoại nav mụ
 | `nguoi-dung.html` | MH-10 Quản lý người dùng và quyền |
 | `de-nghi-sua.html` | MH-13 Đề nghị sửa nội dung |
 | `xem-truoc-gd2.html` | Xem trước Giai đoạn 2 — báo cáo giao dịch và hoa hồng, **số liệu giả**, ngoài gói đã báo giá |
+| `tinh-nang-gd1.html` | Cây tính năng Giai đoạn 1 — 18 hạng mục theo sáu nhánh + nhánh Phần A |
+| `chi-tiet-gd1.html` | Mô tả chi tiết 18 hạng mục, Phần A, chuỗi tính giá và mục Chưa bao gồm |
+| `tinh-nang-gd2.html` | Cây tính năng Giai đoạn 2 — sáu phân hệ và bốn cách RECO chọn |
+| `chi-tiet-gd2.html` | Mô tả chi tiết sáu phân hệ Giai đoạn 2 kèm phụ thuộc, rủi ro và tạm tính |
+
+Bốn màn tính năng/báo giá vào được từ mục **Tính năng & báo giá** trên thanh trên cùng (vai trò Khách hàng
+không thấy mục này). Hai màn cây dùng chung `.tree`/`.tnode` của cây thư mục; hai màn chi tiết dùng chung
+`.detail-grid`/`.secnav` của màn chi tiết dự án — node trên cây neo thẳng tới hạng mục tương ứng
+(`chi-tiet-gd1.html#hm-05`, `chi-tiet-gd2.html#gd2-01`).
+
+**Số liệu của bốn màn này là bản sao, không phải nguồn.** Nguồn sự thật là
+`reco-sales-hub/docs/08-delivery/feature-effort-pricing.md` (18 hạng mục, chuỗi giá, mục Chưa bao gồm) và
+`reco-sales-hub/docs/08-delivery/phase-2-catalog.md` (Phần A, Phần B, bốn phương án). Đổi giá thì **sửa ở docs
+trước**, chạy lại `tools/build-deliverables.ps1` bên repo đó, rồi mới sửa bốn màn này — bốn con số
+`218` · `191.810.000` · `248.585.760` · `198.800.000` phải giống nhau ở markdown, Excel, hai PDF và ở đây.
+Con số ở cây là **chi phí cốt lõi trước VAT**; tổng theo nhánh cộng lại đúng 191.810.000. Riêng Phần A và
+Giai đoạn 2 hiển thị giá **sau ưu đãi 20%**, và tổng từng phần cố tình không cộng khớp với tổng khối
+(làm tròn xuống 100.000 chỉ áp một lần cho khối được chốt) — chỗ nào cũng đã có ghi chú giải thích, đừng "sửa cho khớp".
 
 `assets/` chứa `reco.css` (design token kế thừa từ reco-main-web), `reco.js` (vỏ giao diện, đổi vai trò,
 hộp xác nhận, trạng thái đang xử lý, kiểm tra biểu mẫu, tìm kiếm toàn cục, chuông thông báo),
@@ -90,7 +110,7 @@ theo; gửi đề nghị sửa từ màn Chi tiết dự án thì nó xuất hi�
 thì bấm Xem sẽ ra màn Đường dẫn hết hiệu lực.
 
 Trạng thái lưu trong `sessionStorage`. Mở bằng `file://` thì trình duyệt chặn, kho tự lùi về bộ nhớ
-trong — bản gói một trang vẫn chạy đủ vì cả 14 màn nằm trong cùng một tài liệu.
+trong — bản gói một trang vẫn chạy đủ vì cả 19 màn nằm trong cùng một tài liệu.
 Nút **"Đặt lại dữ liệu demo"** trên thanh đen đưa mọi thứ về trạng thái ban đầu để diễn lại kịch bản.
 
 Sáu dự án phủ đúng ba nhóm bất động sản Giai đoạn 1: căn hộ chung cư, đất nền, nhà thấp tầng và biệt thự.
@@ -166,10 +186,10 @@ Ba điểm nghiệp vụ dễ code sai, đã được bản mô phỏng thể hi
 ## Bản một tệp để gửi link (Claude Artifact)
 
 ```powershell
-node build-artifact.mjs      # → dist/reco-sales-hub.html (~2,8 MB)
+node build-artifact.mjs      # → dist/reco-sales-hub.html (~3,1 MB)
 ```
 
-Gộp cả 14 màn, phông chữ và ảnh vào **một tệp HTML tự chứa**, không gọi ra máy chủ nào —
+Gộp cả 19 màn, phông chữ và ảnh vào **một tệp HTML tự chứa**, không gọi ra máy chủ nào —
 mở offline vẫn đủ. Điều hướng chuyển từ `du-an.html?role=nvbh` sang `#du-an?role=nvbh`,
 mọi thứ khác giữ nguyên: đổi vai trò, khung điện thoại, ẩn thanh demo đều chạy.
 
@@ -195,7 +215,7 @@ sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiế
 
 | Bộ | Kiểm gì |
 | --- | --- |
-| `_check.html` | Tràn ngang ở 360/390/768/1440 và liên kết hỏng trên cả 14 trang |
+| `_check.html` | Tràn ngang ở 360/390/768/1440 và liên kết hỏng trên cả 19 trang |
 | `_check-roles.html` | 82 trường hợp ẩn/hiện theo vai trò |
 | `_check-actions.html` | **Bấm thử từng phần tử** trên mọi màn, so nội dung trước/sau. Đạt khi DOM đổi, hoặc mở hộp thoại, hoặc phần tử mang `data-gd2`. Toast không tính — nó nằm ngoài vùng so sánh. Kiểm thêm: hành động khó hoàn tác có hỏi lại không, ô nhập có phản hồi không, còn liên kết cụt `href="#"` không, và biểu mẫu tải tài liệu có chặn lỗi rồi ghi thật vào kho không |
 | `_check-bundle.html` | Bản một tệp: dựng màn, tràn ngang, liên kết, ảnh và phông nhúng sẵn, phân quyền, mã riêng từng màn |

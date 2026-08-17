@@ -149,7 +149,10 @@
        Danh sách phẳng là chế độ xem thứ hai, đổi bằng cặp nút ở đầu màn. */
     { href: 'cay-thu-muc.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
     { href: 'chia-se.html', label: 'Chia sẻ', key: 'chia-se', icon: 'share' },
-    { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns' }
+    { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns' },
+    /* Danh mục tính năng và báo giá — nội dung thương mại nội bộ, vai trò Khách hàng không thấy.
+       Đặt cuối NAV nên không lọt vào dock (dock chỉ lấy 4 mục đầu). */
+    { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
   ];
   var MORE = [
     { href: 'thu-vien-tai-lieu.html', label: 'Danh sách tài liệu · tìm theo bộ lọc' },
