@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="utf-8"><title>Kiểm tra nhịp giãn cách</title>
+<style>body{font:14px/1.6 monospace;margin:16px;background:#111;color:#ddd}iframe{position:absolute;left:-99999px;width:1280px;height:1400px;border:0}</style></head>
+<body>
+<h1>Nhịp giãn cách giữa các khối</h1>
+<pre id="out">Đang chạy…</pre>
+<div id="frames"></div>
+<script>
+/* Đo khoảng hở dọc giữa các khối kề nhau trong cột nội dung chính của từng màn.
+   Bảng nhịp của reco.css là 8 / 16 / 24 / 34 và khe lưới 16. Một khoảng hở không
+   nằm trong bảng đó nghĩa là ở đâu đó có lề viết tay — đúng thứ làm trang trông
+   lệch nhịp dù từng khối đều đẹp.
+
+   Đo bằng hình học thật (getBoundingClientRect) chứ không đọc CSS: lề chồng nhau,
+   lề âm và khoảng cách do lưới sinh ra chỉ lộ ra sau khi trình duyệt dựng xong. */
+var PAGES = ['index','dang-nhap','trang-dau','du-an','du-an-chi-tiet','thu-vien-tai-lieu','cay-thu-muc',
+             'soan-noi-dung','chia-se','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua','xem-truoc-gd2'];
+
+/* Nhịp hợp lệ. 26 là khoảng cách giữa hai khu vực nội dung (.sec + .sec) của màn
+   chi tiết dự án; 12 và 14 là nhịp bên trong các khối đặc thù của trang công khai. */
+/* 48 là khoảng lùi trước dải chân trang của hai màn công khai (.pub-foot), cố ý rộng
+   gấp đôi nhịp 24 để tách hẳn phần nội dung khỏi phần ký tên. */
+var HOP_LE = [0, 8, 12, 14, 16, 18, 24, 26, 34, 48];
+var DUNG_SAI = 1.5;   // sai số làm tròn của trình duyệt
+
+var out = document.getElementById('out'), frames = document.getElementById('frames');
+var dong = [], hong = 0;
+function say(ok, msg) { dong.push((ok ? 'DAT  ' : 'HONG ') + msg); if (!ok) hong++; }
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+function nap(page) {
+  return new Promise(function (resolve) {
+    var f = document.createElement('iframe');
+    f.src = page + '.html?bare=1';
+    f.onload = function () { resolve(f); };
+    frames.appendChild(f);
+  });
+}
+
+function hopLe(v) {
+  return HOP_LE.some(function (h) { return Math.abs(v - h) <= DUNG_SAI; });
+}
+
+/* Các khối kề nhau trong cùng một hàng của lưới không tạo khoảng hở dọc —
+   chỉ so hai khối khi khối sau thật sự nằm dưới khối trước. */
+function doMotCot(box) {
+  var con = Array.prototype.filter.call(box.children, function (el) {
+    if (el.hidden) return false;
+    var r = el.getBoundingClientRect();
+    return r.height > 0 && r.width > 0;
+  });
+  var ke = [];
+  for (var i = 1; i < con.length; i++) {
+    var tren = con[i - 1].getBoundingClientRect();
+    var duoi = con[i].getBoundingClientRect();
+    if (duoi.top < tren.bottom - 1) continue;      // nằm cùng hàng, không phải chồng dọc
+    ke.push({ ho: duoi.top - tren.bottom, sau: con[i] });
+  }
+  return ke;
+}
+
+function ten(el) {
+  var t = (el.tagName || '').toLowerCase();
+  var c = (el.className || '').toString().split(' ').slice(0, 2).join('.');
+  var chu = (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 34);
+  return t + (c ? '.' + c : '') + (chu ? ' “' + chu + '”' : '');
+}
+
+(async function () {
+  for (var i = 0; i < PAGES.length; i++) {
+    var page = PAGES[i];
+    var f = await nap(page);
+    await wait(320);
+    var d = f.contentDocument;
+    var box = d.querySelector('#page .wrap') || d.querySelector('#page') || d.body;
+    var ke = doMotCot(box);
+    var xau = ke.filter(function (k) { return !hopLe(k.ho); });
+    say(xau.length === 0, page + ' — ' + ke.length + ' khoảng hở dọc' +
+        (xau.length ? ' → lệch nhịp: ' + xau.map(function (k) {
+          return Math.round(k.ho) + 'px trước ' + ten(k.sau);
+        }).join(' | ') : ''));
+
+    /* Lưới bên trong màn: mọi lưới phải dùng chung một khe, không tự đặt gap riêng */
+    var khe = {};
+    Array.prototype.forEach.call(d.querySelectorAll('#page .grid'), function (g) {
+      var v = f.contentWindow.getComputedStyle(g).gap;
+      khe[v] = (khe[v] || 0) + 1;
+    });
+    var cacKhe = Object.keys(khe);
+    say(cacKhe.length <= 1, page + ' — lưới dùng chung một khe (' + (cacKhe.join(', ') || 'không có lưới') + ')');
+
+    f.remove();
+    out.textContent = dong.join('\n');
+  }
+  dong.push('');
+  dong.push(hong === 0 ? '=== NHIP DEU TREN CA ' + PAGES.length + ' MAN ===' : '=== ' + hong + ' CHO LECH NHIP ===');
+  out.textContent = dong.join('\n');
+})();
+</script>
+</body>
+</html>
