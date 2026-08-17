@@ -325,9 +325,19 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('pj-owner').textContent = p.owner;
   }
 
-  /* ---------- Chuyên viên phụ trách theo vai trò đang xem ---------- */
-  var me = S.get('users').filter(function (u) { return u.role === RECO.role && u.state === 'on'; })[0] || {
-    name: RECO.current.who, roleName: RECO.current.name, phone: '0934 524 445', ini: RECO.current.short
+  /* ---------- Chuyên viên phụ trách ----------
+     Trang thật đọc **bản chụp hồ sơ nhân viên đã lưu trên chính đường dẫn**
+     (`share_links.agent_name/agent_phone/agent_avatar_key` — ADR-0006), không truy
+     vấn bảng người dùng: vùng công khai không được có đường nối nào sang kho nội bộ.
+     Ở đây dựng đúng hình dạng đó — đọc từ bản chụp trên đường dẫn — còn việc bản chụp
+     đổi theo vai trò đang xem chỉ là tiện ích của thanh demo. */
+  var link = S.get('shareLinks').filter(function (l) { return l.pj === PJ && l.state === 'live'; })[0] || {};
+  var snap = link.agent || {};
+  var me = {
+    name: snap.name || RECO.current.who,
+    roleName: snap.roleName || RECO.current.name,
+    phone: snap.phone || '0934 524 445',
+    ini: snap.ini || RECO.current.short
   };
   var digits = String(me.phone).replace(/\D/g, '');
   document.getElementById('agent-name').textContent = me.name;

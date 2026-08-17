@@ -117,11 +117,18 @@ function overflow(f, w) {
   say(!d2.querySelector('#kv9 [data-roles*="mkt"]').hidden, '[gddu] khu vuc 9 day du hien lai');
   say(d2.querySelector('.fab').hidden, '[gddu] nut Gui de nghi sua bi an');
 
-  // 6. Mã riêng của màn có chạy (danh sách dự án được sinh động)
+  // 6. Mã riêng của màn có chạy (danh sách dự án được sinh động).
+  //    Số kỳ vọng lấy từ chính kho dữ liệu, không viết cứng: thêm một dự án mẫu là
+  //    hai dòng này hỏng, và người thêm dự án không có lý do gì nghĩ tới bộ kiểm tra bản gói.
   await goto(f2, '#du-an');
-  say(f2.contentDocument.querySelectorAll('#cards .pcard').length === 6, 'ma rieng cua man du-an chay (6 the du an)');
+  var w2 = f2.contentWindow;
+  var soDuAn = w2.RECO.store.get('projects').filter(function (p) { return !p.hidden; }).length;
+  var soNoiBat = w2.RECO.store.get('projects').filter(function (p) { return p.featured && !p.hidden; }).length;
+  say(f2.contentDocument.querySelectorAll('#cards .pcard').length === soDuAn,
+      'ma rieng cua man du-an chay (' + soDuAn + ' the du an)');
   await goto(f2, '#trang-dau');
-  say(f2.contentDocument.querySelectorAll('#featured .pcard').length === 3, 'ma rieng cua man trang-dau chay (3 du an noi bat)');
+  say(f2.contentDocument.querySelectorAll('#featured .pcard').length === soNoiBat,
+      'ma rieng cua man trang-dau chay (' + soNoiBat + ' du an noi bat)');
   await goto(f2, '#soan-noi-dung');
   say((f2.contentDocument.getElementById('pv-text').textContent || '').length > 100, 'xem truoc noi dung duoc dung');
 

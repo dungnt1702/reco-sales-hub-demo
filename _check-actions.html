@@ -101,6 +101,10 @@ async function checkPage(page) {
     var wasActive = alreadyActive(b, txt);
     var before = snap(d);
     var openBefore = d.querySelectorAll('.modal:not([hidden])').length;
+    // Dọn toast cũ trước khi bấm: toast tự tắt sau vài giây, nên nếu chỉ ĐẾM thì một
+    // toast cũ vừa tắt đúng lúc toast mới hiện ra sẽ cho cùng con số, và nút sao chép
+    // bị chấm nhầm là không có tác dụng. Toast không phải đích bấm nên gỡ được an toàn.
+    d.querySelectorAll('.toast').forEach(function (t) { t.remove(); });
     var toastBefore = d.querySelectorAll('.toast').length;
     try { b.click(); } catch (e) { /* bỏ qua */ }
     // Sao chép và chia sẻ đi qua Promise của trình duyệt, toast tới sau — chờ đủ lâu

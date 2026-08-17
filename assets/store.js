@@ -590,8 +590,15 @@
 
       /* Đường dẫn gửi khách */
       shareLinks: [
+        /* `agent` là BẢN CHỤP hồ sơ nhân viên lúc tạo đường dẫn (ADR-0006). Trang khách
+           đọc từ đây, không truy vấn kho người dùng — nhân viên đổi số điện thoại hay
+           nghỉ việc thì đường dẫn đã gửi vẫn hiển thị đúng thông tin lúc gửi. */
+        { id: 'lp-link', slug: '/t/le-parc-place-a2103', pj: 'leparc', kind: 'gia', note: 'Có bảng hàng và phiếu tính giá',
+          by: 'Lê Thu Hà', at: '17/08/2026 · 09:10', days: 7, state: 'live',
+          agent: { name: 'Lê Thu Hà', roleName: 'Nhân viên bán hàng', phone: '0966 808 404', ini: 'TH' } },
         { id: 'l1', slug: '/t/celestine-a1205', pj: 'celestine', kind: 'gia', note: 'Có bảng hàng và phiếu tính giá',
-          by: 'Lê Thu Hà', at: '14/08/2026 · 08:20', days: 6, state: 'live' },
+          by: 'Lê Thu Hà', at: '14/08/2026 · 08:20', days: 6, state: 'live',
+          agent: { name: 'Lê Thu Hà', roleName: 'Nhân viên bán hàng', phone: '0966 808 404', ini: 'TH' } },
         { id: 'l2', slug: '/t/celestine-gioi-thieu', pj: 'celestine', kind: 'chung', note: 'Trang giới thiệu chung',
           by: 'Lê Thu Hà', at: '09/08/2026 · 14:05', days: null, state: 'live' },
         { id: 'l3', slug: '/t/la-perle-ruby-12', pj: 'la-perle', kind: 'gia', note: 'Có chính sách nhạy cảm',
