@@ -25,12 +25,17 @@ function load(url, w, h) {
 }
 
 /* Kho dữ liệu dùng chung sessionStorage — mỗi lần đổi dự án phải nạp lại khung */
+/* Phân bố loại hình của danh mục thật (QD-070): 4 chung cư (Le Parc Place, Celestine Westlake,
+   La Perle Héritage, Gold Season) và đúng một dự án cho mỗi loại thấp tầng / đất nền / tâm linh.
+   Vì thế chỉ còn hai hình dạng để kiểm — "đủ ba dòng cùng loại" và "không có dòng nào cùng loại";
+   ca trộn (1 cùng loại + 2 bù) không còn tồn tại trong dữ liệu, đừng dựng dự án giả để có nó. */
 var CASES = [
   /* bù = số dòng không cùng loại hình; luôn bù cho đủ ba dòng */
   { pj: 'leparc',   type: 'canho',    same: 3, bu: 0, tieu: 'Dự án cùng loại', all: 'Xem tất cả chung cư', href: 'type=canho' },
   /* Không có dự án cùng loại thì link phải về danh sách đầy đủ, không phải bộ lọc chỉ còn chính nó */
-  { pj: 'palmy',    type: 'datnen',   same: 0, bu: 3, tieu: 'Dự án khác',      all: 'Xem tất cả dự án',   href: 'du-an' },
-  { pj: 'la-perle', type: 'thaptang', same: 1, bu: 2, tieu: 'Dự án cùng loại', all: 'Xem tất cả biệt thự, nhà liền kề, shophouse', href: 'type=thaptang' }
+  { pj: 'palmy',    type: 'thaptang', same: 0, bu: 3, tieu: 'Dự án khác',      all: 'Xem tất cả dự án',   href: 'du-an' },
+  /* Loại hình thứ sáu (QD-071) cũng chỉ có một dự án — kiểm luôn để bộ lọc tâm linh không rơi ra ngoài */
+  { pj: 'thien-duong', type: 'tamlinh', same: 0, bu: 3, tieu: 'Dự án khác',    all: 'Xem tất cả dự án',   href: 'du-an' }
 ];
 
 (async function () {

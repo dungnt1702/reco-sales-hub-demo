@@ -44,16 +44,18 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="search" id="f-q" placeholder="Tìm theo tên dự án" aria-label="Tìm theo tên dự án">
       </div>
+      <!-- Danh sách khu vực dựng từ chính danh mục dự án lúc chạy: viết cứng thì đổi danh mục dự án
+           là bộ lọc còn tỉnh không còn dự án nào và thiếu tỉnh mới. -->
       <select class="inp" id="f-area" aria-label="Khu vực">
         <option value="">Mọi khu vực</option>
-        <option>Hà Nội</option><option>Hưng Yên</option><option>Khánh Hòa</option>
       </select>
-      <!-- Năm loại hình và ba phân khúc lấy đúng danh mục RECO đang dùng trong báo cáo (QD-057) -->
+      <!-- Sáu loại hình và ba phân khúc lấy đúng danh mục RECO đang dùng trong báo cáo (QD-057, QD-071) -->
       <select class="inp" id="f-type" aria-label="Loại sản phẩm">
         <option value="">Mọi loại sản phẩm</option>
         <option value="canho">Chung cư</option>
         <option value="datnen">Đất nền</option>
         <option value="thaptang">Biệt thự, nhà liền kề, shophouse</option>
+        <option value="tamlinh">Bất động sản tâm linh</option>
         <option value="chothue">Cho thuê</option>
         <option value="thocu">Nhà đất thổ cư</option>
       </select>
@@ -127,6 +129,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* Khung điện thoại thay #page bằng iframe trỏ về chính màn này — bản ngoài không có nội dung để vẽ */
   if (!kq) return;
+
+  /* Khu vực có thật trong danh mục dự án, xếp theo bảng chữ cái */
+  P.map(function (p) { return p.area; })
+    .filter(function (a, i, all) { return a && all.indexOf(a) === i; })
+    .sort(function (a, b) { return a.localeCompare(b, 'vi'); })
+    .forEach(function (a) {
+      var o = document.createElement('option');
+      o.value = a; o.textContent = a;
+      fa.appendChild(o);
+    });
 
   /* Bộ lọc do Trang đầu truyền sang — đọc được ở cả bản nhiều trang (?q=) lẫn bản gói (#du-an?q=) */
   function param(name) {

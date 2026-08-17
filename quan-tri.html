@@ -69,9 +69,6 @@
           </div>
           <select class="inp" id="pj-type" aria-label="Loại dự án">
             <option value="">Mọi loại</option>
-            <option value="canho">Căn hộ chung cư</option>
-            <option value="thaptang">Nhà thấp tầng, biệt thự</option>
-            <option value="datnen">Đất nền</option>
           </select>
           <select class="inp" id="pj-status" aria-label="Trạng thái dự án">
             <option value="">Mọi trạng thái</option>
@@ -298,21 +295,19 @@
     </div>
     <div class="modal-body" id="pj-form">
       <label class="field"><span class="lab">Tên dự án</span>
-        <input class="inp" type="text" id="pj-f-name" placeholder="The Celestine Riverside"
+        <input class="inp" type="text" id="pj-f-name" placeholder="Celestine Westlake"
                data-required data-msg="Nhập tên dự án đúng như tên thương mại Chủ đầu tư công bố."></label>
       <label class="field"><span class="lab">Khu vực</span>
-        <input class="inp" type="text" id="pj-f-place" placeholder="Long Biên, Hà Nội"
+        <input class="inp" type="text" id="pj-f-place" placeholder="Tây Hồ, Hà Nội"
                data-required data-msg="Nhập khu vực theo mẫu quận/huyện, tỉnh hoặc thành phố.">
         <span class="hint">Phần sau dấu phẩy được dùng làm vùng lọc ở Danh sách dự án — ví dụ <em>Hà Nội</em>.</span></label>
       <label class="field"><span class="lab">Loại hình</span>
-        <select class="inp" id="pj-f-type">
-          <option value="canho">Căn hộ chung cư</option>
-          <option value="thaptang">Nhà thấp tầng, biệt thự</option>
-          <option value="datnen">Đất nền</option>
-        </select></label>
+        <!-- Danh mục loại hình dựng từ S.TYPES lúc chạy: viết cứng ở đây thì màn quản trị đặt
+             nhãn khác với dữ liệu gốc, và thêm loại hình mới là quên một chỗ. -->
+        <select class="inp" id="pj-f-type"></select></label>
       <label class="field"><span class="lab">Quy mô</span>
-        <input class="inp" type="text" id="pj-f-struct" placeholder="4 tòa · 27 tầng · 1.248 căn"
-               data-required data-msg="Ghi quy mô dự án, ví dụ 4 tòa · 27 tầng · 1.248 căn."></label>
+        <input class="inp" type="text" id="pj-f-struct" placeholder="2 tháp · 23 tầng · 216 căn"
+               data-required data-msg="Ghi quy mô dự án, ví dụ 2 tháp · 23 tầng · 216 căn."></label>
       <label class="field"><span class="lab">Trạng thái</span>
         <select class="inp" id="pj-f-status">
           <option value="live">Đang bán</option>
@@ -340,8 +335,8 @@
     </div>
     <div class="modal-body" id="unit-form">
       <label class="field"><span class="lab">Mã căn/lô</span>
-        <input class="inp" type="text" id="un-id" placeholder="A-12.05"
-               data-required data-msg="Nhập mã căn/lô đúng như Chủ đầu tư đặt, ví dụ A-12.05 hoặc B4-07.">
+        <input class="inp" type="text" id="un-id" placeholder="T1-12.05"
+               data-required data-msg="Nhập mã căn/lô đúng như Chủ đầu tư đặt, ví dụ T1-12.05 hoặc VH-LKA.09.">
         <span class="hint">Mã là khóa duy nhất của bảng hàng — phiếu tính giá và đường dẫn gửi khách trỏ theo mã này.</span></label>
       <label class="field"><span class="lab">Vị trí trong dự án</span>
         <select class="inp" id="un-zone"></select>
@@ -469,7 +464,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* Bản mô phỏng đặt "hôm nay" trùng ngày của bộ dữ liệu để mọi số ngày còn lại khớp nhau. */
   var TODAY = '2026-08-14';
-  var TYPE = { canho: 'Căn hộ chung cư', thaptang: 'Nhà thấp tầng, biệt thự', datnen: 'Đất nền' };
+  /* Danh mục loại hình dùng chung với kho dữ liệu (QD-057 + QD-071) — màn quản trị tự chép lại
+     thì nhãn ở đây lệch nhãn của chính dự án, và thêm loại hình mới là hụt một chỗ. */
+  var TYPE = S.TYPES;
+  ['pj-type', 'pj-f-type'].forEach(function (selId) {
+    var sel = document.getElementById(selId);
+    if (!sel) return;
+    Object.keys(TYPE).forEach(function (k) {
+      var o = document.createElement('option');
+      o.value = k; o.textContent = TYPE[k];
+      sel.appendChild(o);
+    });
+  });
   var STATUS = { live: 'Đang bán', soon: 'Sắp mở bán', closed: 'Ngừng bán' };
   var STATUS_CLS = { live: 'st-live', soon: 'st-wait', closed: 'st-off' };
 

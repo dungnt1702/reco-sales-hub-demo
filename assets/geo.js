@@ -9,8 +9,10 @@
  * far: true — điểm nằm ngoài khung bản đồ đã tải sẵn (sân bay, phố cổ...). Vẫn hiện trong
  * danh sách liên kết vùng, không ghim lên bản đồ.
  *
- * Chỉ Le Parc Place — ParkCity Hanoi là dự án thật. Sáu dự án còn lại là dữ liệu mô phỏng,
- * ghim vào một vị trí thực hợp lý trong đúng phường/huyện đã khai.
+ * Cả BẢY dự án nay là dự án thật của Nhà Ở Ngay RECO (QD-070): toạ độ tra theo đúng địa chỉ
+ * công bố trên trang dự án. Nominatim không có điểm cho vài địa chỉ số nhà (300 Võ Chí Công,
+ * 47 Nguyễn Tuân, KĐT Việt Hàn) nên lấy điểm gần nhất tra được trên chính con đường / khu đất
+ * đó — sai số vài trăm mét, đủ đúng để bản đồ vị trí không nói sai khu vực.
  */
 (function () {
   'use strict';
@@ -37,14 +39,18 @@
     /* Dự án — zoom là mức mở mặc định, levels là các mức đã tải sẵn ô ảnh */
     projects: {
       leparc:        { lat: 20.96190, lng: 105.75470, zoom: 15, levels: CLOSE, real: true },
-      /* Ven sông Hồng phía Ngọc Thụy — Bồ Đề, khớp mô tả "khu căn hộ ven sông tại Long Biên";
-         toạ độ cũ rơi đúng vào giữa Sân golf Long Biên nên nhìn là thấy vô lý. */
-      celestine:     { lat: 21.04400, lng: 105.87200, zoom: 15, levels: MID },
-      'la-perle':    { lat: 21.01700, lng: 105.71800, zoom: 15, levels: SPOT },
-      palmy:         { lat: 20.94900, lng: 105.93500, zoom: 15, levels: SPOT },
-      'thien-duong': { lat: 12.04500, lng: 109.20500, zoom: 15, levels: SPOT },
-      central:       { lat: 20.99552, lng: 105.80447, zoom: 15, levels: SPOT },
-      opening:       { lat: 20.96014, lng: 105.78849, zoom: 15, levels: SPOT }
+      /* 300 Võ Chí Công, Tây Hồ — điểm trên đúng đoạn Võ Chí Công cạnh Xuân La, cách Hồ Tây 1,1 km */
+      celestine:     { lat: 21.06464, lng: 105.80595, zoom: 15, levels: MID, real: true },
+      /* 16 Phước Long, Nha Trang */
+      'la-perle':    { lat: 12.21203, lng: 109.19620, zoom: 15, levels: SPOT, real: true },
+      /* Thanh Liệt, Thanh Trì — khu Vành đai 3.5 phía Nam Hà Nội */
+      palmy:         { lat: 20.97192, lng: 105.81989, zoom: 15, levels: SPOT, real: true },
+      /* Lang Quán, Yên Sơn, Tuyên Quang */
+      'thien-duong': { lat: 21.84765, lng: 105.11423, zoom: 15, levels: SPOT, real: true },
+      /* Hồng Tiến, Phổ Yên, Thái Nguyên — khu tái định cư Hồng Tiến cạnh tổ hợp Yên Bình */
+      central:       { lat: 21.45069, lng: 105.89798, zoom: 15, levels: SPOT, real: true },
+      /* 47 Nguyễn Tuân, Thanh Xuân — điểm giữa đường Nguyễn Tuân */
+      opening:       { lat: 20.99886, lng: 105.80291, zoom: 15, levels: SPOT, real: true }
     },
 
     /* Điểm liên kết vùng — id khớp sections kind:'place' trong store.js.
@@ -64,12 +70,12 @@
       lps24: { lat: 20.96020, lng: 105.76080, cat: 'home' },
       lps25: { lat: 21.00600, lng: 105.81300, cat: 'landmark', far: true },
 
-      /* The Celestine Riverside — Long Biên */
-      sc2: { lat: 21.02521, lng: 105.89521, cat: 'transit' },
-      sc3: { lat: 21.02883, lng: 105.85254, cat: 'landmark', far: true },
-      sc4: { lat: 20.98800, lng: 105.90000, cat: 'transit', far: true },
-      sc5: { lat: 21.04057, lng: 105.87692, cat: 'health' },
-      sc6: { lat: 20.99381, lng: 105.86653, cat: 'school', far: true },
+      /* Celestine Westlake — 300 Võ Chí Công, Tây Hồ */
+      sc2: { lat: 21.07320, lng: 105.80794, cat: 'home' },
+      sc3: { lat: 21.05804, lng: 105.81397, cat: 'landmark' },
+      sc4: { lat: 21.07602, lng: 105.81255, cat: 'mall' },
+      sc5: { lat: 21.09831, lng: 105.82321, cat: 'transit' },
+      sc6: { lat: 21.07594, lng: 105.81591, cat: 'leisure' },
       sc7: { lat: 21.21695, lng: 105.79375, cat: 'transit', far: true }
     },
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Celestine Riverside · RECO Sales Hub</title>
+<title>Le Parc Place — ParkCity Hanoi · RECO Sales Hub</title>
 <meta name="theme-color" content="#09263c">
 <link rel="icon" href="assets/img/reco-logo.png">
 <link rel="stylesheet" href="assets/vendor/leaflet.css">
@@ -94,7 +94,7 @@
           <span class="st st-live" style="background:rgba(43,133,105,.25);color:#a8e6cd">Đang bán</span>
         </div>
         <h1 id="pj-title">Le Parc Place — ParkCity Hanoi</h1>
-        <p class="lead mt-1" style="color:rgba(255,255,255,.85)">Long Biên, Hà Nội · Căn hộ chung cư · 4 tòa · 27 tầng · 1.248 căn</p>
+        <p class="lead mt-1" style="color:rgba(255,255,255,.85)">Dương Nội, Hà Đông, Hà Nội · Chung cư · 4 tòa · 29–35 tầng · 802 căn</p>
         <div class="row mt-3">
           <a class="btn btn-primary" href="soan-noi-dung.html">Chuẩn bị nội dung gửi khách</a>
           <a class="btn btn-ghost" href="thu-vien-tai-lieu.html">Thư viện tài liệu</a>
@@ -162,6 +162,10 @@
             <p id="kv1-body"></p>
             <div class="kv kv-3 mt-3" id="kv1-grid"></div>
             <div id="kv1-web" class="mt-3" hidden></div>
+            <!-- Nguồn số liệu và cảnh báo số minh họa — QD-073: người xem phải phân biệt được
+                 con số RECO đã công bố với con số chỉ để buổi demo chạy đủ. -->
+            <p id="kv1-src" class="micro muted mt-2" hidden></p>
+            <div id="kv1-verify" class="note mt-2 small" hidden></div>
             <!-- Mức độ đầy đủ lấy từ chính dữ liệu dự án (`ready`), không viết cứng 100% -->
             <div class="mt-3">
               <div class="spread mb-1"><span class="micro muted">Mức độ đầy đủ tài liệu</span><span class="micro" style="font-weight:700" id="kv1-ready-n"></span></div>
@@ -213,6 +217,7 @@
             <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="plan" data-roles="tkkd gddu gd mkt">+ Thêm mặt bằng</button></span>
           </div>
           <div class="gal" id="kv4-gal"></div>
+          <p class="micro muted mt-2" id="kv4-note" hidden>Bản mô phỏng chưa có tệp mặt bằng thật: ảnh trong khối này là <b>ảnh thay chỗ</b> lấy từ kho ảnh phối cảnh, không phải mặt bằng của đúng căn hay đúng tầng ghi ở nhãn.</p>
           <p class="micro muted mt-2">Tệp gốc nằm ở nhánh <a href="cay-thu-muc.html">Tài liệu bán hàng</a>. Tải xuống luôn là bản PDF có dấu nhận diện người tải.</p>
         </section>
 
@@ -481,13 +486,13 @@
       <label class="field"><span class="lab">Nội dung liên quan</span>
         <select class="inp" id="dn-area" data-required data-msg="Chọn phần nội dung cần sửa.">
           <option value="">— Chọn nội dung —</option>
-          <option value="Khu vực 05 · Bảng hàng">The Celestine Riverside — Khu vực 05: Bảng hàng và phiếu tính giá</option>
-          <option value="Khu vực 07 · Hỏi đáp">The Celestine Riverside — Khu vực 07: Hỏi đáp</option>
+          <option value="Khu vực 05 · Bảng hàng">Khu vực 05: Bảng hàng và phiếu tính giá</option>
+          <option value="Khu vực 07 · Hỏi đáp">Khu vực 07: Hỏi đáp</option>
           <option value="Tài liệu · Chính sách bán hàng tháng 8/2026">Tài liệu: Chính sách bán hàng tháng 8/2026</option>
         </select>
       </label>
       <label class="field"><span class="lab">Phần cần sửa</span>
-        <textarea class="inp" id="dn-body" data-required data-msg="Nêu rõ chỗ nào sai và nên sửa thành gì." placeholder="Ví dụ: diện tích căn A-12.05 đang ghi 72,4 m² nhưng hợp đồng mẫu ghi 74,2 m²."></textarea>
+        <textarea class="inp" id="dn-body" data-required data-msg="Nêu rõ chỗ nào sai và nên sửa thành gì." placeholder="Ví dụ: diện tích căn T1-12.05 đang ghi 112,6 m² nhưng hợp đồng mẫu ghi 114,2 m²."></textarea>
       </label>
       <label class="field"><span class="lab">Căn cứ (tùy chọn)</span><input class="inp" type="text" id="dn-ref" placeholder="Đường dẫn hoặc tên tài liệu đối chiếu"></label>
     </div>
@@ -853,6 +858,23 @@ document.addEventListener('DOMContentLoaded', function () {
         'data-src="Trang giới thiệu dự án">Mở trang giới thiệu dự án</a>' +
         '<span class="micro muted" style="margin-left:.5rem">' + esc(p.web) + '</span>';
     }
+
+    /* Nguồn số liệu và cảnh báo số minh họa (QD-073). Quy mô dự án lấy từ hồ sơ công khai của
+       RECO nên ghi rõ nguồn; giá và bảng hàng là số dựng cho buổi demo nên phải nói thẳng —
+       để một khoảng giá không nhãn trên màn là người xem mặc định đó là giá bán thật. */
+    var prov = id('kv1-src');
+    if (prov) {
+      var bits = [];
+      if (p.src) bits.push('Nguồn số liệu quy mô: ' + esc(p.src) + '.');
+      if (p.illus) bits.push('Khoảng giá, bảng hàng và mọi số liệu giao dịch trên màn này là <b>số minh họa</b>, không phải giá bán.');
+      prov.innerHTML = bits.join(' ');
+      prov.hidden = !bits.length;
+    }
+    var vf = id('kv1-verify');
+    if (vf) {
+      vf.hidden = !p.verify;
+      if (p.verify) vf.innerHTML = '<strong>Cần xác nhận lại:</strong> ' + esc(p.verify);
+    }
     paintFlowBank(p);
   }
 
@@ -990,12 +1012,17 @@ document.addEventListener('DOMContentLoaded', function () {
         '<div class="bend"><span class="lb lb-restricted">Nội bộ hạn chế</span></div></div>';
     }).join('') || '<p class="small muted">Chưa có điểm bán hàng nào.</p>';
 
-    /* 04 · Mặt bằng */
+    /* 04 · Mặt bằng
+       Bản mô phỏng không có tệp mặt bằng thật nên khe ảnh dùng lại ảnh phối cảnh của các dự án
+       khác trong kho. Ảnh phối cảnh nay là ảnh THẬT của từng dự án, nên phải nói rõ đây là ảnh
+       thay chỗ — không nói thì người xem đọc "Mặt bằng tầng điển hình" kèm ảnh một dự án khác. */
     id('kv4-gal').innerHTML = secs('plan').filter(function (s) { return S.canSee(s.label, RECO.role); })
       .map(function (s) {
         return '<figure><img src="' + RECO.asset(s.img) + '" alt="' + esc(s.title) + '" loading="lazy">' +
           S.label(s.label) + editBtn(s) + '</figure>';
       }).join('') || '<p class="small muted">Chưa có mặt bằng nào cho dự án này.</p>';
+    var planNote = id('kv4-note');
+    if (planNote) planNote.hidden = !secs('plan').length;
 
     /* 08 · Nội dung bán hàng được duyệt */
     id('kv8-grid').innerHTML = secs('content').filter(function (s) { return S.canSee(s.label, RECO.role); })
@@ -1164,7 +1191,9 @@ document.addEventListener('DOMContentLoaded', function () {
   var picked = {};
   function units() { return S.get('units').filter(function (u) { return u.pj === PJ; }); }
   function totalUnits() {
-    var m = /([\d.]+)\s*(?:căn|lô)/.exec(project().struct || '');
+    /* "khuôn viên" nằm trong danh sách vì bất động sản tâm linh đếm theo khuôn viên chứ không
+       theo căn hay lô (QD-071) — thiếu từ này thì Công Viên Thiên Đường tụt về đếm số dòng bảng hàng. */
+    var m = /([\d.]+)\s*(?:căn|lô|khuôn viên)/.exec(project().struct || '');
     return m ? m[1] : String(units().length);
   }
   function fillUnitFilters() {
@@ -1210,7 +1239,9 @@ document.addEventListener('DOMContentLoaded', function () {
         '</tr>';
       }).join('');
     }
-    id('bh-count').textContent = 'Hiển thị ' + list.length + ' trong ' + totalUnits() + ' căn · dữ liệu mẫu. ';
+    /* Đơn vị đếm theo loại hình: đất nền đếm lô, bất động sản tâm linh đếm khuôn viên (QD-071) */
+    var dv = project().type === 'datnen' ? 'lô' : (project().type === 'tamlinh' ? 'khuôn viên' : 'căn');
+    id('bh-count').textContent = 'Hiển thị ' + list.length + ' trong ' + totalUnits() + ' ' + dv + ' · dữ liệu mẫu. ';
     paintBulk();
   }
 

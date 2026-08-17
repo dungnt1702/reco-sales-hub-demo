@@ -92,8 +92,43 @@ hộp xác nhận, trạng thái đang xử lý, kiểm tra biểu mẫu, tìm k
 
 Từ 17/08/2026, dự án nổi bật của bản mô phỏng là **Le Parc Place — ParkCity Hanoi**, dựng theo bộ tài liệu
 RECO cung cấp: 4 tòa A/B/C/D, 802 căn, các loại căn thật, **toàn bộ 88 câu hỏi đáp** của *Mẫu kịch bản bán
-hàng — Câu hỏi thường gặp* (bản 17/08/2026), và 8 liên kết sống tới Google Drive của Chủ đầu tư. Sáu dự án
-hư cấu cũ vẫn giữ nguyên để minh họa các trạng thái khác (bản nháp, sắp hết hiệu lực, liên kết Drive hỏng).
+hàng — Câu hỏi thường gặp* (bản 17/08/2026), và 8 liên kết sống tới Google Drive của Chủ đầu tư.
+
+**Cả bảy dự án nay là dự án thật của Nhà Ở Ngay RECO (QD-070)** — sáu dự án hư cấu cũ đã được thay bằng
+đúng danh mục RECO đang phân phối, quy mô lấy từ trang dự án công khai. Trường `src` của từng dự án ghi
+nguồn và ngày trích; `illus: true` nghĩa là **khoảng giá và bảng hàng là số minh họa** (RECO không công bố
+giá trên web, mà buổi demo vẫn cần phiếu tính giá và giữ chỗ chạy đủ — QD-073), màn Chi tiết dự án nói
+thẳng điều đó ngay dưới khối tổng quan.
+
+| `id` | Dự án | Vị trí | Loại hình | Số liệu thật | Nguồn |
+| --- | --- | --- | --- | --- | --- |
+| `leparc` | Le Parc Place — ParkCity Hanoi | Dương Nội, Hà Đông | Chung cư | 4 tòa 29–35 tầng · 802 căn · 16.234 m² | Mẫu kịch bản bán hàng RECO · 17/08/2026 |
+| `celestine` | Celestine Westlake | 300 Võ Chí Công, Tây Hồ | Chung cư | 2 tháp 23 tầng · 216 căn · 15.237 m² · CĐT VINAENCO · bàn giao từ 2027 | recogroup.vn/du-an/celestine-westlake |
+| `la-perle` | La Perle Héritage | 16 Phước Long, Nha Trang | Chung cư | 39 tầng nổi + 41 nhà liền kề · **từ 65 triệu/m²** · CĐT Indochine Nha Trang | Bản trích 10/08/2026 — **trang đã rút khỏi recogroup.vn** |
+| `palmy` | Palmy Biztown | Thanh Liệt, Thanh Trì | Thấp tầng | 142 căn thương mại liên kế 4–5 tầng · 20.499 m² | recogroup.vn/du-an/palmybiztown |
+| `thien-duong` | Công Viên Thiên Đường | Lang Quán, Yên Sơn, Tuyên Quang | **Tâm linh** | Công viên nghĩa trang sinh thái · 5 dòng khuôn viên · CĐT chính RECO | recogroup.vn/du-an/cong-vien-thien-duong |
+| `central` | Khu đô thị Việt Hàn | Hồng Tiến, Phổ Yên, Thái Nguyên | Đất nền | 5 dòng sản phẩm · lô 90 – 369 m² | khudothiviethan.com |
+| `opening` | Gold Season — 47 Nguyễn Tuân | Thanh Xuân, Hà Nội | Chung cư · chuyển nhượng | 4 tòa Autumn/Five Seasons/Summer/Spring · ~1.500 căn · 22.000 m² · mật độ 36,4% · giá gốc từ 22 triệu/m² · hoàn thành Q2/2018 | reco.nhaongay.vn/du-an/gold-season |
+
+Ba dự án còn giữ nguyên vai trò minh họa trạng thái khó (bản nháp chờ duyệt, tài liệu sắp hết hiệu lực,
+liên kết Drive bị thu quyền) — chỉ tên và số liệu đổi theo dự án thật, còn trạng thái thì giữ.
+
+**La Perle Héritage phải đọc kỹ hơn các dự án khác:** trang dự án đã bị rút khỏi `recogroup.vn` (404 ở cả
+`/du-an/la-perle-heritage/` lẫn `/he-thong-san-pham/La-perle-heritage/`) nên số liệu chỉ còn bản trích
+10/08/2026. Màn Chi tiết dự án hiện một khối cảnh báo *Cần xác nhận lại* cho đúng dự án này.
+
+**Ảnh dự án phần lớn là ảnh phối cảnh thật của RECO:** `celestine.jpg`, `palmy.jpg`, `thien-duong.jpg` tải
+từ chính `recogroup.vn/wp-content/uploads/2026/08/` (đối chiếu byte vẫn trùng bản gốc), `gold-season.jpg` là
+đúng ảnh `og:image` của trang Gold Season trên `reco.nhaongay.vn`. Hai ngoại lệ: **Khu đô thị Việt Hàn** dùng
+banner RECO trung tính vì `khudothiviethan.com` không trả ảnh qua HTTP thường và ảnh trong bản trích
+10/08/2026 bị gán lẫn giữa các dự án; **La Perle Héritage** giữ ảnh cũ vì trang dự án đã bị rút. Ảnh dùng
+lại ở khe mặt bằng, thư viện và thẻ mẹo vẫn là ảnh minh họa — dán ảnh của dự án khác lên đúng tên một dự án
+thật thì tệ hơn là không có ảnh.
+
+Loại hình thứ sáu **Bất động sản tâm linh** (`tamlinh`) được thêm vào danh mục chuẩn tại QD-071, nới
+QD-057 vốn chốt đúng năm loại: `recogroup.vn` và `reco.nhaongay.vn` đều có danh mục tâm linh riêng, và
+Công Viên Thiên Đường là dự án RECO tự làm chủ đầu tư. Màn Quản trị nay dựng hai ô chọn loại hình từ
+`S.TYPES` thay vì tự chép lại danh mục — trước đó nhãn ở màn quản trị lệch nhãn của chính dữ liệu.
 
 Bộ 88 câu giữ đúng thứ tự và hai cấp nhóm của tài liệu: nhóm cấp 1 là phạm vi (A khu đô thị 10 câu ·
 B dự án 14 câu · C câu hỏi cụ thể 64 câu), cấp 2 là chủ đề (Nội thất 19 · Ngoại thất và khu chung 15 ·
@@ -134,8 +169,10 @@ Trạng thái lưu trong `sessionStorage`. Mở bằng `file://` thì trình duy
 trong — bản gói một trang vẫn chạy đủ vì cả 20 màn nằm trong cùng một tài liệu.
 Nút **"Đặt lại dữ liệu demo"** trên thanh đen đưa mọi thứ về trạng thái ban đầu để diễn lại kịch bản.
 
-Sáu dự án phủ đúng ba nhóm bất động sản Giai đoạn 1: căn hộ chung cư, đất nền, nhà thấp tầng và biệt thự.
-Tên dự án, con số và ảnh đều là dữ liệu mẫu dùng để minh họa giao diện.
+Bảy dự án phủ cả bốn dòng kinh doanh RECO đang chạy: chung cư (4 dự án, gồm một dự án chuyển nhượng),
+thương mại liên kế, đất nền và bất động sản tâm linh. **Tên dự án, vị trí, quy mô và chủ đầu tư là dữ liệu
+thật** (bảng nguồn ở mục *Dữ liệu thật của RECO trong bản mô phỏng*); **khoảng giá, bảng hàng, tên người và
+mọi số liệu giao dịch là số minh họa** — màn Chi tiết dự án nói thẳng điều đó dưới khối tổng quan.
 
 ## Đưa nội dung vào hệ thống
 
@@ -211,7 +248,7 @@ Ba màn có bản đồ street thật: **chi tiết dự án** (khu vực 02 *V�
 **xem trước Giai đoạn 2** (báo cáo *Theo khu vực địa lý*, bong bóng theo doanh thu).
 Trỏ vào một ô trong danh sách liên kết vùng thì ghim tương ứng trên bản đồ nhảy lên, và ngược lại.
 
-**Ô ảnh bản đồ nằm sẵn trong repo** (`assets/tiles/{z}/{x}/{y}.webp`, 266 ô ≈ 2,7 MB). Bản đồ vì thế
+**Ô ảnh bản đồ nằm sẵn trong repo** (`assets/tiles/{z}/{x}/{y}.webp`, 258 ô ≈ 1,3 MB). Bản đồ vì thế
 vẽ được trên GitHub Pages, khi mở bằng `file://` và trong bản một tệp gửi link — Artifact chặn mọi
 yêu cầu ra máy chủ ngoài nên **không** thể gọi máy chủ ô ảnh lúc chạy.
 
@@ -220,7 +257,8 @@ node tools/geocode.mjs         # tra toạ độ bằng Nominatim, dán tay kế
 node tools/fetch-tiles.mjs     # nướng ô ảnh vào assets/tiles (chạy lại được, bỏ qua ô đã có)
 ```
 
-Đổi toạ độ hay mức phóng trong `assets/geo.js` thì phải chạy lại `fetch-tiles.mjs` rồi build lại bản gói.
+Đổi toạ độ hay mức phóng trong `assets/geo.js` thì phải chạy lại `fetch-tiles.mjs` rồi build lại bản gói —
+`_check.html` nay mở bản đồ của **cả bảy dự án** nên quên bước này là bộ kiểm tra báo ô trống ngay.
 Mỗi mức phóng thêm vào là thêm chừng 24 ô cho một dự án, nên chỉ Le Parc Place có ba mức (z14–z16),
 Celestine hai mức, năm dự án còn lại một mức z15 (bản đồ không phóng được — nút phóng tự ẩn).
 
@@ -232,17 +270,20 @@ công hiện ở góc mỗi bản đồ. **Không dùng `tile.openstreetmap.org`
 Đây là mức dùng của một bản mô phỏng (vài trăm ô, tải một lần). **Bản chạy thật của RECO phải tự dựng
 máy chủ ô ảnh hoặc dùng nhà cung cấp có hợp đồng** — đừng mang cách này lên sản phẩm.
 
-**Chỉ Le Parc Place — ParkCity Hanoi là dự án thật**, ghim đúng vị trí thật trong khu đô thị, các điểm
-liên kết vùng (LINC Mall, ParkCity Club, Trường Quốc tế, Aeon Mall Hà Đông, ga La Khê…) lấy toạ độ thật
-qua Nominatim. Sáu dự án còn lại là dữ liệu mô phỏng, được ghim vào một **vị trí thực hợp lý** trong đúng
-phường/huyện đã khai (Celestine ven sông Hồng phía Ngọc Thụy – Bồ Đề, Palmy Garden ở Văn Giang – Hưng Yên…).
+**Cả bảy dự án nay ghim theo địa chỉ thật** đã công bố trên trang dự án của RECO, toạ độ tra qua
+Nominatim (`tools/geocode.mjs`). Nominatim không có điểm cho vài địa chỉ số nhà (300 Võ Chí Công,
+47 Nguyễn Tuân, Khu đô thị Việt Hàn) nên lấy điểm gần nhất tra được **trên chính con đường hoặc khu đất
+đó** — sai số vài trăm mét, đủ đúng để bản đồ không nói sai khu vực; chỗ nào lấy điểm thay thế đều có ghi
+chú ngay trong `geo.js`. Các điểm liên kết vùng cũng là địa danh thật: Le Parc Place có LINC Mall,
+ParkCity Club, Trường Quốc tế, Aeon Mall Hà Đông; Celestine Westlake có Ciputra, Hồ Tây, Lotte Mall Tây Hồ,
+cầu Nhật Tân, Công viên nước Hồ Tây — khoảng cách trong dữ liệu tính từ chính hai bộ toạ độ đó.
 Điểm nào ở quá xa khung ô ảnh đã tải (sân bay Nội Bài, phố cổ) mang cờ `far: true` trong `geo.js`:
 vẫn hiện trong danh sách, không ghim lên bản đồ.
 
 ## Bản một tệp để gửi link (Claude Artifact)
 
 ```powershell
-node build-artifact.mjs      # → dist/reco-sales-hub.html (~7,3 MB)
+node build-artifact.mjs      # → dist/reco-sales-hub.html (~6,6 MB)
 ```
 
 Gộp cả 20 màn, phông chữ và ảnh vào **một tệp HTML tự chứa**, không gọi ra máy chủ nào —
@@ -272,7 +313,7 @@ sửa file `.html` gốc rồi chạy lại build — đừng sửa trực tiế
 
 | Bộ | Kiểm gì |
 | --- | --- |
-| `_check.html` | Tràn ngang ở 360/390/768/1440, liên kết hỏng trên cả 20 trang, và bản đồ ba màn (ô ảnh tải được, không ô trống trong khung nhìn, đủ ghim, có ghi công) |
+| `_check.html` | Tràn ngang ở **bảy khổ 360/390/768/1024/1152/1280/1440** (dải 1024–1280 trước đây phải đo tay), liên kết hỏng trên cả 20 trang, và bản đồ của **cả bảy dự án** cộng trang gửi khách và màn Giai đoạn 2 (ô ảnh tải được, không ô trống trong khung nhìn, đủ ghim, có ghi công) |
 | `_check-roles.html` | 90 trường hợp ẩn/hiện theo vai trò |
 | `_check-actions.html` | **Bấm thử từng phần tử** trên mọi màn, so nội dung trước/sau. Đạt khi DOM đổi, hoặc mở hộp thoại, hoặc phần tử mang `data-gd2`. Toast không tính — nó nằm ngoài vùng so sánh. Kiểm thêm: hành động khó hoàn tác có hỏi lại không, ô nhập có phản hồi không, còn liên kết cụt `href="#"` không, và biểu mẫu tải tài liệu có chặn lỗi rồi ghi thật vào kho không |
 | `_check-bundle.html` | Bản một tệp: dựng màn, tràn ngang, liên kết, ảnh/phông/ô ảnh bản đồ nhúng sẵn (không tải gì ra ngoài), phân quyền, mã riêng từng màn |
