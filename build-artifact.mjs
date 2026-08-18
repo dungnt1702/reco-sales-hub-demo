@@ -23,7 +23,7 @@ const PAGES = [
   'thu-vien-tai-lieu', 'cay-thu-muc', 'soan-noi-dung', 'chia-se',
   'trang-gui-khach', 'link-het-han', 'quan-tri', 'nguoi-dung', 'de-nghi-sua',
   'xem-truoc-gd2',
-  'tinh-nang-gd1', 'chi-tiet-gd1', 'tinh-nang-gd2', 'chi-tiet-gd2'
+  'tinh-nang-gd1', 'chi-tiet-gd1', 'tinh-nang-gd2', 'chi-tiet-gd2', 'ha-tang'
 ];
 
 const kb = (n) => (n / 1024).toFixed(0) + ' KB';

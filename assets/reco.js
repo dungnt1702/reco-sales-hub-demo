@@ -162,6 +162,8 @@
     /* Bản đồ hệ thống đối chiếu từng mục SaleHUB của RECO với màn hình — nội dung nội bộ,
        vai trò Khách hàng không thấy, giống mục Tính năng & báo giá. */
     { href: 'sitemap.html', label: 'Bản đồ hệ thống · đối chiếu SaleHUB', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' },
+    /* Cùng nhóm nội dung thương mại với Tính năng & báo giá nên dùng chung danh sách vai trò. */
+    { href: 'ha-tang.html', label: 'Hạ tầng và chi phí vận hành', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' },
     { href: 'index.html', label: 'Bản đồ prototype' }
   ];
   function allowed(item) { return !item.roles || item.roles.split(' ').indexOf(role) >= 0; }
@@ -172,10 +174,18 @@
     var opts = ROLES.map(function (r) {
       return '<option value="' + r.id + '"' + (r.id === role ? ' selected' : '') + '>' + r.name + '</option>';
     }).join('');
+    /* Đường về bản đồ prototype. Thanh này có ở mọi màn nên đây là chỗ duy nhất
+       người xem luôn quay lại được trang mở đầu — khác với chữ RECO trên thanh
+       trên cùng, vốn phải trỏ về Trang đầu của ứng dụng.
+       Nút thế chỗ nhãn chứ không thêm vào: thêm một phần tử nữa thì thanh xuống
+       hai dòng ở 1440px, và --proto-h là thứ .sec dùng để chừa chỗ khi nhảy neo. */
+    var home = currentFile() === 'index.html'
+      ? '<span class="proto-tag">Prototype · duyệt thiết kế</span>'
+      : '<a class="proto-btn" href="' + link('index.html') + '">◄ Bản đồ prototype</a>';
     return '' +
       '<div class="proto">' +
         '<div class="proto-in">' +
-          '<span class="proto-tag">Prototype · duyệt thiết kế</span>' +
+          home +
           '<label for="proto-role">Đang xem với vai trò</label>' +
           '<select id="proto-role" aria-label="Chọn vai trò đang xem">' + opts + '</select>' +
           '<span class="micro muted no-lg" style="flex-basis:100%">Phạm vi: ' + R.scope + '</span>' +

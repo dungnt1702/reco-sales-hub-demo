@@ -215,6 +215,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
   border-radius: var(--radius-pill);
   padding: 5px 12px; font: inherit; font-size: 0.76rem; cursor: pointer;
 }
+a.proto-btn { text-decoration: none; display: inline-flex; align-items: center; }
 .proto-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
 .proto-btn[aria-pressed="true"] { background: var(--orange-button); border-color: var(--orange-button); color: #fff; }
 .proto-spacer { margin-left: auto; }

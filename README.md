@@ -4,8 +4,9 @@
 
 Bộ HTML tĩnh dựng 14 màn hình chính trong tài liệu *Yêu cầu các màn hình*
 (`docs/05-user-experience/screen-requirements.md` của repo nội bộ `reco-sales-hub`), cộng một màn xem trước
-Giai đoạn 2, bốn màn danh mục tính năng kèm báo giá của cả hai giai đoạn, và một màn bản đồ hệ thống —
-tổng cộng 20 màn. Dùng để RECO xem và xác nhận thiết kế Giai đoạn 1 trước khi viết dòng mã đầu tiên, và để trình bày
+Giai đoạn 2, bốn màn danh mục tính năng kèm báo giá của cả hai giai đoạn, một màn hạ tầng và chi phí vận hành,
+và một màn bản đồ hệ thống —
+tổng cộng 21 màn. Dùng để RECO xem và xác nhận thiết kế Giai đoạn 1 trước khi viết dòng mã đầu tiên, và để trình bày
 phạm vi cùng giá ngay trong buổi demo mà không phải mở Excel hay PDF ra riêng.
 
 Không cần cài đặt, không cần build. Mở `index.html` bằng trình duyệt là chạy — kể cả khi không có mạng.
@@ -66,6 +67,7 @@ ghi rõ *cùng khu vực* hay *loại khác*. Ở khổ điện thoại nav mụ
 | `chi-tiet-gd1.html` | Mô tả chi tiết 18 hạng mục, Phần A, chuỗi tính giá và mục Chưa bao gồm |
 | `tinh-nang-gd2.html` | Cây tính năng Giai đoạn 2 — sáu phân hệ và bốn cách RECO chọn |
 | `chi-tiet-gd2.html` | Mô tả chi tiết sáu phân hệ Giai đoạn 2 kèm phụ thuộc, rủi ro và tạm tính |
+| `ha-tang.html` | Hạ tầng, tên miền và chi phí vận hành — khoản nằm ngoài gói 198.800.000, RECO tự chi trả |
 
 Tệp dùng chung nằm trong `assets/`: `reco.js` (nền tảng), `store.js` (kho dữ liệu), `data.js` (thẻ dự án),
 `geo.js` + `reco-map.js` + `vendor/leaflet.js` + `tiles/` (bản đồ vị trí — xem mục dưới).
@@ -83,6 +85,14 @@ trước**, chạy lại `tools/build-deliverables.ps1` bên repo đó, rồi m�
 Con số ở cây là **chi phí cốt lõi trước VAT**; tổng theo nhánh cộng lại đúng 191.810.000. Riêng Phần A và
 Giai đoạn 2 hiển thị giá **sau ưu đãi 20%**, và tổng từng phần cố tình không cộng khớp với tổng khối
 (làm tròn xuống 100.000 chỉ áp một lần cho khối được chốt) — chỗ nào cũng đã có ghi chú giải thích, đừng "sửa cho khớp".
+
+Màn thứ năm của cụm này, `ha-tang.html`, đi theo hướng ngược lại: nó **cụ thể hóa mục "Chưa bao gồm"** bằng
+ước tính có nguồn, và **không được cộng vào bốn con số trên** — hạ tầng là khoản RECO trả thẳng cho nhà cung
+cấp, HASU không xuất hóa đơn. Giá tra ngày **18/08/2026** từ [bảng giá máy chủ ảo](https://nhanhoa.com/may-chu/may-chu-ao-vps.html),
+[High CPU](https://nhanhoa.com/may-chu/may-chu-cloud-high-cpu.html), [Cloud Storage](https://nhanhoa.com/may-chu/cloud-storage.html)
+và [tên miền](https://nhanhoa.com/trang/ten-mien/bang-gia-ten-mien.html) của Nhân Hòa, cùng
+[bảng giá Google Workspace](https://workspace.google.com/pricing). Khi RECO chốt DX-016 (cách tính chi phí vận
+hành hằng tháng) thì cập nhật `reco-sales-hub/docs/08-delivery/effort-estimate.md` trước, rồi mới sửa màn này.
 
 `assets/` chứa `reco.css` (design token kế thừa từ reco-main-web), `reco.js` (vỏ giao diện, đổi vai trò,
 hộp xác nhận, trạng thái đang xử lý, kiểm tra biểu mẫu, tìm kiếm toàn cục, chuông thông báo),
@@ -166,7 +176,7 @@ theo; gửi đề nghị sửa từ màn Chi tiết dự án thì nó xuất hi�
 thì bấm Xem sẽ ra màn Đường dẫn hết hiệu lực.
 
 Trạng thái lưu trong `sessionStorage`. Mở bằng `file://` thì trình duyệt chặn, kho tự lùi về bộ nhớ
-trong — bản gói một trang vẫn chạy đủ vì cả 20 màn nằm trong cùng một tài liệu.
+trong — bản gói một trang vẫn chạy đủ vì cả 21 màn nằm trong cùng một tài liệu.
 Nút **"Đặt lại dữ liệu demo"** trên thanh đen đưa mọi thứ về trạng thái ban đầu để diễn lại kịch bản.
 
 Bảy dự án phủ cả bốn dòng kinh doanh RECO đang chạy: chung cư (4 dự án, gồm một dự án chuyển nhượng),
@@ -286,7 +296,7 @@ vẫn hiện trong danh sách, không ghim lên bản đồ.
 node build-artifact.mjs      # → dist/reco-sales-hub.html (~6,6 MB)
 ```
 
-Gộp cả 20 màn, phông chữ và ảnh vào **một tệp HTML tự chứa**, không gọi ra máy chủ nào —
+Gộp cả 21 màn, phông chữ và ảnh vào **một tệp HTML tự chứa**, không gọi ra máy chủ nào —
 mở offline vẫn đủ. Điều hướng chuyển từ `du-an.html?role=nvbh` sang `#du-an?role=nvbh`,
 mọi thứ khác giữ nguyên: đổi vai trò, khung điện thoại, ẩn thanh demo đều chạy.
 
