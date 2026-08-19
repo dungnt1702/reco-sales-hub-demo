@@ -69,8 +69,8 @@ var CASES = [
   say('--- Nav mục dính không bị bắt nhầm link dự án ---');
   var f1 = await load(PHASE + '/du-an-chi-tiet.html?bare=1&pj=leparc', 1440);
   var d1 = f1.contentDocument;
-  /* Ba neo Giai đoạn 1 compact: Thông tin · SP Hot · Mẫu chia sẻ */
-  if (!ok(d1.querySelectorAll('.secnav a[href^="#"]').length === 3, 'secnav có đúng 3 neo trong trang')) bad++;
+  /* Neo Giai đoạn 1: Tổng quan · Vị trí · Điểm chính · Mặt bằng · SP Hot · Mẫu · Tài liệu nguồn · Ảnh */
+  if (!ok(d1.querySelectorAll('.secnav a[href^="#"]').length === 8, 'secnav có đủ 8 neo trong trang')) bad++;
   if (!ok(d1.querySelectorAll('#pj-near-list .on').length === 0, 'không dòng dự án nào bị gán class .on của nav')) bad++;
   if (!ok(!d1.querySelector('.secnav #pj-near-list'), 'khối dự án nằm ngoài <nav class="secnav">')) bad++;
 

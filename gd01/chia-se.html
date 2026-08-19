@@ -45,6 +45,19 @@
         <button role="tab" id="t-gui" aria-controls="p-gui" aria-selected="false" tabindex="-1">Đã gửi</button>
       </div>
 
+      <div class="card-body" id="tpl-filter-wrap" style="padding-bottom:0">
+        <div class="filterbar">
+          <input class="inp" type="search" id="tf-q" placeholder="Tìm tiêu đề hoặc nội dung…" aria-label="Tìm mẫu">
+          <select class="inp" id="tf-pj" aria-label="Lọc theo dự án"><option value="">Mọi dự án</option></select>
+          <select class="inp" id="tf-unit" aria-label="Lọc theo sản phẩm" disabled><option value="">Chọn dự án trước</option></select>
+          <select class="inp" id="tf-kind" aria-label="Loại mẫu">
+            <option value="">Mọi loại</option>
+            <option value="pj">Mẫu dự án</option>
+            <option value="unit">Mẫu sản phẩm</option>
+          </select>
+        </div>
+      </div>
+
       <div role="tabpanel" id="p-doi" aria-labelledby="t-doi" class="card-body">
         <p class="small muted mb-3">Mẫu dùng chung. Nhân viên bán hàng chỉ gửi được mẫu <strong>đã duyệt</strong>.</p>
         <div id="tpl-doi" class="stack"></div>
@@ -160,6 +173,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ---------- Mẫu ---------- */
   var openUnit = qs().get('unit') || null;
+  var tfQ = document.getElementById('tf-q');
+  var tfPj = document.getElementById('tf-pj');
+  var tfUnit = document.getElementById('tf-unit');
+  var tfKind = document.getElementById('tf-kind');
+  var tfWrap = document.getElementById('tpl-filter-wrap');
 
   function canSendTpl(t) {
     if (!CAN_SEND) return false;
@@ -172,11 +190,55 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join(' ');
   }
 
+  function tplUnitId(t) {
+    if (t.unitId) return t.unitId;
+    if (!t.hotId) return '';
+    var hot = S.find('hotProducts', t.hotId);
+    return hot ? hot.unitId : '';
+  }
+  function matchTpl(t) {
+    var q = RECO.norm(tfQ.value || '');
+    if (q && RECO.norm((t.title || '') + ' ' + (t.body || '')).indexOf(q) < 0) return false;
+    if (tfPj.value && t.projectId !== tfPj.value) return false;
+    if (tfUnit.value && tplUnitId(t) !== tfUnit.value) return false;
+    var isUnit = !!(t.unitId || t.hotId);
+    if (tfKind.value === 'pj' && isUnit) return false;
+    if (tfKind.value === 'unit' && !isUnit) return false;
+    return true;
+  }
+  function fillUnitSelect(pjId) {
+    var keep = tfUnit.value;
+    tfUnit.innerHTML = '<option value="">' + (pjId ? 'Mọi sản phẩm' : 'Chọn dự án trước') + '</option>';
+    tfUnit.disabled = !pjId;
+    if (!pjId) { tfUnit.value = ''; return; }
+    var catalog = {};
+    S.get('unitProfiles').forEach(function (u) { catalog[u.unitId] = true; });
+    var units = S.get('units').filter(function (u) { return u.pj === pjId && catalog[u.id]; });
+    if (!units.length) units = S.get('units').filter(function (u) { return u.pj === pjId; });
+    units.forEach(function (u) {
+      tfUnit.appendChild(new Option(u.id, u.id));
+    });
+    tfUnit.value = units.some(function (u) { return u.id === keep; }) ? keep : '';
+  }
+  function fillTplFilters() {
+    var pjs = S.get('projects');
+    var keep = tfPj.value;
+    tfPj.innerHTML = '<option value="">Mọi dự án</option>' +
+      pjs.map(function (p) { return '<option value="' + E(p.id) + '">' + E(p.name) + '</option>'; }).join('');
+    tfPj.value = pjs.some(function (p) { return p.id === keep; }) ? keep : '';
+    fillUnitSelect(tfPj.value);
+  }
+
   function paintTeam() {
     var box = document.getElementById('tpl-doi');
-    var list = S.get('shareTemplates').filter(function (t) { return t.scope === 'shared'; });
-    if (!list.length) {
+    var all = S.get('shareTemplates').filter(function (t) { return t.scope === 'shared'; });
+    if (!all.length) {
       box.innerHTML = RECO_DATA.empty('Chưa có mẫu đội', 'Giám đốc dự án duyệt mẫu dùng chung trước khi sale gửi khách.');
+      return;
+    }
+    var list = all.filter(matchTpl);
+    if (!list.length) {
+      box.innerHTML = RECO_DATA.empty('Không có mẫu khớp', 'Đổi dự án, sản phẩm hoặc xóa ô tìm.');
       return;
     }
     box.innerHTML = list.map(function (t) {
@@ -200,14 +262,19 @@ document.addEventListener('DOMContentLoaded', function () {
   function paintMine() {
     var box = document.getElementById('tpl-toi');
     var uid = currentUserId();
-    var list = S.get('shareTemplates').filter(function (t) {
+    var all = S.get('shareTemplates').filter(function (t) {
       return t.scope === 'personal' && t.ownerUserId === uid;
     });
-    if (!list.length) {
+    if (!all.length) {
       box.innerHTML = RECO_DATA.empty('Anh/chị chưa có mẫu riêng',
         'Tạo mẫu với các khối tổng quan, vị trí, ảnh, SP Hot hoặc STK.',
         '<a class="btn btn-primary" href="' + goPage('mau.html', 'new=1') + '" data-roles="gd gddu tkkd qlkd nvbh mkt">+ Tạo mẫu</a>');
       RECO.applyRoles(box);
+      return;
+    }
+    var list = all.filter(matchTpl);
+    if (!list.length) {
+      box.innerHTML = RECO_DATA.empty('Không có mẫu khớp', 'Đổi dự án, sản phẩm hoặc xóa ô tìm.');
       return;
     }
     box.innerHTML = list.map(function (t) {
@@ -237,6 +304,23 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
   });
+
+  fillTplFilters();
+  tfQ.addEventListener('input', function () { paintTeam(); paintMine(); });
+  tfKind.addEventListener('change', function () { paintTeam(); paintMine(); });
+  tfUnit.addEventListener('change', function () { paintTeam(); paintMine(); });
+  tfPj.addEventListener('change', function () {
+    fillUnitSelect(tfPj.value);
+    tfUnit.value = '';
+    paintTeam(); paintMine();
+  });
+  function syncTplFilter() {
+    var on = document.querySelector('[role="tablist"] [aria-selected="true"]');
+    if (tfWrap) tfWrap.hidden = !!(on && on.id === 't-gui');
+  }
+  var tablist = document.querySelector('[role="tablist"]');
+  tablist.addEventListener('click', function () { setTimeout(syncTplFilter, 0); });
+  tablist.addEventListener('keydown', function () { setTimeout(syncTplFilter, 0); });
 
   S.on('shareTemplates', function () { paintTeam(); paintMine(); });
   paintTeam();

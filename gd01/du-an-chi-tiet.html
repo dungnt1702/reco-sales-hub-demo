@@ -77,8 +77,6 @@
   .qa-tbl td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
   .qa-tbl tbody tr:last-child td { border-bottom: 0; }
   #kv1-info + .sec { margin-top: 26px; }
-  .hot-strip { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
-  .hot-strip > .card { min-width: 260px; flex: none; }
 </style>
 </head>
 <body data-shell="app" data-page="du-an">
@@ -115,17 +113,22 @@
            a[href^="#"] trong đó, mà bản gói đổi href dự án thành #du-an-chi-tiet?pj=… -->
       <div class="detail-side">
 
-      <!-- Nav ba tầng Giai đoạn 1: thông tin · SP Hot · mẫu chia sẻ -->
+      <!-- Nav khu vực Giai đoạn 1 đang hiện trên trang bán -->
       <nav class="secnav" aria-label="Khu vực nội dung">
         <p class="micro muted mb-1" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">Khu vực nội dung</p>
         <ol>
-          <li><a href="#kv1-info" class="on">Thông tin</a></li>
+          <li><a href="#kv1" class="on">Tổng quan</a></li>
+          <li><a href="#kv2">Vị trí</a></li>
+          <li><a href="#kv3">Điểm chính</a></li>
+          <li><a href="#kv4">Mặt bằng</a></li>
           <li><a href="#kv-hot">SP Hot</a></li>
-          <li><a href="#kv-mau">Mẫu chia sẻ</a></li>
+          <li><a href="#kv-mau">Mẫu</a></li>
+          <li><a href="#kv5">Tài liệu nguồn</a></li>
+          <li><a href="#kv6">Ảnh và tài liệu</a></li>
         </ol>
         <div class="note note-navy mt-3 micro">
-          Ba mục này là cách <strong>trình bày</strong> trên trang bán. Cách <strong>tổ chức</strong> tệp trong kho là
-          <a href="#cay-thu-muc" data-page-link="cay-thu-muc.html">bảy nhánh cây thư mục</a> — hai cách phân loại tách biệt.
+          Neo theo từng khu vực đang hiện trên trang bán. Cách <strong>tổ chức</strong> tệp trong kho là
+          <a href="#cay-thu-muc" data-page-link="cay-thu-muc.html">cây thư mục</a> — hai cách phân loại tách biệt.
         </div>
       </nav>
 
@@ -227,8 +230,15 @@
             <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv-hot" aria-label="Mục đích của khu vực Sản phẩm Hot">
               <span class="itip-bub" id="tip-kv-hot" role="tooltip">Căn đang đẩy tuần này, gắn từ màn Quản trị. Không hiện giá — nhân viên mở căn rồi gửi khách bằng mẫu chia sẻ đã duyệt.</span>
             </button>
+            <span class="sec-act row-tight">
+              <button type="button" class="reco-slide-btn reco-slide-prev" id="kv-hot-prev" aria-label="Sản phẩm trước">‹</button>
+              <button type="button" class="reco-slide-btn reco-slide-next" id="kv-hot-next" aria-label="Sản phẩm sau">›</button>
+            </span>
           </div>
-          <div class="hot-strip" id="kv-hot-list"></div>
+          <div class="reco-slide" id="kv-hot-slide">
+            <div class="reco-slide-stage" id="kv-hot-list"></div>
+            <div class="reco-slide-dots" id="kv-hot-dots"></div>
+          </div>
         </section>
 
         <!-- Mẫu chia sẻ -->
@@ -2067,13 +2077,13 @@ document.addEventListener('DOMContentLoaded', function () {
         'Thư ký kinh doanh hoặc Giám đốc dự án gắn căn đang đẩy ở màn Quản trị.');
       return;
     }
-    box.innerHTML = rows.map(function (h) {
+    box.innerHTML = rows.map(function (h, n) {
       var u = S.find('units', h.unitId);
       var tpl = tplForHot(h);
       var gui = tpl
         ? '<a class="btn btn-primary btn-sm" href="' + goQs('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>'
         : '';
-      return '<div class="card card-pad">' +
+      return '<div class="card card-pad reco-slide-item' + (n === 0 ? ' on' : '') + '">' +
         '<div class="row-tight mb-1"><b>' + esc(u.id) + '</b><span class="chip">' + esc(u.kind) + '</span></div>' +
         '<p class="small" style="margin:0">' + esc(h.pitch) + '</p>' +
         '<p class="micro muted mt-1">' + floorLabel(u) + ' · ' + esc(u.dir) + ' · ' +
@@ -2083,6 +2093,8 @@ document.addEventListener('DOMContentLoaded', function () {
           gui +
         '</div></div>';
     }).join('');
+    var wrap = id('kv-hot-slide');
+    if (wrap) RECO.bindSlide(wrap, { prev: '#kv-hot-prev', next: '#kv-hot-next', dots: '#kv-hot-dots' });
   }
   var TICK_LAB = {
     overview: 'Tổng quan', place: 'Vị trí', gallery: 'Ảnh dự án', amenity: 'Tiện ích',

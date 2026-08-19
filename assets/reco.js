@@ -161,6 +161,7 @@
     { href: 'trang-dau.html', label: 'Trang đầu', key: 'trang-dau', icon: 'home' },
     { href: 'du-an.html', label: 'Dự án', key: 'du-an', icon: 'layers' },
     { href: 'danh-muc-san-pham.html', label: 'Sản phẩm', key: 'san-pham', icon: 'grid' },
+    { href: 'cay-thu-muc.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
     { href: 'chia-se.html', label: 'Chia sẻ', key: 'chia-se', icon: 'share' },
     { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' },
     { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
@@ -281,7 +282,8 @@
   }
 
   function buildDock(active) {
-    var items = NAV.filter(allowed).slice(0, 4).map(function (n) {
+    var nDock = inGd01() ? 5 : 4;
+    var items = NAV.filter(allowed).slice(0, nDock).map(function (n) {
       return '<a href="' + link(n.href) + '"' + (n.key === active ? ' aria-current="page"' : '') + '>' + svg(n.icon) + '<span>' + n.label + '</span></a>';
     }).join('');
     return '<nav class="dock" aria-label="Điều hướng nhanh">' + items +
@@ -849,6 +851,61 @@
     secs.forEach(function (s) { obs.observe(s); });
   }
 
+  /* Slider một thẻ / một tin: giữ mọi phần tử trong DOM, chỉ một cái có .on */
+  function bindSlide(root, opts) {
+    opts = opts || {};
+    if (!root) return { go: function () {}, index: function () { return 0; } };
+    var itemSel = opts.item || '.reco-slide-item';
+    var items = root.querySelectorAll(itemSel);
+    function pick(sel, fallback) {
+      if (sel && typeof sel !== 'string') return sel;
+      var q = sel || fallback;
+      if (!q) return null;
+      return root.querySelector(q) || document.querySelector(q);
+    }
+    var dotsEl = pick(opts.dots, '.reco-slide-dots');
+    var prev = pick(opts.prev, '.reco-slide-prev');
+    var next = pick(opts.next, '.reco-slide-next');
+    function rebind(el) {
+      if (!el || !el.parentNode) return el;
+      var n = el.cloneNode(true);
+      el.parentNode.replaceChild(n, el);
+      return n;
+    }
+    prev = rebind(prev);
+    next = rebind(next);
+    var idx = 0;
+    var n = items.length;
+    function go(i) {
+      if (!n) return;
+      idx = (i + n) % n;
+      for (var k = 0; k < n; k++) items[k].classList.toggle('on', k === idx);
+      if (!dotsEl) return;
+      var btns = dotsEl.querySelectorAll('button');
+      for (var d = 0; d < btns.length; d++) {
+        var on = d === idx;
+        btns[d].setAttribute('aria-pressed', on ? 'true' : 'false');
+        if (on) btns[d].setAttribute('aria-current', 'true');
+        else btns[d].removeAttribute('aria-current');
+      }
+    }
+    if (dotsEl) {
+      var html = '';
+      for (var i = 0; i < n; i++) {
+        html += '<button type="button" aria-label="Mục ' + (i + 1) + '"' +
+          (i === 0 ? ' aria-current="true" aria-pressed="true"' : ' aria-pressed="false"') + '></button>';
+      }
+      dotsEl.innerHTML = html;
+      dotsEl.querySelectorAll('button').forEach(function (b, i) {
+        b.addEventListener('click', function (e) { e.stopPropagation(); go(i); });
+      });
+    }
+    if (prev) prev.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); go(idx - 1); });
+    if (next) next.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); go(idx + 1); });
+    go(0);
+    return { go: go, index: function () { return idx; } };
+  }
+
   /* ---------- Bộ lọc / chuyển chế độ xem / ghim ---------- */
   /* Gắn một lần cho cả phiên, bắt sự kiện nổi lên tài liệu.
      Gắn theo từng phần tử lúc dựng màn thì mọi nội dung vẽ bằng JS sau đó sẽ mất tác dụng —
@@ -1161,6 +1218,7 @@
     /* Màn đang được nhúng trong khung điện thoại — mã màn nên thoát sớm */
     get embedded() { return device === 'm' && !bare; },
     search: search, norm: norm, trackRecent: trackRecent,
+    bindSlide: bindSlide,
     renderBell: renderBell, roleOf: roleOf,
     /* Đăng ký vẽ lại theo kho, tự hủy khi bản gói chuyển sang màn khác.
        Dùng RECO.store.on trực tiếp sẽ tích lũy trình nghe qua mỗi lần đổi hash. */

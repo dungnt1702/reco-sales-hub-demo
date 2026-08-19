@@ -28,9 +28,11 @@
         <h1 id="mau-h" style="font-size:clamp(1.6rem,3vw,2.1rem)">Mẫu</h1>
         <p class="lead mt-1" id="mau-sub"></p>
       </div>
-      <div class="row" id="mau-cta"></div>
     </div>
-    <div id="mau-root"></div>
+    <div class="mau-layout" id="mau-layout">
+      <div id="mau-root"></div>
+      <aside class="mau-aside" id="mau-cta"></aside>
+    </div>
   </div>
 </main>
 
@@ -207,8 +209,19 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('mau-root').innerHTML = RECO_DATA.empty('Mẫu không còn trong thư viện',
       'Quay lại thư viện để chọn mẫu đội hoặc mẫu của anh/chị.',
       '<a class="btn btn-primary" href="' + goPage('chia-se.html') + '">Thư viện mẫu</a>');
+    document.getElementById('mau-cta').hidden = true;
     return;
   }
+
+  var CHANNELS = [
+    { name: 'Zalo', href: 'https://chat.zalo.me/', letter: 'Z' },
+    { name: 'Facebook', href: 'https://www.facebook.com/', letter: 'f' },
+    { name: 'Batdongsan', href: 'https://batdongsan.com.vn/dang-tin', letter: 'B' },
+    { name: 'Muaban', href: 'https://muaban.net/dang-tin', letter: 'M' },
+    { name: 'Homedy', href: 'https://homedy.com/dang-tin', letter: 'H' },
+    { name: 'Chợ Tốt', href: 'https://nha.chotot.com/dang-tin', letter: 'C' },
+    { name: 'Alonhadat', href: 'https://alonhadat.com.vn/dang-tin.html', letter: 'A' }
+  ];
 
   function renderView() {
     var p = S.find('projects', t.projectId);
@@ -246,17 +259,33 @@ document.addEventListener('DOMContentLoaded', function () {
         '<p class="micro muted mt-3">Giá và CSBH không nằm trong tin gửi khách trên Hub.</p>' +
       '</article>';
 
-    var cta = '';
-    if (CAN_EDIT) cta += '<a class="btn btn-outline" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id) + (openUnit ? '&unit=' + encodeURIComponent(openUnit) : '') + '&edit=1') + '">Sửa mẫu</a>';
-    cta += '<button type="button" class="btn btn-outline" id="m-copy-zalo"' + (locked ? ' disabled' : '') + '>Sao chép tin Zalo</button>';
+    var guestRec = null;
+    function ensureLink() {
+      if (guestRec) return guestRec;
+      guestRec = makeLink(t, openUnit);
+      return guestRec;
+    }
+    var cta = '<div class="card card-pad"><div class="stack-actions">';
+    cta += '<button type="button" class="btn btn-outline" id="m-copy-zalo"' + (locked ? ' disabled' : '') + '>Sao chép Zalo</button>';
     cta += '<button type="button" class="btn btn-outline" id="m-copy-link"' + (locked ? ' disabled' : '') + '>Sao chép đường dẫn</button>';
-    cta += '<button type="button" class="btn btn-outline" id="m-copy-both"' + (locked ? ' disabled' : '') + '>Sao chép tin và đường dẫn</button>';
     if (!locked) {
       cta += '<a class="btn btn-primary" id="m-view-guest" href="' +
         goPage('trang-gui-khach.html', 'pj=' + encodeURIComponent(t.projectId) + (openUnit ? '&unit=' + encodeURIComponent(openUnit) : '')) +
         '">Xem trang khách</a>';
     }
-    document.getElementById('mau-cta').innerHTML = cta;
+    if (CAN_EDIT) cta += '<a class="btn btn-outline" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id) + (openUnit ? '&unit=' + encodeURIComponent(openUnit) : '') + '&edit=1') + '">Sửa</a>';
+    cta += '</div>';
+    if (!locked) {
+      cta += '<h3 class="mt-3" style="font-size:1.02rem;margin-bottom:8px">Gửi tin / MXH / BĐS</h3>' +
+        '<div class="channels">' + CHANNELS.map(function (ch) {
+          return '<button type="button" class="ch" data-ch="' + E(ch.name) + '" data-href="' + E(ch.href) + '"><i>' + E(ch.letter) + '</i>' + E(ch.name) + '</button>';
+        }).join('') + '</div>' +
+        '<p class="micro muted mt-2">Hub không tự đăng và không tự điền form trang ngoài. Sao chép rồi dán vào form kênh.</p>';
+    }
+    cta += '</div>';
+    var aside = document.getElementById('mau-cta');
+    aside.hidden = false;
+    aside.innerHTML = cta;
 
     function doZalo() {
       RECO.copy(zaloText(t, openUnit)).then(function (ok) {
@@ -264,20 +293,25 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
     function doLink() {
-      var rec = makeLink(t, openUnit);
+      var rec = ensureLink();
       RECO.copy(clipSafe(guestUrl(rec.slug))).then(function (ok) {
         RECO.toast(ok ? 'Đã tạo đường dẫn và sao chép' : 'Đã tạo ' + rec.slug, { danger: !ok });
       });
     }
     var z = document.getElementById('m-copy-zalo');
     var l = document.getElementById('m-copy-link');
-    var b = document.getElementById('m-copy-both');
     if (z) z.addEventListener('click', doZalo);
     if (l) l.addEventListener('click', doLink);
-    if (b) b.addEventListener('click', function () {
-      var rec = makeLink(t, openUnit);
-      RECO.copy(clipSafe(zaloText(t, openUnit) + '\n\n' + guestUrl(rec.slug))).then(function (ok) {
-        RECO.toast(ok ? 'Đã sao chép tin Zalo và đường dẫn' : 'Đã tạo đường dẫn', { danger: !ok });
+    aside.querySelectorAll('[data-ch]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var rec = ensureLink();
+        var payload = clipSafe(zaloText(t, openUnit) + '\n\n' + guestUrl(rec.slug));
+        var name = btn.getAttribute('data-ch');
+        var href = btn.getAttribute('data-href');
+        try { window.open(href, '_blank', 'noopener,noreferrer'); } catch (e) {}
+        RECO.copy(payload).then(function (ok) {
+          RECO.toast(ok ? 'Đã sao chép, dán vào form ' + name : 'Đã mở ' + name + ' — sao chép thủ công', { danger: !ok });
+        });
       });
     });
   }
@@ -298,9 +332,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var projects = S.get('projects').filter(function (p) { return !p.hidden; });
     document.getElementById('mau-h').textContent = isNew ? 'Tạo mẫu chia sẻ' : ('Sửa · ' + draft.title);
     document.getElementById('mau-sub').textContent = 'Chọn khối từ dự án và từ căn, rồi viết tin như bài đăng gửi khách — không ghi giá.';
+    document.getElementById('mau-cta').hidden = false;
     document.getElementById('mau-cta').innerHTML =
-      '<a class="btn btn-outline" href="' + (t ? goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) : goPage('chia-se.html')) + '">Hủy</a>' +
-      '<button type="button" class="btn btn-primary" id="mau-save">Lưu mẫu</button>';
+      '<div class="card card-pad"><div class="stack-actions">' +
+        '<a class="btn btn-outline" href="' + (t ? goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) : goPage('chia-se.html')) + '">Hủy</a>' +
+        '<button type="button" class="btn btn-primary" id="mau-save">Lưu mẫu</button>' +
+      '</div></div>';
 
     function unitOpts(pj, selected) {
       var rows = S.get('unitProfiles').filter(function (x) {

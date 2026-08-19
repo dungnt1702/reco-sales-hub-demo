@@ -28,8 +28,6 @@
   /* .micro và .go đều là span; không cho xuống dòng thì chữ phụ dính liền vào link */
   a.tile [data-sub] { display: block; }
   a.tile .go { display: block; margin-top: 8px; font-size: .78rem; font-weight: 700; color: var(--navy); }
-  .hot-strip { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
-  .hot-strip > .card { min-width: 260px; flex: none; }
 </style>
 </head>
 <body data-shell="app" data-page="trang-dau">
@@ -56,9 +54,15 @@
           </div>
         </div>
         <aside class="honor-rail" id="honor-rail" aria-label="Vinh danh nhân viên vừa bán được hàng">
-          <span class="eyebrow">Vinh danh · vừa chốt</span>
-          <div id="honor-slides"></div>
-          <div class="honor-dots" id="honor-dots"></div>
+          <div class="honor-head">
+            <span class="eyebrow">Vinh danh · vừa chốt</span>
+            <div class="reco-slide-nav">
+              <button type="button" class="reco-slide-btn honor-btn" id="honor-prev" aria-label="Tin trước">‹</button>
+              <button type="button" class="reco-slide-btn honor-btn" id="honor-next" aria-label="Tin sau">›</button>
+            </div>
+          </div>
+          <div class="honor-slides" id="honor-slides"></div>
+          <div class="honor-dots reco-slide-dots" id="honor-dots"></div>
         </aside>
       </div>
     </section>
@@ -105,9 +109,18 @@
           <h2 style="font-size:1.35rem">Sản phẩm Hot</h2>
           <p class="small muted mt-1">Căn đang tư vấn tuần này — không hiện giá trên thẻ.</p>
         </div>
-        <a class="btn btn-quiet btn-sm" href="danh-muc-san-pham.html">Xem catalog Sản phẩm →</a>
+        <div class="row-tight">
+          <a class="btn btn-quiet btn-sm" href="danh-muc-san-pham.html">Xem catalog Sản phẩm →</a>
+          <div class="reco-slide-nav">
+            <button type="button" class="reco-slide-btn reco-slide-prev" id="hot-home-prev" aria-label="Sản phẩm trước">‹</button>
+            <button type="button" class="reco-slide-btn reco-slide-next" id="hot-home-next" aria-label="Sản phẩm sau">›</button>
+          </div>
+        </div>
       </div>
-      <div class="hot-strip" id="hot-home"></div>
+      <div class="reco-slide" id="hot-home-slide">
+        <div class="reco-slide-stage" id="hot-home"></div>
+        <div class="reco-slide-dots" id="hot-home-dots"></div>
+      </div>
     </section>
 
     <!-- Dự án đã ghim -->
@@ -205,54 +218,47 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------- Vinh danh + ticker cảnh báo ---------- */
-  var honorIdx = 0, honorTimer = null;
+  var honorTimer = null;
   function paintHonors() {
     var box = document.getElementById('honor-slides');
-    var dots = document.getElementById('honor-dots');
-    if (!box) return;
+    var rail = document.getElementById('honor-rail');
+    if (!box || !rail) return;
     var list = S.get('honors');
-    if (!list.length) { box.innerHTML = '<p class="small" style="margin:0">Chưa có tin vinh danh.</p>'; return; }
+    if (!list.length) { box.innerHTML = '<p class="small" style="margin:16px">Chưa có tin vinh danh.</p>'; return; }
     box.innerHTML = list.map(function (h, n) {
       var p = S.find('projects', h.pj);
       var ava = h.avatar
         ? '<img src="' + RECO.asset(h.avatar) + '" alt="">'
         : '<span class="honor-ava">' + esc(h.ini || '') + '</span>';
-      return '<div class="honor-slide' + (n === 0 ? ' on' : '') + '" data-hi="' + n + '">' +
+      var bg = p && p.img
+        ? ' style="background-image:linear-gradient(180deg, rgba(5,31,53,.28) 0%, rgba(5,31,53,.88) 70%), url(\'' + RECO.asset(p.img) + '\')"'
+        : '';
+      return '<div class="honor-slide' + (n === 0 ? ' on' : '') + '" data-hi="' + n + '"' + bg + '>' +
         ava +
-        '<div><b>' + esc(h.name) + '</b>' +
-          '<span class="micro" style="display:block;color:rgba(255,255,255,.82)">' + esc(h.action) + ' · ' + esc(h.unitId) + '</span>' +
-          '<span class="micro" style="display:block;color:rgba(255,255,255,.7)">' + esc(p ? p.name : '') + ' · ' + esc(h.at) + '</span>' +
-        '</div></div>';
+        '<div class="honor-who"><b>' + esc(h.name) + '</b>' +
+          '<span class="chip honor-chip">' + esc(h.action) + '</span></div>' +
+        '<p class="honor-note">' + esc(h.note || '') + '</p>' +
+        '<span class="micro honor-meta">' + esc(h.unitId) + ' · ' + esc(p ? p.name : '') + '</span>' +
+        '<span class="micro honor-meta">' + esc(h.at) + '</span>' +
+      '</div>';
     }).join('');
-    dots.innerHTML = list.map(function (_, n) {
-      return '<button type="button" aria-label="Tin ' + (n + 1) + '"' +
-        (n === 0 ? ' aria-current="true" aria-pressed="true"' : ' aria-pressed="false"') + '></button>';
-    }).join('');
-    function goHonor(n) {
-      honorIdx = (n + list.length) % list.length;
-      box.querySelectorAll('.honor-slide').forEach(function (el, i) {
-        el.classList.toggle('on', i === honorIdx);
-      });
-      dots.querySelectorAll('button').forEach(function (b, i) {
-        var on = i === honorIdx;
-        if (on) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
-        b.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
-    }
+    var slider = RECO.bindSlide(rail, {
+      item: '.honor-slide', dots: '#honor-dots', prev: '#honor-prev', next: '#honor-next'
+    });
     function startHonorTimer() {
       if (honorTimer) return;
       if (/(?:^|[?&])bare=1(?:&|$)/.test(location.search) || /[?&]bare=1/.test(location.hash)) return;
-      honorTimer = setInterval(function () { goHonor(honorIdx + 1); }, 4200);
+      honorTimer = setInterval(function () { slider.go(slider.index() + 1); }, 4200);
     }
-    dots.querySelectorAll('button').forEach(function (b, n) {
-      b.addEventListener('click', function (e) { e.stopPropagation(); goHonor(n); });
-    });
-    if (honorTimer) clearInterval(honorTimer);
-    honorTimer = null;
+    if (honorTimer) { clearInterval(honorTimer); honorTimer = null; }
     startHonorTimer();
-    var rail = document.getElementById('honor-rail');
-    rail.addEventListener('mouseenter', function () { if (honorTimer) { clearInterval(honorTimer); honorTimer = null; } });
-    rail.addEventListener('mouseleave', startHonorTimer);
+    if (!rail.dataset.honorHover) {
+      rail.dataset.honorHover = '1';
+      rail.addEventListener('mouseenter', function () {
+        if (honorTimer) { clearInterval(honorTimer); honorTimer = null; }
+      });
+      rail.addEventListener('mouseleave', startHonorTimer);
+    }
   }
 
   function openAlert(id) {
@@ -461,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function () {
       box.innerHTML = RECO_DATA.empty('Chưa có sản phẩm Hot', 'Thư ký kinh doanh gắn căn đang đẩy ở màn Quản trị.');
       return;
     }
-    box.innerHTML = rows.map(function (h) {
+    box.innerHTML = rows.map(function (h, n) {
       var u = S.find('units', h.unitId);
       var p = S.find('projects', u.pj);
       var line = (h.pitch || '').split(/[.\n]/)[0].trim();
@@ -469,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var gui = tpl
         ? '<a class="btn btn-primary btn-sm" href="' + go('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>'
         : '';
-      return '<div class="card card-pad">' +
+      return '<div class="card card-pad reco-slide-item' + (n === 0 ? ' on' : '') + '">' +
         '<div class="row-tight mb-1"><b>' + esc(u.id) + '</b><span class="chip">' + esc(u.kind) + '</span></div>' +
         '<p class="small" style="margin:0">' + esc(line) + '</p>' +
         '<p class="micro muted mt-1">' + esc(p ? p.name : '') + '</p>' +
@@ -478,6 +484,8 @@ document.addEventListener('DOMContentLoaded', function () {
           gui +
         '</div></div>';
     }).join('');
+    var wrap = document.getElementById('hot-home-slide');
+    if (wrap) RECO.bindSlide(wrap, { prev: '#hot-home-prev', next: '#hot-home-next', dots: '#hot-home-dots' });
   }
 
   /* ---------- Lời chào theo vai trò ---------- */
