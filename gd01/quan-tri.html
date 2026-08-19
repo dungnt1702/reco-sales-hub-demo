@@ -1,0 +1,1517 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quản trị dữ liệu và nội dung · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  /* Cây phân khu đứng cạnh bảng căn/lô ở khổ rộng, xếp chồng ở khổ hẹp */
+  .bhq-grid { display: grid; gap: 16px; }
+  @media (min-width: 1024px) { .bhq-grid { grid-template-columns: 250px minmax(0, 1fr); align-items: start; } }
+  .bhq-grid .tnode { width: 100%; }
+</style>
+</head>
+<body data-shell="app" data-page="quan-tri">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="mb-3">
+      <span class="eyebrow">MH-09 · Quản trị dữ liệu và nội dung</span>
+      <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Quản trị</h1>
+      <p class="lead mt-1" style="font-size:.98rem;max-width:72ch">
+        Cập nhật dự án và tài liệu, đặt nhãn quyền, quản lý phiên bản và ngày hiệu lực, duyệt nội dung công bố.
+      </p>
+    </div>
+
+    <!-- Chặn ở cấp màn, không chỉ ẩn nút. Ẩn menu mà gõ thẳng địa chỉ vẫn đọc được
+         tên tài liệu chờ duyệt và số liệu vận hành thì coi như không chặn gì. -->
+    <div class="state-error" data-roles="nvbh qlkd">
+      <h3>Anh/chị không có quyền vào màn Quản trị</h3>
+      <p class="lead mt-1" style="max-width:56ch;margin-inline:auto">
+        Theo ma trận quyền, vai trò của anh/chị không sửa dữ liệu dự án và không duyệt nội dung công bố.
+        Thấy nội dung cần chỉnh thì anh/chị gửi đề nghị sửa để người phụ trách dữ liệu xử lý.
+      </p>
+      <div class="row mt-3" style="justify-content:center">
+        <a class="btn btn-primary" href="de-nghi-sua.html">Gửi đề nghị sửa</a>
+        <a class="btn btn-outline" href="trang-dau.html">Về Trang đầu</a>
+      </div>
+    </div>
+
+    <div class="card" data-roles="gd gddu tkkd mkt hcns ktoan">
+      <div class="tabs" role="tablist" aria-label="Khu vực quản trị">
+        <button role="tab" id="t-duan" aria-controls="p-duan" aria-selected="true">Dự án và nội dung</button>
+        <button role="tab" id="t-duyet" aria-controls="p-duyet" aria-selected="false" tabindex="-1">Chờ duyệt</button>
+        <button role="tab" id="t-nhan" aria-controls="p-nhan" aria-selected="false" tabindex="-1">Nhãn quyền và hiệu lực</button>
+        <!-- HCNS &amp; Kế toán không đụng nội dung dự án nên không thấy tab này -->
+        <button role="tab" id="t-kb" aria-controls="p-kb" aria-selected="false" tabindex="-1" hidden data-gd2>Kịch bản</button>
+        <!-- Thư ký kinh doanh không có quyền xem báo cáo theo ma trận -->
+        <button role="tab" id="t-bc" aria-controls="p-bc" aria-selected="false" tabindex="-1" data-roles="gd gddu tkkd mkt hcns ktoan">Báo cáo vận hành</button>
+      </div>
+
+      <!-- Dự án và nội dung -->
+      <div role="tabpanel" id="p-duan" aria-labelledby="t-duan" class="card-body">
+        <div class="spread mb-3">
+          <p class="small muted" style="margin:0">Tạo, sửa, ẩn dự án; quản lý phân khu/tòa/tầng/căn/lô; chọn dự án nổi bật.</p>
+          <button class="btn btn-primary btn-sm" id="pj-new" data-roles="gd gddu">+ Dự án mới</button>
+        </div>
+
+        <div class="filterbar mb-3">
+          <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" id="pj-q" placeholder="Tìm theo tên dự án hoặc địa điểm" aria-label="Tìm dự án">
+          </div>
+          <select class="inp" id="pj-type" aria-label="Loại dự án">
+            <option value="">Mọi loại</option>
+          </select>
+          <select class="inp" id="pj-status" aria-label="Trạng thái dự án">
+            <option value="">Mọi trạng thái</option>
+            <option value="live">Đang bán</option>
+            <option value="soon">Sắp mở bán</option>
+            <option value="closed">Ngừng bán</option>
+            <option value="hidden">Đã ẩn</option>
+          </select>
+          <button type="button" class="btn btn-quiet btn-sm" id="pj-reset">Xóa lọc</button>
+        </div>
+
+        <p class="small muted mb-2" id="pj-count" style="margin:0"></p>
+
+        <div class="tbl-wrap" id="pj-wrap">
+          <table class="tbl">
+            <thead><tr><th>Dự án</th><th>Loại</th><th>Cấu trúc</th><th>Trạng thái</th><th>Nổi bật</th><th class="r">Thao tác</th></tr></thead>
+            <tbody id="pj-body"></tbody>
+          </table>
+        </div>
+        <div id="pj-rong" hidden></div>
+
+        <p class="micro muted mt-2">
+          Dự án <strong>nổi bật</strong> luôn đứng trước ở Trang đầu và Danh sách dự án. Dự án <strong>đã ẩn</strong> biến mất khỏi mọi danh sách,
+          khỏi ô tìm kiếm và khỏi trang gửi khách — chỉ còn thấy ở màn này.
+        </p>
+
+        <!-- Bảng hàng tới cấp căn/lô. data-roles đặt ở lớp ngoài, còn hidden do JS điều khiển
+             đặt ở lớp trong — để chung một phần tử thì applyRoles sẽ bung panel ra lúc nạp trang. -->
+        <section id="bhq-zone" class="mt-4" data-roles="gddu tkkd gd">
+          <div id="bhq-panel" hidden>
+            <div class="spread mb-2">
+              <div>
+                <span class="eyebrow">Bảng hàng</span>
+                <h3 id="bhq-title" style="font-size:1.05rem"></h3>
+                <p class="small muted mt-1" id="bhq-sub" style="margin:0"></p>
+              </div>
+              <div class="row-tight">
+                <button class="btn btn-primary btn-sm" id="bhq-new">+ Thêm căn/lô</button>
+                <button class="btn btn-quiet btn-sm" id="bhq-close">Đóng bảng hàng</button>
+              </div>
+            </div>
+            <div class="bhq-grid">
+              <div class="card" style="box-shadow:none">
+                <div class="card-head" style="padding-block:10px">
+                  <h4 style="font-size:.9rem">Phân khu và tòa</h4>
+                  <button class="btn btn-outline btn-sm" data-zadd="">+ Phân khu</button>
+                </div>
+                <div class="card-body" style="padding:8px"><div class="tree" id="bhq-tree"></div></div>
+              </div>
+              <div>
+                <div class="tbl-wrap" id="bhq-wrap">
+                  <table class="tbl">
+                    <thead><tr><th>Mã căn/lô</th><th>Loại</th><th class="r">Diện tích</th><th>Tình trạng</th><th class="r">Thao tác</th></tr></thead>
+                    <tbody id="bhq-body"></tbody>
+                  </table>
+                </div>
+                <div id="bhq-rong" hidden></div>
+              </div>
+            </div>
+            <div class="note note-danger mt-2" id="bhq-drive" hidden></div>
+            <p class="micro muted mt-2">
+              Bảng hàng mang nhãn <strong>Nội bộ</strong> và không bao giờ ra thẳng trang gửi khách.
+              Khách chỉ thấy <em>phiếu tính giá đã được duyệt</em>.
+            </p>
+          </div>
+          <p class="small muted" id="bhq-goi" style="margin:0">
+            Bấm <strong>Bảng hàng</strong> ở dòng dự án phía trên để quản lý căn/lô, giá và tình trạng của dự án đó.
+          </p>
+        </section>
+        <p class="micro muted mt-2" data-roles="mkt hcns">
+          Vai trò của anh/chị không quản lý bảng hàng — nhánh <em>Sản phẩm và Bảng hàng</em> do Thư ký kinh doanh
+          và Giám đốc dự án phụ trách.
+        </p>
+      </div>
+
+      <!-- Chờ duyệt -->
+      <div role="tabpanel" id="p-duyet" aria-labelledby="t-duyet" class="card-body" hidden>
+        <div class="note note-navy mb-3">
+          <strong>Giám đốc dự án là người duyệt cuối</strong> nội dung công khai của dự án phụ trách.
+          Thư ký kinh doanh cập nhật rồi gửi lên; Marketing chuẩn bị nội dung và chờ duyệt, không tự công bố.
+          Duyệt là hành động chịu trách nhiệm pháp lý — mỗi lần duyệt đều hiện đủ nội dung sắp ra tới khách hàng.
+        </div>
+
+        <div id="dq-bulk"></div>
+
+        <div class="spread mb-2" id="dq-head">
+          <label class="pick-row" data-roles="gddu gd" style="margin:0">
+            <input type="checkbox" id="dq-all" aria-label="Chọn tất cả mục đang chờ duyệt">
+            <span class="small">Chọn tất cả</span>
+          </label>
+          <p class="small muted" id="dq-count" style="margin:0"></p>
+        </div>
+
+        <div class="card" style="box-shadow:none" id="dq-list"></div>
+        <div id="dq-rong" hidden></div>
+      </div>
+
+      <!-- Kịch bản kinh doanh -->
+      <div role="tabpanel" id="p-kb" aria-labelledby="t-kb" class="card-body" hidden data-gd2>
+        <div class="note note-navy mb-3">
+          <strong>Kịch bản dùng chung</strong> áp cho cả đội, do người được phân quyền soạn.
+          <strong>Kịch bản cá nhân</strong> là của riêng từng nhân viên bán hàng — màn này chỉ đếm, không đọc được nội dung.
+          Nhân viên muốn đưa kịch bản riêng thành bản chung thì gửi <strong>đề xuất</strong>, Giám đốc dự án duyệt hoặc từ chối kèm lý do (QD-032).
+        </div>
+
+        <div class="spread mb-3">
+          <div class="filterbar" style="flex:1 1 auto">
+            <select class="inp" id="kb-pj" aria-label="Lọc theo dự án"><option value="">Mọi dự án</option></select>
+            <select class="inp" id="kb-scope" aria-label="Lọc theo loại kịch bản">
+              <option value="">Mọi loại</option>
+              <option value="shared">Dùng chung</option>
+              <option value="proposal">Đề xuất nâng lên chung</option>
+              <option value="mine">Cá nhân</option>
+            </select>
+            <button type="button" class="btn btn-quiet btn-sm" id="kb-reset">Xóa lọc</button>
+          </div>
+          <button class="btn btn-primary btn-sm" id="kb-new" data-roles="gddu tkkd gd">+ Kịch bản dùng chung</button>
+        </div>
+
+        <p class="small muted mb-2" id="kb-count" style="margin:0"></p>
+        <div class="card" style="box-shadow:none" id="kb-list"></div>
+        <div id="kb-rong" hidden></div>
+        <p class="micro muted mt-2" id="kb-mine-note"></p>
+      </div>
+
+      <!-- Nhãn quyền và hiệu lực -->
+      <div role="tabpanel" id="p-nhan" aria-labelledby="t-nhan" class="card-body" hidden>
+        <div class="grid g-3 mb-3">
+          <div class="card card-pad" style="box-shadow:none">
+            <span class="lb lb-public">Công khai</span>
+            <p class="small muted mt-2">Khách hàng xem được, không cần đăng nhập. Dùng cho nội dung được phép gửi ra ngoài RECO.</p>
+          </div>
+          <div class="card card-pad" style="box-shadow:none">
+            <span class="lb lb-internal">Nội bộ</span>
+            <p class="small muted mt-2">Mọi nhân viên đã đăng nhập. Mặc định cho nội dung chưa được duyệt để công khai.</p>
+          </div>
+          <div class="card card-pad" style="box-shadow:none">
+            <span class="lb lb-restricted">Nội bộ hạn chế</span>
+            <p class="small muted mt-2">Chỉ vai trò được chỉ định. <strong>Chỉ Giám đốc dự án cấp được nhãn này</strong>, trong phạm vi dự án phụ trách.</p>
+          </div>
+        </div>
+
+        <div class="note mb-3">
+          <strong>Kế thừa nghiêm ngặt nhất thắng.</strong> Nhãn của thư mục kế thừa xuống thư mục con và tệp bên trong.
+          Nội dung con chỉ được siết chặt hơn, không bao giờ được nới lỏng hơn nội dung cha.
+        </div>
+
+        <h3 class="mb-2">Năm nhóm nội dung không bao giờ được gán nhãn Công khai</h3>
+        <div class="grid g-2 mb-3">
+          <div class="card card-pad" style="box-shadow:none"><b>1. Chính sách hoa hồng</b></div>
+          <div class="card card-pad" style="box-shadow:none"><b>2. Bảng hàng, giá hoặc chính sách chưa công bố</b></div>
+          <div class="card card-pad" style="box-shadow:none"><b>3. Kịch bản bán hàng và ghi chú nội bộ</b></div>
+          <div class="card card-pad" style="box-shadow:none"><b>4. Báo cáo, KPI và số liệu tài chính</b></div>
+          <div class="card card-pad" style="box-shadow:none"><b>5. Tài liệu chưa duyệt hoặc đã hết hiệu lực</b></div>
+        </div>
+
+        <h3 class="mb-2">Đặt nhãn và ngày hiệu lực cho một tài liệu</h3>
+        <div class="card card-pad" style="box-shadow:none" id="nh-form">
+          <div class="grid g-3">
+            <label class="field" style="margin:0"><span class="lab">Tài liệu</span>
+              <select class="inp" id="nh-doc"></select>
+              <span class="hint" id="nh-doc-hint"></span></label>
+            <label class="field" style="margin:0"><span class="lab">Nhãn quyền</span>
+              <select class="inp" id="nh-label"></select>
+              <span class="hint" id="nh-label-hint"></span></label>
+            <label class="field" style="margin:0"><span class="lab">Phiên bản</span>
+              <input class="inp" type="text" id="nh-ver" data-required data-msg="Ghi phiên bản, ví dụ v3. Không có phiên bản thì ghi một dấu gạch."></label>
+            <label class="field" style="margin:0"><span class="lab">Ngày hiệu lực</span>
+              <input class="inp" type="date" id="nh-from" data-required data-msg="Chọn ngày tài liệu bắt đầu có hiệu lực."></label>
+            <label class="field" style="margin:0"><span class="lab">Hết hiệu lực</span>
+              <input class="inp" type="date" id="nh-to">
+              <span class="hint">Để trống nếu tài liệu không đặt ngày hết hiệu lực.</span></label>
+            <label class="field" style="margin:0"><span class="lab">Nhắc trước</span>
+              <input class="inp" type="text" value="7 ngày" readonly>
+              <span class="hint">Hệ thống tự nhắc Thư ký kinh doanh và Giám đốc dự án.</span></label>
+          </div>
+          <div class="row mt-3">
+            <button class="btn btn-primary btn-sm" id="nh-save" data-roles="gddu tkkd">Lưu</button>
+            <span class="chip" data-roles="mkt hcns qlkd nvbh">Vai trò của anh/chị chỉ xem, không đổi được nhãn quyền</span>
+            <span class="small muted" id="nh-now"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Báo cáo vận hành -->
+      <div role="tabpanel" id="p-bc" aria-labelledby="t-bc" class="card-body" hidden data-roles="gd gddu tkkd mkt hcns ktoan">
+        <div class="note note-navy mb-3">
+          <strong>Đúng mức tối thiểu theo QD-042.</strong> Bốn số liệu vận hành cơ bản và danh sách tài liệu sắp hết hiệu lực,
+          trên một màn hình duy nhất — <em>không có bộ lọc, không xuất tệp</em>. Báo cáo Marketing của dự án chuyển sang Giai đoạn 2.
+        </div>
+
+        <div class="grid g-4 mb-4" id="bc-tiles"></div>
+
+        <h3 class="mb-2">Tài liệu sắp hết hiệu lực</h3>
+        <div class="tbl-wrap" id="bc-wrap">
+          <table class="tbl">
+            <thead><tr><th>Tài liệu</th><th>Dự án</th><th>Nhãn</th><th>Hết hiệu lực</th><th class="r">Thao tác</th></tr></thead>
+            <tbody id="bc-body"></tbody>
+          </table>
+        </div>
+        <div id="bc-rong" hidden></div>
+
+        <div class="gd2-band mt-4" data-gd2>
+          <span class="chip-gd2">Giai đoạn 2 · ngoài báo giá</span>
+          <h3 class="mt-2" style="font-size:1.1rem">Báo cáo quản trị chuyên sâu</h3>
+          <p class="small muted mt-1" style="max-width:76ch">
+            KPI bán hàng theo đội và theo nhân viên, bảng mức độ sử dụng của từng người (QD-011), nhật ký kiểm toán đầy đủ,
+            bộ lọc theo khoảng thời gian và xuất tệp. Giai đoạn 1 cố ý dừng ở bốn số liệu trên một màn hình theo QD-042 —
+            thêm bộ lọc hay nút xuất tệp vào đây là vượt phạm vi đã báo giá.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Tạo / sửa dự án -->
+<div class="modal" id="m-pj" hidden role="dialog" aria-modal="true" aria-labelledby="m-pj-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Luồng 3 · quản trị dữ liệu dự án</span><h3 id="m-pj-t">Dự án mới</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="pj-form">
+      <label class="field"><span class="lab">Tên dự án</span>
+        <input class="inp" type="text" id="pj-f-name" placeholder="Celestine Westlake"
+               data-required data-msg="Nhập tên dự án đúng như tên thương mại Chủ đầu tư công bố."></label>
+      <label class="field"><span class="lab">Khu vực</span>
+        <input class="inp" type="text" id="pj-f-place" placeholder="Tây Hồ, Hà Nội"
+               data-required data-msg="Nhập khu vực theo mẫu quận/huyện, tỉnh hoặc thành phố.">
+        <span class="hint">Phần sau dấu phẩy được dùng làm vùng lọc ở Danh sách dự án — ví dụ <em>Hà Nội</em>.</span></label>
+      <label class="field"><span class="lab">Loại hình</span>
+        <!-- Danh mục loại hình dựng từ S.TYPES lúc chạy: viết cứng ở đây thì màn quản trị đặt
+             nhãn khác với dữ liệu gốc, và thêm loại hình mới là quên một chỗ. -->
+        <select class="inp" id="pj-f-type"></select></label>
+      <label class="field"><span class="lab">Quy mô</span>
+        <input class="inp" type="text" id="pj-f-struct" placeholder="2 tháp · 23 tầng · 216 căn"
+               data-required data-msg="Ghi quy mô dự án, ví dụ 2 tháp · 23 tầng · 216 căn."></label>
+      <label class="field"><span class="lab">Trạng thái</span>
+        <select class="inp" id="pj-f-status">
+          <option value="live">Đang bán</option>
+          <option value="soon">Sắp mở bán</option>
+          <option value="closed">Ngừng bán</option>
+        </select></label>
+      <label class="check"><input type="checkbox" id="pj-f-featured"> <span>Đặt làm dự án nổi bật — luôn đứng trước ở mọi danh sách</span></label>
+      <div class="note mt-2" id="pj-f-note">
+        Dự án mới tạo chưa có giá, diện tích và tài liệu. Thư ký kinh doanh bổ sung theo bảy nhánh cố định trước khi mở bán.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="pj-save">Tạo dự án</button>
+    </div>
+  </div>
+</div>
+
+<!-- Thêm hoặc sửa một căn/lô -->
+<div class="modal" id="m-unit" hidden role="dialog" aria-modal="true" aria-labelledby="m-unit-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Bảng hàng tới cấp căn/lô</span><h3 id="m-unit-t">Thêm căn/lô</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="unit-form">
+      <label class="field"><span class="lab">Mã căn/lô</span>
+        <input class="inp" type="text" id="un-id" placeholder="T1-12.05"
+               data-required data-msg="Nhập mã căn/lô đúng như Chủ đầu tư đặt, ví dụ T1-12.05 hoặc VH-LKA.09.">
+        <span class="hint">Mã là khóa duy nhất của bảng hàng — phiếu tính giá và đường dẫn gửi khách trỏ theo mã này.</span></label>
+      <label class="field"><span class="lab">Vị trí trong dự án</span>
+        <select class="inp" id="un-zone"></select>
+        <span class="hint" id="un-zone-hint">Chọn tới cấp sâu nhất đang có. Căn hộ thường là Phân khu › Tòa › Tầng; đất nền và nhà thấp tầng dừng ở cấp dãy.</span></label>
+      <label class="field"><span class="lab">Loại sản phẩm</span>
+        <input class="inp" type="text" id="un-kind" data-required data-msg="Ghi loại sản phẩm, ví dụ 2PN + 1, Liền kề, Lô góc."></label>
+      <label class="field"><span class="lab">Diện tích (m²)</span>
+        <input class="inp" type="text" id="un-area" inputmode="decimal"
+               data-required data-msg="Nhập diện tích theo m², ví dụ 72,4."></label>
+      <label class="field"><span class="lab">Hướng</span>
+        <input class="inp" type="text" id="un-dir" placeholder="Đông Nam"></label>
+      <label class="field" hidden>
+        <span class="lab">Giá (không hiện trên giao diện Giai đoạn 1)</span>
+        <input class="inp" type="text" id="un-price" inputmode="numeric">
+      </label>
+      <label class="field"><span class="lab">Tình trạng</span>
+        <select class="inp" id="un-state">
+          <option value="con">Còn hàng</option>
+          <option value="giu">Đang giữ chỗ</option>
+          <option value="ban">Đã bán</option>
+          <option value="ngung">Ngừng bán</option>
+        </select></label>
+      <div class="note">Giai đoạn 1 không nhập và không hiện giá trên giao diện. Số chính thức nằm trên Drive Chủ đầu tư (QD-075).</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="un-save">Thêm vào bảng hàng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Thêm hoặc sửa kịch bản dùng chung -->
+<div class="modal" id="m-kb" hidden role="dialog" aria-modal="true" aria-labelledby="m-kb-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Kịch bản kinh doanh</span><h3 id="m-kb-t">Kịch bản dùng chung mới</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="kb-form">
+      <label class="field"><span class="lab">Dự án</span><select class="inp" id="kb-f-pj"></select></label>
+      <label class="field"><span class="lab">Tiêu đề</span>
+        <input class="inp" type="text" id="kb-f-title" data-required data-msg="Đặt tiêu đề để cả đội tìm được kịch bản."
+               placeholder="Ví dụ: Xử lý phản đối về giá so với dự án lân cận"></label>
+      <label class="field"><span class="lab">Nội dung</span>
+        <textarea class="inp" id="kb-f-body" rows="4" data-required data-msg="Nhập nội dung kịch bản."></textarea></label>
+      <label class="field"><span class="lab">Nhãn quyền</span>
+        <select class="inp" id="kb-f-label"></select>
+        <span class="hint" id="kb-f-hint"></span></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="kb-f-save">Lưu kịch bản</button>
+    </div>
+  </div>
+</div>
+
+<!-- Từ chối đề xuất nâng lên bản chung -->
+<div class="modal" id="m-kb-tuchoi" hidden role="dialog" aria-modal="true" aria-labelledby="m-kbtc-t">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-head">
+      <div><span class="eyebrow">Đề xuất nâng lên bản chung</span><h3 id="m-kbtc-t">Từ chối đề xuất</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="kbtc-form">
+      <p class="small muted mb-2" id="kbtc-ctx"></p>
+      <label class="field"><span class="lab">Lý do từ chối</span>
+        <textarea class="inp" id="kbtc-ly" rows="3" data-required data-msg="Nhập lý do — người gửi cần biết phải sửa gì (QD-047)."></textarea>
+        <span class="hint">Lý do hiện lại cho người gửi ở khu vực 09 màn Chi tiết dự án.</span></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="kbtc-ok">Từ chối kèm lý do</button>
+    </div>
+  </div>
+</div>
+
+<!-- Trả lại nội dung -->
+<div class="modal" id="m-tra" hidden role="dialog" aria-modal="true" aria-labelledby="m-tra-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Hàng chờ duyệt</span><h3 id="m-tra-t">Trả lại nội dung</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="tra-form">
+      <p class="small muted" id="tra-what"></p>
+      <label class="field"><span class="lab">Lý do trả lại</span>
+        <textarea class="inp" id="tra-reason" rows="4" placeholder="Ví dụ: Bảng giá tòa C chưa khớp thông báo ngày 11/08 của Chủ đầu tư."
+                  data-required data-msg="Nêu rõ lý do — người cập nhật cần biết phải sửa gì."></textarea>
+        <span class="hint">Lý do hiện lại cho người gửi và lưu vào lịch sử của nội dung.</span></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="tra-save">Trả lại kèm lý do</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gia hạn hiệu lực -->
+<div class="modal" id="m-giahan" hidden role="dialog" aria-modal="true" aria-labelledby="m-giahan-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Báo cáo vận hành</span><h3 id="m-giahan-t">Gia hạn ngày hiệu lực</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="gh-form">
+      <p class="small muted" id="gh-what"></p>
+      <label class="field"><span class="lab">Hết hiệu lực mới</span>
+        <input class="inp" type="date" id="gh-to" data-required data-msg="Chọn ngày hết hiệu lực mới.">
+        <span class="hint">Phải sau ngày hôm nay. Hệ thống nhắc lại khi còn 7 ngày.</span></label>
+      <div class="note">Gia hạn không thay bản mới. Nếu nội dung đã đổi, anh/chị tải bản mới rồi gửi duyệt thay vì kéo dài bản cũ.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="gh-save">Gia hạn</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  /* Chế độ xem điện thoại thay toàn bộ nội dung màn bằng khung iframe — không còn gì để dựng. */
+  if (!document.getElementById('pj-body')) return;
+
+  var S = RECO.store, esc = RECO_DATA.esc;
+
+  /* Bản mô phỏng đặt "hôm nay" trùng ngày của bộ dữ liệu để mọi số ngày còn lại khớp nhau. */
+  var TODAY = '2026-08-14';
+  /* Danh mục loại hình dùng chung với kho dữ liệu (QD-057 + QD-071) — màn quản trị tự chép lại
+     thì nhãn ở đây lệch nhãn của chính dự án, và thêm loại hình mới là hụt một chỗ. */
+  var TYPE = S.TYPES;
+  ['pj-type', 'pj-f-type'].forEach(function (selId) {
+    var sel = document.getElementById(selId);
+    if (!sel) return;
+    Object.keys(TYPE).forEach(function (k) {
+      var o = document.createElement('option');
+      o.value = k; o.textContent = TYPE[k];
+      sel.appendChild(o);
+    });
+  });
+  var STATUS = { live: 'Đang bán', soon: 'Sắp mở bán', closed: 'Ngừng bán' };
+  var STATUS_CLS = { live: 'st-live', soon: 'st-wait', closed: 'st-off' };
+
+  function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd'); }
+  function toISO(vn) { var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(vn || ''); return m ? m[3] + '-' + m[2] + '-' + m[1] : ''; }
+  function toVN(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : null; }
+  function dayDiff(iso) { return Math.round((Date.parse(iso + 'T00:00:00Z') - Date.parse(TODAY + 'T00:00:00Z')) / 86400000); }
+  function fieldErr(input, msg) {
+    var f = input.closest('.field'), e = f.querySelector('.err');
+    if (!msg) { if (e) e.remove(); input.removeAttribute('aria-invalid'); return; }
+    if (!e) { e = document.createElement('span'); e.className = 'err'; f.appendChild(e); }
+    e.textContent = msg;
+    input.setAttribute('aria-invalid', 'true');
+    input.focus();
+  }
+  /* Hết hiệu lực đổi thì trạng thái tài liệu phải đổi theo, nếu không thư viện và báo cáo lệch nhau. */
+  function lifePatch(doc, isoTo) {
+    if (doc.state === 'draft' || doc.state === 'broken') return { to: toVN(isoTo) };
+    if (!isoTo) return { to: null, state: 'live', daysLeft: null };
+    var n = dayDiff(isoTo);
+    return n <= 7
+      ? { to: toVN(isoTo), state: 'expiring', daysLeft: Math.max(n, 0) }
+      : { to: toVN(isoTo), state: 'live', daysLeft: null };
+  }
+
+  /* ================= Tab 1 · Dự án ================= */
+  var pjBody = document.getElementById('pj-body'), pjWrap = document.getElementById('pj-wrap'),
+      pjRong = document.getElementById('pj-rong'), pjCount = document.getElementById('pj-count'),
+      pjQ = document.getElementById('pj-q'), pjType = document.getElementById('pj-type'),
+      pjStatus = document.getElementById('pj-status');
+  var pjForm = document.getElementById('pj-form'), pjSave = document.getElementById('pj-save'),
+      pjTitle = document.getElementById('m-pj-t');
+  var editingPj = null;
+
+  function pjRow(p) {
+    var acts = '<button class="btn btn-outline btn-sm" data-act="edit" data-id="' + p.id + '" data-roles="gd gddu tkkd">Sửa</button>';
+    if (p.hidden) {
+      acts += '<button class="btn btn-outline btn-sm" data-act="show" data-id="' + p.id + '" data-roles="gd gddu">Bỏ ẩn</button>';
+    } else {
+      acts += '<button class="btn btn-quiet btn-sm" data-act="star" data-id="' + p.id + '" data-roles="gd gddu">' +
+        (p.featured ? 'Bỏ nổi bật' : 'Đặt nổi bật') + '</button>' +
+        '<button class="btn btn-quiet btn-sm" data-act="hide" data-id="' + p.id + '" data-roles="gd gddu">Ẩn</button>';
+    }
+    return '<tr>' +
+      '<td data-l="Dự án"><b>' + esc(p.name) + '</b><div class="micro muted">' + esc(p.place) + '</div></td>' +
+      '<td data-l="Loại">' + esc(p.typeName) + '</td>' +
+      '<td data-l="Cấu trúc">' + esc(p.struct) + '</td>' +
+      '<td data-l="Trạng thái">' + (p.hidden
+        ? '<span class="st st-stop">Đã ẩn</span>'
+        : '<span class="st ' + (STATUS_CLS[p.status] || 'st-off') + '">' + esc(p.statusText) + '</span>') + '</td>' +
+      '<td data-l="Nổi bật">' + (p.featured ? '<span class="hot">Có</span>' : '<span class="chip">Không</span>') + '</td>' +
+      '<td data-l="" class="r"><div class="row-tight" style="justify-content:flex-end">' +
+        '<button class="btn btn-quiet btn-sm" data-act="units" data-id="' + p.id + '" data-roles="gddu tkkd">Bảng hàng</button>' +
+        acts + '<span class="chip" data-roles="mkt hcns qlkd nvbh">Chỉ xem</span></div></td>' +
+    '</tr>';
+  }
+
+  function pjRender() {
+    var t = norm(pjQ.value.trim());
+    var list = S.get('projects').filter(function (p) {
+      var okStatus = !pjStatus.value
+        || (pjStatus.value === 'hidden' ? !!p.hidden : (!p.hidden && p.status === pjStatus.value));
+      return (!t || norm(p.name + ' ' + p.place).indexOf(t) >= 0)
+        && (!pjType.value || p.type === pjType.value)
+        && okStatus;
+    }).sort(function (a, b) { return (b.featured ? 1 : 0) - (a.featured ? 1 : 0); });
+
+    var none = list.length === 0;
+    pjWrap.hidden = none;
+    pjRong.hidden = !none;
+    if (none) {
+      pjRong.innerHTML = RECO_DATA.empty('Không có dự án nào khớp bộ lọc',
+        'Thử bỏ bớt một điều kiện, hoặc tạo dự án mới nếu Chủ đầu tư vừa bàn giao hồ sơ.',
+        '<button type="button" class="btn btn-primary" data-act="reset">Bỏ bộ lọc</button>');
+    } else {
+      pjBody.innerHTML = list.map(pjRow).join('');
+    }
+    pjCount.textContent = none
+      ? 'Không có dự án nào khớp bộ lọc'
+      : 'Đang hiển thị ' + list.length + ' trên tổng ' + S.get('projects').length + ' dự án';
+    RECO.applyRoles(none ? pjRong : pjBody);
+  }
+
+  function pjOpen(p) {
+    editingPj = p || null;
+    pjTitle.textContent = p ? 'Sửa dự án' : 'Dự án mới';
+    pjSave.textContent = p ? 'Lưu thay đổi' : 'Tạo dự án';
+    document.getElementById('pj-f-note').hidden = !!p;
+    document.getElementById('pj-f-name').value = p ? p.name : '';
+    document.getElementById('pj-f-place').value = p ? p.place : '';
+    document.getElementById('pj-f-type').value = p ? p.type : 'canho';
+    document.getElementById('pj-f-struct').value = p ? p.struct : '';
+    document.getElementById('pj-f-status').value = p ? p.status : 'live';
+    document.getElementById('pj-f-featured').checked = p ? !!p.featured : false;
+    pjForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    pjForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    RECO.openModal('m-pj');
+  }
+  document.getElementById('pj-new').addEventListener('click', function () { pjOpen(null); });
+
+  pjSave.addEventListener('click', function () {
+    if (!RECO.validate(pjForm)) return;
+    var place = document.getElementById('pj-f-place').value.trim();
+    var type = document.getElementById('pj-f-type').value;
+    var status = document.getElementById('pj-f-status').value;
+    var patch = {
+      name: document.getElementById('pj-f-name').value.trim(),
+      place: place,
+      area: place.split(',').pop().trim() || place,
+      type: type, typeName: TYPE[type],
+      struct: document.getElementById('pj-f-struct').value.trim(),
+      status: status, statusText: STATUS[status],
+      featured: document.getElementById('pj-f-featured').checked
+    };
+    RECO.busy(pjSave, editingPj ? 'Đang lưu…' : 'Đang tạo…', 900, function () {
+      RECO.closeModal('m-pj');
+      if (editingPj) {
+        S.update('projects', editingPj.id, patch);
+        RECO.toast('Đã lưu dự án ' + patch.name);
+      } else {
+        S.add('projects', Object.assign(patch, {
+          price: 0, priceText: 'Đang cập nhật', size: 0, sizeText: 'Đang cập nhật',
+          pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 0, ready: 0,
+          updated: 'Vừa tạo', owner: 'Đang cập nhật', handover: 'Đang cập nhật'
+        }));
+        RECO.toast('Đã tạo dự án ' + patch.name + ' — bổ sung tài liệu theo bảy nhánh trước khi mở bán');
+      }
+      editingPj = null;
+      pjRender();
+    });
+  });
+
+  function pjAct(e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var act = b.getAttribute('data-act');
+    if (act === 'reset') { pjReset(); return; }
+    var p = S.find('projects', b.getAttribute('data-id'));
+    if (!p) return;
+    if (act === 'edit') { pjOpen(p); return; }
+    if (act === 'units') { bhqOpen(p); return; }
+    if (act === 'star') {
+      var on = !p.featured;
+      S.update('projects', p.id, { featured: on });
+      pjRender();
+      RECO.toast(on
+        ? 'Đã đặt ' + p.name + ' làm dự án nổi bật — dự án này đứng trước ở mọi danh sách'
+        : 'Đã bỏ nổi bật ' + p.name, { undo: function () { S.update('projects', p.id, { featured: !on }); pjRender(); } });
+      return;
+    }
+    if (act === 'show') {
+      S.update('projects', p.id, { hidden: false });
+      pjRender();
+      RECO.toast('Đã hiện lại ' + p.name + ' trên mọi danh sách');
+      return;
+    }
+    if (act === 'hide') {
+      RECO.confirm({
+        eyebrow: 'Ẩn dự án',
+        title: 'Ẩn ' + esc(p.name) + ' khỏi mọi danh sách?',
+        body: '<p class="small">Dự án này <strong>biến mất khỏi Trang đầu, Danh sách dự án, ô tìm kiếm và mọi trang gửi khách</strong> ngay lập tức. ' +
+              'Đường dẫn gửi khách đang trỏ tới dự án sẽ không còn nội dung để hiện.</p>' +
+              '<p class="small muted mt-2">Dữ liệu không bị xóa. Anh/chị bỏ ẩn ở đúng màn này khi cần dùng lại.</p>',
+        okText: 'Ẩn dự án',
+        danger: true,
+        onOk: function () {
+          RECO.busy(b, 'Đang ẩn…', 700, function () {
+            S.update('projects', p.id, { hidden: true });
+            pjRender();
+            RECO.toast('Đã ẩn ' + p.name + ' khỏi mọi danh sách', {
+              danger: true,
+              undo: function () { S.update('projects', p.id, { hidden: false }); pjRender(); }
+            });
+          });
+        }
+      });
+    }
+  }
+  pjBody.addEventListener('click', pjAct);
+  pjRong.addEventListener('click', pjAct);
+
+  function pjReset() { pjQ.value = ''; pjType.value = ''; pjStatus.value = ''; pjRender(); }
+  document.getElementById('pj-reset').addEventListener('click', pjReset);
+
+  /* ================= Tab 1 · Bảng hàng tới cấp căn/lô ================= */
+  var bhqPanel = document.getElementById('bhq-panel'), bhqGoi = document.getElementById('bhq-goi'),
+      bhqBody = document.getElementById('bhq-body'), bhqWrap = document.getElementById('bhq-wrap'),
+      bhqRong = document.getElementById('bhq-rong'), bhqTitle = document.getElementById('bhq-title'),
+      bhqSub = document.getElementById('bhq-sub');
+  var unForm = document.getElementById('unit-form'), unSave = document.getElementById('un-save');
+  var unId = document.getElementById('un-id');
+  var bhqPj = null, editingUnit = null;
+
+  /* ---- Cây phân khu → tòa → tầng (schema: zones + units.zone_id) ---- */
+  var ZKIND = { khu: 'Phân khu', toa: 'Tòa hoặc dãy', tang: 'Tầng' };
+  var ZNEXT = { khu: 'toa', toa: 'tang' };
+  var selZone = null;
+
+  function zones(parent) {
+    return S.get('zones').filter(function (z) {
+      return z.pj === bhqPj.id && (z.parent || null) === (parent || null);
+    });
+  }
+  function zonePath(id) {
+    var out = [], z = id && S.find('zones', id);
+    while (z) { out.unshift(z.name); z = z.parent ? S.find('zones', z.parent) : null; }
+    return out.join(' › ');
+  }
+  function zoneAndBelow(id) {
+    var ids = [id];
+    S.get('zones').forEach(function (z) { if (z.parent === id) ids = ids.concat(zoneAndBelow(z.id)); });
+    return ids;
+  }
+  function units() {
+    var list = S.get('units').filter(function (u) { return u.pj === bhqPj.id; });
+    if (!selZone) return list;
+    var scope = zoneAndBelow(selZone);
+    return list.filter(function (u) { return scope.indexOf(u.zone) >= 0; });
+  }
+  function zoneTreeHtml(parent, depth) {
+    var list = zones(parent);
+    if (!list.length) return '';
+    return '<ul>' + list.map(function (z) {
+      var n = S.get('units').filter(function (u) {
+        return u.pj === bhqPj.id && zoneAndBelow(z.id).indexOf(u.zone) >= 0;
+      }).length;
+      return '<li><button type="button" class="tnode' + (selZone === z.id ? ' sel' : '') + '" data-zone="' + z.id + '">' +
+          '<span style="width:' + (depth * 8) + 'px"></span>' + RECO.svg('folder', 'ficon') +
+          '<span class="tname">' + esc(z.name) + '</span><span class="chip">' + n + '</span>' +
+        '</button>' +
+        (ZNEXT[z.kind] ? '<button type="button" class="btn btn-quiet btn-sm" data-zadd="' + z.id + '" ' +
+          'title="Thêm ' + ZKIND[ZNEXT[z.kind]].toLowerCase() + '">+</button>' : '') +
+        zoneTreeHtml(z.id, depth + 1) + '</li>';
+    }).join('') + '</ul>';
+  }
+  function paintZones() {
+    var box = document.getElementById('bhq-tree');
+    var html = zoneTreeHtml(null, 0);
+    box.innerHTML = (selZone ? '<button type="button" class="btn btn-quiet btn-sm mb-1" data-zone="">← Toàn bộ dự án</button>' : '') +
+      (html || '<p class="micro muted" style="padding:6px">Dự án này chưa khai báo phân khu. Bấm <strong>+ Phân khu</strong> để dựng.</p>');
+  }
+  /* Số kiểu Việt: 4.860 và 72,4 đều phải đọc được. */
+  function num(v) {
+    var s = String(v || '').trim().replace(/\./g, '').replace(',', '.');
+    var n = parseFloat(s);
+    return isFinite(n) ? n : null;
+  }
+  function unRow(u) {
+    var st = S.UNIT_STATE[u.state] || S.UNIT_STATE.con;
+    var hot = S.get('hotProducts').filter(function (h) { return h.unitId === u.id && h.active; })[0];
+    return '<tr>' +
+      '<td data-l="Mã căn/lô"><b>' + esc(u.id) + '</b>' + (hot ? ' <span class="hot">Hot</span>' : '') +
+        '<div class="micro muted">' + esc(u.block) +
+        (u.floor ? ' · tầng ' + u.floor : '') + (u.dir ? ' · ' + esc(u.dir) : '') + '</div></td>' +
+      '<td data-l="Loại">' + esc(u.kind) + '</td>' +
+      '<td data-l="Diện tích" class="r">' + String(u.area).replace('.', ',') + ' m²</td>' +
+      '<td data-l="Tình trạng"><span class="st ' + st.cls + '">' + st.text + '</span></td>' +
+      '<td data-l="" class="r"><div class="row-tight" style="justify-content:flex-end">' +
+        '<button class="btn btn-primary btn-sm" data-act="hot" data-id="' + esc(u.id) + '" data-roles="tkkd gddu gd">' +
+          (hot ? 'Sửa Hot' : 'Gắn Hot') + '</button>' +
+        '<button class="btn btn-outline btn-sm" data-act="uedit" data-id="' + esc(u.id) + '" data-roles="gddu tkkd">Sửa</button>' +
+      '</div></td></tr>';
+  }
+  /* Bảng hàng của dự án là liên kết sống do Chủ đầu tư sở hữu thì RECO chỉ đọc,
+     không sửa được trong Sales Hub (ADR-0003) — khoá luôn nút thêm căn. */
+  function driveSheet() {
+    return S.get('documents').filter(function (d) {
+      return d.pj === bhqPj.id && d.branch === 2 && (d.src === 'drive' || d.src === 'broken');
+    })[0];
+  }
+  function bhqRender() {
+    if (!bhqPj) return;
+    var ext = driveSheet();
+    document.getElementById('bhq-new').hidden = !!ext;
+    var warn = document.getElementById('bhq-drive');
+    warn.hidden = !ext;
+    if (ext) {
+      warn.innerHTML = '<strong>Bảng hàng dự án này là nguồn ngoài.</strong> “' + esc(ext.name) +
+        '” là ' + (ext.src === 'broken' ? 'liên kết đã hỏng' : 'liên kết sống Google Drive do Chủ đầu tư sở hữu') +
+        ' — RECO chỉ đọc, không thêm hay sửa căn/lô trong Sales Hub. Muốn RECO quản lý đầy đủ thì phải ' +
+        'chuyển tài liệu sang chế độ tệp RECO lưu trước.';
+    }
+    var list = units();
+    var none = list.length === 0;
+    bhqWrap.hidden = none;
+    bhqRong.hidden = !none;
+    if (none) {
+      bhqRong.innerHTML = RECO_DATA.empty('Dự án này chưa có căn/lô nào',
+        'Bấm Thêm căn/lô để dựng bảng hàng đầu tiên. Căn vừa thêm hiện ngay ở khu vực Bảng hàng của màn Chi tiết dự án.');
+    } else {
+      bhqBody.innerHTML = list.map(unRow).join('');
+    }
+    var con = list.filter(function (u) { return u.state === 'con'; }).length;
+    bhqSub.textContent = (selZone ? zonePath(selZone) + ' · ' : '') + (list.length
+      ? list.length + ' căn/lô · còn hàng ' + con + ' · quy mô công bố: ' + bhqPj.struct
+      : 'Quy mô công bố: ' + bhqPj.struct);
+    paintZones();
+    RECO.applyRoles(none ? bhqRong : bhqBody);
+  }
+
+  /* Thêm phân khu, tòa hoặc tầng — cấp con suy từ cấp cha nên không cần ô chọn loại */
+  document.getElementById('bhq-panel').addEventListener('click', function (e) {
+    var z = e.target.closest('[data-zone]');
+    if (z) { selZone = z.getAttribute('data-zone') || null; bhqRender(); return; }
+    var a = e.target.closest('[data-zadd]');
+    if (!a) return;
+    var parentId = a.getAttribute('data-zadd') || null;
+    var parent = parentId && S.find('zones', parentId);
+    var kind = parent ? ZNEXT[parent.kind] : 'khu';
+    RECO.confirm({
+      eyebrow: parent ? zonePath(parentId) : bhqPj.name,
+      title: 'Thêm ' + ZKIND[kind].toLowerCase() + '?',
+      body: '<label class="field"><span class="lab">Tên ' + ZKIND[kind].toLowerCase() + '</span>' +
+            '<input class="inp" type="text" id="z-ten" placeholder="' +
+            (kind === 'khu' ? 'Phân khu Sông' : kind === 'toa' ? 'Tòa A' : 'Tầng 12') + '"></label>' +
+            '<p class="micro muted">Cấu trúc này quyết định cách bảng hàng được nhóm ở mọi màn.</p>',
+      okText: 'Thêm',
+      onOk: function () {
+        var ten = (document.getElementById('z-ten') || {}).value;
+        ten = (ten || '').trim();
+        if (!ten) { RECO.toast('Chưa nhập tên — không thêm được', { danger: true }); return; }
+        S.add('zones', { pj: bhqPj.id, parent: parentId, kind: kind, name: ten }, true);
+        bhqRender();
+        RECO.toast('Đã thêm ' + ZKIND[kind].toLowerCase() + ' “' + ten + '”');
+      }
+    });
+  });
+  function bhqOpen(p) {
+    if (bhqPj && bhqPj.id !== p.id) selZone = null;
+    bhqPj = p;
+    bhqTitle.textContent = 'Bảng hàng — ' + p.name;
+    bhqPanel.hidden = false;
+    bhqGoi.hidden = true;
+    bhqRender();
+    document.getElementById('bhq-zone').scrollIntoView({ block: 'nearest' });
+  }
+  document.getElementById('bhq-close').addEventListener('click', function () {
+    bhqPanel.hidden = true;
+    bhqGoi.hidden = false;
+    bhqPj = null;
+  });
+
+  function unOpen(u) {
+    editingUnit = u || null;
+    document.getElementById('m-unit-t').textContent = u ? 'Sửa căn/lô ' + u.id : 'Thêm căn/lô';
+    unSave.textContent = u ? 'Lưu thay đổi' : 'Thêm vào bảng hàng';
+    unId.value = u ? u.id : '';
+    unId.readOnly = !!u;
+    /* Ô chọn vị trí liệt kê mọi nút của cây theo đường dẫn đầy đủ — nhìn là biết căn nằm đâu */
+    var zs = S.get('zones').filter(function (z) { return z.pj === bhqPj.id; });
+    document.getElementById('un-zone').innerHTML =
+      '<option value="">— Chưa phân khu —</option>' +
+      zs.map(function (z) {
+        var sel2 = (u ? u.zone : selZone) === z.id ? ' selected' : '';
+        return '<option value="' + z.id + '"' + sel2 + '>' + esc(zonePath(z.id)) + '</option>';
+      }).join('');
+    document.getElementById('un-zone-hint').textContent = zs.length
+      ? 'Chọn tới cấp sâu nhất đang có. Căn hộ thường là Phân khu › Tòa › Tầng; đất nền và nhà thấp tầng dừng ở cấp dãy.'
+      : 'Dự án này chưa khai báo phân khu nào — thêm ở cây bên trái trước, hoặc để trống rồi gán sau.';
+    document.getElementById('un-kind').value = u ? u.kind : '';
+    document.getElementById('un-area').value = u ? String(u.area).replace('.', ',') : '';
+    document.getElementById('un-dir').value = u && u.dir ? u.dir : '';
+    document.getElementById('un-price').value = u ? u.price : '';
+    document.getElementById('un-state').value = u ? u.state : 'con';
+    unForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    unForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    RECO.openModal('m-unit');
+  }
+  document.getElementById('bhq-new').addEventListener('click', function () { unOpen(null); });
+
+  bhqBody.addEventListener('click', function (e) {
+    var hotBtn = e.target.closest('[data-act="hot"]');
+    if (hotBtn) {
+      var hu = S.find('units', hotBtn.getAttribute('data-id'));
+      if (hu) hotAttach(hu);
+      return;
+    }
+    var b = e.target.closest('[data-act="uedit"]');
+    if (!b) return;
+    var u = S.find('units', b.getAttribute('data-id'));
+    if (u) unOpen(u);
+  });
+
+  function hotAttach(u) {
+    var existing = S.get('hotProducts').filter(function (h) { return h.unitId === u.id; })[0];
+    RECO.confirm({
+      eyebrow: 'Sản phẩm Hot',
+      title: (existing ? 'Sửa câu chào' : 'Gắn Hot') + ' — ' + esc(u.id),
+      body: '<label class="field"><span class="lab">Câu chào (không ghi giá)</span>' +
+            '<textarea class="inp" id="hot-pitch" rows="3">' + esc(existing ? existing.pitch : '') + '</textarea></label>' +
+            '<p class="micro muted">Câu này hiện trên Trang đầu, chi tiết dự án và trang gửi khách.</p>',
+      okText: existing ? 'Lưu' : 'Gắn Hot',
+      onOk: function () {
+        var pitch = ((document.getElementById('hot-pitch') || {}).value || '').trim();
+        if (!pitch) { RECO.toast('Cần một câu chào — chưa gắn.', { danger: true }); return; }
+        if (existing) S.update('hotProducts', existing.id, { pitch: pitch, active: true });
+        else S.add('hotProducts', { unitId: u.id, pitch: pitch, sort: S.get('hotProducts').length + 1, active: true }, true);
+        RECO.toast('Đã gắn ' + u.id + ' làm sản phẩm Hot');
+        if (bhqPj) bhqRender();
+      }
+    });
+  }
+
+  unSave.addEventListener('click', function () {
+    if (!RECO.validate(unForm)) return;
+    var code = unId.value.trim();
+    /* S.add không kiểm trùng id — hai căn cùng mã sẽ làm phiếu tính giá bám nhầm bản ghi. */
+    if (!editingUnit && S.find('units', code)) {
+      RECO.fieldError(unId, 'Mã ' + code + ' đã có trong bảng hàng. Mỗi căn/lô chỉ có một mã.');
+      return;
+    }
+    var area = num(document.getElementById('un-area').value);
+    if (area === null || area <= 0) {
+      RECO.fieldError(document.getElementById('un-area'), 'Diện tích phải là số lớn hơn 0, ví dụ 72,4.');
+      return;
+    }
+    var price = num(document.getElementById('un-price').value);
+    if (price === null || price <= 0) price = editingUnit && editingUnit.price ? editingUnit.price : 0;
+    /* block và floor suy từ cây, không bắt gõ tay nữa — một nguồn sự thật là zone */
+    var zid = document.getElementById('un-zone').value || null;
+    var z = zid && S.find('zones', zid);
+    var toa = z && z.kind === 'tang' ? S.find('zones', z.parent) : (z && z.kind === 'toa' ? z : null);
+    var patch = {
+      pj: bhqPj.id, zone: zid,
+      block: toa ? toa.name : (z ? z.name : '—'),
+      floor: z && z.kind === 'tang' ? (num(z.name.replace(/\D+/g, '')) || 0) : 0,
+      kind: document.getElementById('un-kind').value.trim(),
+      area: area, dir: document.getElementById('un-dir').value.trim(),
+      price: price, state: document.getElementById('un-state').value
+    };
+    RECO.busy(unSave, editingUnit ? 'Đang lưu…' : 'Đang thêm…', 900, function () {
+      RECO.closeModal('m-unit');
+      if (editingUnit) {
+        S.update('units', editingUnit.id, patch);
+        RECO.toast('Đã lưu căn/lô ' + editingUnit.id);
+      } else {
+        patch.id = code;
+        S.add('units', patch);
+        RECO.toast('Đã thêm ' + code + ' vào bảng hàng ' + bhqPj.name);
+      }
+      editingUnit = null;
+      bhqRender();
+    });
+  });
+
+  S.on('units', function () { if (bhqPj) bhqRender(); });
+  S.on('hotProducts', function () { if (bhqPj) bhqRender(); });
+
+  /* ================= Tab · Kịch bản kinh doanh ================= */
+  var kbList = document.getElementById('kb-list'), kbRong = document.getElementById('kb-rong'),
+      kbCount = document.getElementById('kb-count'), kbMineNote = document.getElementById('kb-mine-note'),
+      kbPj = document.getElementById('kb-pj'), kbScope = document.getElementById('kb-scope');
+  var kbForm = document.getElementById('kb-form'), kbSave = document.getElementById('kb-f-save');
+  var kbFPj = document.getElementById('kb-f-pj'), kbFTitle = document.getElementById('kb-f-title'),
+      kbFBody = document.getElementById('kb-f-body'), kbFLabel = document.getElementById('kb-f-label');
+  var editingKb = null, refusing = null;
+  var SCOPE = { shared: 'Dùng chung', mine: 'Cá nhân', proposal: 'Đề xuất nâng lên chung' };
+
+  var pjOpts = S.get('projects').map(function (p) {
+    return '<option value="' + p.id + '">' + esc(p.name) + '</option>';
+  }).join('');
+  kbPj.insertAdjacentHTML('beforeend', pjOpts);
+  kbFPj.innerHTML = pjOpts;
+
+  function kbLabelOpts(sel) {
+    kbFLabel.innerHTML = Object.keys(S.LABELS).map(function (k) {
+      if (!S.canGrant(k, RECO.role)) return '';
+      return '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + S.LABELS[k].text + '</option>';
+    }).join('');
+    document.getElementById('kb-f-hint').innerHTML = RECO.role === 'gddu'
+      ? 'Kịch bản mang nhãn <strong>Nội bộ hạn chế</strong> chỉ vai trò được chỉ định đọc được.'
+      : 'Nhãn <strong>Nội bộ hạn chế</strong> chỉ Giám đốc dự án cấp được (QD-027).';
+  }
+
+  /* Kịch bản cá nhân chỉ chủ sở hữu đọc được — màn quản trị chỉ đếm, không hiện nội dung. */
+  function kbMatched() {
+    return S.get('scripts').filter(function (s) {
+      if (s.scope === 'mine') return false;
+      return (!kbPj.value || s.pj === kbPj.value) && (!kbScope.value || s.scope === kbScope.value);
+    });
+  }
+  function kbRow(s) {
+    var acts = '';
+    if (s.scope === 'proposal' && s.state === 'pending') {
+      acts = '<button class="btn btn-outline btn-sm" data-kb="tuchoi" data-id="' + s.id + '" data-roles="gddu gd">Từ chối</button>' +
+             '<button class="btn btn-primary btn-sm" data-kb="duyet" data-id="' + s.id + '" data-roles="gddu gd">Duyệt thành bản chung</button>' +
+             '<span class="chip" data-roles="tkkd mkt">Chờ Giám đốc dự án duyệt</span>';
+    } else if (s.scope === 'shared') {
+      acts = '<button class="btn btn-outline btn-sm" data-kb="sua" data-id="' + s.id + '" data-roles="gddu tkkd">Sửa</button>' +
+             '<button class="btn btn-quiet btn-sm" data-kb="' + (s.hidden ? 'hien' : 'an') + '" data-id="' + s.id +
+               '" data-roles="gddu tkkd">' + (s.hidden ? 'Bỏ ẩn' : 'Ẩn khỏi đội') + '</button>' +
+             '<span class="chip" data-roles="tkkd">Chỉ xem</span>';
+    } else {
+      acts = '<span class="chip">' + (s.state === 'rejected' ? 'Đã từ chối' : 'Đã có bản dùng chung') + '</span>';
+    }
+    return '<div class="frow">' +
+      '<span class="fico">' + RECO.svg('file') + '</span>' +
+      '<div class="fmeta"><div class="fname">' + esc(s.title) + '</div>' +
+        '<div class="fsub"><span class="chip">' + SCOPE[s.scope] + '</span>' + S.label(s.label) +
+          (s.hidden ? '<span class="st st-off">Đang ẩn khỏi đội</span>' : '') +
+          '<span>' + esc(S.projectName(s.pj)) + '</span><span>' + esc(s.by) + ' · ' + esc(s.at) + '</span></div>' +
+        '<div class="micro muted mt-1">' + esc(s.body) + '</div>' +
+        (s.reason ? '<div class="micro muted mt-1">Lý do đề xuất: ' + esc(s.reason) + '</div>' : '') +
+        (s.refuse ? '<div class="micro mt-1" style="color:var(--danger)">Đã từ chối: ' + esc(s.refuse) + '</div>' : '') +
+      '</div>' +
+      '<div class="fend">' + acts + '</div></div>';
+  }
+  function kbRender() {
+    var list = kbMatched();
+    var none = list.length === 0;
+    kbList.hidden = none;
+    kbRong.hidden = !none;
+    if (none) {
+      kbRong.innerHTML = RECO_DATA.empty('Không có kịch bản nào khớp bộ lọc',
+        'Thử bỏ bớt điều kiện, hoặc soạn kịch bản dùng chung đầu tiên cho đội.');
+    } else {
+      kbList.innerHTML = list.map(kbRow).join('');
+    }
+    var cho = list.filter(function (s) { return s.scope === 'proposal' && s.state === 'pending'; }).length;
+    kbCount.textContent = (none ? 'Không có kịch bản nào khớp bộ lọc' : 'Đang hiển thị ' + list.length + ' kịch bản') +
+      (cho ? ' · ' + cho + ' đề xuất chờ duyệt' : '');
+
+    var mine = S.get('scripts').filter(function (s) {
+      return s.scope === 'mine' && (!kbPj.value || s.pj === kbPj.value);
+    });
+    var who = mine.map(function (s) { return s.by; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+    kbMineNote.textContent = mine.length
+      ? mine.length + ' kịch bản cá nhân của ' + who.length + ' nhân viên — nội dung chỉ chủ sở hữu xem được, màn này không hiển thị.'
+      : 'Chưa có kịch bản cá nhân nào trong phạm vi đang lọc.';
+    RECO.applyRoles(none ? kbRong : kbList);
+  }
+  [kbPj, kbScope].forEach(function (el) { el.addEventListener('change', kbRender); });
+  document.getElementById('kb-reset').addEventListener('click', function () {
+    kbPj.value = ''; kbScope.value = ''; kbRender();
+  });
+
+  function kbOpen(s) {
+    editingKb = s || null;
+    document.getElementById('m-kb-t').textContent = s ? 'Sửa kịch bản dùng chung' : 'Kịch bản dùng chung mới';
+    kbSave.textContent = s ? 'Lưu thay đổi' : 'Lưu kịch bản';
+    kbFPj.value = s ? s.pj : (kbPj.value || S.get('projects')[0].id);
+    kbFTitle.value = s ? s.title : '';
+    kbFBody.value = s ? s.body : '';
+    kbLabelOpts(s ? s.label : 'internal');
+    kbForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    kbForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    RECO.openModal('m-kb');
+  }
+  document.getElementById('kb-new').addEventListener('click', function () { kbOpen(null); });
+
+  kbSave.addEventListener('click', function () {
+    if (!RECO.validate(kbForm)) return;
+    var patch = {
+      pj: kbFPj.value, title: kbFTitle.value.trim(), body: kbFBody.value.trim(),
+      label: kbFLabel.value
+    };
+    /* Hạ nhãn kịch bản xuống Công khai phải hỏi lại — MH-09 */
+    RECO.guardLabel({
+      from: editingKb ? editingKb.label : null, to: patch.label, name: patch.title, onOk: luuKb
+    });
+
+    function luuKb() {
+    RECO.busy(kbSave, 'Đang lưu…', 900, function () {
+      RECO.closeModal('m-kb');
+      if (editingKb) {
+        S.update('scripts', editingKb.id, patch);
+        RECO.toast('Đã lưu kịch bản “' + patch.title + '”');
+      } else {
+        patch.scope = 'shared';
+        patch.by = RECO.current.who;
+        patch.at = S.todayVN();
+        S.add('scripts', patch);
+        RECO.toast('Đã thêm kịch bản dùng chung — cả đội thấy ở khu vực 09 màn Chi tiết dự án');
+      }
+      editingKb = null;
+      kbRender();
+    });
+    }
+  });
+
+  kbList.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-kb]');
+    if (!b) return;
+    var s = S.find('scripts', b.getAttribute('data-id'));
+    if (!s) return;
+    var act = b.getAttribute('data-kb');
+    if (act === 'sua') { kbOpen(s); return; }
+    if (act === 'an' || act === 'hien') {
+      var an = act === 'an';
+      var doIt = function () {
+        RECO.busy(b, an ? 'Đang ẩn…' : 'Đang bật lại…', 700, function () {
+          S.update('scripts', s.id, { hidden: an });
+          kbRender();
+          RECO.toast(an ? 'Đã ẩn “' + s.title + '” khỏi cả đội' : 'Đã bật lại “' + s.title + '” cho cả đội',
+            { danger: an, undo: function () { S.update('scripts', s.id, { hidden: !an }); kbRender(); } });
+        });
+      };
+      if (!an) { doIt(); return; }
+      RECO.confirm({
+        eyebrow: 'Kịch bản dùng chung',
+        title: 'Ẩn “' + esc(s.title) + '” khỏi cả đội?',
+        body: '<p class="small">Kịch bản biến mất khỏi khu vực 09 của mọi nhân viên. Nội dung không bị xóa, bật lại được ngay tại đây.</p>',
+        okText: 'Ẩn khỏi đội', danger: true, onOk: doIt
+      });
+      return;
+    }
+    if (act === 'tuchoi') {
+      refusing = s;
+      document.getElementById('kbtc-ctx').textContent = '“' + s.title + '” — ' + s.by + ' gửi ngày ' + s.at + '.';
+      document.getElementById('kbtc-ly').value = '';
+      document.getElementById('kbtc-form').querySelectorAll('.err').forEach(function (x) { x.remove(); });
+      RECO.openModal('m-kb-tuchoi');
+      return;
+    }
+    if (act === 'duyet') {
+      RECO.confirm({
+        eyebrow: 'Đề xuất nâng lên bản chung',
+        title: 'Duyệt “' + esc(s.title) + '” thành kịch bản dùng chung?',
+        body: '<div class="note note-navy small">' + esc(s.body) + '</div>' +
+              '<p class="micro muted mt-2">' + esc(s.by) + ' gửi ngày ' + esc(s.at) +
+              '. Hệ thống <strong>tạo một bản sao dùng chung</strong> cho cả đội; bản cá nhân gốc vẫn ' +
+              'thuộc về ' + esc(s.by) + ' (QD-032).</p>',
+        okText: 'Duyệt thành bản chung',
+        onOk: function () {
+          RECO.busy(b, 'Đang duyệt…', 900, function () {
+            /* Sao chép chứ không đổi scope tại chỗ (QD-022, QD-032) */
+            var ban = S.add('scripts', {
+              pj: s.pj, scope: 'shared', title: s.title, body: s.body, label: s.label,
+              by: RECO.current.who, at: S.todayVN(), fromProposal: s.id
+            });
+            S.update('scripts', s.id, { state: 'accepted', sharedId: ban.id });
+            S.add('notifications', {
+              kind: 'ok', title: 'Đề xuất kịch bản được duyệt',
+              body: '“' + s.title + '” nay có bản dùng chung cho cả đội; bản riêng của anh/chị giữ nguyên.',
+              at: 'vừa xong', read: false, go: 'du-an-chi-tiet.html'
+            });
+            kbRender();
+            RECO.toast('Đã duyệt “' + s.title + '” — bản sao dùng chung đã tạo');
+          });
+        }
+      });
+    }
+  });
+
+  document.getElementById('kbtc-ok').addEventListener('click', function () {
+    var box = document.getElementById('kbtc-form');
+    if (!RECO.validate(box) || !refusing) return;
+    var ly = document.getElementById('kbtc-ly').value.trim();
+    RECO.busy(this, 'Đang gửi…', 800, function () {
+      RECO.closeModal('m-kb-tuchoi');
+      S.update('scripts', refusing.id, { state: 'rejected', refuse: ly });
+      S.add('notifications', {
+        kind: 'req', title: 'Đề xuất kịch bản bị từ chối',
+        body: '“' + refusing.title + '” — lý do: ' + ly,
+        at: 'vừa xong', read: false, go: 'du-an-chi-tiet.html'
+      });
+      RECO.toast('Đã từ chối kèm lý do — người gửi nhận được thông báo', { danger: true });
+      refusing = null;
+      kbRender();
+    });
+  });
+
+  S.on('scripts', kbRender);
+  kbRender();
+  [pjQ, pjType, pjStatus].forEach(function (el) {
+    el.addEventListener('input', pjRender); el.addEventListener('change', pjRender);
+  });
+
+  /* ================= Tab 2 · Chờ duyệt ================= */
+  var dqList = document.getElementById('dq-list'), dqRong = document.getElementById('dq-rong'),
+      dqBulk = document.getElementById('dq-bulk'), dqHead = document.getElementById('dq-head'),
+      dqCount = document.getElementById('dq-count'), dqAll = document.getElementById('dq-all');
+  var picked = {};
+  var CAN_APPROVE = ['gd', 'gddu'].indexOf(RECO.role) >= 0;
+  var ICON = { xls: 'sheet', pdf: 'file', img: 'image', file: 'file' };
+
+  function pending() { return S.get('approvals').filter(function (a) { return a.state === 'pending'; }); }
+  function whoSees(labelKey) {
+    return labelKey === 'public'
+      ? 'khách hàng xem được trên trang gửi khách, <strong>không cần đăng nhập</strong>'
+      : labelKey === 'restricted'
+        ? 'chỉ Tổng giám đốc, Giám đốc dự án, Quản lý kinh doanh và HCNS &amp; Kế toán xem được'
+        : 'mọi nhân viên RECO đã đăng nhập xem được, khách hàng không xem được';
+  }
+  function previewHtml(a) {
+    return '<p class="small muted">' + esc(S.projectName(a.pj)) + ' · ' + esc(a.kind) + ' · ' +
+        esc(a.by) + ' gửi ' + esc(a.at) + '</p>' +
+      '<div class="note note-navy mt-2"><strong>Nội dung sắp công bố</strong><br>' + esc(a.preview) + '</div>' +
+      '<p class="small mt-2">Sau khi công bố, nội dung mang nhãn ' + S.label(a.label) + ' — ' + whoSees(a.label) + '.</p>';
+  }
+
+  function dqRow(a) {
+    return '<div class="frow">' +
+      '<label class="pick-row" data-roles="gddu gd" style="margin:0">' +
+        '<input type="checkbox" data-pick="' + a.id + '"' + (picked[a.id] ? ' checked' : '') +
+        ' aria-label="Chọn ' + esc(a.name) + '"></label>' +
+      '<span class="fico ' + esc(a.icon) + '">' + RECO.svg(ICON[a.icon] || 'file') + '</span>' +
+      '<div class="fmeta">' +
+        '<div class="fname">' + esc(a.name) + '</div>' +
+        '<div class="fsub"><span>' + esc(a.by) + ' · ' + esc(a.at) + '</span>' + S.label(a.label) +
+          '<span>' + esc(S.projectName(a.pj)) + '</span></div>' +
+        '<div class="micro muted mt-1">Sắp công bố: ' + esc(a.preview) + '</div>' +
+      '</div>' +
+      '<div class="fend" data-roles="gddu gd">' +
+        '<button class="btn btn-outline btn-sm" data-act="return" data-id="' + a.id + '">Trả lại</button>' +
+        '<button class="btn btn-primary btn-sm" data-act="ok" data-id="' + a.id + '">Duyệt</button>' +
+      '</div>' +
+      '<div class="fend" data-roles="tkkd mkt hcns qlkd nvbh"><span class="chip">Chờ Giám đốc dự án duyệt</span></div>' +
+    '</div>';
+  }
+
+  function dqRender() {
+    var list = pending();
+    Object.keys(picked).forEach(function (id) {
+      if (!list.some(function (a) { return a.id === id; })) delete picked[id];
+    });
+    var none = list.length === 0;
+    dqList.hidden = none;
+    dqHead.hidden = none;
+    dqRong.hidden = !none;
+    if (none) {
+      dqRong.innerHTML = RECO_DATA.empty('Hàng chờ đã sạch',
+        'Không còn nội dung nào chờ anh/chị duyệt. Khi Thư ký kinh doanh hoặc Marketing gửi bản mới lên, ' +
+        'mục sẽ xuất hiện ở đây và anh/chị nhận được thông báo trên chuông.');
+    } else {
+      dqList.innerHTML = list.map(dqRow).join('');
+      RECO.applyRoles(dqList);
+    }
+    var n = Object.keys(picked).length;
+    dqCount.textContent = none ? '' : list.length + ' mục đang chờ duyệt' + (n ? ' · đã chọn ' + n : '');
+    dqAll.checked = !none && n === list.length;
+    dqBulk.innerHTML = (n && CAN_APPROVE)
+      ? '<div class="bulkbar">' +
+          '<b>' + n + ' mục đã chọn</b>' +
+          '<span class="micro">Duyệt gộp vẫn hiện đủ danh sách để anh/chị đọc lại trước khi công bố.</span>' +
+          '<span style="flex:1 1 auto"></span>' +
+          '<button class="btn btn-ghost btn-sm" data-act="clear">Bỏ chọn</button>' +
+          '<button class="btn btn-primary btn-sm" data-act="bulk">Duyệt ' + n + ' mục</button>' +
+        '</div>'
+      : '';
+  }
+
+  /* Duyệt một mục phải lật cả bản ghi gốc mà nó trỏ tới, không chỉ mục trong hàng chờ —
+     nếu không thì tài liệu vừa duyệt vẫn còn chữ "Chưa duyệt" ở Thư viện và Cây thư mục. */
+  function commitApproved(a) {
+    S.update('approvals', a.id, { state: 'approved' });
+    if (a.doc) S.update('documents', a.doc, { state: 'live', from: S.todayVN() });
+    if (a.media) S.update('media', a.media, { state: 'approved' });
+    if (a.qa) S.update('qas', a.qa, { state: 'approved' });
+  }
+
+  function approve(a, btn) {
+    RECO.busy(btn, 'Đang công bố…', 1000, function () {
+      commitApproved(a);
+      dqRender();
+      RECO.toast('Đã duyệt và công bố “' + a.name + '”');
+    });
+  }
+
+  function dqAct(e) {
+    var pick = e.target.closest('[data-pick]');
+    if (pick) {
+      var pid = pick.getAttribute('data-pick');
+      if (pick.checked) picked[pid] = true; else delete picked[pid];
+      dqRender();
+      return;
+    }
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var act = b.getAttribute('data-act');
+    if (act === 'clear') { picked = {}; dqRender(); return; }
+    if (act === 'bulk') {
+      var list = pending().filter(function (a) { return picked[a.id]; });
+      if (!list.length) return;
+      RECO.confirm({
+        eyebrow: 'Duyệt hàng loạt',
+        title: 'Duyệt và công bố ' + list.length + ' mục?',
+        body: '<p class="small">Anh/chị chịu trách nhiệm với nội dung của cả ' + list.length + ' mục dưới đây sau khi công bố:</p>' +
+          '<ul class="small" style="margin:8px 0 0;padding-left:18px">' +
+          list.map(function (a) {
+            return '<li class="mt-1"><b>' + esc(a.name) + '</b> — ' + esc(S.projectName(a.pj)) + ' · ' +
+              S.LABELS[a.label].text + '<br><span class="muted">' + esc(a.preview) + '</span></li>';
+          }).join('') + '</ul>' +
+          (list.some(function (a) { return a.label === 'public'; })
+            ? '<div class="note note-danger mt-3"><strong>Có mục sẽ công khai.</strong> Nội dung mang nhãn Công khai ra tới khách hàng ngay, không cần đăng nhập.</div>'
+            : ''),
+        okText: 'Duyệt ' + list.length + ' mục',
+        danger: list.some(function (a) { return a.label === 'public'; }),
+        onOk: function () {
+          RECO.busy(b, 'Đang công bố…', 1200, function () {
+            list.forEach(commitApproved);
+            picked = {};
+            dqRender();
+            RECO.toast('Đã duyệt và công bố ' + list.length + ' mục');
+          });
+        }
+      });
+      return;
+    }
+    var ap = S.find('approvals', b.getAttribute('data-id'));
+    if (!ap) return;
+    if (act === 'ok') {
+      RECO.confirm({
+        eyebrow: 'Duyệt và công bố',
+        title: esc(ap.name),
+        body: previewHtml(ap) +
+          (ap.label === 'public'
+            ? '<div class="note note-danger mt-2"><strong>Đây là nội dung công khai.</strong> Bấm duyệt là nội dung ra tới khách hàng ngay, ' +
+              'Giám đốc dự án chịu trách nhiệm với thông tin trong đó.</div>'
+            : ''),
+        okText: 'Duyệt và công bố',
+        danger: ap.label === 'public',
+        onOk: function () { approve(ap, b); }
+      });
+      return;
+    }
+    if (act === 'return') traOpen(ap);
+  }
+  dqList.addEventListener('click', dqAct);
+  dqBulk.addEventListener('click', dqAct);
+  dqAll.addEventListener('change', function () {
+    picked = {};
+    if (dqAll.checked) pending().forEach(function (a) { picked[a.id] = true; });
+    dqRender();
+  });
+
+  var traForm = document.getElementById('tra-form'), traReason = document.getElementById('tra-reason'),
+      traSave = document.getElementById('tra-save'), traWhat = document.getElementById('tra-what');
+  var returning = null;
+  function traOpen(a) {
+    returning = a;
+    traWhat.textContent = a.name + ' — ' + S.projectName(a.pj) + ' · ' + a.by + ' gửi ' + a.at;
+    traReason.value = '';
+    traForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    traReason.removeAttribute('aria-invalid');
+    RECO.openModal('m-tra');
+  }
+  traSave.addEventListener('click', function () {
+    if (!RECO.validate(traForm)) return;
+    var a = returning;
+    RECO.busy(traSave, 'Đang trả lại…', 800, function () {
+      RECO.closeModal('m-tra');
+      S.update('approvals', a.id, { state: 'returned', reason: traReason.value.trim() });
+      returning = null;
+      dqRender();
+      RECO.toast('Đã trả lại “' + a.name + '” kèm lý do cho ' + a.by);
+    });
+  });
+
+  /* ================= Tab 3 · Nhãn quyền và hiệu lực ================= */
+  var nhDoc = document.getElementById('nh-doc'), nhLabel = document.getElementById('nh-label'),
+      nhVer = document.getElementById('nh-ver'), nhFrom = document.getElementById('nh-from'),
+      nhTo = document.getElementById('nh-to'), nhSave = document.getElementById('nh-save'),
+      nhForm = document.getElementById('nh-form'), nhNow = document.getElementById('nh-now'),
+      nhDocHint = document.getElementById('nh-doc-hint'), nhLabelHint = document.getElementById('nh-label-hint');
+
+  function nhDocs() {
+    return S.get('documents').filter(function (d) { return S.canSee(d.label, RECO.role); });
+  }
+  function nhFillDocs() {
+    var list = nhDocs();
+    var keep = nhDoc.value;
+    nhDoc.innerHTML = list.map(function (d) {
+      return '<option value="' + d.id + '">' + esc(d.name) + ' — ' + esc(S.projectName(d.pj)) + '</option>';
+    }).join('');
+    if (keep && list.some(function (d) { return d.id === keep; })) nhDoc.value = keep;
+  }
+
+  /* QD-027: chỉ Giám đốc dự án cấp được nhãn Nội bộ hạn chế, nên vai trò khác không thấy lựa chọn đó.
+     Tài liệu đang mang nhãn này thì khóa hẳn ô chọn để không ai vô tình hạ nhãn. */
+  function nhFillLabels(doc) {
+    var locked = doc.label === 'restricted' && RECO.role !== 'gddu';
+    var keys = ['public', 'internal'];
+    if (RECO.role === 'gddu' || locked) keys.push('restricted');
+    nhLabel.innerHTML = keys.map(function (k) {
+      return '<option value="' + k + '"' + (k === doc.label ? ' selected' : '') + '>' + S.LABELS[k].text + '</option>';
+    }).join('');
+    nhLabel.disabled = locked;
+    nhLabelHint.innerHTML = locked
+      ? 'Tài liệu đang mang nhãn Nội bộ hạn chế — chỉ Giám đốc dự án đổi được nhãn này (QD-027).'
+      : RECO.role === 'gddu'
+        ? 'Anh/chị cấp được cả ba nhãn trong phạm vi dự án phụ trách.'
+        : 'Vai trò của anh/chị không cấp được nhãn Nội bộ hạn chế nên lựa chọn đó không có trong danh sách (QD-027).';
+  }
+
+  function nhLoad() {
+    var d = S.find('documents', nhDoc.value);
+    if (!d) return;
+    nhFillLabels(d);
+    nhVer.value = d.ver || '';
+    nhFrom.value = toISO(d.from);
+    nhTo.value = toISO(d.to);
+    nhDocHint.textContent = S.projectName(d.pj) + ' · nhánh ' + (S.BRANCHES[d.branch - 1] || '—') +
+      (d.state === 'draft' ? ' · bản nháp chưa duyệt' : d.state === 'broken' ? ' · liên kết hỏng' : '');
+    nhNow.textContent = 'Đang đặt: ' + S.LABELS[d.label].text +
+      ' · hiệu lực ' + (d.from || 'chưa đặt') + (d.to ? ' → ' + d.to : ' → không hết hạn');
+    nhForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    nhForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+  }
+  nhDoc.addEventListener('change', nhLoad);
+
+  function nhCommit(d, patch) {
+    RECO.busy(nhSave, 'Đang lưu…', 900, function () {
+      S.update('documents', d.id, patch);
+      nhLoad();
+      bcRender();
+      RECO.toast('Đã lưu nhãn quyền và ngày hiệu lực cho “' + d.name + '” — thư viện tài liệu đã đổi theo');
+    });
+  }
+
+  nhSave.addEventListener('click', function () {
+    var d = S.find('documents', nhDoc.value);
+    if (!d) return;
+    if (!RECO.validate(nhForm)) return;
+    fieldErr(nhTo, '');
+    if (nhTo.value && nhTo.value <= nhFrom.value) {
+      fieldErr(nhTo, 'Ngày hết hiệu lực phải sau ngày hiệu lực.');
+      return;
+    }
+    var label = nhLabel.disabled ? d.label : nhLabel.value;
+    var patch = Object.assign({ label: label, ver: nhVer.value.trim(), from: toVN(nhFrom.value) },
+      lifePatch(d, nhTo.value));
+    var downgrade = label === 'public' && d.label !== 'public';
+    if (!downgrade) { nhCommit(d, patch); return; }
+    RECO.confirm({
+      eyebrow: 'Hạ nhãn quyền',
+      title: 'Chuyển “' + esc(d.name) + '” sang Công khai?',
+      body: '<p class="small">Tài liệu đang mang nhãn ' + S.label(d.label) + '. Chuyển sang ' + S.label('public') +
+            ' là <strong>đưa nội dung ra tới khách hàng, không cần đăng nhập</strong> — mọi trang gửi khách của dự án ' +
+            'đều lấy được tài liệu này.</p>' +
+            '<p class="small muted mt-2">Nhắc lại năm nhóm không bao giờ được công khai: chính sách hoa hồng; bảng hàng, giá hoặc ' +
+            'chính sách chưa công bố; kịch bản bán hàng và ghi chú nội bộ; báo cáo, KPI và số liệu tài chính; ' +
+            'tài liệu chưa duyệt hoặc đã hết hiệu lực.</p>',
+      okText: 'Công khai tài liệu',
+      danger: true,
+      onOk: function () { nhCommit(d, patch); }
+    });
+  });
+
+  /* ================= Tab 4 · Báo cáo vận hành ================= */
+  var bcTiles = document.getElementById('bc-tiles'), bcBody = document.getElementById('bc-body'),
+      bcWrap = document.getElementById('bc-wrap'), bcRong = document.getElementById('bc-rong');
+  var ghForm = document.getElementById('gh-form'), ghTo = document.getElementById('gh-to'),
+      ghSave = document.getElementById('gh-save'), ghWhat = document.getElementById('gh-what');
+  var extending = null;
+
+  function tile(k, num, sub, danger) {
+    return '<div class="tile"><span class="k">' + k + '</span>' +
+      '<span class="num"' + (danger ? ' style="color:var(--orange-text)"' : '') + '>' + num + '</span>' +
+      '<span class="micro muted">' + sub + '</span></div>';
+  }
+  function bcRender() {
+    var users = S.get('users'), links = S.get('shareLinks'), docs = S.get('documents');
+    var onUsers = users.filter(function (u) { return u.state === 'on'; }).length;
+    var liveLinks = links.filter(function (l) { return l.state === 'live'; }).length;
+    var shown = S.get('projects').filter(function (p) { return !p.hidden; });
+    var full = shown.filter(function (p) {
+      var br = {};
+      docs.forEach(function (d) { if (d.pj === p.id) br[d.branch] = true; });
+      return Object.keys(br).length === S.BRANCHES.length;
+    }).length;
+    var expiring = docs.filter(function (d) { return d.state === 'expiring'; });
+
+    bcTiles.innerHTML =
+      tile('Tài khoản đang hoạt động', onUsers, 'Trên tổng ' + users.length + ' tài khoản') +
+      tile('Đường dẫn gửi khách còn hiệu lực', liveLinks, 'Trên tổng ' + links.length + ' đã tạo') +
+      tile('Dự án có tài liệu đầy đủ',
+        full + '<span style="font-size:1rem;color:var(--muted)">/' + shown.length + '</span>', 'Đủ cả bảy nhánh') +
+      tile('Tài liệu sắp hết hiệu lực', expiring.length, 'Trong 7 ngày tới', expiring.length > 0);
+
+    var none = expiring.length === 0;
+    bcWrap.hidden = none;
+    bcRong.hidden = !none;
+    if (none) {
+      bcRong.innerHTML = RECO_DATA.empty('Không tài liệu nào sắp hết hiệu lực',
+        'Toàn bộ tài liệu còn hạn trên 7 ngày. Hệ thống sẽ nhắc lại ở đây và trên chuông khi có tài liệu tới gần ngày hết hiệu lực.');
+    } else {
+      bcBody.innerHTML = expiring.map(function (d) {
+        var n = d.daysLeft;
+        var pill = (n === 0 || n === null || n === undefined)
+          ? '<span class="st st-stop">Hết hôm nay</span>'
+          : '<span class="st st-wait">Còn ' + n + ' ngày</span>';
+        return '<tr>' +
+          '<td data-l="Tài liệu"><b>' + esc(d.name) + '</b><div class="micro muted">Bản ' + esc(d.ver) +
+            ' · hết hiệu lực ' + esc(d.to || '—') + '</div></td>' +
+          '<td data-l="Dự án">' + esc(S.projectName(d.pj)) + '</td>' +
+          '<td data-l="Nhãn">' + S.label(d.label) + '</td>' +
+          '<td data-l="Hết hiệu lực">' + pill + '</td>' +
+          '<td data-l="" class="r">' +
+            '<button class="btn ' + (n ? 'btn-outline' : 'btn-primary') + ' btn-sm" data-act="gh" data-id="' + d.id + '"' +
+              ' data-roles="gddu tkkd">Gia hạn' + (n ? '' : ' ngay') + '</button>' +
+            '<span class="chip" data-roles="mkt hcns qlkd nvbh">Chỉ xem</span></td>' +
+        '</tr>';
+      }).join('');
+      RECO.applyRoles(bcBody);
+    }
+  }
+
+  bcBody.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act="gh"]');
+    if (!b) return;
+    var d = S.find('documents', b.getAttribute('data-id'));
+    if (!d) return;
+    extending = d;
+    ghWhat.textContent = d.name + ' — ' + S.projectName(d.pj) + ' · đang hết hiệu lực ' + (d.to || '—');
+    ghTo.value = '';
+    ghForm.querySelectorAll('.err').forEach(function (x) { x.remove(); });
+    ghTo.removeAttribute('aria-invalid');
+    RECO.openModal('m-giahan');
+  });
+
+  ghSave.addEventListener('click', function () {
+    if (!RECO.validate(ghForm)) return;
+    fieldErr(ghTo, '');
+    if (ghTo.value <= TODAY) {
+      fieldErr(ghTo, 'Ngày hết hiệu lực mới phải sau hôm nay (14/08/2026).');
+      return;
+    }
+    var d = extending;
+    RECO.busy(ghSave, 'Đang gia hạn…', 900, function () {
+      RECO.closeModal('m-giahan');
+      S.update('documents', d.id, lifePatch(d, ghTo.value));
+      extending = null;
+      bcRender();
+      nhLoad();
+      RECO.toast('Đã gia hạn “' + d.name + '” tới ' + toVN(ghTo.value));
+    });
+  });
+
+  /* ---------- Dựng lần đầu ---------- */
+  pjRender();
+  dqRender();
+  nhFillDocs();
+  nhLoad();
+  bcRender();
+});
+</script>
+</body>
+</html>

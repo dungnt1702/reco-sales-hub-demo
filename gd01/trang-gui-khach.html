@@ -1,0 +1,560 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Parc Place — ParkCity Hanoi — thông tin dự án | RECO</title>
+<meta name="theme-color" content="#09263c">
+<meta name="description" content="Thông tin dự án Le Parc Place — ParkCity Hanoi do chuyên viên RECO gửi tới quý khách.">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/vendor/leaflet.css">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<script defer src="../assets/vendor/leaflet.js"></script>
+<script defer src="../assets/geo.js"></script>
+<script defer src="../assets/reco-map.js"></script>
+<style>
+  .pub-hero {
+    position: relative; color: #fff; min-height: 340px; display: flex; align-items: flex-end;
+    background:
+      linear-gradient(0deg, rgba(4,25,44,.95) 6%, rgba(4,25,44,.42) 62%, rgba(4,25,44,.22)),
+      linear-gradient(90deg, rgba(4,25,44,.5), rgba(4,25,44,.08) 55%),
+      url('../assets/img/celestine.jpg') center/cover;
+    padding: 26px var(--gutter);
+  }
+  @media (min-width: 768px) { .pub-hero { min-height: 460px; padding: 44px 0; } }
+  .pub-hero h1 { color: #fff; font-size: clamp(1.8rem,4vw,3rem); }
+  .pub-sec { padding-block: 34px; border-bottom: 1px solid var(--line); }
+  .pub-sec:last-of-type { border-bottom: 0; }
+  .pub-gal { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (min-width: 768px) { .pub-gal { grid-template-columns: repeat(4, 1fr); } }
+  .pub-gal img { aspect-ratio: 4/3; object-fit: cover; width: 100%; border-radius: var(--radius-md); display: block; }
+  .pub-gal button { border: 0; padding: 0; background: none; cursor: zoom-in; border-radius: var(--radius-md); display: block; width: 100%; }
+  .pub-gal button:focus-visible { outline: 2px solid var(--orange-button); outline-offset: 3px; }
+  .agent-wrap { display: grid; gap: 18px; }
+  @media (min-width: 900px) { .agent-wrap { grid-template-columns: minmax(0,1fr) 340px; align-items: start; } }
+
+  /* Xem ảnh lớn — tự viết, không dùng thư viện ngoài */
+  .lbx[hidden] { display: none; }
+  .lbx {
+    position: fixed; inset: 0; z-index: 90; background: rgba(4,16,26,.93);
+    display: flex; align-items: center; justify-content: center; padding: 60px 12px 44px;
+  }
+  .lbx img { max-width: min(1100px, 100%); max-height: 100%; object-fit: contain; border-radius: var(--radius-md); }
+  .lbx-bar { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 14px; justify-content: space-between; padding: 12px 14px; }
+  .lbx-cap { font-size: .88rem; color: rgba(255,255,255,.86); min-width: 0; }
+  .lbx-btn, .lbx-nav {
+    flex: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+    border: 1px solid rgba(255,255,255,.34); background: rgba(255,255,255,.1); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .lbx-btn:hover, .lbx-nav:hover { background: rgba(255,255,255,.22); }
+  .lbx-btn svg, .lbx-nav svg { width: 20px; height: 20px; }
+  .lbx-nav { position: absolute; top: 50%; transform: translateY(-50%); }
+  .lbx-nav.prev { left: 12px; }
+  .lbx-nav.next { right: 12px; }
+  .lbx-count { position: absolute; bottom: 14px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.72); font-size: .8rem; }
+</style>
+</head>
+<body data-shell="public" data-page="">
+
+<div id="page">
+
+  <!-- Thanh trên: KHÔNG có điều hướng nội bộ, không có ô tìm kiếm, không có cấu trúc kho tệp -->
+  <div class="pub-top">
+    <div class="in">
+      <span class="brand" style="color:#fff"><b style="color:#fff">RECO</b><span style="color:rgba(255,255,255,.7)">Group</span></span>
+      <span class="chip" id="valid-chip" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span id="valid-text">Trang còn hiệu lực 6 ngày</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="pub-wrap" id="expired-bar" hidden style="padding-top:14px">
+    <div class="note note-danger">
+      <strong>Đường dẫn này không còn hiệu lực.</strong>
+      Quý khách vui lòng liên hệ chuyên viên phụ trách bên dưới để nhận đường dẫn mới với thông tin cập nhật.
+    </div>
+  </div>
+
+  <section class="pub-hero">
+    <div class="pub-wrap" style="width:100%">
+      <span class="eyebrow light">Thông tin dự án · RECO gửi quý khách</span>
+      <h1 id="pj-name">Le Parc Place — ParkCity Hanoi</h1>
+      <p class="lead mt-1" id="pj-sub" style="color:rgba(255,255,255,.86)">Dương Nội, Hà Đông, Hà Nội · Chung cư · Bàn giao dự kiến Chờ cập nhật</p>
+    </div>
+  </section>
+
+  <div class="pub-wrap">
+
+    <section class="pub-sec">
+      <div class="agent-wrap">
+        <div id="pub-overview">
+          <span class="eyebrow">Tổng quan</span>
+          <h2 style="font-size:1.5rem" id="pj-h2">Tổng quan Le Parc Place — ParkCity Hanoi</h2>
+          <p class="mt-2" id="pj-overview">Dự án căn hộ lớn nhất khu đô thị ParkCity Hanoi: 4 tòa A, B, C, D cao 29–35 tầng trên khu đất 16.234 m², tổng 802 căn, chung khối đế 4 tầng. Đối diện Công viên Trung tâm và hồ cảnh quan; tầng tiện ích tầng 5 rộng hơn 8.000 m². Sở hữu lâu dài.</p>
+          <div class="kv kv-2 mt-3">
+            <div><div class="k">Quy mô</div><div class="v" id="pj-struct">4 tòa · 29–35 tầng · 802 căn</div></div>
+            <div><div class="k">Diện tích căn</div><div class="v" id="pj-size">62 – 210 m²</div></div>
+            <div><div class="k">Chủ đầu tư</div><div class="v" id="pj-owner">ParkCity Holdings</div></div>
+            <div><div class="k">Đơn vị phân phối</div><div class="v">RECO Group</div></div>
+          </div>
+        </div>
+
+        <!-- Nhân viên phụ trách — luôn hiện, không theo ticks -->
+        <aside class="agent-card">
+          <span class="eyebrow">Chuyên viên phụ trách</span>
+          <div class="people mt-2">
+            <span class="avatar lg" id="agent-ava">HT</span>
+            <span class="who"><b style="font-size:1.05rem" id="agent-name">Hoàng Anh Tuấn</b><span id="agent-role">Giám đốc dự án · RECO Group</span></span>
+          </div>
+          <div class="stack mt-3">
+            <a class="btn btn-primary btn-block" id="agent-call" href="tel:+84934524445">Gọi 0934 524 445</a>
+            <a class="btn btn-outline btn-block" id="agent-zalo" href="https://zalo.me/0934524445" target="_blank" rel="noopener">Nhắn Zalo</a>
+          </div>
+          <p class="micro muted mt-3">Đường dẫn này gắn đúng chuyên viên đã gửi cho quý khách. Quý khách có thể chia sẻ tiếp cho người thân.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="pub-sec" id="pub-points">
+      <span class="eyebrow">Điểm nổi bật</span>
+      <h2 style="font-size:1.5rem">Vì sao khách hàng chọn dự án này</h2>
+      <div class="grid g-3 mt-3" id="pub-points-grid"></div>
+    </section>
+
+    <section class="pub-sec" id="pub-place">
+      <span class="eyebrow">Vị trí</span>
+      <h2 style="font-size:1.5rem">Liên kết vùng</h2>
+      <div id="pub-map" class="mt-3"></div>
+      <p class="micro muted mt-1">Nền bản đồ OpenStreetMap. Chỉ hiện các điểm đã được duyệt công khai.</p>
+      <div class="kv kv-3 mt-3" id="pub-place-kv"></div>
+    </section>
+
+    <section class="pub-sec" id="pub-gallery">
+      <span class="eyebrow">Hình ảnh và mặt bằng</span>
+      <div class="pub-gal mt-3" id="gal">
+        <img src="../assets/img/reco-banner.jpg" alt="Phối cảnh tổng thể Le Parc Place" loading="lazy">
+        <img src="../assets/img/celestine.jpg" alt="Tầng tiện ích tầng 5 — lap pool 40 m" loading="lazy">
+        <img src="../assets/img/palmy.jpg" alt="Sân pickleball tầng 5" loading="lazy">
+        <img src="../assets/img/la-perle.webp" alt="Wine lounge tầng 15" loading="lazy">
+      </div>
+      <p class="micro muted mt-2">Hình ảnh do Chủ đầu tư cung cấp, mang tính minh họa. Quý khách bấm vào ảnh để xem cỡ lớn.</p>
+    </section>
+
+    <!-- Sản phẩm Hot — không giá. PTG ẩn ở Giai đoạn 1 compact. -->
+    <section class="pub-sec" id="pub-hot" hidden>
+      <span class="eyebrow">Sản phẩm đang tư vấn</span>
+      <h2 style="font-size:1.5rem" id="u-title">Căn</h2>
+      <p class="lead mt-1" id="u-pitch" style="font-size:.98rem"></p>
+      <div class="card mt-3">
+        <div class="card-body">
+          <div class="kv kv-3">
+            <div><div class="k">Diện tích thông thủy</div><div class="v" id="u-area">—</div></div>
+            <div><div class="k">Hướng ban công</div><div class="v" id="u-dir">—</div></div>
+            <div><div class="k">Tòa · tầng</div><div class="v" id="u-block">—</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pub-sec" id="pub-ptg" hidden data-gd2>
+      <span class="eyebrow">Phiếu tính giá</span>
+      <h2 style="font-size:1.5rem">Phiếu tính giá</h2>
+      <table class="tbl" hidden>
+        <tbody>
+          <tr><td data-l="Khoản">Giá bán niêm yết</td><td data-l="Số tiền" class="r"><b id="u-list">—</b></td></tr>
+          <tr><td data-l="Khoản">Chiết khấu</td><td data-l="Số tiền" class="r"><span id="u-disc">—</span></td></tr>
+          <tr><td data-l="Khoản">Giá sau chiết khấu</td><td data-l="Số tiền" class="r"><b id="u-net">—</b></td></tr>
+          <tr><td data-l="Khoản">Thanh toán đợt 1</td><td data-l="Số tiền" class="r"><b id="u-first">—</b></td></tr>
+        </tbody>
+      </table>
+      <span id="u-state" hidden></span>
+    </section>
+
+    <section class="pub-sec" id="pub-bank" hidden>
+      <span class="eyebrow">Đặt cọc</span>
+      <h2 style="font-size:1.5rem">Thông tin chuyển khoản</h2>
+      <div class="kv kv-2 mt-3" id="pub-bank-grid"></div>
+    </section>
+
+    <section class="pub-sec" id="pub-policy">
+      <span class="eyebrow">Chính sách được công bố</span>
+      <h2 style="font-size:1.5rem">Chính sách bán hàng được công bố</h2>
+      <ul class="mt-2" style="padding-left:18px">
+        <li>Hỗ trợ lãi suất 0% trong 18 tháng, ân hạn gốc 18 tháng.</li>
+        <li>Vay tối đa 70% giá trị căn hộ qua ngân hàng liên kết.</li>
+        <li>Tiến độ thanh toán chuẩn 30 – 70.</li>
+        <li>Áp dụng cho hợp đồng ký trước 30/09/2026.</li>
+      </ul>
+      <p class="micro muted mt-2">Trang này chỉ hiển thị phần chính sách được phép công bố.</p>
+    </section>
+
+    <section class="pub-sec" id="yeu-cau" hidden>
+      <div class="card card-pad">
+        <div class="row-tight mb-1">
+          <b>Nhận báo giá / quan tâm căn</b>
+          <span class="chip-gd2">Hạng mục bổ sung · ngoài gói đã báo giá</span>
+        </div>
+        <p class="small muted">Quý khách để lại tên và số điện thoại, chuyên viên phụ trách sẽ gọi lại kèm phiếu tính giá của đúng căn quan tâm.</p>
+
+        <div id="yc-form" class="mt-3">
+          <div class="grid g-2">
+            <label class="field"><span class="lab">Họ và tên</span>
+              <input class="inp" type="text" id="yc-ten" data-required data-msg="Quý khách cho biết tên để chuyên viên tiện xưng hô."></label>
+            <label class="field"><span class="lab">Số điện thoại</span>
+              <input class="inp" type="tel" id="yc-sdt" data-required data-msg="Nhập số điện thoại để chuyên viên gọi lại."
+                     placeholder="Ví dụ: 0912 345 678"></label>
+          </div>
+          <label class="field"><span class="lab">Căn quan tâm</span>
+            <select class="inp" id="yc-can" data-gd2></select></label>
+          <label class="field"><span class="lab">Ghi chú</span>
+            <textarea class="inp" id="yc-note" rows="2" data-gd2 placeholder="Ví dụ: mong muốn xem căn mẫu cuối tuần"></textarea></label>
+          <div class="row mt-2">
+            <button type="button" class="btn btn-primary" id="yc-send">Gửi yêu cầu</button>
+          </div>
+          <p class="micro muted mt-2">
+            Quý khách <strong>không cần đăng nhập</strong> và trang này <strong>không tự tính giá</strong> — phiếu tính giá do chuyên viên lập và đã được duyệt (QD-010).
+          </p>
+        </div>
+
+        <div id="yc-done" hidden class="note mt-3">
+          <b>Đã nhận yêu cầu của quý khách.</b>
+          <p class="small mt-1" style="margin:0" id="yc-done-text"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pub-sec">
+      <div class="band">
+        <span class="eyebrow light">Bước tiếp theo</span>
+        <h2>Quý khách muốn xem căn mẫu?</h2>
+        <p class="lead mt-1">Chuyên viên phụ trách sẽ sắp lịch và gửi thêm mặt bằng chi tiết.</p>
+        <div class="row mt-3">
+          <a class="btn btn-light" id="band-call" href="tel:+84934524445">Gọi chuyên viên</a>
+          <a class="btn btn-ghost" id="band-zalo" href="https://zalo.me/0934524445" target="_blank" rel="noopener">Nhắn Zalo</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="pub-foot">
+    <div class="pub-wrap">
+      <b style="color:#fff">RECO Group</b>
+      <p class="mt-1" style="max-width:60ch">Công ty Cổ phần Nhà Ở Ngay RECO · 19–21 Vũ Trọng Phụng, Thanh Xuân Trung, Hà Nội · cskh@nhaongayreco.vn</p>
+      <p class="micro mt-2" style="color:rgba(255,255,255,.5)">
+        Thông tin trên trang do RECO tổng hợp từ tài liệu chính thức của Chủ đầu tư và được cập nhật liên tục.
+        Trang này không hiển thị nội dung nội bộ và không chứa liên kết tài liệu do Chủ đầu tư sở hữu.
+      </p>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Xem ảnh lớn -->
+<div class="lbx" id="lbx" hidden role="dialog" aria-modal="true" aria-label="Xem ảnh cỡ lớn" tabindex="-1">
+  <div class="lbx-bar">
+    <span class="lbx-cap" id="lbx-cap"></span>
+    <button type="button" class="lbx-btn" id="lbx-close" aria-label="Đóng ảnh">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <button type="button" class="lbx-nav prev" id="lbx-prev" aria-label="Ảnh trước">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
+  <img id="lbx-img" alt="">
+  <button type="button" class="lbx-nav next" id="lbx-next" aria-label="Ảnh sau">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>
+  </button>
+  <span class="lbx-count" id="lbx-count"></span>
+</div>
+
+<script>
+/* Khối gửi yêu cầu của khách — QD-055. Chỉ ghi tên, số điện thoại, căn quan tâm và ghi chú;
+   không có hồ sơ khách hàng, không chấm điểm, không phân bổ tự động (những thứ đó ở Giai đoạn 2). */
+document.addEventListener('DOMContentLoaded', function () {
+  var S = RECO.store, form = document.getElementById('yc-form');
+  if (form) {
+    var sel = document.getElementById('yc-can');
+    var h = location.hash, qi = h.indexOf('?');
+    var want = new URLSearchParams(qi >= 0 ? h.slice(qi + 1) : location.search).get('pj');
+    var pj = (want && S.find('projects', want)) ? want : 'leparc';
+    var units = S.get('units').filter(function (u) { return u.pj === pj && u.state !== 'ban'; });
+    sel.innerHTML = '<option value="">Chưa chọn căn cụ thể</option>' +
+      units.map(function (u) {
+        return '<option value="' + u.id + '">' + u.id + ' · ' + u.kind + ' · ' + u.area + ' m²</option>';
+      }).join('');
+
+    document.getElementById('yc-send').addEventListener('click', function () {
+      if (!RECO.validate(form)) return;
+      var ten = document.getElementById('yc-ten').value.trim();
+      var can = sel.value;
+      RECO.busy(this, 'Đang gửi…', 800, function () {
+        form.hidden = true;
+        var done = document.getElementById('yc-done');
+        done.hidden = false;
+        document.getElementById('yc-done-text').textContent =
+          'Cảm ơn ' + ten + '. Chuyên viên phụ trách đường dẫn này đã nhận thông báo' +
+          (can ? ' kèm căn ' + can : '') + ' và sẽ liên hệ lại trong hôm nay.';
+        RECO.toast('Đã gửi yêu cầu tới chuyên viên phụ trách');
+      });
+    });
+  }
+})
+document.addEventListener('DOMContentLoaded', function () {
+  // Khung điện thoại thay nội dung màn bằng iframe — bản ngoài không có gì để dựng.
+  if (!document.getElementById('gal')) return;
+
+  var S = RECO.store, E = RECO_DATA.esc;
+  var params = (function () {
+    var h = location.hash, i = h.indexOf('?');
+    return new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search);
+  })();
+  function findLink() {
+    var slug = params.get('slug');
+    if (slug) {
+      var want = slug.indexOf('/t/') === 0 ? slug : '/t/' + slug.replace(/^\/t\//, '');
+      var hit = S.get('shareLinks').filter(function (l) {
+        return l.slug === slug || l.slug === want || l.slug === '/t/' + slug;
+      })[0];
+      if (hit) return hit;
+    }
+    var pjWant = params.get('pj');
+    return S.get('shareLinks').filter(function (l) {
+      return l.state === 'live' && (!pjWant || l.pj === pjWant);
+    })[0] || {};
+  }
+  var link = findLink();
+  var PJ = (link.pj && S.find('projects', link.pj)) ? link.pj
+    : ((params.get('pj') && S.find('projects', params.get('pj'))) ? params.get('pj') : 'leparc');
+  var ticks = link.ticks && link.ticks.length ? link.ticks : null;
+  var tpl = link.templateId ? S.find('shareTemplates', link.templateId) : null;
+  if (!ticks && tpl && tpl.ticks && tpl.ticks.length) ticks = tpl.ticks;
+  var hotId = link.hotId || (tpl && tpl.hotId) || null;
+
+  /* ---------- Nội dung dự án ----------
+     Cả trang phải bám theo dự án đang được gửi. Trước đây tên và quy mô đọc từ kho nhưng
+     đoạn tổng quan, điểm nổi bật và ảnh lại ghi cứng của một dự án khác — mở đúng đường dẫn
+     là thấy chữ nói một tỉnh, bản đồ chỉ một tỉnh khác. */
+  var p = S.find('projects', PJ);
+  if (p) {
+    document.getElementById('pj-name').textContent = p.name;
+    document.getElementById('pj-sub').textContent = p.place + ' · ' + p.typeName + ' · Bàn giao dự kiến ' + p.handover;
+    document.getElementById('pj-struct').textContent = p.struct;
+    document.getElementById('pj-size').textContent = p.sizeText;
+    document.getElementById('pj-owner').textContent = p.owner;
+    document.title = p.name + ' — thông tin dự án | RECO';
+    var hero = document.querySelector('.pub-hero');
+    if (hero) {
+      hero.style.backgroundImage =
+        'linear-gradient(0deg, rgba(4,25,44,.95) 6%, rgba(4,25,44,.42) 62%, rgba(4,25,44,.22)),' +
+        'linear-gradient(90deg, rgba(4,25,44,.5), rgba(4,25,44,.08) 55%),' +
+        'url("' + RECO.asset(p.summary || p.img) + '")';
+    }
+  }
+
+  var ov = S.get('sections').filter(function (s) { return s.pj === PJ && s.kind === 'overview'; })[0];
+  if (ov) {
+    document.getElementById('pj-h2').textContent = 'Tổng quan ' + (p ? p.name : 'dự án');
+    document.getElementById('pj-overview').textContent = ov.body;
+  }
+
+  var ptsBox = document.getElementById('pub-points-grid');
+  if (ptsBox) ptsBox.innerHTML = S.get('sections')
+    .filter(function (s) { return s.pj === PJ && s.kind === 'point' && s.label === 'public'; })
+    .slice(0, 3)
+    .map(function (s) {
+      return '<div class="card card-pad"><h3 style="font-size:1rem">' + E(s.title) + '</h3>' +
+        '<p class="small muted mt-1">' + E(s.body) + '</p></div>';
+    }).join('');
+
+  /* ---------- Vị trí và liên kết vùng ----------
+     Ưu tiên điểm ghim được lên bản đồ, rồi mới tới điểm ở xa khung bản đồ (sân bay, phố cổ). */
+  var place = S.get('sections')
+    .filter(function (s) { return s.pj === PJ && s.kind === 'place' && s.label === 'public'; })
+    .sort(function (a, b) {
+      var ga = RECO_GEO.pois[a.id], gb = RECO_GEO.pois[b.id];
+      return (gb && !gb.far ? 1 : 0) - (ga && !ga.far ? 1 : 0);
+    })
+    .slice(0, 6);
+  document.getElementById('pub-place-kv').innerHTML = place.map(function (s) {
+    var g = RECO_GEO.pois[s.id];
+    return '<div' + (g && !g.far ? ' data-poi="' + E(s.id) + '"' : '') + '>' +
+      '<div class="k">' + E(s.title) + '</div><div class="v">' + E(s.body) + '</div></div>';
+  }).join('');
+
+  /* publicOnly: trang này là vùng công khai, chỉ ghim điểm mang nhãn Công khai */
+  if (window.RECO.map) RECO.map.project(document.getElementById('pub-map'), PJ, { publicOnly: true });
+
+  /* ---------- Chuyên viên phụ trách ----------
+     Trang thật đọc **bản chụp hồ sơ nhân viên đã lưu trên chính đường dẫn**
+     (`share_links.agent_name/agent_phone/agent_avatar_key` — ADR-0006), không truy
+     vấn bảng người dùng: vùng công khai không được có đường nối nào sang kho nội bộ.
+     Ở đây dựng đúng hình dạng đó — đọc từ bản chụp trên đường dẫn — còn việc bản chụp
+     đổi theo vai trò đang xem chỉ là tiện ích của thanh demo. */
+  var linkForAgent = link;
+  var snap = (linkForAgent && linkForAgent.agent) || {};
+  var me = {
+    name: snap.name || RECO.current.who,
+    roleName: snap.roleName || RECO.current.name,
+    phone: snap.phone || '0934 524 445',
+    ini: snap.ini || RECO.current.short
+  };
+  var digits = String(me.phone).replace(/\D/g, '');
+  document.getElementById('agent-name').textContent = me.name;
+  document.getElementById('agent-role').textContent = me.roleName + ' · RECO Group';
+  var ava = document.getElementById('agent-ava');
+  if (me.img) ava.innerHTML = '<img src="' + RECO.asset(me.img) + '" alt="">';
+  else ava.textContent = me.ini || RECO.current.short;
+
+  var call = 'tel:+84' + digits.replace(/^0/, '');
+  var zalo = 'https://zalo.me/' + digits;
+  var callBtn = document.getElementById('agent-call');
+  callBtn.href = call;
+  callBtn.textContent = 'Gọi ' + me.phone;
+  document.getElementById('agent-zalo').href = zalo;
+  document.getElementById('band-call').href = call;
+  document.getElementById('band-zalo').href = zalo;
+
+  /* ---------- Hiệu lực của đường dẫn ---------- */
+  var best = link && link.id ? link : (S.get('shareLinks').filter(function (l) {
+    return l.pj === PJ && l.state === 'live' && (l.days === null || l.days === undefined || l.days > 0);
+  })[0]);
+  var validText = document.getElementById('valid-text');
+  if (!best || best.state === 'off' || (best.days !== null && best.days !== undefined && best.days <= 0)) {
+    validText.textContent = 'Đường dẫn đã hết hiệu lực';
+    document.getElementById('expired-bar').hidden = false;
+  } else if (best.days === null || best.days === undefined) {
+    validText.textContent = 'Trang còn hiệu lực khi dự án còn hoạt động';
+  } else {
+    validText.textContent = 'Trang còn hiệu lực ' + best.days + ' ngày';
+  }
+
+  /* ---------- Sản phẩm Hot: mã, loại, diện tích, hướng, pitch — không giá ---------- */
+  var hot = hotId ? S.find('hotProducts', hotId) : null;
+  var u = (link.unitId && S.find('units', link.unitId)) ||
+          (hot && S.find('units', hot.unitId)) || null;
+  var hotSec = document.getElementById('pub-hot');
+  if (u && hotSec) {
+    document.getElementById('u-title').textContent = 'Căn ' + u.id + ' · ' + u.kind.replace(/(\d+)\s*PN/, '$1 phòng ngủ');
+    document.getElementById('u-area').textContent = u.area.toLocaleString('vi-VN') + ' m²';
+    document.getElementById('u-dir').textContent = u.dir;
+    var blk = document.getElementById('u-block');
+    if (blk) blk.textContent = u.block + (u.floor ? ' · tầng ' + u.floor : '');
+    var pitchEl = document.getElementById('u-pitch');
+    if (pitchEl) pitchEl.textContent = (hot && hot.pitch) ? hot.pitch : (u.kind + ' · ' + (u.dir || ''));
+    if (document.getElementById('u-state')) document.getElementById('u-state').textContent = (S.UNIT_STATE[u.state] || {}).text || '—';
+  }
+  if (document.getElementById('u-list')) {
+    document.getElementById('u-list').textContent = '—';
+    document.getElementById('u-disc').textContent = '—';
+    document.getElementById('u-net').textContent = '—';
+    document.getElementById('u-first').textContent = '—';
+  }
+
+  var bankBox = document.getElementById('pub-bank-grid');
+  if (bankBox && p && p.bank) {
+    var b = p.bank;
+    bankBox.innerHTML =
+      '<div><div class="k">Chủ tài khoản</div><div class="v">' + E(b.holder) + '</div></div>' +
+      '<div><div class="k">Số tài khoản</div><div class="v">' + E(b.no) + '</div></div>' +
+      '<div><div class="k">Ngân hàng</div><div class="v">' + E(b.at) + '</div></div>' +
+      '<div><div class="k">Nội dung CK</div><div class="v">' + E(b.memo) + '</div></div>';
+  }
+
+  /* Ẩn khối theo ticks/hotId. Không ticks = trang giới thiệu (không PTG, không form, không Drive). */
+  var vis = {
+    overview: !ticks || ticks.indexOf('overview') >= 0,
+    place: !ticks || ticks.indexOf('place') >= 0,
+    gallery: !ticks || ticks.indexOf('gallery') >= 0,
+    hot: !!(hotId || (ticks && ticks.indexOf('hot') >= 0) || link.unitId),
+    bank: !!(ticks && ticks.indexOf('bank') >= 0)
+  };
+  if (ticks) {
+    vis.hot = ticks.indexOf('hot') >= 0;
+    vis.bank = ticks.indexOf('bank') >= 0;
+  }
+  function hideSec(id, on) {
+    var el = document.getElementById(id);
+    if (el) el.hidden = !on;
+  }
+  hideSec('pub-overview', vis.overview);
+  hideSec('pub-points', vis.overview);
+  hideSec('pub-place', vis.place);
+  hideSec('pub-gallery', vis.gallery);
+  hideSec('pub-hot', vis.hot && !!u);
+  hideSec('pub-bank', vis.bank && !!(p && p.bank));
+  hideSec('pub-policy', !ticks);
+  hideSec('pub-ptg', false);
+  hideSec('yeu-cau', false);
+
+  /* ---------- Thư viện ảnh: chỉ ảnh đã duyệt mang nhãn Công khai ---------- */
+  var gal = document.getElementById('gal');
+  var shots = S.get('media').filter(function (m) {
+    return m.pj === PJ && m.state === 'approved' && m.label === 'public';
+  }).slice(0, 4);
+  if (shots.length) {
+    gal.innerHTML = shots.map(function (m, i) {
+      return '<button type="button" data-i="' + i + '" aria-label="Xem ảnh lớn: ' + E(m.name) + '">' +
+        '<img src="' + S.imgSrc(m) + '" alt="' + E(m.name) + '" loading="lazy"></button>';
+    }).join('');
+  }
+
+  /* ---------- Xem ảnh lớn ---------- */
+  var lbx = document.getElementById('lbx'), lbxImg = document.getElementById('lbx-img'),
+      lbxCap = document.getElementById('lbx-cap'), lbxCount = document.getElementById('lbx-count'),
+      lbxClose = document.getElementById('lbx-close'), lbxPrev = document.getElementById('lbx-prev'),
+      lbxNext = document.getElementById('lbx-next');
+  var stops = [lbxClose, lbxPrev, lbxNext];
+  var at = 0, opener = null;
+
+  function show(i) {
+    if (!shots.length) return;
+    at = (i + shots.length) % shots.length;
+    var m = shots[at];
+    lbxImg.src = S.imgSrc(m);
+    lbxImg.alt = m.name;
+    lbxCap.textContent = m.name;
+    lbxCount.textContent = 'Ảnh ' + (at + 1) + ' trên ' + shots.length;
+  }
+  function openLbx(i, from) {
+    opener = from || null;
+    show(i);
+    lbx.hidden = false;
+    document.body.style.overflow = 'hidden';
+    lbxClose.focus();
+  }
+  function closeLbx() {
+    lbx.hidden = true;
+    lbxImg.removeAttribute('src');
+    document.body.style.overflow = '';
+    if (opener && opener.isConnected) opener.focus();
+  }
+
+  gal.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-i]');
+    if (b) openLbx(Number(b.getAttribute('data-i')), b);
+  });
+  lbxClose.addEventListener('click', closeLbx);
+  lbxPrev.addEventListener('click', function () { show(at - 1); });
+  lbxNext.addEventListener('click', function () { show(at + 1); });
+  lbx.addEventListener('click', function (e) { if (e.target === lbx) closeLbx(); });
+  lbx.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeLbx(); return; }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(at - 1); return; }
+    if (e.key === 'ArrowRight') { e.preventDefault(); show(at + 1); return; }
+    if (e.key !== 'Tab') return;
+    // Bẫy focus: chỉ ba nút trong khung xem ảnh
+    var i = stops.indexOf(document.activeElement);
+    e.preventDefault();
+    if (i < 0) { stops[0].focus(); return; }
+    stops[(i + (e.shiftKey ? -1 : 1) + stops.length) % stops.length].focus();
+  });
+});
+</script>
+</body>
+</html>

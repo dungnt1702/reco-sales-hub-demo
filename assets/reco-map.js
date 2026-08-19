@@ -50,7 +50,8 @@
       if (!has(this.options.recoRanges, c)) return BLANK;
       var key = c.z + '/' + c.x + '/' + c.y;
       if (window.RECO_TILES) return window.RECO_TILES[key] || BLANK;
-      return 'assets/tiles/' + key + '.webp';
+      var base = (window.RECO && window.RECO.assetBase) ? window.RECO.assetBase() : 'assets/';
+      return base + 'tiles/' + key + '.webp';
     }
   });
 

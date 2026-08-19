@@ -1,0 +1,147 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đường dẫn không còn hiệu lực | RECO</title>
+<meta name="theme-color" content="#09263c">
+<meta name="description" content="Đường dẫn quý khách vừa mở không còn hiệu lực. Vui lòng liên hệ chuyên viên phụ trách của RECO để nhận đường dẫn mới.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  .gone-wrap { max-width: 620px; margin-inline: auto; padding-block: 46px; }
+  .gone-mark {
+    width: 62px; height: 62px; border-radius: 50%; margin-inline: auto;
+    display: flex; align-items: center; justify-content: center;
+    background: color-mix(in srgb, var(--navy) 8%, var(--white));
+    border: 1px solid var(--line); color: var(--navy);
+  }
+  .gone-mark svg { width: 26px; height: 26px; }
+  .gone-card { text-align: center; }
+  .gone-card .agent-card { text-align: left; }
+</style>
+</head>
+<body data-shell="public" data-page="">
+
+<div id="page">
+
+  <!-- Cùng chrome với trang gửi khách: KHÔNG có điều hướng nội bộ, không có ô tìm kiếm -->
+  <div class="pub-top">
+    <div class="in">
+      <span class="brand" style="color:#fff"><b style="color:#fff">RECO</b><span style="color:rgba(255,255,255,.7)">Group</span></span>
+      <span class="chip" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <span id="chip-text">Đường dẫn không còn hiệu lực</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="pub-wrap">
+    <div class="gone-wrap">
+
+      <div class="empty state-empty gone-card">
+        <span class="gone-mark" id="gone-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </span>
+        <span class="eyebrow mt-3" style="display:block">Đường dẫn gửi khách</span>
+        <h1 id="gone-title" style="font-size:clamp(1.4rem,3vw,1.8rem)">Đường dẫn đã hết hiệu lực</h1>
+        <p class="lead mt-2" id="gone-body" style="font-size:.98rem">
+          Đường dẫn quý khách vừa mở có thời hạn 7 ngày và nay đã quá hạn.
+        </p>
+        <p class="small muted mt-2">
+          Thông tin dự án được cập nhật liên tục, nên RECO đặt thời hạn cho mỗi đường dẫn để quý khách luôn xem đúng bản mới nhất.
+          Quý khách vui lòng liên hệ chuyên viên phụ trách bên dưới để nhận đường dẫn mới — việc cấp lại chỉ mất vài phút.
+        </p>
+      </div>
+
+      <aside class="agent-card mt-3">
+        <span class="eyebrow">Chuyên viên phụ trách</span>
+        <div class="people mt-2">
+          <span class="avatar lg" id="agent-ava">QH</span>
+          <span class="who"><b style="font-size:1.05rem" id="agent-name">Hoàng Anh Tuấn</b><span id="agent-role">Giám đốc dự án · RECO Group</span></span>
+        </div>
+        <div class="stack mt-3">
+          <a class="btn btn-primary btn-block" id="agent-call" href="tel:+84934524445">Gọi 0934 524 445</a>
+          <a class="btn btn-outline btn-block" id="agent-zalo" href="https://zalo.me/0934524445" target="_blank" rel="noopener">Nhắn Zalo xin đường dẫn mới</a>
+        </div>
+        <p class="micro muted mt-3">Quý khách nhắn giúp tên dự án đang quan tâm để chuyên viên gửi lại đúng thông tin.</p>
+      </aside>
+
+    </div>
+  </div>
+
+  <footer class="pub-foot">
+    <div class="pub-wrap">
+      <b style="color:#fff">RECO Group</b>
+      <p class="mt-1" style="max-width:60ch">Công ty Cổ phần Nhà Ở Ngay RECO · 19–21 Vũ Trọng Phụng, Thanh Xuân Trung, Hà Nội · cskh@nhaongayreco.vn</p>
+      <p class="micro mt-2" style="color:rgba(255,255,255,.5)">
+        Trang này không hiển thị nội dung nội bộ và không chứa liên kết tài liệu do Chủ đầu tư sở hữu.
+      </p>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Khung điện thoại thay nội dung màn bằng iframe — bản ngoài không có gì để dựng.
+  if (!document.getElementById('gone-title')) return;
+
+  var S = RECO.store;
+
+  /* Lý do đọc từ đường dẫn — chạy được cả bản nhiều trang (#thu-hoi)
+     lẫn bản gói một trang (#link-het-han?at=thu-hoi). */
+  function reason() {
+    var h = location.hash.replace(/^#/, '');
+    var i = h.indexOf('?');
+    var frag = i < 0 ? h : h.slice(0, i);
+    var hashQs = new URLSearchParams(i < 0 ? '' : h.slice(i + 1));
+    var v = hashQs.get('at') || hashQs.get('ly-do') ||
+            new URLSearchParams(location.search).get('ly-do') || frag;
+    return v === 'thu-hoi' ? 'thu-hoi' : 'het-han';
+  }
+
+  var TEXT = {
+    'het-han': {
+      chip: 'Đường dẫn đã hết hiệu lực',
+      title: 'Đường dẫn đã hết hiệu lực',
+      body: 'Đường dẫn quý khách vừa mở có thời hạn 7 ngày và nay đã quá hạn.',
+      icon: 'clock'
+    },
+    'thu-hoi': {
+      chip: 'Đường dẫn đã được thu hồi',
+      title: 'Đường dẫn đã được thu hồi',
+      body: 'Đường dẫn quý khách vừa mở đã được người phụ trách dự án thu hồi, nên nội dung tạm ngừng hiển thị.',
+      icon: 'lock'
+    }
+  };
+  var t = TEXT[reason()];
+  document.getElementById('chip-text').textContent = t.chip;
+  document.getElementById('gone-title').textContent = t.title;
+  document.getElementById('gone-body').textContent = t.body;
+  document.getElementById('gone-icon').innerHTML = RECO.svg(t.icon);
+  document.title = t.title + ' | RECO';
+
+  /* Chuyên viên phụ trách — để khách xin đường dẫn mới. Không nêu tên dự án. */
+  var me = S.get('users').filter(function (u) { return u.role === RECO.role && u.state === 'on'; })[0] || {
+    name: RECO.current.who, roleName: RECO.current.name, phone: '0934 524 445', ini: RECO.current.short
+  };
+  var digits = String(me.phone).replace(/\D/g, '');
+  document.getElementById('agent-name').textContent = me.name;
+  document.getElementById('agent-role').textContent = me.roleName + ' · RECO Group';
+  var ava = document.getElementById('agent-ava');
+  if (me.img) ava.innerHTML = '<img src="' + RECO.asset(me.img) + '" alt="">';
+  else ava.textContent = me.ini || RECO.current.short;
+
+  var call = document.getElementById('agent-call');
+  call.href = 'tel:+84' + digits.replace(/^0/, '');
+  call.textContent = 'Gọi ' + me.phone;
+  document.getElementById('agent-zalo').href = 'https://zalo.me/' + digits;
+});
+</script>
+</body>
+</html>

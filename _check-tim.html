@@ -7,6 +7,7 @@
 <pre id="out">Đang chạy…</pre>
 <div id="frames"></div>
 <script>
+var PHASE = 'gd01';
 var out = document.getElementById('out'), frames = document.getElementById('frames');
 var lines = [], fail = 0;
 function say(ok, msg) { if (!ok) fail++; lines.push((ok ? 'OK   ' : 'HONG ') + msg); }
@@ -15,7 +16,7 @@ function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 function load(role) {
   return new Promise(function (res) {
     var f = document.createElement('iframe');
-    f.src = 'cay-thu-muc.html?bare=1&role=' + role;
+    f.src = PHASE + '/cay-thu-muc.html?bare=1&role=' + role;
     f.onload = function () { setTimeout(function () { res(f); }, 300); };
     frames.appendChild(f);
   });

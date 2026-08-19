@@ -60,11 +60,21 @@
   }
 
   /* ---------- Ảnh ----------
-     Bản nhiều trang đọc thẳng từ assets/img. Bản gói giữ mỗi ảnh đúng một lần trong
-     window.RECO_IMG rồi thay vào lúc dựng — nếu nhúng data URI ngay trong đánh dấu thì
-     một tấm ảnh dùng ở năm màn sẽ bị chép năm lần và tệp phình gấp ba. */
+     Bản nhiều trang đọc từ ASSET_BASE/img (root = assets/, trang trong gd01/gd02 = ../assets/).
+     Bản gói giữ mỗi ảnh đúng một lần trong window.RECO_IMG rồi thay vào lúc dựng. */
+  function assetBase() {
+    if (window.RECO_ASSET_BASE != null) return window.RECO_ASSET_BASE;
+    if (BUNDLE) return '';
+    var scripts = document.getElementsByTagName('script');
+    for (var i = 0; i < scripts.length; i++) {
+      var abs = scripts[i].src || '';
+      if (/\/reco\.js(\?|$)/.test(abs)) return abs.replace(/reco\.js(\?.*)?$/, '');
+    }
+    return 'assets/';
+  }
+  var ASSET_BASE = assetBase();
   function asset(name) {
-    return (window.RECO_IMG && window.RECO_IMG[name]) || 'assets/img/' + name;
+    return (window.RECO_IMG && window.RECO_IMG[name]) || (ASSET_BASE + 'img/' + name);
   }
   function expand(s) {
     if (!BUNDLE || !s) return s;
@@ -142,7 +152,17 @@
   }
 
   /* ---------- Nav ---------- */
-  var NAV = [
+  function inGd01() {
+    try { return /(?:^|\/)gd01\//.test(location.pathname || ''); } catch (e) { return false; }
+  }
+
+  var NAV = inGd01() ? [
+    { href: 'trang-dau.html', label: 'Trang đầu', key: 'trang-dau', icon: 'home' },
+    { href: 'du-an.html', label: 'Dự án', key: 'du-an', icon: 'layers' },
+    { href: 'chia-se.html', label: 'Chia sẻ', key: 'chia-se', icon: 'share' },
+    { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' },
+    { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
+  ] : [
     { href: 'trang-dau.html', label: 'Trang đầu', key: 'trang-dau', icon: 'home' },
     { href: 'du-an.html', label: 'Dự án', key: 'du-an', icon: 'layers' },
     /* Tài liệu mở thẳng vào cây thư mục — đó là cách RECO tổ chức tài liệu thật.
@@ -154,7 +174,14 @@
        Đặt cuối NAV nên không lọt vào dock (dock chỉ lấy 4 mục đầu). */
     { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
   ];
-  var MORE = [
+  var MORE = inGd01() ? [
+    { href: 'de-nghi-sua.html', label: 'Đề nghị sửa nội dung' },
+    { href: 'nguoi-dung.html', label: 'Người dùng và quyền', roles: 'gd hcns' },
+    { href: 'sitemap.html', label: 'Bản đồ hệ thống · đối chiếu SaleHUB', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' },
+    { href: 'bao-tri.html', label: 'Lịch bàn giao và bảo trì', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' },
+    { href: 'ha-tang.html', label: 'Hạ tầng và chi phí vận hành', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' },
+    { href: '../index.html', label: 'Cổng Giai đoạn 1 / 2' }
+  ] : [
     { href: 'thu-vien-tai-lieu.html', label: 'Danh sách tài liệu · tìm theo bộ lọc' },
     { href: 'soan-noi-dung.html', label: 'Chuẩn bị nội dung bán hàng', roles: 'gd gddu tkkd qlkd nvbh mkt' },
     { href: 'de-nghi-sua.html', label: 'Đề nghị sửa nội dung' },
@@ -179,9 +206,10 @@
        trên cùng, vốn phải trỏ về Trang đầu của ứng dụng.
        Nút thế chỗ nhãn chứ không thêm vào: thêm một phần tử nữa thì thanh xuống
        hai dòng ở 1440px, và --proto-h là thứ .sec dùng để chừa chỗ khi nhảy neo. */
-    var home = currentFile() === 'index.html'
+    var homeHref = inGd01() ? '../index.html' : 'index.html';
+    var home = (currentFile() === 'index.html' && !inGd01())
       ? '<span class="proto-tag">Prototype · duyệt thiết kế</span>'
-      : '<a class="proto-btn" href="' + link('index.html') + '">◄ Bản đồ prototype</a>';
+      : '<a class="proto-btn" href="' + link(homeHref) + '">◄ Cổng prototype</a>';
     return '' +
       '<div class="proto">' +
         '<div class="proto-in">' +
@@ -1108,7 +1136,7 @@
 
   window.RECO = Object.assign(window.RECO || {}, {
     role: role, roles: ROLES, current: R, page: page,
-    svg: svg, link: link, toast: toast, asset: asset,
+    svg: svg, link: link, toast: toast, asset: asset, assetBase: assetBase,
     openModal: openModal, closeModal: closeModal, applyRoles: applyRoles,
     confirm: confirmBox, guardLabel: guardLabel, busy: busy, validate: validate, fieldError: fieldError,
     copy: copy, copyWithToast: copyWithToast, today: today, now: now,

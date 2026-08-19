@@ -7,14 +7,15 @@
 <pre id="out">Đang chạy…</pre>
 <div id="frames"></div>
 <script>
+var PHASE = 'gd01';
 /* Mỗi dòng: [trang, vai trò, mô tả, hàm kiểm tra, kỳ vọng] */
 var CASES = [
-  ['du-an-chi-tiet', 'gddu', 'khu vực 9 đầy đủ hiện với Giám đốc dự án',
-   function (d) { return !d.querySelector('#kv9 [data-roles*="mkt"]').hidden; }, true],
-  ['du-an-chi-tiet', 'nvbh', 'khu vực 9 đầy đủ ẩn với Nhân viên bán hàng',
-   function (d) { return d.querySelector('#kv9 [data-roles*="mkt"]').hidden; }, true],
-  ['du-an-chi-tiet', 'nvbh', 'nhân viên bán hàng chỉ thấy Kịch bản của tôi',
-   function (d) { return !d.querySelector('#kv9 [data-roles="nvbh"]').hidden; }, true],
+  ['du-an-chi-tiet', 'gddu', 'khu vực 9 ẩn ở Giai đoạn 1 compact',
+   function (d) { var el = d.getElementById('kv9'); return !el || el.hidden === true; }, true],
+  ['du-an-chi-tiet', 'nvbh', 'khu vực 9 ẩn với Nhân viên bán hàng',
+   function (d) { var el = d.getElementById('kv9'); return !el || el.hidden === true; }, true],
+  ['du-an-chi-tiet', 'nvbh', 'nhân viên bán hàng vẫn có mục Chia sẻ',
+   function (d) { return /chia-se/.test((d.querySelector('.nav') || {}).innerHTML || ''); }, true],
   ['du-an-chi-tiet', 'nvbh', 'nút nổi Gửi đề nghị sửa hiện với Nhân viên bán hàng',
    function (d) { return !d.querySelector('.fab').hidden; }, true],
   ['du-an-chi-tiet', 'gddu', 'nút nổi Gửi đề nghị sửa ẩn với Giám đốc dự án',
@@ -130,31 +131,41 @@ var CASES = [
   ['quan-tri', 'mkt', 'Marketing không có nút Bảng hàng trên dòng dự án',
    function (d) { return d.querySelector('#pj-body [data-act="units"]').hidden; }, true],
 
-  /* A4 · thêm hỏi đáp */
-  ['du-an-chi-tiet', 'tkkd', 'Thư ký kinh doanh thêm được câu hỏi đáp',
-   function (d) { return !d.querySelector('#qa-new').hidden; }, true],
-  ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng không thêm được câu hỏi đáp',
-   function (d) { return d.querySelector('#qa-new').hidden; }, true],
-  ['du-an-chi-tiet', 'qlkd', 'Quản lý kinh doanh không thêm được câu hỏi đáp',
-   function (d) { return d.querySelector('#qa-new').hidden; }, true],
+  /* A4 · hỏi đáp 88 câu cắt khỏi Giai đoạn 1 compact */
+  ['du-an-chi-tiet', 'tkkd', 'Khu vực hỏi đáp ẩn khỏi Giai đoạn 1 compact',
+   function (d) { var el = d.getElementById('kv7'); return !el || el.hidden; }, true],
+  ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng không thấy khu vực hỏi đáp',
+   function (d) { var el = d.getElementById('kv7'); return !el || el.hidden; }, true],
+  ['du-an-chi-tiet', 'qlkd', 'Quản lý kinh doanh không thấy khu vực hỏi đáp',
+   function (d) { var el = d.getElementById('kv7'); return !el || el.hidden; }, true],
 
-  /* B · các nút từng hở quyền */
-  ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng lập được phiếu tính giá',
-   function (d) { return !d.querySelector('#pt-tao').hidden; }, true],
-  ['du-an-chi-tiet', 'hcns', 'HCNS va Ke toan không lập được phiếu tính giá',
-   function (d) { return d.querySelector('#pt-tao').hidden; }, true],
-  ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng gửi được một đường dẫn cho nhiều căn',
+  /* B · lưới bảng hàng và phiếu tính giá cắt khỏi Giai đoạn 1 compact */
+  ['du-an-chi-tiet', 'nvbh', 'Giai đoạn 1 không lập phiếu tính giá trên trang dự án',
    function (d) {
-     d.querySelector('#bh-body [data-pick]').click();
-     return !d.querySelector('#bh-bulk [data-bulk="share"]').hidden;
+     var b = d.querySelector('#pt-tao');
+     return !b || b.hidden || !!b.closest('[hidden]');
    }, true],
-  ['du-an-chi-tiet', 'hcns', 'HCNS va Ke toan không gửi được đường dẫn cho nhiều căn',
+  ['du-an-chi-tiet', 'hcns', 'Form phiếu tính giá ẩn với mọi vai trò ở Giai đoạn 1',
    function (d) {
-     d.querySelector('#bh-body [data-pick]').click();
-     return d.querySelector('#bh-bulk [data-bulk="share"]').hidden;
+     var b = d.querySelector('#pt-tao');
+     return !b || b.hidden || !!b.closest('[hidden]');
+   }, true],
+  ['du-an-chi-tiet', 'nvbh', 'Lưới bảng hàng ẩn — không gửi nhiều căn từ lưới',
+   function (d) {
+     var wrap = d.querySelector('#kv5 .tbl-wrap');
+     return !wrap || wrap.hidden;
+   }, true],
+  ['du-an-chi-tiet', 'hcns', 'Lưới bảng hàng cũng ẩn với HCNS',
+   function (d) {
+     var wrap = d.querySelector('#kv5 .tbl-wrap');
+     return !wrap || wrap.hidden;
    }, true],
   ['du-an-chi-tiet', 'gddu', 'Chỉ còn một lối thêm kịch bản cá nhân, dành cho Nhân viên bán hàng',
-   function (d) { return d.querySelectorAll('#kv9 [data-new-kb="mine"]').length; }, 1],
+   function (d) {
+     var kv9 = d.getElementById('kv9');
+     if (!kv9 || kv9.hidden) return true;
+     return d.querySelectorAll('#kv9 [data-new-kb="mine"]').length === 1;
+   }, true],
   ['de-nghi-sua', 'nvbh', 'Nhân viên bán hàng gửi được đề nghị mới',
    function (d) { return !d.querySelector('#req-new').hidden; }, true],
   ['de-nghi-sua', 'tkkd', 'Thư ký kinh doanh không gửi đề nghị mới, chỉ xử lý',
@@ -180,21 +191,21 @@ var CASES = [
 
   /* --- Đợt bổ sung: cây thư mục mặc định, quản lý kịch bản, sửa thành phần trang dự án --- */
 
-  ['trang-dau', 'nvbh', 'Muc Tai lieu tren thanh dieu huong mo thang vao cay thu muc',
-   function (d) { return d.querySelector('.nav a[href*="cay-thu-muc"]') !== null; }, true],
+  ['trang-dau', 'nvbh', 'Thanh điều hướng Giai đoạn 1 có mục Chia sẻ',
+   function (d) { return d.querySelector('.nav a[href*="chia-se"]') !== null; }, true],
   ['cay-thu-muc', 'nvbh', 'Man cay thu muc co nut chuyen sang danh sach',
    function (d) { return d.querySelector('.seg a[href*="thu-vien-tai-lieu"]') !== null; }, true],
   ['thu-vien-tai-lieu', 'nvbh', 'Man danh sach co nut quay ve cay thu muc',
    function (d) { return d.querySelector('.seg a[href*="cay-thu-muc"]') !== null; }, true],
 
-  ['quan-tri', 'gddu', 'Giám đốc dự án thấy tab Kịch bản',
-   function (d) { return d.querySelector('#t-kb').hidden; }, false],
+  ['quan-tri', 'gddu', 'Tab Kịch bản ẩn ở Giai đoạn 1 compact',
+   function (d) { return d.querySelector('#t-kb').hidden; }, true],
   ['quan-tri', 'hcns', 'HCNS va Ke toan không thấy tab Kịch bản',
    function (d) { return d.querySelector('#t-kb').hidden; }, true],
   ['quan-tri', 'mkt', 'Marketing không soạn kịch bản dùng chung (nhánh 7 chỉ Xem)',
    function (d) { return d.querySelector('#kb-new').hidden; }, true],
-  ['quan-tri', 'tkkd', 'Thư ký kinh doanh soạn được kịch bản dùng chung',
-   function (d) { return d.querySelector('#kb-new').hidden; }, false],
+  ['quan-tri', 'tkkd', 'Giai đoạn 1 không soạn kịch bản dùng chung',
+   function (d) { return d.querySelector('#t-kb').hidden; }, true],
   ['quan-tri', 'gddu', 'Kịch bản cá nhân của người khác không lọt vào danh sách quản trị',
    function (d) { return d.querySelector('#kb-list').innerHTML.indexOf('Cách mình mở đầu') >= 0; }, false],
 
@@ -234,9 +245,18 @@ var CASES = [
   ['cay-thu-muc', 'nvbh', 'Cây thư mục xem trước được tài liệu, không phải tải mới xem (MH-05)',
    function (d) { return d.querySelector('#pane [data-act="xem"]') !== null; }, true],
   ['du-an-chi-tiet', 'nvbh', 'Nhân viên bán hàng xóa được kịch bản cá nhân của mình (MH-12)',
-   function (d) { return d.querySelector('#kb-nvbh [data-del-kb]') !== null; }, true],
+   function (d) {
+     var kv9 = d.getElementById('kv9');
+     if (!kv9 || kv9.hidden) return true;
+     return d.querySelector('#kb-nvbh [data-del-kb]') !== null;
+   }, true],
   ['du-an-chi-tiet', 'gddu', 'Người phân quyền ẩn được kịch bản dùng chung (MH-12)',
-   function (d) { return !d.querySelector('#kb-chung [data-hide-kb]').closest('[data-roles]').hidden; }, true],
+   function (d) {
+     var kv9 = d.getElementById('kv9');
+     if (!kv9 || kv9.hidden) return true;
+     var b = d.querySelector('#kb-chung [data-hide-kb]');
+     return b && !b.closest('[data-roles]').hidden;
+   }, true],
   ['quan-tri', 'tkkd', 'Bảng hàng nguồn Drive không thêm được căn trong Sales Hub (ADR-0003)',
    function (d) {
      d.querySelector('#pj-body [data-act="units"]').click();
@@ -287,12 +307,7 @@ var CASES = [
 ];
 
 function emptyShare(d) {
-  var S = d.defaultView.RECO.store;
-  S.get('shareLinks').slice().forEach(function (l) { S.remove('shareLinks', l.id); });
-  var btn = d.querySelector('#lk-empty [data-act="new"]');
-  var state = { hidden: btn ? btn.hidden : 'khong tim thay nut tao moi' };
-  S.reset();
-  return state;
+  return d.querySelector('#lk-new') || { hidden: 'khong tim thay nut tao mau' };
 }
 
 var out = document.getElementById('out'), frames = document.getElementById('frames'), lines = [], fail = 0;
@@ -300,7 +315,7 @@ var out = document.getElementById('out'), frames = document.getElementById('fram
 function run(c) {
   return new Promise(function (res) {
     var f = document.createElement('iframe');
-    f.src = c[0] + '.html?bare=1&role=' + c[1];
+    f.src = PHASE + '/' + c[0] + '.html?bare=1&role=' + c[1];
     f.onload = function () {
       var got;
       try { got = c[3](f.contentDocument); } catch (e) { got = 'LOI: ' + e.message; }

@@ -1,0 +1,227 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cây tính năng Giai đoạn 1 · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  /* Bộ class cây node-là-liên kết (a.tnode, .tname b/.d/.m, .grp) nằm ở assets/reco.css
+     vì cả ba trang cây tính năng và bản đồ hệ thống cùng dùng. */
+  .kpi b { font-family: var(--font-display); font-size: 1.5rem; display: block; margin: 2px 0; }
+  .card-head h2 { margin: 0; }
+</style>
+</head>
+<body data-shell="app" data-page="tinh-nang">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">Giai đoạn 1 · gói đang có hiệu lực · v0.9</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Cây tính năng Giai đoạn 1</h1>
+        <p class="lead mt-1" style="font-size:.98rem;max-width:74ch">
+          Mười bốn hạng mục của gói đã báo giá, xếp theo bốn nhánh — nền tảng, sản phẩm, chia sẻ tin và bàn giao.
+          Bấm vào một hạng mục để đọc mô tả đầy đủ và phần chi phí của hạng mục đó.
+        </p>
+      </div>
+      <div class="row-tight">
+        <div class="seg" role="group" aria-label="Chọn nội dung">
+          <button type="button" aria-pressed="true">Giai đoạn 1</button>
+          <a href="tinh-nang-gd2.html" role="button">Giai đoạn 2</a>
+          <a href="ha-tang.html" role="button">Hạ tầng</a>
+          <a href="bao-tri.html" role="button">Bảo trì</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g-4 mb-4">
+      <div class="card card-pad kpi"><span class="micro muted">Ngày công cốt lõi</span><b>170</b><span class="micro muted">Cộng dự phòng 10% là 187 ngày</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Thời gian triển khai</span><b>1 tháng + 2 tuần KT</b><span class="micro muted">Bảo hành 1 tháng sau bàn giao</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Giá thanh toán</span><b>124.300.000</b><span class="micro muted">VNĐ, đã gồm VAT 8%</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Dự phòng / ưu đãi</span><b>10% · 30%</b><span class="micro muted">Dự phòng trên cốt lõi · ưu đãi trên giá gốc</span></div>
+    </div>
+
+    <div class="note note-navy mb-4">
+      <strong>Gói bán trọn mười bốn hạng mục với một giá.</strong>
+      Ngày công và chi phí ghi ở từng dòng là để RECO thấy khối lượng phân bổ thế nào, không phải bảng giá lẻ để
+      cắt bớt từng dòng — bỏ một hạng mục không làm giá giảm đúng bằng con số của dòng đó.
+      Lịch sáu tuần dương (một tháng phát triển cộng hai tuần kiểm thử) cần nhân sự làm song song, không phải một người lần lượt 170 ngày.
+      Chi phí trong cây là <em>chi phí cốt lõi trước VAT</em>; chuỗi tính từ đó ra giá thanh toán nằm ở
+      <a href="chi-tiet-gd1.html#gia">trang chi tiết</a>.
+      Con số 198,8 triệu của gói mười tám hạng mục không còn hiệu lực.
+    </div>
+
+    <section class="card mb-4">
+      <div class="card-head" style="padding-block:14px">
+        <h2 style="font-size:1.05rem">Bốn nhánh trong gói · 14 hạng mục · 170 ngày công</h2>
+        <span class="micro muted">149.520.000 đ trước VAT</span>
+      </div>
+      <div class="card-body" style="padding:10px 8px">
+        <div class="tree">
+
+          <div class="grp">
+          <ul>
+            <li>
+              <div class="tnode root">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+                <span class="tname"><b>Nền tảng</b><span class="m">57 ngày · 51.280.000 đ</span></span>
+              </div>
+              <ul>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-01">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                  <span class="tname"><b>1 · Hạ tầng</b><span class="d">Kho mã, kiểm tra tự động, ba môi trường và sao lưu</span><span class="m">10 ngày · 9.730.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-02">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                  <span class="tname"><b>2 · Thiết kế giao diện</b><span class="d">Khoảng mười màn hình Giai đoạn 1 gọn và thành phần dùng chung</span><span class="m">10 ngày · 9.400.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-03">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+                  <span class="tname"><b>3 · Mô hình dữ liệu</b><span class="d">Dự án, cây khối/tòa/tầng/căn, mẫu và thẻ liên kết</span><span class="m">9 ngày · 8.300.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-04">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                  <span class="tname"><b>4 · Xác thực và phiên sử dụng</b><span class="d">Đăng nhập bằng số điện thoại hoặc email kèm mật khẩu, quản lý phiên</span><span class="m">13 ngày · 11.090.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-05">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 20v-2a4 4 0 0 0-3-3.87"/></svg>
+                  <span class="tname"><b>5 · Phân quyền</b><span class="d">Vai trò, nhãn nội dung và phạm vi dự án được giao</span><span class="m">15 ngày · 12.760.000 đ</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <div class="tnode root">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+                <span class="tname"><b>Sản phẩm</b><span class="m">45 ngày · 38.900.000 đ</span></span>
+              </div>
+              <ul>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-06">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
+                  <span class="tname"><b>6 · Quản trị dự án mỏng + thẻ link</b><span class="d">Hồ sơ dự án gọn; Drive ngoài chỉ gắn thẻ URL, không kéo tệp vào hệ thống</span><span class="m">18 ngày · 15.300.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-07">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22V12h6v10"/></svg>
+                  <span class="tname"><b>7 · Cây khối/tòa/tầng/căn + SP</b><span class="d">Sản phẩm là căn trong cây; không lưới bảng hàng</span><span class="m">14 ngày · 12.250.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-08">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.1L12 16.5 5.7 20.7 8 13.6 2 9.2h7.6Z"/></svg>
+                  <span class="tname"><b>8 · SP Hot + pitch</b><span class="d">Căn nổi bật kèm lời chào; không trường giá; nhân viên bán hàng không tự gắn Hot</span><span class="m">13 ngày · 11.350.000 đ</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <div class="tnode root">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>
+                <span class="tname"><b>Chia sẻ tin</b><span class="m">44 ngày · 37.880.000 đ</span></span>
+              </div>
+              <ul>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-09">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+                  <span class="tname"><b>9 · Thư viện mẫu</b><span class="d">Kho dùng chung phải duyệt Giám đốc dự án, kèm kho cá nhân</span><span class="m">17 ngày · 14.680.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-10">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+                  <span class="tname"><b>10 · Soạn tin + trang khách</b><span class="d">Tick công khai, tối đa một mẫu Hot, copy Zalo và liên kết trang khách</span><span class="m">22 ngày · 18.840.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-11">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  <span class="tname"><b>11 · Duyệt mẫu</b><span class="d">Luồng duyệt mẫu dùng chung của Giám đốc dự án</span><span class="m">5 ngày · 4.360.000 đ</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <div class="tnode root">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                <span class="tname"><b>Bàn giao</b><span class="m">24 ngày · 21.460.000 đ</span></span>
+              </div>
+              <ul>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-12">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  <span class="tname"><b>12 · Kiểm thử</b><span class="d">Quyền theo vai trò, luồng chính và biên nội dung công khai</span><span class="m">14 ngày · 10.460.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-13">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 20v-2a4 4 0 0 0-3-3.87"/></svg>
+                  <span class="tname"><b>13 · Dữ liệu mẫu + đào tạo</b><span class="d">Hướng dẫn nhập dữ liệu mẫu và một buổi bàn giao</span><span class="m">4 ngày · 4.400.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#hm-14">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  <span class="tname"><b>14 · Quản lý dự án</b><span class="d">Họp, báo cáo tiến độ và phối hợp trong khoảng sáu tuần</span><span class="m">6 ngày · 6.600.000 đ</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+        </div>
+      </div>
+      <div class="card-foot spread">
+        <span class="small muted">Cộng 14 hạng mục</span>
+        <span class="num" style="font-weight:700">170 ngày · 149.520.000 đ trước VAT</span>
+      </div>
+    </section>
+
+    <!-- Phần A: làm cùng Giai đoạn 1 nhưng không nằm trong 124.300.000 -->
+    <section class="card mb-4" id="phan-a" data-gd2>
+      <div class="card-head" style="padding-block:14px">
+        <div>
+          <span class="eyebrow">Phần A · quyết định ngày 17/08/2026</span>
+          <h2 style="font-size:1.05rem;margin-top:2px">Bổ sung ngoài gói, làm cùng Giai đoạn 1</h2>
+        </div>
+        <span class="chip-gd2">Ngoài gói 124.300.000 VNĐ</span>
+      </div>
+      <div class="card-body" style="padding:10px 8px">
+        <div class="tree">
+          <ul>
+            <li>
+              <div class="tnode root">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                <span class="tname"><b>Ba hạng mục cộng thêm</b><span class="m">25 ngày · 22.200.000 đ sau ưu đãi</span></span>
+              </div>
+              <ul>
+                <li><a class="tnode" href="chi-tiet-gd1.html#bs-01">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6A2 2 0 0 0 22 18L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 17h.01"/></svg>
+                  <span class="tname"><b>BS-01 · Khách gửi yêu cầu từ trang công khai</b><span class="d">Nút “Nhận báo giá / quan tâm căn”, khách để lại họ tên và số điện thoại — kéo theo nghĩa vụ theo Nghị định 13</span><span class="m">8 ngày · 7.000.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#bs-02">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
+                  <span class="tname"><b>BS-02 · Vai trò Khách hàng có tài khoản</b><span class="d">Khách đăng nhập bằng số điện thoại, chỉ thấy đúng phần nhân viên đã chia sẻ cho mình</span><span class="m">14 ngày · 12.600.000 đ</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd1.html#bs-03">
+                  <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+                  <span class="tname"><b>BS-03 · Tách vai trò Kế toán và phân cấp cấp tài khoản</b><span class="d">Nâng từ bảy lên chín vai trò; Hành chính nhân sự tạo được tài khoản và gán vai trò thường</span><span class="m">3 ngày · 2.500.000 đ</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-foot spread">
+        <span class="small muted">Nếu RECO duyệt cả phần A</span>
+        <span class="num" style="font-weight:700">195 ngày · 146.500.000 đ · tạm tính cộng thêm</span>
+      </div>
+    </section>
+
+    <section class="card card-pad">
+      <h2 style="font-size:1.15rem;margin-top:0">Đọc tiếp</h2>
+      <p class="small muted mt-1">
+        Mô tả đầy đủ từng hạng mục, chuỗi tính giá và danh sách những gì chưa bao gồm nằm ở trang chi tiết.
+        Lịch và gói bảo trì sau một tháng bảo hành là trang riêng. Sáu phân hệ Giai đoạn 2 là một danh mục riêng, chưa nằm trong gói này.
+      </p>
+      <div class="row mt-3">
+        <a class="btn btn-primary" href="chi-tiet-gd1.html">Chi tiết và báo giá Giai đoạn 1</a>
+        <a class="btn btn-outline" href="bao-tri.html">Lịch và bảo trì</a>
+        <a class="btn btn-outline" href="tinh-nang-gd2.html">Cây tính năng Giai đoạn 2</a>
+        <a class="btn btn-outline" href="../index.html">Về cổng mô phỏng</a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,367 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bản đồ hệ thống · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<meta name="description" content="Đối chiếu từng mục trong bộ mô tả SaleHUB của RECO với màn hình tương ứng trong Sales Hub, kèm trạng thái Giai đoạn 1, ngoài gói hay Giai đoạn 2.">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  /* Bộ class cây node-là-liên kết nằm ở assets/reco.css, dùng chung ba trang.
+     Ở trang này cột phải là trạng thái chứ không phải tiền, nên đổi màu theo trạng thái. */
+  .tnode .tname .m.s-gd2 { color: var(--muted); }
+  .tnode .tname .m.s-bs { color: var(--navy-2); }
+  .tnode .tname .m.s-part { color: var(--navy-2); }
+  .card-head h2 { margin: 0; }
+</style>
+</head>
+<body data-shell="app" data-page="sitemap">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">Đối chiếu nguồn · SaleHUB 17/08/2026</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Bản đồ hệ thống</h1>
+        <p class="lead mt-1" style="font-size:.98rem;max-width:74ch">
+          Từng mục trong bộ mô tả <em>SaleHUB</em> RECO gửi ngày 17/08/2026 được đặt cạnh chỗ nó nằm trong hệ thống.
+          Bấm một dòng để mở đúng màn hình hoặc đúng khu vực nội dung. Dòng không bấm được là mục chưa có màn hình.
+        </p>
+      </div>
+      <div class="row-tight">
+        <div class="seg" role="group" aria-label="Chọn bản đồ">
+          <button type="button" aria-pressed="true">Bản đồ hệ thống</button>
+          <a href="index.html" role="button">Bản đồ prototype</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g-3 mb-4">
+      <div class="card card-pad">
+        <span class="chip">Giai đoạn 1</span>
+        <p class="small muted mt-1">Nằm trong gói 198.800.000 đ đã báo giá, đã dựng thành màn hình bấm được trong bản mô phỏng này.</p>
+      </div>
+      <div class="card card-pad">
+        <span class="open-q">Ngoài gói</span>
+        <p class="small muted mt-1">Ba hạng mục BS-01, BS-02 và BS-03 — RECO chọn làm cùng Giai đoạn 1 thì cộng thêm tiền, tạm tính ở cây tính năng Giai đoạn 1.</p>
+      </div>
+      <div class="card card-pad">
+        <span class="chip-gd2">Giai đoạn 2</span>
+        <p class="small muted mt-1">Sáu phân hệ GD2-01 đến GD2-06, chưa có màn hình. Phạm vi và tạm tính ở cây tính năng Giai đoạn 2.</p>
+      </div>
+    </div>
+
+    <div class="note note-navy mb-4">
+      <strong>Ba chỗ tên gọi khác nhau, đọc kỹ tránh hiểu nhầm.</strong>
+      <em>Chủ sàn</em> trong mô tả của RECO là <em>Tổng giám đốc</em> trong tài liệu và trong bản mô phỏng.
+      <em>Sale</em> được tách thành hai vai trò <em>Quản lý kinh doanh</em> và <em>Nhân viên bán hàng</em>.
+      Ngược lại, <em>Quản lý kinh doanh</em> không xuất hiện trong SaleHUB nhưng đã có ma trận quyền từ 13/08 nên giữ nguyên (QD-053).
+    </div>
+
+    <section class="card mb-4">
+      <div class="card-head" style="padding-block:14px">
+        <h2 style="font-size:1.05rem">Quyền tài khoản · 8 nhóm trong SaleHUB</h2>
+        <span class="micro muted">Bấm một nhóm để xem hệ thống với đúng vai trò đó</span>
+      </div>
+      <div class="card-body" style="padding:10px 8px">
+        <div class="tree">
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="trang-dau.html?role=gd">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+                <span class="tname"><b>Chủ sàn</b><span class="d">Trong hệ thống là vai trò Tổng giám đốc</span><span class="m">Xem với vai trò này →</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="du-an.html?role=gd"><span class="tname"><b>Xem tất cả các nội dung</b><span class="d">Không giới hạn theo dự án hay vùng được giao</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="quan-tri.html?role=gd"><span class="tname"><b>Sửa tất cả các nội dung</b><span class="d">Đồng bộ theo SaleHUB tại QD-060; mọi thao tác sửa đều ghi nhật ký và hiện tên người sửa cuối</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="chia-se.html?role=gd"><span class="tname"><b>Share được các nội dung public</b><span class="d">Đường dẫn gửi khách, hiệu lực 7 ngày với nội dung nhạy cảm</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="quan-tri.html?role=gd"><span class="tname"><b>Quản lý và báo cáo</b><span class="d">Giai đoạn 1 là bốn số liệu vận hành và danh sách tài liệu sắp hết hiệu lực</span><span class="m s-part">Một phần ở GĐ1</span></span></a></li>
+                <li><a class="tnode" href="nguoi-dung.html?role=gd"><span class="tname"><b>Thêm quyền — add tới quyền Giám đốc dự án</b><span class="d">QD-061; việc tạo và khoá tài khoản vẫn thuộc Hành chính nhân sự</span><span class="m s-bs">Ngoài gói · BS-03</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-05"><span class="tname"><b>Phân bổ khách hàng</b><span class="d">Quyền đã khai báo trong ma trận (QD-064), tính năng thuộc GD2-05</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="trang-dau.html?role=gddu">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                <span class="tname"><b>Giám đốc dự án</b><span class="d">Người duyệt cuối nội dung công khai của dự án phụ trách</span><span class="m">Xem với vai trò này →</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="du-an.html?role=gddu"><span class="tname"><b>Xem tất cả các nội dung</b><span class="d">Đồng bộ theo SaleHUB tại QD-062 — xem mọi dự án, sửa và duyệt vẫn trong dự án được giao</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="du-an-chi-tiet.html?role=gddu#kv7"><span class="tname"><b>Sửa Q&amp;A</b><span class="d">Hai cấp nhóm, mỗi câu có bản đầy đủ cho nhân viên và bản rút gọn gửi khách</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="du-an-chi-tiet.html?role=gddu#kv9"><span class="tname"><b>Sửa kịch bản bán hàng</b><span class="d">Kịch bản dùng chung, và duyệt đề xuất nâng kịch bản cá nhân lên bản chung</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-04"><span class="tname"><b>Sửa file training</b><span class="d">Đào tạo là module cấp công ty ngoài cây bảy nhánh (QD-056); người cập nhật đã chốt tại QD-067</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+                <li><a class="tnode" href="chia-se.html?role=gddu"><span class="tname"><b>Share được các nội dung public</b><span class="d">Kèm quyền vô hiệu hoá tập trung mọi đường dẫn đã gửi</span><span class="m">Giai đoạn 1</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="trang-dau.html?role=tkkd">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                <span class="tname"><b>Thư ký kinh doanh</b><span class="d">Người cập nhật dữ liệu chính của hệ thống</span><span class="m">Xem với vai trò này →</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="du-an.html?role=tkkd"><span class="tname"><b>Xem tất cả nội dung của dự án được phân công</b><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="quan-tri.html?role=tkkd"><span class="tname"><b>Sửa tất cả nội dung của dự án được phân công</b><span class="d">Giá, bảng hàng, chính sách, tình trạng sản phẩm và tài liệu; công bố thì gửi Giám đốc dự án duyệt</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="quan-tri.html?role=tkkd"><span class="tname"><b>Quản lý và báo cáo giao dịch</b><span class="d">Quyền đã mở tại QD-063; Giai đoạn 1 áp lên báo cáo vận hành, phân hệ giao dịch đầy đủ ở GD2-01</span><span class="m s-part">Một phần ở GĐ1</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="trang-dau.html?role=nvbh">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 20v-2a4 4 0 0 0-3-3.87"/></svg>
+                <span class="tname"><b>Sale</b><span class="d">Trong hệ thống tách làm hai: Nhân viên bán hàng và Quản lý kinh doanh</span><span class="m">Xem với vai trò này →</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="du-an.html?role=nvbh"><span class="tname"><b>Xem các nội dung public</b><span class="d">Thực tế rộng hơn mô tả: nhân viên xem được cả nội dung nhãn Nội bộ sau khi đăng nhập</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="trang-gui-khach.html"><span class="tname"><b>Share được các nội dung public</b><span class="d">Trang gửi khách gắn tên và số điện thoại của chính nhân viên gửi</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="soan-noi-dung.html?role=nvbh"><span class="tname"><b>Tự tạo tài liệu bán hàng từ các nguyên liệu có sẵn</b><span class="d">Chọn mẫu đã duyệt và ảnh đã duyệt, cắt gọt lại rồi mở kênh đăng thủ công</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="trang-dau.html?role=qlkd"><span class="tname"><b>Xem theo đội và vùng phụ trách</b><span class="d">Phần việc của Quản lý kinh doanh — vai trò không có trong SaleHUB nhưng giữ theo QD-053</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-05"><span class="tname"><b>Tạo thông tin khách hàng</b><span class="d">Hồ sơ khách hàng cần mô hình dữ liệu khách, thuộc GD2-05</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="trang-dau.html?role=mkt">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-5v12L3 13v-2Z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+                <span class="tname"><b>Marketing</b><span class="d">Soạn nội dung, không tự công bố</span><span class="m">Xem với vai trò này →</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="du-an.html?role=mkt"><span class="tname"><b>Xem các nội dung public</b><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="quan-tri.html?role=mkt"><span class="tname"><b>Sửa các file Marketing</b><span class="d">Mẫu nội dung và ảnh đã duyệt ở nhánh 4 và nhánh 5; mọi thay đổi dừng ở trạng thái chờ duyệt</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-05"><span class="tname"><b>Quản lý và báo cáo</b><span class="d">Báo cáo Marketing của dự án đã chuyển sang Giai đoạn 2 tại QD-043</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-05"><span class="tname"><b>Phân bổ khách hàng</b><span class="d">Quyền đã khai báo trong ma trận (QD-064), tính năng thuộc GD2-05</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="trang-dau.html?role=hcns">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+                <span class="tname"><b>HCNS</b><span class="d">Trong hệ thống là vai trò Hành chính nhân sự</span><span class="m">Xem với vai trò này →</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="nguoi-dung.html?role=hcns"><span class="tname"><b>Thêm tài khoản</b><span class="d">Tạo, khoá và mở lại tài khoản, đặt lại mật khẩu (QD-054)</span><span class="m s-bs">Ngoài gói · BS-03</span></span></a></li>
+                <li><a class="tnode" href="nguoi-dung.html?role=hcns"><span class="tname"><b>Cấp quyền tài khoản</b><span class="d">Chỉ các vai trò thường; vai trò quản lý do Tổng giám đốc hoặc người quản trị chung gán</span><span class="m s-bs">Ngoài gói · BS-03</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-01"><span class="tname"><b>Quản lý và báo cáo giao dịch &amp; KPI</b><span class="d">Giao dịch ở GD2-01, chỉ số KPI ở GD2-03</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-03"><span class="tname"><b>Quản lý phiếu biểu liên quan công và lương</b><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-03"><span class="tname"><b>Đồng bộ dữ liệu từ HCNS và app chấm công sang</b><span class="d">Chưa ước tính được phần đồng bộ — cần RECO cho biết ứng dụng chấm công là gì</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="trang-dau.html?role=ktoan">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h4"/></svg>
+                <span class="tname"><b>Kế toán</b><span class="d">Vai trò tách riêng khỏi Hành chính nhân sự từ QD-053</span><span class="m">Xem với vai trò này →</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="quan-tri.html?role=ktoan"><span class="tname"><b>Báo cáo giao dịch</b><span class="d">Giai đoạn 1 chỉ có báo cáo vận hành; bảng kê giao dịch và hoa hồng đầy đủ ở GD2-01 và GD2-02</span><span class="m s-part">Một phần ở GĐ1</span></span></a></li>
+                <li><a class="tnode" href="cay-thu-muc.html?role=ktoan"><span class="tname"><b>Xem chính sách hoa hồng đang hiệu lực</b><span class="d">Nhánh 1 và phần số liệu ở nhánh 7 của cây thư mục (QD-027, QD-051)</span><span class="m">Giai đoạn 1</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="trang-gui-khach.html">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="tname"><b>Khách hàng</b><span class="d">Toàn bộ nhóm quyền này nằm ngoài gói đã báo giá</span><span class="m s-bs">Xem trang khách nhận được →</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="trang-gui-khach.html"><span class="tname"><b>Xem thông tin được share từ sale</b><span class="d">Đăng nhập bằng số điện thoại, chỉ thấy nội dung nhân viên đã chia sẻ cho chính mình</span><span class="m s-bs">Ngoài gói · BS-02</span></span></a></li>
+                <li><a class="tnode" href="trang-gui-khach.html"><span class="tname"><b>Yêu cầu nhận báo giá và chọn căn</b><span class="d">Khách để lại họ tên, số điện thoại và căn quan tâm ngay trên trang công khai (QD-055)</span><span class="m s-bs">Ngoài gói · BS-01</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-head" style="padding-block:14px">
+        <h2 style="font-size:1.05rem">Tính năng ưu tiên · 8 mục trong SaleHUB</h2>
+        <span class="micro muted">Bốn mục đã có màn hình, bốn mục còn lại thuộc Giai đoạn 2</span>
+      </div>
+      <div class="card-body" style="padding:10px 8px">
+        <div class="tree">
+          <div class="grp">
+          <ul>
+            <li><a class="tnode" href="trang-dau.html"><span class="tname"><b>1 · Tìm kiếm nhanh thông tin để tư vấn khách</b><span class="d">Ô tìm toàn cục trên mọi màn, ô tìm ở trang đầu, bộ lọc dự án và tìm trong cây thư mục</span><span class="m">Giai đoạn 1</span></span></a></li>
+            <li><a class="tnode" href="du-an-chi-tiet.html"><span class="tname"><b>2 · Truy cập thông tin dự án</b><span class="d">Chín khu vực nội dung dùng chung cho mọi dự án, mỗi khu vực có dấu giải thích tại chỗ</span><span class="m">Giai đoạn 1</span></span></a></li>
+            <li><a class="tnode" href="du-an-chi-tiet.html#kv5"><span class="tname"><b>3 · Truy cập nhanh bảng hàng</b><span class="d">Lọc theo tòa, loại sản phẩm và tình trạng; quản trị theo phân khu → tòa → tầng → căn</span><span class="m">Giai đoạn 1</span></span></a></li>
+            <li><a class="tnode" href="du-an-chi-tiet.html#kv5"><span class="tname"><b>4 · Truy cập nhanh phiếu tính giá</b><span class="d">Tính lại theo từng căn và phương thức thanh toán; khách chỉ thấy phiếu đã duyệt, không có ô nhập</span><span class="m">Giai đoạn 1</span></span></a></li>
+            <li><a class="tnode" href="chi-tiet-gd2.html#gd2-06"><span class="tname"><b>5 · Truy cập và hoàn thiện các form mẫu biểu</b><span class="d">Form hoàn thiện giao dịch, đề xuất marketing, form công tác và bù công — thuộc GD2-06</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+            <li><a class="tnode" href="quan-tri.html"><span class="tname"><b>6 · Quản lý và báo cáo giao dịch</b><span class="d">Giai đoạn 1 có bốn số liệu vận hành (QD-042); bảy báo cáo tuần đầy đủ ở GD2-01</span><span class="m s-part">Một phần ở GĐ1</span></span></a></li>
+            <li><a class="tnode" href="chi-tiet-gd2.html#gd2-05"><span class="tname"><b>7 · Quản lý và báo cáo hoạt động truyền thông, marketing</b><span class="d">Báo cáo Marketing chuyển sang Giai đoạn 2 tại QD-043; quản lý nội dung đang chạy thuộc GD2-05</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+            <li><a class="tnode" href="chi-tiet-gd2.html#gd2-03"><span class="tname"><b>8 · Quản lý công lương nhân sự</b><span class="d">Phiếu biểu công lương, KPI và đồng bộ chấm công — thuộc GD2-03</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+          </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-head" style="padding-block:14px">
+        <h2 style="font-size:1.05rem">Nội dung thông tin · 3 khối trong SaleHUB</h2>
+        <span class="micro muted">Khối Dự án nằm trong gói; hai khối còn lại thuộc Giai đoạn 2</span>
+      </div>
+      <div class="card-body" style="padding:10px 8px">
+        <div class="tree">
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="du-an-chi-tiet.html">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-7h6v7"/></svg>
+                <span class="tname"><b>Dự án</b><span class="d">Bảy mục, tất cả nằm trên màn Chi tiết dự án</span><span class="m">Giai đoạn 1</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="du-an-chi-tiet.html#kv1"><span class="tname"><b>Tóm tắt dự án — dạng 1 ảnh</b><span class="d">Ảnh tóm tắt do RECO tải lên, đặt đầu khu vực Tổng quan, nhãn Công khai (QD-065)</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="du-an-chi-tiet.html#kv1"><span class="tname"><b>Link về website / landing page dự án</b><span class="d">Nằm trong khu vực Tổng quan, mở ra tab mới</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="du-an-chi-tiet.html#kv5-flow"><span class="tname"><b>Quy trình bán hàng &amp; hoàn thiện giao dịch</b><span class="d">Các bước từ đặt cọc tới ký hợp đồng, đặt ngay trên khu vực Bảng hàng</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="du-an-chi-tiet.html#kv5"><span class="tname"><b>Bảng hàng &amp; Phiếu tính giá</b><span class="d">Khu vực Nội bộ; bảng hàng có thể là liên kết sống tới Google Drive của Chủ đầu tư</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="du-an-chi-tiet.html#kv7"><span class="tname"><b>Kịch bản tiếp khách — dạng toggle câu hỏi</b><span class="d">Bộ hỏi đáp hai cấp nhóm và kịch bản kinh doanh, đều gấp/mở từng mục</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="du-an-chi-tiet.html#kv6"><span class="tname"><b>Thông tin chi tiết — thông tin kèm link</b><span class="d">Tám nhóm tài liệu của Le Parc Place, mỗi tệp hiện rõ nguồn và hạn hiệu lực</span><span class="m">Giai đoạn 1</span></span></a></li>
+                <li><a class="tnode" href="du-an-chi-tiet.html#kv5-bank"><span class="tname"><b>Tài khoản nhận mua dự án</b><span class="d">Tên tài khoản, số tài khoản, ngân hàng và cú pháp nội dung đặt cọc, mỗi dòng có nút sao chép</span><span class="m">Giai đoạn 1</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="chi-tiet-gd2.html#gd2-04">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>
+                <span class="tname"><b>Đào tạo</b><span class="d">Module cấp công ty nằm ngoài cây bảy nhánh của dự án (QD-056, ADR-0008)</span><span class="m s-gd2">Giai đoạn 2 · GD2-04</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-04"><span class="tname"><b>Gắn các video đào tạo kỹ năng</b><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-04"><span class="tname"><b>Các bài kiểm tra kỹ năng</b><span class="d">Phần tốn công nhất của khối này — có chấm điểm và theo dõi ai đã đạt</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-04"><span class="tname"><b>Bộ Q&amp;A về quy trình và hướng dẫn</b><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+          <div class="grp">
+          <ul>
+            <li>
+              <a class="tnode root" href="chi-tiet-gd2.html#gd2-05">
+                <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span class="tname"><b>Quản lý Marketing &amp; Phân bổ khách hàng</b><span class="d">Cần mô hình dữ liệu khách hàng mà Giai đoạn 1 chưa có</span><span class="m s-gd2">Giai đoạn 2 · GD2-05</span></span>
+              </a>
+              <ul>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-05"><span class="tname"><b>File thông tin khách hàng của Sale</b><span class="d">Hồ sơ khách hàng do nhân viên bán hàng tạo và cập nhật</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-05"><span class="tname"><b>Quản lý các nội dung marketing đang triển khai</b><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-05"><span class="tname"><b>Tìm phương án link API với các nền tảng quảng cáo</b><span class="d">Tạm tính chỉ gồm một nền tảng đầu tiên; mỗi nền tảng thêm là một khối việc riêng</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+                <li><a class="tnode" href="chi-tiet-gd2.html#gd2-05"><span class="tname"><b>Đăng ký marketing</b><span class="d">Biểu mẫu trong hệ thống thay cho Google Form RECO đang dùng</span><span class="m s-gd2">Giai đoạn 2</span></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-4" id="man-hinh">
+      <div class="section-head">
+        <span class="eyebrow">Bản đồ điều hướng</span>
+        <h2>Hai mươi màn trong bản mô phỏng</h2>
+        <p class="lead">Mười bốn màn mang mã MH khớp với <em>docs/05-user-experience/screen-requirements.md</em>; sáu màn còn lại phục vụ buổi trình bày.</p>
+      </div>
+
+      <h3 class="mt-3 mb-2">Tiếp cận và truy xuất</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="dang-nhap.html"><span class="mh">MH-01</span><h3>Đăng nhập</h3><p>Một ô nhận số điện thoại hoặc email, mật khẩu, không mã xác thực một lần.</p></a>
+        <a class="map-card" href="trang-dau.html"><span class="mh">MH-02</span><h3>Trang đầu</h3><p>Dự án đang bán, dự án nổi bật, ô tìm kiếm, khu ghim và mẹo bán hàng.</p></a>
+        <a class="map-card" href="du-an.html"><span class="mh">MH-03</span><h3>Tìm kiếm và danh sách dự án</h3><p>Lọc theo khu vực, loại sản phẩm, khoảng giá, diện tích; chuyển thẻ ↔ danh sách.</p></a>
+        <a class="map-card" href="du-an-chi-tiet.html"><span class="mh">MH-04</span><h3>Chi tiết dự án</h3><p>Chín khu vực nội dung dùng chung, kèm bốn khối bổ sung theo SaleHUB.</p></a>
+        <a class="map-card" href="du-an-chi-tiet.html#kv7"><span class="mh">MH-06</span><h3>Hỏi đáp và nội dung tư vấn</h3><p>Nhóm hỏi đáp hai cấp, mỗi câu có bản đầy đủ và bản rút gọn gửi khách.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Tài liệu</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="thu-vien-tai-lieu.html"><span class="mh">MH-05</span><h3>Thư viện tài liệu</h3><p>Lọc theo loại và theo nguồn; phiên bản, ngày hiệu lực, tải bản có dấu nhận diện.</p></a>
+        <a class="map-card" href="cay-thu-muc.html"><span class="mh">MH-11</span><h3>Cây thư mục tài liệu</h3><p>Bảy nhánh cố định, thư mục con, nhãn quyền kế thừa xuống nội dung con.</p></a>
+        <a class="map-card" href="de-nghi-sua.html"><span class="mh">MH-13</span><h3>Đề nghị sửa nội dung</h3><p>Nhân viên gửi đề nghị, người phụ trách dữ liệu cập nhật hoặc từ chối kèm lý do.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Chia sẻ</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="soan-noi-dung.html"><span class="mh">MH-07</span><h3>Chuẩn bị nội dung bán hàng</h3><p>Một mẫu chung cho mọi kênh; chọn ảnh đã duyệt, xem trước, mở kênh đăng thủ công.</p></a>
+        <a class="map-card" href="trang-gui-khach.html"><span class="mh">MH-08</span><h3>Trang công khai gửi khách</h3><p>Chỉ nội dung công khai, gắn nhân viên phụ trách, phiếu tính giá đã duyệt.</p></a>
+        <a class="map-card" href="link-het-han.html"><span class="mh">MH-14</span><h3>Đường dẫn hết hiệu lực</h3><p>Màn khách thấy khi mở đường dẫn đã quá 7 ngày hoặc bị Giám đốc dự án thu hồi.</p></a>
+        <a class="map-card" href="chia-se.html"><span class="mh">—</span><h3>Nhật ký đường dẫn chia sẻ</h3><p>Ai tạo, cho dự án nào, còn hiệu lực bao lâu, và nút vô hiệu hóa tập trung.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Quản trị</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="quan-tri.html"><span class="mh">MH-09</span><h3>Quản trị dữ liệu và nội dung</h3><p>Nhãn quyền, phiên bản/ngày hiệu lực, duyệt công bố và báo cáo vận hành tối thiểu.</p></a>
+        <a class="map-card" href="nguoi-dung.html"><span class="mh">MH-10</span><h3>Quản lý người dùng và quyền</h3><p>Chín vai trò, gán dự án hoặc vùng, đặt lại mật khẩu, ngừng tài khoản.</p></a>
+        <a class="map-card" href="du-an-chi-tiet.html#kv9"><span class="mh">MH-12</span><h3>Kịch bản kinh doanh</h3><p>Kịch bản dùng chung và kịch bản cá nhân, kèm luồng đề xuất nâng lên bản chung.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Tính năng và báo giá</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="tinh-nang-gd1.html"><span class="mh">GĐ1</span><h3>Cây tính năng Giai đoạn 1</h3><p>Mười tám hạng mục của gói 198.800.000 VNĐ xếp theo sáu nhánh, kèm ba hạng mục bổ sung.</p></a>
+        <a class="map-card" href="chi-tiet-gd1.html"><span class="mh">GĐ1</span><h3>Chi tiết và báo giá Giai đoạn 1</h3><p>Mô tả đầy đủ từng hạng mục và chuỗi tính từ ngày công ra giá thanh toán.</p></a>
+        <a class="map-card" href="tinh-nang-gd2.html"><span class="mh">GĐ2</span><h3>Cây tính năng Giai đoạn 2</h3><p>Sáu phân hệ dựng từ bộ mô tả và ba tệp Excel vận hành RECO gửi ngày 17/08/2026.</p></a>
+        <a class="map-card" href="chi-tiet-gd2.html"><span class="mh">GĐ2</span><h3>Chi tiết và báo giá Giai đoạn 2</h3><p>Phạm vi, rủi ro và tạm tính của từng phân hệ, kèm bốn cách chọn cho RECO.</p></a>
+        <a class="map-card" href="xem-truoc-gd2.html"><span class="mh">GĐ2</span><h3>Xem trước báo cáo giao dịch và hoa hồng</h3><p>Dựng theo bảy báo cáo tuần RECO đang làm trên Excel. Toàn bộ số liệu là số giả.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Bản đồ</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="index.html"><span class="mh">—</span><h3>Bản đồ prototype</h3><p>Trang mở đầu buổi trình bày: cách dùng thanh demo, đường đi 10 phút và các điểm cần RECO xác nhận.</p></a>
+        <a class="map-card" href="sitemap.html"><span class="mh">—</span><h3>Bản đồ hệ thống</h3><p>Chính trang này — đối chiếu từng mục SaleHUB với chỗ nó nằm trong hệ thống.</p></a>
+      </div>
+    </section>
+
+    <p class="small muted mt-4">
+      Nguồn đối chiếu: <em>SaleHUB.pdf</em> RECO gửi ngày 17/08/2026, và bảng truy vết ở cuối
+      <em>docs/04-features/feature-list.md</em>. Năm điểm ma trận quyền đã đồng bộ theo mô tả của RECO
+      nằm ở <em>docs/07-security/role-permission-matrix.md</em> (QD-060 đến QD-064).
+    </p>
+
+  </div>
+</main>
+
+</body>
+</html>

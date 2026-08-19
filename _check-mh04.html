@@ -10,6 +10,7 @@
 <pre id="out">Đang chạy…</pre>
 <div id="frames"></div>
 <script>
+var PHASE = 'gd01';
 var out = document.getElementById('out'), frames = document.getElementById('frames'), lines = [];
 function say(s) { lines.push(s); out.textContent = lines.join('\n'); }
 function ok(c, s) { say((c ? 'DAT  ' : 'HONG ') + s); return c; }
@@ -44,7 +45,7 @@ var CASES = [
   say('--- Danh sách dự án cùng loại (1440) ---');
   for (var i = 0; i < CASES.length; i++) {
     var c = CASES[i];
-    var f = await load('du-an-chi-tiet.html?bare=1&pj=' + c.pj, 1440);
+    var f = await load(PHASE + '/du-an-chi-tiet.html?bare=1&pj=' + c.pj, 1440);
     var d = f.contentDocument;
     var rows = d.querySelectorAll('#pj-near-list .mini');
     var bu = d.querySelectorAll('#pj-near-list .mmeta');
@@ -66,18 +67,20 @@ var CASES = [
 
   say('');
   say('--- Nav mục dính không bị bắt nhầm link dự án ---');
-  var f1 = await load('du-an-chi-tiet.html?bare=1&pj=leparc', 1440);
+  var f1 = await load(PHASE + '/du-an-chi-tiet.html?bare=1&pj=leparc', 1440);
   var d1 = f1.contentDocument;
-  /* Chỉ chín neo khu vực: liên kết cây thư mục đã được mã của màn đổi sang đường dẫn thật */
-  if (!ok(d1.querySelectorAll('.secnav a[href^="#"]').length === 9, 'secnav có đúng 9 neo trong trang')) bad++;
+  /* Ba neo Giai đoạn 1 compact: Thông tin · SP Hot · Mẫu chia sẻ */
+  if (!ok(d1.querySelectorAll('.secnav a[href^="#"]').length === 3, 'secnav có đúng 3 neo trong trang')) bad++;
   if (!ok(d1.querySelectorAll('#pj-near-list .on').length === 0, 'không dòng dự án nào bị gán class .on của nav')) bad++;
   if (!ok(!d1.querySelector('.secnav #pj-near-list'), 'khối dự án nằm ngoài <nav class="secnav">')) bad++;
 
   say('');
   say('--- Gợi ý (i) ---');
-  /* Mười: chín khu vực cộng biến thể "Kịch bản của tôi" của khu vực 09 */
-  var tips = d1.querySelectorAll('.sec-head [data-tip]');
-  if (!ok(tips.length === 10, 'có ' + tips.length + ' nút (i) ở tiêu đề khu vực (mong 10)')) bad++;
+  /* Gợi ý (i) còn lại ở kv1–4 và các khu compact (Hot, mẫu). Không đòi 9 khu / 10 nút. */
+  var tips = Array.prototype.filter.call(d1.querySelectorAll('.sec-head [data-tip]'), function (b) {
+    return !b.closest('[hidden]');
+  });
+  if (!ok(tips.length >= 4, 'có ' + tips.length + ' nút (i) ở khu vực đang hiện (mong ≥ 4)')) bad++;
   var noSvg = 0, noText = 0, noLabel = 0;
   tips.forEach(function (b) {
     if (!b.querySelector('svg')) noSvg++;
@@ -133,7 +136,7 @@ var CASES = [
 
   say('');
   say('--- Khổ hẹp 390: cột trái xuống cuối trang ---');
-  var f2 = await load('du-an-chi-tiet.html?bare=1&pj=leparc', 390);
+  var f2 = await load(PHASE + '/du-an-chi-tiet.html?bare=1&pj=leparc', 390);
   var d2 = f2.contentDocument, w2 = f2.contentWindow;
   var side = d2.querySelector('.detail-side'), main = d2.querySelector('.detail-main');
   if (!ok(w2.getComputedStyle(d2.querySelector('.secnav')).display === 'none', 'nav chín khu vực ẩn')) bad++;
@@ -159,7 +162,7 @@ var CASES = [
      dự án tụt xuống dưới vùng cuộn — người dùng tưởng là không có. Đo trên các khổ cao thật. */
   var CAO = [[1440, 900], [1440, 800], [1536, 730], [1280, 720]];
   for (var k = 0; k < CAO.length; k++) {
-    var fk = await load('du-an-chi-tiet.html?bare=1&pj=leparc', CAO[k][0], CAO[k][1]);
+    var fk = await load(PHASE + '/du-an-chi-tiet.html?bare=1&pj=leparc', CAO[k][0], CAO[k][1]);
     var dk = fk.contentDocument;
     var sd = dk.querySelector('.detail-side'), nr = dk.querySelector('.pj-near'), nv = dk.querySelector('.secnav');
     var rows = dk.querySelectorAll('#pj-near-list .mini').length;
@@ -177,16 +180,13 @@ var CASES = [
   }
 
   say('');
-  say('--- Không giẫm lên lớp .tip của Trang đầu ---');
-  /* Bản gói nối CSS mọi màn vào một tệp, nên tên lớp trùng là hai màn phá nhau.
-     Thẻ "Mẹo và nội dung dùng ngay" ở Trang đầu đã dùng .tip từ trước. */
-  var f3 = await load('trang-dau.html?bare=1', 1440);
+  say('--- Trang đầu không dùng lớp .tip (trùng CSS với gợi ý MH-04) ---');
+  /* Giai đoạn 1 gọn bỏ thẻ mẹo kịch bản. Kiểm không còn .tip, còn dải Hot và mẫu đội. */
+  var f3 = await load(PHASE + '/trang-dau.html?bare=1', 1440);
   var d3 = f3.contentDocument;
-  var cards = d3.querySelectorAll('.tips .tip');
-  var lun = 0;
-  cards.forEach(function (c) { if (c.getBoundingClientRect().width < 100) lun++; });
-  if (!ok(cards.length > 0, 'Trang đầu có ' + cards.length + ' thẻ mẹo để đo')) bad++;
-  if (!ok(lun === 0, 'thẻ mẹo Trang đầu không bị bóp nhỏ (' + lun + ' thẻ hẹp dưới 100px)')) bad++;
+  if (!ok(d3.querySelectorAll('.tips .tip').length === 0, 'Trang đầu không còn thẻ .tip')) bad++;
+  if (!ok(d3.querySelectorAll('#hot-home .card').length > 0, 'Trang đầu có dải SP Hot')) bad++;
+  if (!ok(d3.querySelectorAll('#home-tpl .card').length > 0, 'Trang đầu có mẫu đội')) bad++;
   if (!ok(d3.querySelectorAll('.itip').length === 0, 'Trang đầu không dùng lớp .itip')) bad++;
   f3.remove();
 
@@ -202,7 +202,8 @@ var CASES = [
   if (!ok(gRows.length === 3, 'bản gói: khối dự án có ' + gRows.length + ' dòng')) bad++;
   if (!ok(gRows.length > 0 && gRows[0].getAttribute('href').indexOf('#du-an-chi-tiet?pj=') === 0,
     'bản gói: link dòng dự án đúng dạng neo trong tệp')) bad++;
-  if (!ok(gTips.length === 10, 'bản gói: có ' + gTips.length + ' nút (i)')) bad++;
+  var gTipsVis = Array.prototype.filter.call(gTips, function (b) { return !b.closest('[hidden]'); });
+  if (!ok(gTipsVis.length >= 4, 'bản gói: có ' + gTipsVis.length + ' nút (i) đang hiện (mong ≥ 4)')) bad++;
   if (gTips.length) {
     gTips[0].setAttribute('aria-expanded', 'true');
     var gb = gTips[0].querySelector('.itip-bub'), gr = gb.getBoundingClientRect();
