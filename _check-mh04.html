@@ -150,12 +150,8 @@ var CASES = [
   if (!ok(w2.getComputedStyle(d2.querySelector('.zone-chips')).display === 'none', 'chip khu vực ẩn trên điện thoại')) bad++;
   var burger = d2.querySelector('.burger');
   var bdisp = burger ? w2.getComputedStyle(burger).display : 'missing';
-  if (!ok(bdisp !== 'none' && burger, 'hamburger hiện trên điện thoại (display=' + bdisp + ')')) bad++;
-  var loc = d2.querySelector('#nav-drawer .drawer-local');
-  var nA = loc ? loc.querySelectorAll('a').length : -1;
-  var nB = loc ? loc.querySelectorAll('button').length : -1;
-  var nNav = d2.querySelectorAll('#nav-drawer nav a').length;
-  if (!ok(nA === 8, 'hamburger 8 neo local=' + (loc ? 'yes' : 'no') + ' a=' + nA + ' btn=' + nB + ' navA=' + nNav + ' data=' + d2.body.getAttribute('data-local-nav'))) bad++;
+  if (!ok(bdisp !== 'none' && burger, 'hamburger hiện trên điện thoại')) bad++;
+  if (!ok(d2.querySelectorAll('#nav-drawer .drawer-local a').length === 8, 'hamburger có 8 neo khu vực')) bad++;
   var hotM = d2.querySelector('#kv-hot-slide');
   if (!ok(hotM && w2.getComputedStyle(hotM).getPropertyValue('--slide-per').trim() === '1', 'MH-04 mobile --slide-per=1')) bad++;
   if (!ok(side.getBoundingClientRect().top > main.getBoundingClientRect().top, 'cột trái nằm SAU nội dung')) bad++;

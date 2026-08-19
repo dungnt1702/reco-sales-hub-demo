@@ -963,7 +963,7 @@
     if (!nav) return;
     // Chỉ nhận neo trong trang. Một href kiểu "trang.html?role=x" đưa thẳng vào querySelector
     // sẽ ném SyntaxError và làm chết cả phần khởi tạo còn lại của màn.
-    var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+    var links = Array.prototype.slice.call(nav.querySelectorAll('ol a[href^="#"]'));
     var secs = links.map(function (a) {
       try { return document.getElementById(a.getAttribute('href').slice(1)); }
       catch (e) { return null; }
@@ -1012,7 +1012,7 @@
     var list = document.querySelector('[role="tablist"]');
     if (sec) {
       title = 'Khu vực nội dung';
-      Array.prototype.forEach.call(sec.querySelectorAll('a[href^="#"]'), function (a) {
+      Array.prototype.forEach.call(sec.querySelectorAll('ol a[href^="#"]'), function (a) {
         nodes.push({ kind: 'a', href: a.getAttribute('href'), label: a.textContent.replace(/\s+/g, ' ').trim() });
       });
     } else if (list && shownEl(list)) {
@@ -1023,7 +1023,6 @@
       });
     }
     if (!nodes.length) return;
-    document.body.setAttribute('data-local-nav', String(nodes.length));
 
     var box = document.createElement('div');
     box.className = 'drawer-local';
