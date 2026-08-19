@@ -104,6 +104,13 @@ var CASES = [
   if (!ok(noDesc === 0, 'mọi nút (i) đều trỏ aria-describedby tới đúng phần mô tả')) bad++;
   if (!ok(trung === 0, 'không id mô tả nào bị trùng')) bad++;
 
+  var w1 = f1.contentWindow;
+  var hotSlide = d1.querySelector('#kv-hot-slide');
+  if (!ok(hotSlide && hotSlide.getAttribute('data-per') === 'pj', 'MH-04 slide SP Hot data-per=pj')) bad++;
+  if (!ok(hotSlide && w1.getComputedStyle(hotSlide).getPropertyValue('--slide-per').trim() === '2', 'MH-04 desktop --slide-per=2')) bad++;
+  if (!ok(w1.getComputedStyle(d1.querySelector('.zone-chips')).display === 'none', 'chip khu vực ẩn trên desktop')) bad++;
+  if (!ok(w1.getComputedStyle(d1.querySelector('.burger')).display === 'none', 'hamburger ẩn trên desktop')) bad++;
+
   /* Bấm thử từng phần tử chấm nhãn theo textContent, mà textContent của nút (i) là cả câu
      giải thích. Câu nào mở đầu bằng từ trong danh sách hành động khó hoàn tác sẽ bị đòi hỏi lại. */
   var NGUY = ['vô hiệu hóa', 'ngừng', 'đặt lại mật khẩu', 'ẩn', 'duyệt', 'xóa', 'thu hồi', 'từ chối', 'đặt lại dữ liệu'];
@@ -140,7 +147,17 @@ var CASES = [
   var d2 = f2.contentDocument, w2 = f2.contentWindow;
   var side = d2.querySelector('.detail-side'), main = d2.querySelector('.detail-main');
   if (!ok(w2.getComputedStyle(d2.querySelector('.secnav')).display === 'none', 'nav chín khu vực ẩn')) bad++;
-  if (!ok(w2.getComputedStyle(d2.querySelector('.zone-chips')).display === 'flex', 'chip khu vực hiện ở khổ hẹp')) bad++;
+  if (!ok(w2.getComputedStyle(d2.querySelector('.zone-chips')).display === 'none', 'chip khu vực ẩn trên điện thoại')) bad++;
+  var burger = d2.querySelector('.burger');
+  var bdisp = burger ? w2.getComputedStyle(burger).display : 'missing';
+  if (!ok(bdisp !== 'none' && burger, 'hamburger hiện trên điện thoại (display=' + bdisp + ')')) bad++;
+  var loc = d2.querySelector('#nav-drawer .drawer-local');
+  var nA = loc ? loc.querySelectorAll('a').length : -1;
+  var nB = loc ? loc.querySelectorAll('button').length : -1;
+  var nNav = d2.querySelectorAll('#nav-drawer nav a').length;
+  if (!ok(nA === 8, 'hamburger 8 neo local=' + (loc ? 'yes' : 'no') + ' a=' + nA + ' btn=' + nB + ' navA=' + nNav + ' data=' + d2.body.getAttribute('data-local-nav'))) bad++;
+  var hotM = d2.querySelector('#kv-hot-slide');
+  if (!ok(hotM && w2.getComputedStyle(hotM).getPropertyValue('--slide-per').trim() === '1', 'MH-04 mobile --slide-per=1')) bad++;
   if (!ok(side.getBoundingClientRect().top > main.getBoundingClientRect().top, 'cột trái nằm SAU nội dung')) bad++;
   if (!ok(w2.getComputedStyle(side).position !== 'sticky', 'cột trái không dính ở khổ hẹp')) bad++;
   var near = d2.querySelector('.pj-near');
@@ -156,6 +173,23 @@ var CASES = [
   });
   if (!ok(over.length === 0, 'mở mọi gợi ý ở 390px không tràn ngang' + (over.length ? ' → ' + over.join(', ') : ''))) bad++;
   f2.remove();
+
+  say('');
+  say('--- Máy tính bảng 834: chip vuốt, cột nội dung, 2 ô Hot ---');
+  var ft = await load(PHASE + '/du-an-chi-tiet.html?bare=1&pj=leparc', 834);
+  var dt = ft.contentDocument, wt = ft.contentWindow;
+  var chips = dt.querySelector('.zone-chips');
+  if (!ok(wt.getComputedStyle(dt.querySelector('.secnav')).display === 'none', 'tablet: secnav ẩn')) bad++;
+  if (!ok(wt.getComputedStyle(chips).display === 'flex', 'tablet: chip khu vực hiện')) bad++;
+  if (!ok(!!dt.querySelector('.zone-chips-hint'), 'tablet: có gợi ý vuốt')) bad++;
+  if (!ok(wt.getComputedStyle(dt.querySelector('.burger')).display === 'none', 'tablet: hamburger ẩn')) bad++;
+  var hotT = dt.querySelector('#kv-hot-slide');
+  if (!ok(hotT && wt.getComputedStyle(hotT).getPropertyValue('--slide-per').trim() === '2', 'MH-04 tablet --slide-per=2')) bad++;
+  var kv1 = dt.querySelector('#kv1-grid');
+  var gtc = kv1 ? wt.getComputedStyle(kv1).gridTemplateColumns : '';
+  var nCol = gtc.replace(/minmax\([^)]*\)/gi, 'x').trim().split(/\s+/).filter(Boolean).length;
+  if (!ok(nCol === 3, 'tablet: kv-3 ba cột như cột phải desktop (got ' + nCol + ')')) bad++;
+  ft.remove();
 
   say('');
   say('--- Khối dự án thấy được ngay trên laptop, không phải cuộn trong cột ---');
@@ -187,9 +221,13 @@ var CASES = [
   var d3 = f3.contentDocument;
   if (!ok(d3.querySelectorAll('.tips .tip').length === 0, 'Trang đầu không còn thẻ .tip')) bad++;
   if (!ok(d3.querySelectorAll('#hot-home .card').length >= 8, 'Trang đầu TGĐ có dải SP Hot (8 căn)')) bad++;
+  var homeSlide = d3.querySelector('#hot-home-slide');
+  if (!ok(homeSlide && homeSlide.getAttribute('data-per') === 'home', 'Trang đầu slide Hot data-per=home')) bad++;
+  if (!ok(homeSlide && f3.contentWindow.getComputedStyle(homeSlide).getPropertyValue('--slide-per').trim() === '3', 'Trang đầu desktop --slide-per=3')) bad++;
   if (!ok(!!d3.querySelector('#honor-rail'), 'Trang đầu có khối vinh danh')) bad++;
   if (!ok(!!d3.querySelector('#alert-ticker'), 'Trang đầu có dòng cảnh báo')) bad++;
-  if (!ok(d3.querySelectorAll('#home-tpl .card').length > 0, 'Trang đầu có mẫu đội')) bad++;
+  if (!ok(d3.querySelectorAll('#home-tpl .pcard').length > 0, 'Trang đầu có mẫu Hot dạng thẻ dự án')) bad++;
+  if (!ok(d3.querySelector('#home-tpl .pcard .hot'), 'Trang đầu mẫu Hot đứng trước có badge HOT')) bad++;
   if (!ok(d3.querySelectorAll('.itip').length === 0, 'Trang đầu không dùng lớp .itip')) bad++;
   f3.remove();
   var f3n = await load(PHASE + '/trang-dau.html?bare=1', 1440);
@@ -198,6 +236,23 @@ var CASES = [
   if (!ok(d3n.querySelectorAll('#hot-home .card').length >= 4, 'Trang đầu NVBH có Hot trong phạm vi (≥4)')) bad++;
   if (!ok(d3n.querySelector('.nav a[href*="tinh-nang"]') === null, 'NAV NVBH không có Tính năng & báo giá')) bad++;
   f3n.remove();
+  var f3t = await load(PHASE + '/trang-dau.html?bare=1', 834);
+  var hsT = f3t.contentDocument.querySelector('#hot-home-slide');
+  if (!ok(hsT && f3t.contentWindow.getComputedStyle(hsT).getPropertyValue('--slide-per').trim() === '2', 'Trang đầu tablet --slide-per=2')) bad++;
+  f3t.remove();
+  var f3m = await load(PHASE + '/trang-dau.html?bare=1', 390);
+  var hsM = f3m.contentDocument.querySelector('#hot-home-slide');
+  if (!ok(hsM && f3m.contentWindow.getComputedStyle(hsM).getPropertyValue('--slide-per').trim() === '1', 'Trang đầu mobile --slide-per=1')) bad++;
+  f3m.remove();
+
+  say('');
+  say('--- Hamburger nhận tab nội trang ---');
+  var fq = await load(PHASE + '/quan-tri.html?bare=1&role=gd', 390);
+  if (!ok(fq.contentDocument.querySelectorAll('#nav-drawer .drawer-local button').length >= 3, 'Quản trị mobile: tab trong hamburger')) bad++;
+  fq.remove();
+  var fs2 = await load(PHASE + '/chia-se.html?bare=1', 390);
+  if (!ok(fs2.contentDocument.querySelectorAll('#nav-drawer .drawer-local button').length === 3, 'Chia sẻ mobile: 3 tab trong hamburger')) bad++;
+  fs2.remove();
 
   say('');
   say('--- Catalog Sản phẩm + mẫu tin ---');

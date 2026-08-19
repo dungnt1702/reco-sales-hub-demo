@@ -941,6 +941,22 @@
     });
   }
 
+  function shownEl(el) {
+    if (!el || el.hidden || el.closest('[hidden]')) return false;
+    var cs = window.getComputedStyle(el);
+    return cs.display !== 'none' && cs.visibility !== 'hidden';
+  }
+
+  function markZone(href, links) {
+    links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === href); });
+    document.querySelectorAll('.zone-chips a, #nav-drawer .drawer-local a[href^="#"]').forEach(function (a) {
+      var on = a.getAttribute('href') === href;
+      a.classList.toggle('on', on);
+      if (on) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }
+
   /* ---------- Nav mục dính (chi tiết dự án) ---------- */
   function initSecnav() {
     var nav = document.querySelector('.secnav');
@@ -956,14 +972,7 @@
     var obs = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
-        var href = '#' + en.target.id;
-        links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === href); });
-        var chipsNav = document.querySelector('.zone-chips');
-        if (chipsNav) {
-          chipsNav.querySelectorAll('a').forEach(function (a) {
-            a.classList.toggle('on', a.getAttribute('href') === href);
-          });
-        }
+        markZone('#' + en.target.id, links);
       });
     }, { rootMargin: '-25% 0px -65% 0px', threshold: 0 });
     secs.forEach(function (s) { obs.observe(s); });
@@ -972,40 +981,209 @@
       var chips = document.createElement('nav');
       chips.className = 'zone-chips';
       chips.setAttribute('aria-label', 'Khu vực nội dung');
+      var row = document.createElement('div');
+      row.className = 'zone-chips-row';
       links.forEach(function (a) {
         var c = document.createElement('a');
-        c.href = a.getAttribute('href');
+        c.setAttribute('href', a.getAttribute('href'));
         c.textContent = a.textContent.replace(/\s+/g, ' ').trim();
         if (a.classList.contains('on')) c.classList.add('on');
-        chips.appendChild(c);
+        row.appendChild(c);
       });
+      chips.appendChild(row);
+      var hint = document.createElement('p');
+      hint.className = 'zone-chips-hint';
+      hint.textContent = 'Vuốt để xem đủ khu vực';
+      chips.appendChild(hint);
       grid.parentNode.insertBefore(chips, grid);
     }
+  }
+
+  /* Neo khu vực / tab nội trang — chỉ hiện trong hamburger (mobile). */
+  function initLocalDrawer() {
+    var drawer = document.getElementById('nav-drawer');
+    if (!drawer) return;
+    var old = drawer.querySelector('.drawer-local');
+    if (old) old.remove();
+
+    var title = '';
+    var nodes = [];
+    var sec = document.querySelector('.secnav');
+    var list = document.querySelector('[role="tablist"]');
+    if (sec) {
+      title = 'Khu vực nội dung';
+      Array.prototype.forEach.call(sec.querySelectorAll('a[href^="#"]'), function (a) {
+        nodes.push({ kind: 'a', href: a.getAttribute('href'), label: a.textContent.replace(/\s+/g, ' ').trim() });
+      });
+    } else if (list && shownEl(list)) {
+      title = list.getAttribute('aria-label') || 'Mục trên trang';
+      Array.prototype.forEach.call(list.querySelectorAll('[role="tab"]'), function (t) {
+        if (!shownEl(t)) return;
+        nodes.push({ kind: 'tab', label: t.textContent.replace(/\s+/g, ' ').trim(), src: t });
+      });
+    }
+    if (!nodes.length) return;
+    document.body.setAttribute('data-local-nav', String(nodes.length));
+
+    var box = document.createElement('div');
+    box.className = 'drawer-local';
+    box.innerHTML = '<p class="micro muted drawer-local-h">' + title + '</p><nav aria-label="' + title + '"></nav>';
+    var localNav = box.querySelector('nav');
+    nodes.forEach(function (it, i) {
+      var el;
+      if (it.kind === 'a') {
+        el = document.createElement('a');
+        el.setAttribute('href', it.href);
+        el.textContent = it.label;
+        el.addEventListener('click', function () { closeDrawer(); });
+      } else {
+        el = document.createElement('button');
+        el.type = 'button';
+        el.textContent = it.label;
+        el.setAttribute('data-i', String(i));
+        if (it.src.getAttribute('aria-selected') === 'true') el.setAttribute('aria-current', 'true');
+        el.addEventListener('click', function () {
+          it.src.click();
+          closeDrawer();
+        });
+      }
+      localNav.appendChild(el);
+    });
+
+    var khac = Array.prototype.filter.call(drawer.querySelectorAll('.micro.muted'), function (p) {
+      return p.textContent.replace(/\s+/g, ' ').trim() === 'Khác';
+    })[0];
+    if (khac) drawer.insertBefore(box, khac);
+    else drawer.appendChild(box);
+
+    if (list) {
+      list.addEventListener('click', function () {
+        requestAnimationFrame(function () {
+          var btns = localNav.querySelectorAll('button');
+          var tabs = Array.prototype.filter.call(list.querySelectorAll('[role="tab"]'), shownEl);
+          for (var i = 0; i < btns.length; i++) {
+            var on = tabs[i] && tabs[i].getAttribute('aria-selected') === 'true';
+            if (on) btns[i].setAttribute('aria-current', 'true');
+            else btns[i].removeAttribute('aria-current');
+          }
+        });
+      });
+    }
+  }
+
+  function pickSlideEl(root, sel, fallback) {
+    if (sel && typeof sel !== 'string') return sel;
+    var q = sel || fallback;
+    if (!q) return null;
+    return root.querySelector(q) || document.querySelector(q);
+  }
+
+  function rebindEl(el) {
+    if (!el || !el.parentNode) return el;
+    var n = el.cloneNode(true);
+    el.parentNode.replaceChild(n, el);
+    return n;
+  }
+
+  function readSlidePer(el) {
+    var v = parseInt((window.getComputedStyle(el).getPropertyValue('--slide-per') || '1').trim(), 10);
+    return v > 0 ? v : 1;
+  }
+
+  /* Nhiều ô một lúc, mỗi lần trượt lệch 1 ô. Honor rail không dùng nhánh này. */
+  function bindMultiSlide(root, opts) {
+    var itemSel = opts.item || '.reco-slide-item';
+    var stage = root.querySelector('.reco-slide-stage') || root;
+    var nodes = Array.prototype.slice.call(stage.querySelectorAll(itemSel));
+    root.setAttribute('data-per', String(opts.per));
+    var dotsEl = pickSlideEl(root, opts.dots, '.reco-slide-dots');
+    var prev = rebindEl(pickSlideEl(root, opts.prev, '.reco-slide-prev'));
+    var next = rebindEl(pickSlideEl(root, opts.next, '.reco-slide-next'));
+    if (!nodes.length) {
+      if (dotsEl) dotsEl.innerHTML = '';
+      return { go: function () {}, index: function () { return 0; } };
+    }
+
+    var track = document.createElement('div');
+    track.className = 'reco-slide-track';
+    nodes.forEach(function (el) {
+      el.classList.add('on');
+      track.appendChild(el);
+    });
+    stage.insertBefore(track, stage.firstChild);
+
+    var idx = 0;
+    var dotCount = -1;
+    function perView() { return Math.min(readSlidePer(root), nodes.length); }
+    function maxIdx() { return Math.max(0, nodes.length - perView()); }
+    function paintDots() {
+      if (!dotsEl) return;
+      var n = maxIdx() + 1;
+      if (n !== dotCount) {
+        dotCount = n;
+        var html = '';
+        for (var i = 0; i < n; i++) {
+          html += '<button type="button" aria-label="Vị trí ' + (i + 1) + '"></button>';
+        }
+        dotsEl.innerHTML = html;
+        dotsEl.hidden = n <= 1;
+        dotsEl.querySelectorAll('button').forEach(function (b, i) {
+          b.addEventListener('click', function (e) { e.stopPropagation(); go(i, false); });
+        });
+      }
+      var btns = dotsEl.querySelectorAll('button');
+      for (var d = 0; d < btns.length; d++) {
+        var on = d === idx;
+        btns[d].setAttribute('aria-pressed', on ? 'true' : 'false');
+        if (on) btns[d].setAttribute('aria-current', 'true');
+        else btns[d].removeAttribute('aria-current');
+      }
+    }
+    function go(i, wrap) {
+      var max = maxIdx();
+      if (wrap) idx = max === 0 ? 0 : ((i % (max + 1)) + (max + 1)) % (max + 1);
+      else idx = Math.max(0, Math.min(i, max));
+      var p = perView();
+      var gap = parseFloat(window.getComputedStyle(track).columnGap || window.getComputedStyle(track).gap) || 16;
+      var step = (stage.clientWidth + gap) / p;
+      track.style.transform = 'translateX(-' + (idx * step) + 'px)';
+      paintDots();
+    }
+    if (prev) prev.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); go(idx - 1, true); });
+    if (next) next.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); go(idx + 1, true); });
+    var startX = 0, startY = 0, tracking = false;
+    root.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.buttons !== 1) return;
+      if (e.target.closest && e.target.closest('a, button')) return;
+      tracking = true; startX = e.clientX; startY = e.clientY;
+    });
+    function endPointer(e) {
+      if (!tracking) return;
+      tracking = false;
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+      go(dx < 0 ? idx + 1 : idx - 1, true);
+    }
+    root.addEventListener('pointerup', endPointer);
+    root.addEventListener('pointercancel', function () { tracking = false; });
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function () { go(idx, false); });
+      ro.observe(stage);
+    }
+    go(0, false);
+    return { go: function (i) { go(i, false); }, index: function () { return idx; } };
   }
 
   /* Slider một thẻ / một tin: giữ mọi phần tử trong DOM, chỉ một cái có .on */
   function bindSlide(root, opts) {
     opts = opts || {};
     if (!root) return { go: function () {}, index: function () { return 0; } };
+    if (opts.per) return bindMultiSlide(root, opts);
     var itemSel = opts.item || '.reco-slide-item';
     var items = root.querySelectorAll(itemSel);
-    function pick(sel, fallback) {
-      if (sel && typeof sel !== 'string') return sel;
-      var q = sel || fallback;
-      if (!q) return null;
-      return root.querySelector(q) || document.querySelector(q);
-    }
-    var dotsEl = pick(opts.dots, '.reco-slide-dots');
-    var prev = pick(opts.prev, '.reco-slide-prev');
-    var next = pick(opts.next, '.reco-slide-next');
-    function rebind(el) {
-      if (!el || !el.parentNode) return el;
-      var n = el.cloneNode(true);
-      el.parentNode.replaceChild(n, el);
-      return n;
-    }
-    prev = rebind(prev);
-    next = rebind(next);
+    var dotsEl = pickSlideEl(root, opts.dots, '.reco-slide-dots');
+    var prev = rebindEl(pickSlideEl(root, opts.prev, '.reco-slide-prev'));
+    var next = rebindEl(pickSlideEl(root, opts.next, '.reco-slide-next'));
     var idx = 0;
     var n = items.length;
     function go(i) {
@@ -1238,6 +1416,7 @@
     initTopbarPanels();
     initTabs();
     initSecnav();
+    initLocalDrawer();
     initFilterSheets();
     initBits();
 

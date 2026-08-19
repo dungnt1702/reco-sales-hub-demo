@@ -151,12 +151,12 @@
       <div class="spread mb-2">
         <div>
           <span class="eyebrow">Gửi khách</span>
-          <h2 style="font-size:1.35rem">Mẫu đội đã duyệt</h2>
-          <p class="small muted mt-1">Chọn mẫu, sao chép tin Zalo hoặc đường dẫn trang khách.</p>
+          <h2 style="font-size:1.35rem">Mẫu Hot</h2>
+          <p class="small muted mt-1">Mẫu đội đã duyệt gắn căn đang đẩy — chọn rồi sao chép tin hoặc đường dẫn.</p>
         </div>
         <a class="btn btn-quiet btn-sm" href="chia-se.html">Thư viện mẫu →</a>
       </div>
-      <div class="stack" id="home-tpl"></div>
+      <div class="grid g-3" id="home-tpl"></div>
     </section>
 
   </div>
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('');
     RECO.applyRoles(box);
     var wrap = document.getElementById('hot-home-slide');
-    if (wrap) RECO.bindSlide(wrap, { prev: '#hot-home-prev', next: '#hot-home-next', dots: '#hot-home-dots' });
+    if (wrap) RECO.bindSlide(wrap, { prev: '#hot-home-prev', next: '#hot-home-next', dots: '#hot-home-dots', per: 'home' });
   }
 
   /* ---------- Lời chào theo vai trò ---------- */
@@ -516,20 +516,42 @@ document.addEventListener('DOMContentLoaded', function () {
       return qs ? to + (to.indexOf('?') >= 0 ? '&' : '?') + qs : to;
     }
     var ids = mineIds();
+    var hotSort = {};
+    S.get('hotProducts').forEach(function (h) {
+      if (h.active) hotSort[h.id] = h.sort || 0;
+    });
     var list = S.get('shareTemplates').filter(function (t) {
       return t.scope === 'shared' && t.approved && ids.indexOf(t.projectId) >= 0;
-    }).slice(0, 3);
+    }).sort(function (a, b) {
+      var ah = a.hotId && hotSort[a.hotId] != null;
+      var bh = b.hotId && hotSort[b.hotId] != null;
+      if (ah && bh) return hotSort[a.hotId] - hotSort[b.hotId];
+      if (ah) return -1;
+      if (bh) return 1;
+      return 0;
+    }).slice(0, 6);
     if (!list.length) {
+      box.classList.remove('grid', 'g-3');
       box.innerHTML = RECO_DATA.empty('Chưa có mẫu đội đã duyệt', 'Giám đốc dự án duyệt mẫu ở màn Chia sẻ.');
       return;
     }
+    box.classList.add('grid', 'g-3');
     box.innerHTML = list.map(function (t) {
       var p = S.find('projects', t.projectId);
-      return '<div class="card card-pad spread">' +
-        '<div><b>' + esc(t.title) + '</b>' +
-          '<p class="small muted mt-1" style="margin-bottom:0">' + esc(p ? p.name : '') + ' · ' + esc((t.body || '').slice(0, 90)) + '</p></div>' +
-        '<a class="btn btn-outline btn-sm" href="' + go('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Dùng mẫu</a>' +
-      '</div>';
+      var isHot = !!(t.hotId && hotSort[t.hotId] != null);
+      var img = p && p.img ? RECO.asset(p.img) : RECO.asset('reco-banner.jpg');
+      var excerpt = esc((t.body || '').replace(/\s+/g, ' ').slice(0, 90));
+      return '<a class="pcard" href="' + go('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">' +
+        '<div class="pcard-media">' +
+          '<img src="' + img + '" alt="' + esc(t.title) + '" loading="lazy">' +
+          (isHot ? '<span class="top-left hot">HOT</span>' : '') +
+          '<span class="on-media"><h3>' + esc(t.title) + '</h3>' +
+            '<span class="place">' + esc(p ? p.name : '') + '</span></span>' +
+        '</div>' +
+        '<div class="pcard-body">' +
+          '<p class="small muted" style="margin:0">' + excerpt + (t.body && t.body.length > 90 ? '…' : '') + '</p>' +
+          '<div class="pcard-foot"><span class="micro muted">Mẫu đội đã duyệt</span><span class="go">Dùng mẫu →</span></div>' +
+        '</div></a>';
     }).join('');
   }
 

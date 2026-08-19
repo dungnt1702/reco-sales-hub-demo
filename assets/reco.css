@@ -346,6 +346,7 @@ body:not(.proto-off) .topbar { top: var(--proto-h); }
   background: var(--orange-button); border: 1.5px solid var(--white);
 }
 .burger { display: none; }
+@media (max-width: 767px) { .burger { display: inline-flex; } }
 .nav-more-top { display: none; }
 @media (min-width: 768px) { .nav-more-top { display: inline-flex; } }
 
@@ -384,7 +385,18 @@ body:not(.proto-off) .topbar { top: var(--proto-h); }
   font-weight: 600; text-decoration: none; color: var(--ink);
 }
 .drawer nav a:hover { background: var(--soft); }
-.drawer nav a[aria-current="page"] { background: color-mix(in srgb, var(--orange) 12%, transparent); color: var(--navy); }
+.drawer nav a[aria-current="page"],
+.drawer nav a[aria-current="true"],
+.drawer nav button[aria-current="true"] { background: color-mix(in srgb, var(--orange) 12%, transparent); color: var(--navy); }
+.drawer nav button {
+  padding: 12px 14px; border-radius: var(--radius-md);
+  font-weight: 600; color: var(--ink);
+  border: 0; background: transparent; cursor: pointer;
+  font: inherit; text-align: left; width: 100%;
+}
+.drawer nav button:hover { background: var(--soft); }
+.drawer-local { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 4px; }
+.drawer-local-h { padding: 6px 20px 4px; }
 
 /* Dock đáy (mobile) */
 .dock {
@@ -538,6 +550,7 @@ body.device-mobile .dock { position: sticky; }
 .pcard-facts .k { font-size: 0.7rem; color: var(--muted); font-weight: 600; letter-spacing: 0.02em; }
 .pcard-facts .v { font-size: 0.88rem; font-weight: 700; color: var(--navy); letter-spacing: -0.02em; }
 .pcard-foot { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pcard-foot .go { font-size: 0.78rem; font-weight: 700; color: var(--navy); flex: none; }
 
 .pin-btn {
   width: 34px; height: 34px; border-radius: 50%;
@@ -1057,7 +1070,7 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
 
 .kv { display: grid; gap: 10px 18px; }
 @media (min-width: 640px) { .kv.kv-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 900px) { .kv.kv-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 768px) { .kv.kv-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .kv .k { font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
 .kv .v { font-size: 0.95rem; font-weight: 600; color: var(--ink); letter-spacing: -0.015em; }
 
@@ -1334,9 +1347,33 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
   width: 32px; height: 32px;
   border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.16); color: #fff;
 }
-.reco-slide-stage { position: relative; }
+.reco-slide { --slide-per: 1; --slide-gap: 16px; }
+.reco-slide[data-per="home"],
+.reco-slide[data-per="pj"] { --slide-per: 1; }
+@media (min-width: 768px) {
+  .reco-slide[data-per="home"],
+  .reco-slide[data-per="pj"] { --slide-per: 2; }
+}
+@media (min-width: 1024px) {
+  .reco-slide[data-per="home"] { --slide-per: 3; }
+}
+.reco-slide-stage { position: relative; overflow: hidden; container-type: inline-size; }
+.reco-slide-track {
+  display: flex;
+  gap: var(--slide-gap);
+  transition: transform 0.28s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reco-slide-track { transition: none; }
+}
 .reco-slide-item { display: none; }
 .reco-slide-item.on { display: block; }
+.reco-slide[data-per] .reco-slide-item,
+.reco-slide[data-per] .reco-slide-item.on {
+  display: block;
+  flex: 0 0 calc((100cqw - (var(--slide-per) - 1) * var(--slide-gap)) / var(--slide-per));
+  min-width: 0;
+}
 .reco-slide-dots { display: flex; gap: 6px; justify-content: center; margin-top: 12px; }
 .reco-slide-dots button {
   width: 44px; height: 44px; padding: 0; border: 0;
@@ -1452,38 +1489,57 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
   .mau-aside { position: sticky; top: calc(var(--header-h, 56px) + 16px); }
 }
 
-/* Hàng chip khu vực — phone + tablet; secnav desktop giữ nguyên */
+/* Chip khu vực — chỉ tablet; mobile vào hamburger, desktop dùng .secnav */
 .zone-chips {
   display: none;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  scroll-snap-type: x proximity;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
   position: sticky;
   top: calc(var(--proto-h) + var(--header-h));
   z-index: 28;
   background: color-mix(in srgb, var(--paper) 94%, transparent);
   backdrop-filter: blur(10px);
   margin: 0 calc(-1 * var(--gutter));
-  padding: 8px var(--gutter);
+  padding: 8px var(--gutter) 10px;
   border-bottom: 1px solid var(--line);
 }
 body.proto-off .zone-chips { top: var(--header-h); }
-.zone-chips::-webkit-scrollbar { display: none; }
+.zone-chips-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  -webkit-mask-image: linear-gradient(90deg, #000 72%, transparent);
+  mask-image: linear-gradient(90deg, #000 72%, transparent);
+}
+.zone-chips-row::-webkit-scrollbar { display: none; }
 .zone-chips a {
   flex: none;
   scroll-snap-align: start;
-  padding: 8px 14px;
+  padding: 8px 12px;
   min-height: 44px;
   display: inline-flex; align-items: center;
   border: 1px solid var(--line); border-radius: var(--radius-pill);
   background: var(--white); color: var(--ink);
-  font-size: 0.82rem; font-weight: 700; text-decoration: none; white-space: nowrap;
+  font-size: 0.8rem; font-weight: 700; text-decoration: none; white-space: nowrap;
 }
 .zone-chips a.on {
   background: var(--navy); border-color: var(--navy); color: #fff;
 }
-@media (max-width: 1023px) { .zone-chips { display: flex; } }
+.zone-chips-hint {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.zone-chips-hint::before { content: '‹ ›'; font-weight: 700; color: var(--navy); letter-spacing: 0.08em; }
+@media (min-width: 768px) and (max-width: 1023px) { .zone-chips { display: flex; } }
 
 /* Lọc: pill + sheet trên phone; display:contents trả select về hàng filterbar từ tablet */
 .fsheet-open { display: none; }
