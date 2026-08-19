@@ -177,7 +177,7 @@ var CASES = [
   var chips = dt.querySelector('.zone-chips');
   if (!ok(wt.getComputedStyle(dt.querySelector('.secnav')).display === 'none', 'tablet: secnav ẩn')) bad++;
   if (!ok(wt.getComputedStyle(chips).display === 'flex', 'tablet: chip khu vực hiện')) bad++;
-  if (!ok(!!dt.querySelector('.zone-chips-hint'), 'tablet: có gợi ý vuốt')) bad++;
+  if (!ok(!dt.querySelector('.zone-chips-hint'), 'tablet: không còn gợi ý vuốt')) bad++;
   if (!ok(wt.getComputedStyle(dt.querySelector('.burger')).display === 'none', 'tablet: hamburger ẩn')) bad++;
   var hotT = dt.querySelector('#kv-hot-slide');
   if (!ok(hotT && wt.getComputedStyle(hotT).getPropertyValue('--slide-per').trim() === '2', 'MH-04 tablet --slide-per=2')) bad++;
@@ -242,12 +242,12 @@ var CASES = [
   f3m.remove();
 
   say('');
-  say('--- Hamburger nhận tab nội trang ---');
+  say('--- Hamburger không lặp tab sticky ---');
   var fq = await load(PHASE + '/quan-tri.html?bare=1&role=gd', 390);
-  if (!ok(fq.contentDocument.querySelectorAll('#nav-drawer .drawer-local button').length >= 3, 'Quản trị mobile: tab trong hamburger')) bad++;
+  if (!ok(fq.contentDocument.querySelectorAll('#nav-drawer .drawer-local button').length === 0, 'Quản trị mobile: không nhét tab vào hamburger')) bad++;
   fq.remove();
   var fs2 = await load(PHASE + '/chia-se.html?bare=1', 390);
-  if (!ok(fs2.contentDocument.querySelectorAll('#nav-drawer .drawer-local button').length === 3, 'Chia sẻ mobile: 3 tab trong hamburger')) bad++;
+  if (!ok(fs2.contentDocument.querySelectorAll('#nav-drawer .drawer-local button').length === 0, 'Bài đăng mobile: không nhét tab vào hamburger')) bad++;
   fs2.remove();
 
   say('');

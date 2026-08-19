@@ -20,21 +20,17 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
-    <div class="spread mb-3">
-      <div>
-        <span class="eyebrow">MH-03 · Tìm kiếm và danh sách dự án</span>
-        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Dự án</h1>
-        <p class="lead mt-1" style="font-size:.98rem">Dự án nổi bật luôn được đặt trước. Mỗi dự án hiển thị khu vực, loại sản phẩm, diện tích và tình trạng bán.</p>
-      </div>
-      <div class="seg" role="group" aria-label="Chế độ hiển thị">
-        <button type="button" data-view="card" data-view-target="ket-qua" aria-pressed="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-          Thẻ
-        </button>
-        <button type="button" data-view="list" data-view-target="ket-qua" aria-pressed="false">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-          Danh sách
-        </button>
+    <div class="page-head">
+      <h1>Dự án</h1>
+      <div class="page-head-end">
+        <div class="view-toggle" role="group" aria-label="Chế độ hiển thị">
+          <button type="button" data-view="card" data-view-target="ket-qua" aria-pressed="true" aria-label="Dạng thẻ" title="Dạng thẻ">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </button>
+          <button type="button" data-view="list" data-view-target="ket-qua" aria-pressed="false" aria-label="Dạng danh sách" title="Dạng danh sách">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -77,13 +73,10 @@
         <option value="80-150">80 – 150 m²</option>
         <option value="150-9999">Trên 150 m²</option>
       </select>
-      <button type="button" class="btn btn-quiet btn-sm" id="f-reset">Xóa lọc</button>
+      <button type="button" class="icon-btn" id="f-reset" aria-label="Xóa lọc" title="Xóa lọc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
 
-    <div class="spread mt-3 mb-2">
-      <p class="small muted" id="count" style="margin:0" role="status">Đang hiển thị 6 dự án</p>
-      <span class="micro muted">Sắp xếp: dự án nổi bật trước, sau đó theo lần cập nhật gần nhất</span>
-    </div>
+    <p class="small muted mt-2 mb-2" id="count" style="margin:0" role="status">Đang hiển thị 6 dự án</p>
 
     <!-- Đang tải — cho thấy hệ thống có phản hồi mỗi lần đổi bộ lọc -->
     <div id="dang-tai" class="grid g-3" hidden aria-hidden="true">
@@ -101,14 +94,9 @@
     <div id="rong" hidden>
       <div class="empty">
         <h3>Chưa có dự án nào khớp bộ lọc</h3>
-        <p class="lead mt-1">Anh/chị thử bỏ bớt một điều kiện, hoặc xem ba dự án được cập nhật gần đây nhất bên dưới.</p>
         <div class="row mt-3" style="justify-content:center">
           <button type="button" class="btn btn-primary" id="rong-reset">Bỏ bộ lọc</button>
-          <a class="btn btn-outline" href="trang-dau.html">Về Trang đầu</a>
         </div>
-        <p class="micro muted mt-3" style="max-width:52ch;margin-inline:auto">
-          Thử bỏ bớt một điều kiện, hoặc xem ba dự án được cập nhật gần đây nhất bên dưới.
-        </p>
       </div>
       <h3 class="mt-4 mb-2">Ba dự án cập nhật gần nhất</h3>
       <div class="grid g-3" id="goi-y"></div>

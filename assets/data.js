@@ -125,8 +125,26 @@
       '</div></a>';
   }
 
+  function unitRow(u, opts) {
+    opts = opts || {};
+    var hot = !!opts.hot;
+    var st = S.UNIT_STATE[u.state] || S.UNIT_STATE.con;
+    var p = S.find('projects', u.pj);
+    var cover = S.unitCover(u);
+    var meta = esc(u.kind) + ' · ' + areaTxt(u.area) + (u.dir ? ' · ' + esc(u.dir) : '');
+    return '<a class="prow" href="' + unitHref(u) + '">' +
+      '<img src="' + RECO.asset(cover) + '" alt="' + esc(u.id) + '" loading="lazy">' +
+      '<div>' +
+        '<div class="row-tight mb-1">' +
+          (hot ? '<span class="hot">HOT</span>' : '') +
+          '<span class="st ' + st.cls + '">' + esc(st.text) + '</span></div>' +
+        '<h3 style="font-size:1.02rem">' + esc(u.id) + '</h3>' +
+        '<div class="small muted">' + esc(p ? p.name : '') + ' · ' + meta + '</div>' +
+      '</div></a>';
+  }
+
   window.RECO_DATA = {
     projects: projects, card: card, row: row, paint: paint, bindPins: bindPins, empty: empty, esc: esc,
-    unitCard: unitCard, areaTxt: areaTxt, unitHref: unitHref
+    unitCard: unitCard, unitRow: unitRow, areaTxt: areaTxt, unitHref: unitHref
   };
 })();

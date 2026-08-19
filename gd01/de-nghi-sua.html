@@ -24,39 +24,23 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
-    <div class="spread mb-3">
-      <div>
-        <span class="eyebrow">MH-13 · Đề nghị sửa nội dung</span>
-        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Đề nghị sửa nội dung</h1>
-        <p class="lead mt-1" style="font-size:.98rem;max-width:72ch">
-          Nhân viên không sửa trực tiếp dữ liệu gốc. Đề nghị được gửi tới người phụ trách dữ liệu kiểm tra rồi cập nhật hoặc từ chối kèm lý do —
-          nhờ vậy dữ liệu luôn giữ một nguồn sự thật duy nhất.
-        </p>
+    <div class="page-head">
+      <h1>Đề nghị sửa</h1>
+      <div class="page-tabs" role="tablist" aria-label="Lọc theo trạng thái">
+        <button role="tab" id="t-all" aria-controls="p-all" aria-selected="true">Tất cả</button>
+        <button role="tab" id="t-moi" aria-controls="p-moi" aria-selected="false" tabindex="-1">Mới <span class="n" id="c-new">0</span></button>
+        <button role="tab" id="t-xuly" aria-controls="p-xuly" aria-selected="false" tabindex="-1">Đang xử lý <span class="n" id="c-doing">0</span></button>
+        <button role="tab" id="t-xong" aria-controls="p-xong" aria-selected="false" tabindex="-1">Đã xử lý <span class="n" id="c-xong">0</span></button>
       </div>
-      <div class="row-tight">
-        <!-- Chỉ Nhân viên bán hàng và Quản lý kinh doanh gửi đề nghị; các vai trò còn lại là người xử lý. -->
-        <button class="btn btn-primary" id="req-new" data-roles="nvbh qlkd" data-open="m-gui">Gửi đề nghị mới</button>
-        <span class="chip" data-roles="gd gddu tkkd mkt hcns ktoan">Vai trò của anh/chị xử lý đề nghị, không gửi đề nghị mới</span>
+      <div class="page-head-end">
+        <button class="btn btn-primary btn-sm" id="req-new" data-roles="nvbh qlkd" data-open="m-gui">Gửi đề nghị</button>
       </div>
     </div>
-
-    <div class="grid g-4 mb-4">
-      <div class="tile"><span class="k">Mới</span><span class="num" style="color:var(--orange-text)" id="c-new">0</span></div>
-      <div class="tile"><span class="k">Đang xử lý</span><span class="num" id="c-doing">0</span></div>
-      <div class="tile"><span class="k">Đã cập nhật</span><span class="num" style="color:var(--verified)" id="c-done">0</span></div>
-      <div class="tile"><span class="k">Từ chối</span><span class="num" id="c-rej">0</span></div>
-    </div>
+    <span id="c-done" hidden>0</span>
+    <span id="c-rej" hidden>0</span>
 
     <div class="req-grid">
-
       <div>
-        <div class="tabs mb-3" role="tablist" aria-label="Lọc theo trạng thái">
-          <button role="tab" id="t-all" aria-controls="p-all" aria-selected="true">Tất cả</button>
-          <button role="tab" id="t-moi" aria-controls="p-moi" aria-selected="false" tabindex="-1">Mới</button>
-          <button role="tab" id="t-xuly" aria-controls="p-xuly" aria-selected="false" tabindex="-1">Đang xử lý</button>
-          <button role="tab" id="t-xong" aria-controls="p-xong" aria-selected="false" tabindex="-1">Đã xử lý</button>
-        </div>
-
         <div role="tabpanel" id="p-all" aria-labelledby="t-all"><div id="l-all"></div></div>
         <div role="tabpanel" id="p-moi" aria-labelledby="t-moi" hidden><div id="l-moi"></div></div>
         <div role="tabpanel" id="p-xuly" aria-labelledby="t-xuly" hidden><div id="l-xuly"></div></div>
@@ -65,7 +49,6 @@
 
       <!-- Chi tiết một đề nghị -->
       <aside id="chi-tiet"></aside>
-
     </div>
   </div>
 </main>
@@ -260,6 +243,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('c-doing').textContent = list.filter(IN_TAB.xuly).length;
     document.getElementById('c-done').textContent = list.filter(function (r) { return r.state === 'done'; }).length;
     document.getElementById('c-rej').textContent = list.filter(function (r) { return r.state === 'rejected'; }).length;
+    var xongEl = document.getElementById('c-xong');
+    if (xongEl) {
+      xongEl.textContent = list.filter(function (r) { return r.state === 'done' || r.state === 'rejected'; }).length;
+    }
 
     Object.keys(LISTS).forEach(function (k) {
       var part = list.filter(IN_TAB[k]);

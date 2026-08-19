@@ -76,11 +76,11 @@
         <h2>Số liệu nhanh của tôi</h2>
       </div>
       <div class="grid g-4">
-        <a class="tile" id="tl-duan" href="du-an.html"><span class="k">Dự án được giao</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Xem danh sách →</span></a>
-        <a class="tile" id="tl-link" href="chia-se.html"><span class="k">Đường dẫn gửi khách còn hiệu lực</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Mở nhật ký chia sẻ →</span></a>
-        <a class="tile" id="tl-hethan" href="thu-vien-tai-lieu.html"><span class="k">Tài liệu sắp hết hiệu lực</span><span class="num" style="color:var(--orange-text)">—</span><span class="micro muted" data-sub>Nhắc trước 7 ngày</span><span class="go">Xem tài liệu →</span></a>
-        <a class="tile" id="tl-duyet" data-roles="gd gddu tkkd mkt" href="quan-tri.html"><span class="k">Chờ tôi duyệt</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Mở hàng chờ duyệt →</span></a>
-        <a class="tile" id="tl-denghi" data-roles="nvbh qlkd hcns" href="de-nghi-sua.html"><span class="k">Đề nghị sửa tôi đã gửi</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Theo dõi trạng thái →</span></a>
+        <a class="tile" id="tl-duan" href="du-an.html"><span class="k">Dự án được giao</span><span class="num">—</span><span class="micro muted" data-sub></span></a>
+        <a class="tile" id="tl-link" href="chia-se.html"><span class="k">Đường dẫn gửi khách còn hiệu lực</span><span class="num">—</span><span class="micro muted" data-sub></span></a>
+        <a class="tile" id="tl-hethan" href="thu-vien-tai-lieu.html"><span class="k">Tài liệu sắp hết hiệu lực</span><span class="num" style="color:var(--orange-text)">—</span><span class="micro muted" data-sub>Nhắc trước 7 ngày</span></a>
+        <a class="tile" id="tl-duyet" data-roles="gd gddu tkkd mkt" href="quan-tri.html"><span class="k">Chờ tôi duyệt</span><span class="num">—</span><span class="micro muted" data-sub></span></a>
+        <a class="tile" id="tl-denghi" data-roles="nvbh qlkd hcns" href="de-nghi-sua.html"><span class="k">Đề nghị sửa tôi đã gửi</span><span class="num">—</span><span class="micro muted" data-sub></span></a>
       </div>
     </section>
   </div>
@@ -103,13 +103,9 @@
     <!-- Sản phẩm Hot -->
     <section class="mt-4">
       <div class="spread mb-2">
-        <div>
-          <span class="eyebrow">Đang đẩy</span>
-          <h2 style="font-size:1.35rem">Sản phẩm Hot</h2>
-          <p class="small muted mt-1">Căn đang tư vấn tuần này — không hiện giá trên thẻ.</p>
-        </div>
+        <h2 style="font-size:1.25rem">Sản phẩm Hot</h2>
         <div class="row-tight">
-          <a class="btn btn-quiet btn-sm" href="danh-muc-san-pham.html">Xem catalog Sản phẩm →</a>
+          <a class="btn btn-quiet btn-sm" href="danh-muc-san-pham.html">Catalog</a>
           <div class="reco-slide-nav">
             <button type="button" class="reco-slide-btn reco-slide-prev" id="hot-home-prev" aria-label="Sản phẩm trước">‹</button>
             <button type="button" class="reco-slide-btn reco-slide-next" id="hot-home-next" aria-label="Sản phẩm sau">›</button>
@@ -125,11 +121,8 @@
     <!-- Dự án đã ghim -->
     <section class="mt-4">
       <div class="spread mb-2">
-        <div>
-          <span class="eyebrow">Khu ghim của tôi</span>
-          <h2 style="font-size:1.35rem">Dự án tôi đang bán</h2>
-        </div>
-        <a class="btn btn-quiet btn-sm" href="du-an.html">Xem tất cả dự án →</a>
+        <h2 style="font-size:1.25rem">Dự án tôi đang bán</h2>
+        <a class="btn btn-quiet btn-sm" href="du-an.html">Tất cả</a>
       </div>
       <div class="grid g-3" id="pinned"></div>
     </section>
@@ -137,24 +130,16 @@
     <!-- Dự án nổi bật -->
     <section class="mt-4">
       <div class="spread mb-2">
-        <div>
-          <span class="eyebrow">Đang bán</span>
-          <h2 style="font-size:1.35rem">Dự án nổi bật của RECO</h2>
-          <p class="small muted mt-1">Dự án nổi bật do người quản trị chọn, luôn được đặt trước trong mọi danh sách.</p>
-        </div>
+        <h2 style="font-size:1.25rem">Dự án nổi bật của RECO</h2>
       </div>
       <div class="grid g-3" id="featured"></div>
     </section>
 
-    <!-- Mẫu đội đã duyệt -->
+    <!-- Bài đăng mẫu chung đã duyệt -->
     <section class="mt-4">
       <div class="spread mb-2">
-        <div>
-          <span class="eyebrow">Gửi khách</span>
-          <h2 style="font-size:1.35rem">Mẫu Hot</h2>
-          <p class="small muted mt-1">Mẫu đội đã duyệt gắn căn đang đẩy — chọn rồi sao chép tin hoặc đường dẫn.</p>
-        </div>
-        <a class="btn btn-quiet btn-sm" href="chia-se.html">Thư viện mẫu →</a>
+        <h2 style="font-size:1.25rem">Bài đăng</h2>
+        <a class="btn btn-quiet btn-sm" href="chia-se.html">Thư viện</a>
       </div>
       <div class="grid g-3" id="home-tpl"></div>
     </section>
@@ -532,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }).slice(0, 6);
     if (!list.length) {
       box.classList.remove('grid', 'g-3');
-      box.innerHTML = RECO_DATA.empty('Chưa có mẫu đội đã duyệt', 'Giám đốc dự án duyệt mẫu ở màn Chia sẻ.');
+      box.innerHTML = RECO_DATA.empty('Chưa có mẫu chung đã duyệt', 'Giám đốc dự án duyệt bài ở màn Bài đăng.');
       return;
     }
     box.classList.add('grid', 'g-3');
@@ -550,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function () {
         '</div>' +
         '<div class="pcard-body">' +
           '<p class="small muted" style="margin:0">' + excerpt + (t.body && t.body.length > 90 ? '…' : '') + '</p>' +
-          '<div class="pcard-foot"><span class="micro muted">Mẫu đội đã duyệt</span><span class="go">Dùng mẫu →</span></div>' +
+          '<div class="pcard-foot"><span class="micro muted">Mẫu chung đã duyệt</span><span class="go">Dùng bài</span></div>' +
         '</div></a>';
     }).join('');
   }

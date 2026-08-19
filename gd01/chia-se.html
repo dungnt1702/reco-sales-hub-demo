@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Thư viện mẫu chia sẻ · RECO Sales Hub</title>
+<title>Bài đăng · RECO Sales Hub</title>
 <meta name="theme-color" content="#09263c">
 <link rel="icon" href="../assets/img/reco-logo.png">
 <link rel="stylesheet" href="../assets/reco.css">
@@ -21,63 +21,61 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
-    <div class="spread mb-3">
-      <div>
-        <span class="eyebrow">Chia sẻ · thư viện mẫu</span>
-        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Mẫu chia sẻ tin</h1>
-        <p class="lead mt-1" style="font-size:.98rem;max-width:72ch">
-          Chọn mẫu đội đã duyệt hoặc mẫu của anh/chị, xem trước khối trên trang khách, rồi sao chép tin Zalo hoặc đường dẫn.
-          Không đưa liên kết Google Drive vào tin gửi khách.
-        </p>
-      </div>
-      <a class="btn btn-primary" id="lk-new" href="mau.html?new=1" data-roles="gd gddu tkkd qlkd nvbh mkt">Tạo mẫu của tôi</a>
-    </div>
-
-    <div class="note note-navy mb-3" data-roles="hcns ktoan">
-      Vai trò <strong>HCNS &amp; Kế toán</strong> không tạo mẫu và không thu hồi đường dẫn gửi khách.
-      Anh/chị đang xem nhật ký ở chế độ tham khảo.
-    </div>
-
-    <div class="card">
-      <div class="tabs" role="tablist" aria-label="Thư viện mẫu">
-        <button role="tab" id="t-doi" aria-controls="p-doi" aria-selected="true">Mẫu đội</button>
+    <div class="page-head">
+      <h1>Bài đăng</h1>
+      <div class="page-tabs" role="tablist" aria-label="Thư viện bài đăng">
+        <button role="tab" id="t-doi" aria-controls="p-doi" aria-selected="true">Mẫu chung</button>
         <button role="tab" id="t-toi" aria-controls="p-toi" aria-selected="false" tabindex="-1">Mẫu của tôi</button>
         <button role="tab" id="t-gui" aria-controls="p-gui" aria-selected="false" tabindex="-1">Đã gửi</button>
       </div>
-
-      <div class="card-body" id="tpl-filter-wrap" style="padding-bottom:0">
-        <div class="filterbar" data-filter-sheet>
-          <input class="inp" type="search" id="tf-q" placeholder="Tìm tiêu đề hoặc nội dung…" aria-label="Tìm mẫu">
-          <select class="inp" id="tf-pj" aria-label="Lọc theo dự án"><option value="">Mọi dự án</option></select>
-          <select class="inp" id="tf-unit" aria-label="Lọc theo sản phẩm" disabled><option value="">Chọn dự án trước</option></select>
-          <select class="inp" id="tf-kind" aria-label="Loại mẫu">
-            <option value="">Mọi loại</option>
-            <option value="pj">Mẫu dự án</option>
-            <option value="unit">Mẫu sản phẩm</option>
-          </select>
+      <div class="page-head-end">
+        <div class="view-toggle" id="tpl-view" role="group" aria-label="Chế độ hiển thị">
+          <button type="button" data-view="card" data-view-target="tpl-ket-qua" aria-pressed="true" aria-label="Dạng thẻ" title="Dạng thẻ">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </button>
+          <button type="button" data-view="list" data-view-target="tpl-ket-qua" aria-pressed="false" aria-label="Dạng danh sách" title="Dạng danh sách">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          </button>
         </div>
+        <a class="btn btn-primary btn-sm" id="lk-new" href="mau.html?new=1" data-roles="gd gddu tkkd qlkd nvbh mkt">Tạo bài của tôi</a>
       </div>
+    </div>
 
-      <div role="tabpanel" id="p-doi" aria-labelledby="t-doi" class="card-body">
-        <p class="small muted mb-3">Mẫu dùng chung. Nhân viên bán hàng chỉ gửi được mẫu <strong>đã duyệt</strong>.</p>
+    <div class="note note-navy mb-3" data-roles="hcns ktoan">
+      Vai trò <strong>HCNS &amp; Kế toán</strong> không tạo bài và không thu hồi đường dẫn gửi khách.
+      Anh/chị đang xem nhật ký ở chế độ tham khảo.
+    </div>
+
+    <div id="tpl-filter-wrap">
+      <div class="filterbar" data-filter-sheet>
+        <input class="inp" type="search" id="tf-q" placeholder="Tìm tiêu đề hoặc nội dung…" aria-label="Tìm bài đăng">
+        <select class="inp" id="tf-pj" aria-label="Lọc theo dự án"><option value="">Mọi dự án</option></select>
+        <select class="inp" id="tf-unit" aria-label="Lọc theo sản phẩm" disabled><option value="">Chọn dự án trước</option></select>
+        <select class="inp" id="tf-kind" aria-label="Loại bài">
+          <option value="">Mọi loại</option>
+          <option value="pj">Bài dự án</option>
+          <option value="unit">Bài sản phẩm</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="tpl-ket-qua">
+      <div role="tabpanel" id="p-doi" aria-labelledby="t-doi">
         <div id="tpl-doi" class="stack"></div>
       </div>
 
-      <div role="tabpanel" id="p-toi" aria-labelledby="t-toi" class="card-body" hidden>
-        <div class="spread mb-3">
-          <p class="small muted" style="margin:0">Chỉ mình anh/chị thấy. Không hiện với vai trò khác.</p>
-          <a class="btn btn-outline btn-sm" id="tpl-new" href="mau.html?new=1" data-roles="gd gddu tkkd qlkd nvbh mkt">+ Tạo mẫu</a>
-        </div>
+      <div role="tabpanel" id="p-toi" aria-labelledby="t-toi" hidden>
         <div id="tpl-toi" class="stack"></div>
       </div>
 
-      <div role="tabpanel" id="p-gui" aria-labelledby="t-gui" class="card-body" hidden>
-        <div class="grid g-4 mb-4">
-          <div class="tile"><span class="k">Còn hiệu lực</span><span class="num" id="t-live">—</span><span class="micro muted" id="t-live-sub">&nbsp;</span></div>
-          <div class="tile"><span class="k">Hết hạn trong 48 giờ</span><span class="num" id="t-soon" style="color:var(--orange-text)">—</span><span class="micro muted">Trang có thời hạn</span></div>
-          <div class="tile"><span class="k">Đã vô hiệu hóa</span><span class="num" id="t-off">—</span><span class="micro muted">Do Giám đốc dự án thu hồi</span></div>
-          <div class="tile"><span class="k">Tạo trong tháng 8</span><span class="num" id="t-month">—</span><span class="micro muted">Toàn đội Miền Bắc</span></div>
+      <div role="tabpanel" id="p-gui" aria-labelledby="t-gui" hidden>
+        <div class="stat-chips mb-3" id="t-kpis">
+          <span class="chip">Còn hiệu lực <span class="n" id="t-live">—</span></span>
+          <span class="chip">Hết hạn 48 giờ <span class="n" id="t-soon">—</span></span>
+          <span class="chip">Đã vô hiệu hóa <span class="n" id="t-off">—</span></span>
+          <span class="chip">Tháng 8 <span class="n" id="t-month">—</span></span>
         </div>
+        <p class="micro muted mb-2" id="t-live-sub">&nbsp;</p>
 
         <div class="filterbar mb-3" data-filter-sheet>
           <select class="inp" id="f-pj" aria-label="Lọc theo dự án"><option value="">Mọi dự án</option></select>
@@ -102,10 +100,7 @@
         </div>
         <div id="lk-empty" hidden></div>
 
-        <div class="note note-danger mt-3">
-          <strong>Không nhúng liên kết Google Drive của Chủ đầu tư vào trang gửi khách.</strong>
-          RECO không kiểm soát được quyền truy cập của những liên kết đó.
-        </div>
+        <p class="micro muted mt-3">Không nhúng liên kết Google Drive của Chủ đầu tư vào trang gửi khách.</p>
       </div>
     </div>
 
@@ -229,33 +224,60 @@ document.addEventListener('DOMContentLoaded', function () {
     fillUnitSelect(tfPj.value);
   }
 
+  function viewMode() {
+    var on = document.querySelector('#tpl-view [aria-pressed="true"]');
+    return (on && on.getAttribute('data-view')) || 'card';
+  }
+  function wrapModes(cardHtml, listHtml) {
+    var mode = viewMode();
+    return '<div data-mode="card"' + (mode === 'list' ? ' hidden' : '') + '>' + cardHtml + '</div>' +
+      '<div data-mode="list"' + (mode === 'card' ? ' hidden' : '') + '>' + listHtml + '</div>';
+  }
+  function postCard(t, actions, extra) {
+    return '<div class="post"><div class="spread">' +
+      '<div><b>' + E(t.title) + '</b> <span class="micro muted">' + E(S.projectName(t.projectId)) + '</span>' +
+        '<div class="row-tight mt-1">' + (extra || '') + ticksHtml(t) + '</div>' +
+        '<p class="small muted mt-1" style="margin:0">' + E(t.body) + '</p></div>' +
+      '<div class="row-tight">' + actions + '</div></div></div>';
+  }
+  function postRow(t, actions, extra) {
+    return '<div class="post spread">' +
+      '<div><b>' + E(t.title) + '</b> <span class="micro muted">' + E(S.projectName(t.projectId)) + '</span>' +
+        (extra ? '<div class="row-tight mt-1">' + extra + '</div>' : '') + '</div>' +
+      '<div class="row-tight">' + actions + '</div></div>';
+  }
+  function tplActions(t) {
+    var ok = canSendTpl(t);
+    var appr = (!t.approved)
+      ? '<button class="btn btn-outline btn-sm" data-appr="' + E(t.id) + '" data-roles="gddu tkkd gd">Duyệt</button>'
+      : '';
+    var send = ok
+      ? '<a class="btn btn-primary btn-sm" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id) + (openUnit ? '&unit=' + encodeURIComponent(openUnit) : '')) + '">Mở bài</a>'
+      : '<a class="btn btn-outline btn-sm" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Xem bài</a>';
+    return appr + send;
+  }
+
   function paintTeam() {
     var box = document.getElementById('tpl-doi');
     var all = S.get('shareTemplates').filter(function (t) { return t.scope === 'shared'; });
     if (!all.length) {
-      box.innerHTML = RECO_DATA.empty('Chưa có mẫu đội', 'Giám đốc dự án duyệt mẫu dùng chung trước khi sale gửi khách.');
+      box.innerHTML = RECO_DATA.empty('Chưa có mẫu chung', 'Giám đốc dự án duyệt bài dùng chung trước khi sale gửi khách.');
       return;
     }
     var list = all.filter(matchTpl);
     if (!list.length) {
-      box.innerHTML = RECO_DATA.empty('Không có mẫu khớp', 'Đổi dự án, sản phẩm hoặc xóa ô tìm.');
+      box.innerHTML = RECO_DATA.empty('Không có bài khớp', 'Đổi dự án, sản phẩm hoặc xóa ô tìm.');
       return;
     }
-    box.innerHTML = list.map(function (t) {
+    var cards = list.map(function (t) {
       var locked = t.approved ? '' : '<span class="st st-wait">Chưa duyệt</span>';
-      var ok = canSendTpl(t);
-      var appr = (!t.approved)
-        ? '<button class="btn btn-outline btn-sm" data-appr="' + E(t.id) + '" data-roles="gddu tkkd gd">Duyệt</button>'
-        : '';
-      var send = ok
-        ? '<a class="btn btn-primary btn-sm" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id) + (openUnit ? '&unit=' + encodeURIComponent(openUnit) : '')) + '">Mở mẫu</a>'
-        : '<a class="btn btn-outline btn-sm" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Xem mẫu</a>';
-      return '<div class="card card-pad"><div class="spread">' +
-        '<div><b>' + E(t.title) + '</b> <span class="micro muted">' + E(S.projectName(t.projectId)) + '</span>' +
-          '<div class="row-tight mt-1">' + locked + ticksHtml(t) + '</div>' +
-          '<p class="small muted mt-1" style="margin:0">' + E(t.body) + '</p></div>' +
-        '<div class="row-tight">' + appr + send + '</div></div></div>';
+      return postCard(t, tplActions(t), locked);
     }).join('');
+    var rows = list.map(function (t) {
+      var locked = t.approved ? '' : '<span class="st st-wait">Chưa duyệt</span>';
+      return postRow(t, tplActions(t), locked);
+    }).join('');
+    box.innerHTML = wrapModes(cards, rows);
     RECO.applyRoles(box);
   }
 
@@ -266,24 +288,22 @@ document.addEventListener('DOMContentLoaded', function () {
       return t.scope === 'personal' && t.ownerUserId === uid;
     });
     if (!all.length) {
-      box.innerHTML = RECO_DATA.empty('Anh/chị chưa có mẫu riêng',
-        'Tạo mẫu với các khối tổng quan, vị trí, ảnh, SP Hot hoặc STK.',
-        '<a class="btn btn-primary" href="' + goPage('mau.html', 'new=1') + '" data-roles="gd gddu tkkd qlkd nvbh mkt">+ Tạo mẫu</a>');
-      RECO.applyRoles(box);
+      box.innerHTML = RECO_DATA.empty('Anh/chị chưa có bài riêng',
+        'Tạo bài với các khối tổng quan, vị trí, ảnh, SP Hot hoặc STK.');
       return;
     }
     var list = all.filter(matchTpl);
     if (!list.length) {
-      box.innerHTML = RECO_DATA.empty('Không có mẫu khớp', 'Đổi dự án, sản phẩm hoặc xóa ô tìm.');
+      box.innerHTML = RECO_DATA.empty('Không có bài khớp', 'Đổi dự án, sản phẩm hoặc xóa ô tìm.');
       return;
     }
-    box.innerHTML = list.map(function (t) {
-      return '<div class="card card-pad"><div class="spread">' +
-        '<div><b>' + E(t.title) + '</b> <span class="micro muted">' + E(S.projectName(t.projectId)) + '</span>' +
-          '<div class="row-tight mt-1">' + ticksHtml(t) + '</div>' +
-          '<p class="small muted mt-1" style="margin:0">' + E(t.body) + '</p></div>' +
-        '<a class="btn btn-primary btn-sm" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Mở mẫu</a></div></div>';
-    }).join('');
+    var open = function (t) {
+      return '<a class="btn btn-primary btn-sm" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Mở bài</a>';
+    };
+    box.innerHTML = wrapModes(
+      list.map(function (t) { return postCard(t, open(t), ''); }).join(''),
+      list.map(function (t) { return postRow(t, open(t), ''); }).join('')
+    );
   }
 
   document.getElementById('page').addEventListener('click', function (e) {
@@ -293,13 +313,13 @@ document.addEventListener('DOMContentLoaded', function () {
       var tAp = S.find('shareTemplates', ap.getAttribute('data-appr'));
       if (!tAp) return;
       RECO.confirm({
-        eyebrow: 'Mẫu đội',
+        eyebrow: 'Mẫu chung',
         title: 'Duyệt “' + E(tAp.title) + '”?',
-        body: '<p class="small muted">Sau khi duyệt, nhân viên bán hàng gửi được mẫu này cho khách.</p>',
+        body: '<p class="small muted">Sau khi duyệt, nhân viên bán hàng gửi được bài này cho khách.</p>',
         okText: 'Duyệt',
         onOk: function () {
           S.update('shareTemplates', tAp.id, { approved: true });
-          RECO.toast('Đã duyệt mẫu — sale gửi được');
+          RECO.toast('Đã duyệt bài — sale gửi được');
         }
       });
     }
@@ -316,7 +336,10 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   function syncTplFilter() {
     var on = document.querySelector('[role="tablist"] [aria-selected="true"]');
-    if (tfWrap) tfWrap.hidden = !!(on && on.id === 't-gui');
+    var sent = !!(on && on.id === 't-gui');
+    if (tfWrap) tfWrap.hidden = sent;
+    var view = document.getElementById('tpl-view');
+    if (view) view.hidden = sent;
   }
   var tablist = document.querySelector('[role="tablist"]');
   tablist.addEventListener('click', function () { setTimeout(syncTplFilter, 0); });
@@ -325,8 +348,9 @@ document.addEventListener('DOMContentLoaded', function () {
   S.on('shareTemplates', function () { paintTeam(); paintMine(); });
   paintTeam();
   paintMine();
+  syncTplFilter();
 
-  /* Mở mẫu trên màn riêng */
+  /* Mở bài trên màn riêng */
   var want = qs().get('tpl');
   if (want) {
     var extra = 'tpl=' + encodeURIComponent(want);
@@ -370,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (/\/08\/2026/.test(l.at || '')) month++;
     });
     document.getElementById('t-live').textContent = live;
-    document.getElementById('t-live-sub').textContent = gia ? ('Trong đó ' + gia + ' trang có giá') : 'Từ mẫu chia sẻ';
+    document.getElementById('t-live-sub').textContent = gia ? ('Trong đó ' + gia + ' trang có giá') : 'Từ bài đăng';
     document.getElementById('t-soon').textContent = soon;
     document.getElementById('t-off').textContent = off;
     document.getElementById('t-month').textContent = month;
@@ -421,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function () {
             'Anh/chị thử bỏ bớt điều kiện lọc để xem toàn bộ nhật ký chia sẻ.',
             '<button class="btn btn-outline" data-act="clear">Bỏ bộ lọc</button>')
         : RECO_DATA.empty('Chưa có đường dẫn gửi khách nào',
-            'Chọn một mẫu ở tab Mẫu đội hoặc Mẫu của tôi để tạo đường dẫn.',
+            'Chọn một bài ở tab Mẫu chung hoặc Mẫu của tôi để tạo đường dẫn.',
             '<button class="btn btn-primary" data-act="new" data-roles="gd gddu tkkd qlkd nvbh mkt">Tạo đường dẫn mới</button>');
     }
     RECO.applyRoles(document.querySelector('.wrap.page'));

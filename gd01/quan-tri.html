@@ -22,12 +22,18 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
-    <div class="mb-3">
-      <span class="eyebrow">MH-09 · Quản trị dữ liệu và nội dung</span>
-      <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Quản trị</h1>
-      <p class="lead mt-1" style="font-size:.98rem;max-width:72ch">
-        Cập nhật dự án và tài liệu, đặt nhãn quyền, quản lý phiên bản và ngày hiệu lực, duyệt nội dung công bố.
-      </p>
+    <div class="page-head">
+      <h1>Quản trị</h1>
+      <div class="page-tabs" role="tablist" aria-label="Khu vực quản trị" data-roles="gd gddu tkkd mkt hcns ktoan">
+        <button role="tab" id="t-duan" aria-controls="p-duan" aria-selected="true">Dự án và nội dung</button>
+        <button role="tab" id="t-duyet" aria-controls="p-duyet" aria-selected="false" tabindex="-1">Chờ duyệt</button>
+        <button role="tab" id="t-nhan" aria-controls="p-nhan" aria-selected="false" tabindex="-1">Nhãn quyền và hiệu lực</button>
+        <button role="tab" id="t-kb" aria-controls="p-kb" aria-selected="false" tabindex="-1" hidden data-gd2>Kịch bản</button>
+        <button role="tab" id="t-bc" aria-controls="p-bc" aria-selected="false" tabindex="-1" data-roles="gd gddu tkkd mkt hcns ktoan">Báo cáo vận hành</button>
+      </div>
+      <div class="page-head-end">
+        <button class="btn btn-primary btn-sm" id="pj-new" data-roles="gd gddu">+ Dự án mới</button>
+      </div>
     </div>
 
     <!-- Chặn ở cấp màn, không chỉ ẩn nút. Ẩn menu mà gõ thẳng địa chỉ vẫn đọc được
@@ -44,25 +50,10 @@
       </div>
     </div>
 
-    <div class="card" data-roles="gd gddu tkkd mkt hcns ktoan">
-      <div class="tabs" role="tablist" aria-label="Khu vực quản trị">
-        <button role="tab" id="t-duan" aria-controls="p-duan" aria-selected="true">Dự án và nội dung</button>
-        <button role="tab" id="t-duyet" aria-controls="p-duyet" aria-selected="false" tabindex="-1">Chờ duyệt</button>
-        <button role="tab" id="t-nhan" aria-controls="p-nhan" aria-selected="false" tabindex="-1">Nhãn quyền và hiệu lực</button>
-        <!-- HCNS &amp; Kế toán không đụng nội dung dự án nên không thấy tab này -->
-        <button role="tab" id="t-kb" aria-controls="p-kb" aria-selected="false" tabindex="-1" hidden data-gd2>Kịch bản</button>
-        <!-- Thư ký kinh doanh không có quyền xem báo cáo theo ma trận -->
-        <button role="tab" id="t-bc" aria-controls="p-bc" aria-selected="false" tabindex="-1" data-roles="gd gddu tkkd mkt hcns ktoan">Báo cáo vận hành</button>
-      </div>
-
+    <div class="qt-main" data-roles="gd gddu tkkd mkt hcns ktoan">
       <!-- Dự án và nội dung -->
-      <div role="tabpanel" id="p-duan" aria-labelledby="t-duan" class="card-body">
-        <div class="spread mb-3">
-          <p class="small muted" style="margin:0">Tạo, sửa, ẩn dự án; quản lý phân khu/tòa/tầng/căn/lô; chọn dự án nổi bật.</p>
-          <button class="btn btn-primary btn-sm" id="pj-new" data-roles="gd gddu">+ Dự án mới</button>
-        </div>
-
-        <div class="filterbar mb-3">
+      <div role="tabpanel" id="p-duan" aria-labelledby="t-duan">
+        <div class="filterbar mb-3" data-filter-sheet>
           <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
             <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
             <input type="search" id="pj-q" placeholder="Tìm theo tên dự án hoặc địa điểm" aria-label="Tìm dự án">
@@ -77,7 +68,7 @@
             <option value="closed">Ngừng bán</option>
             <option value="hidden">Đã ẩn</option>
           </select>
-          <button type="button" class="btn btn-quiet btn-sm" id="pj-reset">Xóa lọc</button>
+          <button type="button" class="icon-btn" id="pj-reset" aria-label="Xóa lọc" title="Xóa lọc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
 
         <p class="small muted mb-2" id="pj-count" style="margin:0"></p>
@@ -145,7 +136,7 @@
       </div>
 
       <!-- Chờ duyệt -->
-      <div role="tabpanel" id="p-duyet" aria-labelledby="t-duyet" class="card-body" hidden>
+      <div role="tabpanel" id="p-duyet" aria-labelledby="t-duyet" hidden>
         <div class="note note-navy mb-3">
           <strong>Giám đốc dự án là người duyệt cuối</strong> nội dung công khai của dự án phụ trách.
           Thư ký kinh doanh cập nhật rồi gửi lên; Marketing chuẩn bị nội dung và chờ duyệt, không tự công bố.
@@ -167,7 +158,7 @@
       </div>
 
       <!-- Kịch bản kinh doanh -->
-      <div role="tabpanel" id="p-kb" aria-labelledby="t-kb" class="card-body" hidden data-gd2>
+      <div role="tabpanel" id="p-kb" aria-labelledby="t-kb" hidden data-gd2>
         <div class="note note-navy mb-3">
           <strong>Kịch bản dùng chung</strong> áp cho cả đội, do người được phân quyền soạn.
           <strong>Kịch bản cá nhân</strong> là của riêng từng nhân viên bán hàng — màn này chỉ đếm, không đọc được nội dung.
@@ -195,7 +186,7 @@
       </div>
 
       <!-- Nhãn quyền và hiệu lực -->
-      <div role="tabpanel" id="p-nhan" aria-labelledby="t-nhan" class="card-body" hidden>
+      <div role="tabpanel" id="p-nhan" aria-labelledby="t-nhan" hidden>
         <div class="grid g-3 mb-3">
           <div class="card card-pad" style="box-shadow:none">
             <span class="lb lb-public">Công khai</span>
@@ -254,7 +245,7 @@
       </div>
 
       <!-- Báo cáo vận hành -->
-      <div role="tabpanel" id="p-bc" aria-labelledby="t-bc" class="card-body" hidden data-roles="gd gddu tkkd mkt hcns ktoan">
+      <div role="tabpanel" id="p-bc" aria-labelledby="t-bc" hidden data-roles="gd gddu tkkd mkt hcns ktoan">
         <div class="note note-navy mb-3">
           <strong>Đúng mức tối thiểu theo QD-042.</strong> Bốn số liệu vận hành cơ bản và danh sách tài liệu sắp hết hiệu lực,
           trên một màn hình duy nhất — <em>không có bộ lọc, không xuất tệp</em>. Báo cáo Marketing của dự án chuyển sang Giai đoạn 2.
@@ -575,6 +566,19 @@ document.addEventListener('DOMContentLoaded', function () {
     RECO.openModal('m-pj');
   }
   document.getElementById('pj-new').addEventListener('click', function () { pjOpen(null); });
+  function syncPjCta() {
+    var btn = document.getElementById('pj-new');
+    var tab = document.getElementById('t-duan');
+    if (!btn || !tab) return;
+    if (tab.getAttribute('aria-selected') !== 'true') { btn.hidden = true; return; }
+    RECO.applyRoles(btn.parentNode);
+  }
+  var qtTabs = document.querySelector('.page-tabs');
+  if (qtTabs) {
+    qtTabs.addEventListener('click', function () { setTimeout(syncPjCta, 0); });
+    qtTabs.addEventListener('keydown', function () { setTimeout(syncPjCta, 0); });
+  }
+  syncPjCta();
 
   pjSave.addEventListener('click', function () {
     if (!RECO.validate(pjForm)) return;

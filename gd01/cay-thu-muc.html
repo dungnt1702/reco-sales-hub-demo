@@ -31,20 +31,17 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
-    <div class="spread mb-3">
-      <div>
-        <span class="eyebrow">MH-11 · Cây thư mục tài liệu</span>
-        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)" id="tree-title">Cây thư mục</h1>
-        <p class="lead mt-1" style="font-size:.98rem;max-width:70ch">
-          Mỗi dự án dùng chung <strong>bảy nhánh chính cố định</strong>. Không ai được tạo thêm, đổi tên, di chuyển hay xóa bảy nhánh này — nhờ đó mọi dự án có cùng một cấu trúc.
-        </p>
-      </div>
-      <div class="row-tight">
-        <div class="seg" role="group" aria-label="Chế độ xem tài liệu">
-          <button type="button" aria-pressed="true">Cây thư mục</button>
-          <a href="thu-vien-tai-lieu.html" role="button">Danh sách</a>
+    <div class="page-head">
+      <h1 id="tree-title">Cây thư mục</h1>
+      <div class="page-head-end">
+        <div class="view-toggle" role="group" aria-label="Chế độ xem tài liệu">
+          <button type="button" aria-pressed="true" aria-label="Cây thư mục" title="Cây thư mục">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
+          </button>
+          <a href="thu-vien-tai-lieu.html" role="button" aria-pressed="false" aria-label="Danh sách" title="Danh sách">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          </a>
         </div>
-        <select class="inp" style="max-width:260px" id="f-pj" aria-label="Chọn dự án"></select>
       </div>
     </div>
 
@@ -61,6 +58,7 @@
             </div>
           </div>
           <div class="card-body" style="padding:10px">
+            <select class="inp mb-2" id="f-pj" aria-label="Chọn dự án"></select>
             <div class="searchbox mb-2" style="display:flex">
               <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
               <input type="search" id="t-q" placeholder="Tìm tệp hoặc thư mục trong cây" aria-label="Tìm tệp hoặc thư mục trong cây">
@@ -462,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (S.canSeeBranch(b, RECO.role)) { sel = { branch: b, folder: null }; break; }
       }
     }
-    title.textContent = 'Cây thư mục — ' + S.projectName(pj);
+    title.textContent = 'Cây thư mục';
     paintTree();
     paintPane();
     /* Quyền tải lên của Marketing phụ thuộc nhánh đang chọn, mà nút này là đánh dấu tĩnh —

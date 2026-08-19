@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mẫu tin gửi khách · RECO Sales Hub</title>
+<title>Bài đăng · RECO Sales Hub</title>
 <meta name="theme-color" content="#09263c">
 <link rel="icon" href="../assets/img/reco-logo.png">
 <link rel="stylesheet" href="../assets/reco.css">
@@ -21,14 +21,11 @@
 
 <main id="page" class="pad-b">
   <div class="wrap page">
-    <p class="small muted mb-2"><a href="chia-se.html">← Thư viện mẫu</a></p>
-    <div class="spread mb-3">
-      <div>
-        <span class="eyebrow" id="mau-eye">Mẫu tin gửi khách</span>
-        <h1 id="mau-h" style="font-size:clamp(1.6rem,3vw,2.1rem)">Mẫu</h1>
-        <p class="lead mt-1" id="mau-sub"></p>
-      </div>
+    <p class="small muted mb-2"><a href="chia-se.html">← Bài đăng</a></p>
+    <div class="page-head">
+      <h1 id="mau-h">Bài đăng</h1>
     </div>
+    <p class="small muted mb-3" id="mau-sub"></p>
     <div class="mau-layout" id="mau-layout">
       <div id="mau-root"></div>
       <aside class="mau-aside" id="mau-cta"></aside>
@@ -205,10 +202,10 @@ document.addEventListener('DOMContentLoaded', function () {
   var openUnit = q.get('unit') || null;
   var t = tplId ? S.find('shareTemplates', tplId) : null;
   if (!t && !isNew) {
-    document.getElementById('mau-h').textContent = 'Không tìm thấy mẫu';
-    document.getElementById('mau-root').innerHTML = RECO_DATA.empty('Mẫu không còn trong thư viện',
-      'Quay lại thư viện để chọn mẫu đội hoặc mẫu của anh/chị.',
-      '<a class="btn btn-primary" href="' + goPage('chia-se.html') + '">Thư viện mẫu</a>');
+    document.getElementById('mau-h').textContent = 'Không tìm thấy bài';
+    document.getElementById('mau-root').innerHTML = RECO_DATA.empty('Bài không còn trong thư viện',
+      'Quay lại Bài đăng để chọn mẫu chung hoặc mẫu của anh/chị.',
+      '<a class="btn btn-primary" href="' + goPage('chia-se.html') + '">Bài đăng</a>');
     document.getElementById('mau-cta').hidden = true;
     return;
   }
@@ -261,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var p = S.find('projects', t.projectId);
     var locked = !canSendTpl(t);
     document.getElementById('mau-layout').classList.remove('is-edit');
-    document.title = t.title + ' · Mẫu tin · RECO Sales Hub';
+    document.title = t.title + ' · Bài đăng · RECO Sales Hub';
     document.getElementById('mau-h').textContent = t.title;
     document.getElementById('mau-sub').innerHTML = E(p ? p.name : '') + ' · ' + ticksHtml(t) +
       (t.approved ? '' : ' <span class="st st-wait">Chưa duyệt</span>');
@@ -346,7 +343,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var projects = S.get('projects').filter(function (p) { return !p.hidden; });
     var cancelHref = t ? goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) : goPage('chia-se.html');
     document.getElementById('mau-layout').classList.add('is-edit');
-    document.getElementById('mau-eye').textContent = 'Xem trước tin gửi khách';
     document.getElementById('mau-cta').hidden = false;
 
     function unitOpts(pj, selected) {
@@ -389,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function paintPreview() {
       var d = readDraft();
       var p = S.find('projects', d.projectId);
-      document.getElementById('mau-h').textContent = d.title || (isNew ? 'Tạo mẫu chia sẻ' : 'Sửa mẫu');
+      document.getElementById('mau-h').textContent = d.title || (isNew ? 'Tạo bài đăng' : 'Sửa bài');
       document.getElementById('mau-sub').innerHTML = E(p ? p.name : '') +
         (d.ticks.length ? ' · ' + ticksHtml(d) : ' · Tick thành phần để hiện khối trên mẫu');
       document.getElementById('mau-root').innerHTML =
@@ -404,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return '<option value="' + E(p.id) + '"' + (p.id === draft.projectId ? ' selected' : '') + '>' + E(p.name) + '</option>';
           }).join('') + '</select></label>' +
         '<label class="field"><span class="lab">Tiêu đề</span>' +
-          '<input class="inp" type="text" id="nm-title" data-required data-msg="Đặt tiêu đề để tìm lại mẫu." value="' + E(draft.title) + '"></label>' +
+          '<input class="inp" type="text" id="nm-title" data-required data-msg="Đặt tiêu đề để tìm lại bài." value="' + E(draft.title) + '"></label>' +
         '<label class="field"><span class="lab">Nội dung tin</span>' +
           '<textarea class="inp" id="nm-body" rows="5" data-required data-msg="Nhập nội dung tin gửi khách.">' + E(draft.body) + '</textarea></label>' +
         tickChecks(draft.ticks || [], PROJ_TICKS, 'Thành phần từ dự án') +
@@ -414,10 +410,10 @@ document.addEventListener('DOMContentLoaded', function () {
         '<fieldset class="field mt-2" style="border:0;padding:0"><span class="lab">Lưu thành</span>' +
           '<div class="tick-list mt-1">' +
             '<label class="pick-row"><input type="radio" name="nm-scope" value="personal"' + (draft.scope !== 'shared' ? ' checked' : '') + '> Mẫu của tôi</label>' +
-            '<label class="pick-row"><input type="radio" name="nm-scope" value="shared"' + (draft.scope === 'shared' ? ' checked' : '') + '> Mẫu đội' + (IS_SALE ? ' (chờ duyệt)' : '') + '</label>' +
+            '<label class="pick-row"><input type="radio" name="nm-scope" value="shared"' + (draft.scope === 'shared' ? ' checked' : '') + '> Mẫu chung' + (IS_SALE ? ' (chờ duyệt)' : '') + '</label>' +
           '</div></fieldset>' +
         '<div class="stack-actions mt-3">' +
-          '<button type="button" class="btn btn-primary" id="mau-save">Lưu mẫu</button>' +
+          '<button type="button" class="btn btn-primary" id="mau-save">Lưu bài</button>' +
           '<a class="btn btn-outline" href="' + cancelHref + '">Hủy</a>' +
         '</div>' +
       '</div>';
@@ -454,14 +450,14 @@ document.addEventListener('DOMContentLoaded', function () {
         payload.approved = !(IS_SALE && d.scope === 'shared');
         var rec = S.add('shareTemplates', payload);
         var nid = rec && rec.id ? rec.id : S.get('shareTemplates')[S.get('shareTemplates').length - 1].id;
-        RECO.toast(payload.approved ? 'Đã lưu mẫu' : 'Đã lưu — mẫu đội chờ duyệt');
+        RECO.toast(payload.approved ? 'Đã lưu bài' : 'Đã lưu — mẫu chung chờ duyệt');
         location.href = goPage('mau.html', 'tpl=' + encodeURIComponent(nid));
       } else {
         if (d.scope === 'personal') payload.ownerUserId = t.ownerUserId || currentUserId();
         else payload.ownerUserId = null;
         payload.approved = !(IS_SALE && d.scope === 'shared');
         S.update('shareTemplates', t.id, payload);
-        RECO.toast(IS_SALE && d.scope === 'shared' ? 'Đã lưu — mẫu đội chờ duyệt lại' : 'Đã lưu mẫu');
+        RECO.toast(IS_SALE && d.scope === 'shared' ? 'Đã lưu — mẫu chung chờ duyệt lại' : 'Đã lưu bài');
         location.href = goPage('mau.html', 'tpl=' + encodeURIComponent(t.id));
       }
     });
@@ -469,12 +465,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (editing && CAN_EDIT) renderEdit();
   else if (isNew && !CAN_EDIT) {
-    document.getElementById('mau-h').textContent = 'Không soạn mẫu';
+    document.getElementById('mau-h').textContent = 'Không soạn bài';
     document.getElementById('mau-sub').textContent = 'HCNS và Kế toán xem tài liệu, không soạn tin gửi khách.';
     document.getElementById('mau-root').innerHTML = RECO_DATA.empty(
-      'Vai trò này không soạn mẫu',
-      'Chọn vai trò bán hàng hoặc quản trị trên thanh prototype để tạo mẫu tin.',
-      '<a class="btn btn-outline" href="' + goPage('chia-se.html') + '">Thư viện mẫu</a>'
+      'Vai trò này không soạn bài',
+      'Chọn vai trò bán hàng hoặc quản trị trên thanh prototype để tạo bài đăng.',
+      '<a class="btn btn-outline" href="' + goPage('chia-se.html') + '">Bài đăng</a>'
     );
     document.getElementById('mau-cta').hidden = true;
   } else renderView();

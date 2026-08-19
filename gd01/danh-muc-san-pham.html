@@ -15,14 +15,17 @@
 
 <main id="page" class="pad-b">
   <div class="wrap page">
-    <div class="spread mb-3">
-      <div>
-        <span class="eyebrow">Catalog căn đang tư vấn</span>
-        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Sản phẩm</h1>
-        <p class="lead mt-1" style="max-width:70ch">
-          Tìm mã căn, lọc dự án, loại hình, số phòng và tình trạng. Tám căn đang đẩy tuần này ở trên.
-          Không hiện giá: giá nằm trên bảng hàng Chủ đầu tư.
-        </p>
+    <div class="page-head">
+      <h1>Sản phẩm</h1>
+      <div class="page-head-end">
+        <div class="view-toggle" role="group" aria-label="Chế độ hiển thị">
+          <button type="button" data-view="card" data-view-target="ket-qua" aria-pressed="true" aria-label="Dạng thẻ" title="Dạng thẻ">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </button>
+          <button type="button" data-view="list" data-view-target="ket-qua" aria-pressed="false" aria-label="Dạng danh sách" title="Dạng danh sách">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -51,38 +54,44 @@
         <option value="giu">Đang giữ chỗ</option>
         <option value="ban">Đã bán</option>
       </select>
-      <button type="button" class="btn btn-quiet btn-sm" id="f-reset">Xóa lọc</button>
+      <button type="button" class="icon-btn" id="f-reset" aria-label="Xóa lọc" title="Xóa lọc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
 
-    <div class="spread mt-3 mb-2">
-      <p class="small muted" id="sp-count" style="margin:0" role="status"></p>
-      <span class="micro muted">Không lọc theo giá — đối chiếu bảng hàng Chủ đầu tư</span>
-    </div>
+    <p class="small muted mt-2 mb-2" id="sp-count" style="margin:0" role="status"></p>
 
     <div id="sp-empty" hidden></div>
 
+    <div id="ket-qua">
+    <div data-mode="card">
     <section class="mb-4" id="hot-sec">
       <div class="spread mb-2">
-        <div>
-          <span class="eyebrow">Đang đẩy</span>
-          <h2 style="font-size:1.25rem">Sản phẩm Hot</h2>
-        </div>
-        <p class="micro muted" id="hot-meta" style="margin:0">8 căn · 2 hàng trên máy tính · 2 cột trên điện thoại</p>
+        <h2 style="font-size:1.15rem">Sản phẩm Hot</h2>
       </div>
       <div class="ucard-grid" id="hot-grid"></div>
-      <p class="micro muted mt-2">Ảnh minh họa nội thất — không phải ảnh căn thật của Chủ đầu tư.</p>
     </section>
 
     <section id="other-sec">
       <div class="spread mb-2">
-        <div>
-          <span class="eyebrow">Cùng danh mục</span>
-          <h2 style="font-size:1.25rem">Sản phẩm khác</h2>
-          <p class="small muted mt-1">Căn còn hàng hoặc đang giữ chỗ — thẻ gọn để lướt nhanh khi khách so sánh.</p>
-        </div>
+        <h2 style="font-size:1.15rem">Sản phẩm khác</h2>
       </div>
       <div class="ucard-grid" id="other-grid"></div>
     </section>
+    </div>
+    <div data-mode="list" hidden>
+    <section class="mb-4" id="hot-sec-list">
+      <div class="spread mb-2">
+        <h2 style="font-size:1.15rem">Sản phẩm Hot</h2>
+      </div>
+      <div class="stack" id="hot-rows"></div>
+    </section>
+    <section id="other-sec-list">
+      <div class="spread mb-2">
+        <h2 style="font-size:1.15rem">Sản phẩm khác</h2>
+      </div>
+      <div class="stack" id="other-rows"></div>
+    </section>
+    </div>
+    </div>
   </div>
 </main>
 
@@ -187,9 +196,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var empty = document.getElementById('sp-empty');
     var hotSec = document.getElementById('hot-sec');
     var otherSec = document.getElementById('other-sec');
+    var hotSecL = document.getElementById('hot-sec-list');
+    var otherSecL = document.getElementById('other-sec-list');
     var hotGrid = document.getElementById('hot-grid');
     var otherGrid = document.getElementById('other-grid');
-    var hotMeta = document.getElementById('hot-meta');
+    var hotRows = document.getElementById('hot-rows');
+    var otherRows = document.getElementById('other-rows');
 
     if (!total) {
       empty.hidden = false;
@@ -202,23 +214,38 @@ document.addEventListener('DOMContentLoaded', function () {
       if (b) b.addEventListener('click', reset);
       hotSec.hidden = true;
       otherSec.hidden = true;
+      if (hotSecL) hotSecL.hidden = true;
+      if (otherSecL) otherSecL.hidden = true;
       hotGrid.innerHTML = '';
       otherGrid.innerHTML = '';
+      if (hotRows) hotRows.innerHTML = '';
+      if (otherRows) otherRows.innerHTML = '';
       return;
     }
     empty.hidden = true;
     empty.innerHTML = '';
 
     hotSec.hidden = !hotViews.length;
+    if (hotSecL) hotSecL.hidden = !hotViews.length;
     hotGrid.innerHTML = hotViews.map(function (u) {
       return RECO_DATA.unitCard(u, { hot: true });
     }).join('');
-    hotMeta.textContent = hotViews.length + ' căn · 2 hàng trên máy tính · 2 cột trên điện thoại';
+    if (hotRows) {
+      hotRows.innerHTML = hotViews.map(function (u) {
+        return RECO_DATA.unitRow(u, { hot: true });
+      }).join('');
+    }
 
     otherSec.hidden = !others.length;
+    if (otherSecL) otherSecL.hidden = !others.length;
     otherGrid.innerHTML = others.length
       ? others.map(function (u) { return RECO_DATA.unitCard(u); }).join('')
       : '';
+    if (otherRows) {
+      otherRows.innerHTML = others.length
+        ? others.map(function (u) { return RECO_DATA.unitRow(u); }).join('')
+        : '';
+    }
 
     document.querySelectorAll('#page a[href]').forEach(function (a) {
       a.setAttribute('href', RECO.link(a.getAttribute('href')));

@@ -24,7 +24,7 @@ Thanh này chỉ phục vụ buổi trình bày.
 
 Trạng thái nằm trong URL (`?role=…&dev=m&bare=1`).
 
-Điểm đáng xem nhất trên GĐ1: trang đầu dải **SP Hot**; chi tiết dự án **ba tầng** (thông tin · Hot · mẫu); **Chia sẻ** là thư viện mẫu (đội / của tôi / đã gửi). Drive chỉ còn thẻ mở nguồn.
+Điểm đáng xem nhất trên GĐ1: trang đầu dải **SP Hot**; chi tiết dự án **ba tầng** (thông tin · Hot · bài đăng); **Bài đăng** là thư viện mẫu (chung / của tôi / đã gửi). Drive chỉ còn thẻ mở nguồn.
 
 ## Bản đồ tệp
 

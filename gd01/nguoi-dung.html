@@ -16,15 +16,11 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
-    <div class="spread mb-3">
-      <div>
-        <span class="eyebrow">MH-10 · Quản lý người dùng và quyền</span>
-        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Người dùng và quyền</h1>
-        <p class="lead mt-1" style="font-size:.98rem;max-width:70ch">
-          Người quản trị chung là người duy nhất cấp tài khoản, gán vai trò, gán dự án hoặc vùng và đặt lại mật khẩu.
-        </p>
+    <div class="page-head">
+      <h1>Người dùng và quyền</h1>
+      <div class="page-head-end">
+        <button class="btn btn-primary btn-sm" id="u-new" data-roles="hcns">+ Tài khoản mới</button>
       </div>
-      <button class="btn btn-primary" id="u-new" data-roles="hcns">+ Tài khoản mới</button>
     </div>
 
     <!-- Chặn ở cấp màn, không chỉ ẩn nút. Ẩn menu mà gõ thẳng địa chỉ vẫn đọc được họ tên,
@@ -48,7 +44,7 @@
 
     <div id="u-zone" data-roles="gd hcns">
 
-    <div class="filterbar mb-3">
+    <div class="filterbar mb-3" data-filter-sheet>
       <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
         <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="search" id="u-q" placeholder="Tìm theo tên hoặc số điện thoại" aria-label="Tìm người dùng">
@@ -62,7 +58,7 @@
       <select class="inp" id="u-state" aria-label="Trạng thái">
         <option value="">Mọi trạng thái</option><option value="on">Đang hoạt động</option><option value="off">Đã ngừng</option>
       </select>
-      <button type="button" class="btn btn-quiet btn-sm" id="u-reset">Xóa lọc</button>
+      <button type="button" class="icon-btn" id="u-reset" aria-label="Xóa lọc" title="Xóa lọc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
 
     <p class="small muted mb-2" id="u-count" style="margin:0"></p>
@@ -313,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
       title: 'Ngừng tài khoản của ' + esc(u.name) + '?',
       body: '<p class="small">Phiên đăng nhập của người này <strong>bị hủy ngay</strong>, kể cả trên điện thoại đang mở. ' +
             'Người này không mở được tài liệu, không tạo được đường dẫn gửi khách.</p>' +
-            '<p class="small muted mt-2">Đường dẫn gửi khách người này đã tạo vẫn còn hiệu lực — nếu cần thu hồi thì làm ở màn Chia sẻ.</p>',
+            '<p class="small muted mt-2">Đường dẫn gửi khách người này đã tạo vẫn còn hiệu lực — nếu cần thu hồi thì làm ở màn Bài đăng.</p>',
       okText: 'Ngừng tài khoản',
       danger: true,
       onOk: function () {

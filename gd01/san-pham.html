@@ -20,18 +20,19 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
     <p class="small muted mb-2" id="sp-crumb"><a href="danh-muc-san-pham.html">Sản phẩm</a></p>
-    <div class="spread mb-3">
-      <div>
-        <span class="eyebrow" id="sp-eye">Sản phẩm</span>
-        <h1 id="sp-id" style="font-size:clamp(1.6rem,3vw,2.1rem)">—</h1>
-        <p class="lead mt-1" id="sp-sub"></p>
-      </div>
-      <div class="row" id="sp-cta">
-        <button type="button" class="btn btn-outline" id="sp-copy">Sao chép pitch</button>
-        <a class="btn btn-outline" id="sp-pj" href="du-an-chi-tiet.html">Mở dự án</a>
-        <a class="btn btn-primary" id="sp-gui" href="mau.html?tpl=st2">Gửi mẫu</a>
+    <div class="page-head">
+      <h1 id="sp-id">—</h1>
+      <div class="page-head-end" id="sp-cta">
+        <button type="button" class="icon-btn" id="sp-copy" aria-label="Sao chép pitch" title="Sao chép pitch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        </button>
+        <a class="icon-btn" id="sp-pj" href="du-an-chi-tiet.html" aria-label="Mở dự án" title="Mở dự án">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+        </a>
+        <a class="btn btn-primary btn-sm" id="sp-gui" href="mau.html?tpl=st2">Gửi bài</a>
       </div>
     </div>
+    <p class="small muted mb-3" id="sp-sub"></p>
 
     <div class="sp-grid">
       <div>
@@ -86,7 +87,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var hot = S.get('hotProducts').filter(function (x) { return x.unitId === u.id && x.active; })[0];
   document.title = u.id + ' · ' + (p ? p.name : 'RECO') + ' · RECO Sales Hub';
-  document.getElementById('sp-eye').textContent = hot ? 'Sản phẩm Hot' : 'Sản phẩm';
   document.getElementById('sp-id').textContent = u.id;
   document.getElementById('sp-sub').textContent = (p ? p.name + ' · ' : '') + u.kind +
     (u.block ? ' · ' + u.block + (u.floor ? ' tầng ' + u.floor : '') : '');

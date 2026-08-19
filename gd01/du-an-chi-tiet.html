@@ -97,8 +97,10 @@
         <h1 id="pj-title">Le Parc Place — ParkCity Hanoi</h1>
         <p class="lead mt-1" style="color:rgba(255,255,255,.85)">Dương Nội, Hà Đông, Hà Nội · Chung cư · 4 tòa · 29–35 tầng · 802 căn</p>
         <div class="row mt-3">
-          <a class="btn btn-primary" href="chia-se.html">Tạo link từ mẫu</a>
-          <a class="btn btn-ghost" href="thu-vien-tai-lieu.html">Thư viện tài liệu</a>
+          <a class="btn btn-primary" href="mau.html?new=1">Tạo link</a>
+          <a class="icon-btn" href="chia-se.html" aria-label="Bài đăng" title="Bài đăng" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28);color:#fff">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>
+          </a>
           <button type="button" class="pin-btn" id="pj-pin" data-pj="celestine" aria-pressed="true" aria-label="Bỏ ghim dự án">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3.5 3.5H6.5L10 9Z"/></svg>
           </button>
@@ -122,14 +124,10 @@
           <li><a href="#kv3">Điểm chính</a></li>
           <li><a href="#kv4">Mặt bằng</a></li>
           <li><a href="#kv-hot">SP Hot</a></li>
-          <li><a href="#kv-mau">Mẫu</a></li>
+          <li><a href="#kv-mau">Bài đăng</a></li>
           <li><a href="#kv5">Tài liệu nguồn</a></li>
           <li><a href="#kv6">Ảnh và tài liệu</a></li>
         </ol>
-        <div class="note note-navy mt-3 micro">
-          Neo theo từng khu vực đang hiện trên trang bán. Cách <strong>tổ chức</strong> tệp trong kho là
-          <a href="#cay-thu-muc" data-page-link="cay-thu-muc.html">cây thư mục</a> — hai cách phân loại tách biệt.
-        </div>
       </nav>
 
       <!-- Dự án cùng loại — chuyển nhanh khi tư vấn so sánh, khỏi quay về danh sách lọc lại -->
@@ -228,7 +226,7 @@
         <section class="sec" id="kv-hot">
           <div class="sec-head"><span class="n">SP HOT</span><h2>Sản phẩm Hot</h2>
             <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv-hot" aria-label="Mục đích của khu vực Sản phẩm Hot">
-              <span class="itip-bub" id="tip-kv-hot" role="tooltip">Căn đang đẩy tuần này, gắn từ màn Quản trị. Không hiện giá — nhân viên mở căn rồi gửi khách bằng mẫu chia sẻ đã duyệt.</span>
+              <span class="itip-bub" id="tip-kv-hot" role="tooltip">Căn đang đẩy tuần này, gắn từ màn Quản trị. Không hiện giá — nhân viên mở căn rồi gửi khách bằng bài đã duyệt.</span>
             </button>
             <span class="sec-act row-tight">
               <button type="button" class="reco-slide-btn reco-slide-prev" id="kv-hot-prev" aria-label="Sản phẩm trước">‹</button>
@@ -241,13 +239,13 @@
           </div>
         </section>
 
-        <!-- Mẫu chia sẻ -->
+        <!-- Bài đăng -->
         <section class="sec" id="kv-mau">
-          <div class="sec-head"><span class="n">MẪU</span><h2>Mẫu chia sẻ</h2>
-            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv-mau" aria-label="Mục đích của khu vực Mẫu chia sẻ">
-              <span class="itip-bub" id="tip-kv-mau" role="tooltip">Mẫu tin dùng chung của đội (phải duyệt mới gửi được) và mẫu cá nhân của anh/chị. Bấm để mở màn Chia sẻ và sao chép tin Zalo hoặc đường dẫn.</span>
+          <div class="sec-head"><h2>Bài đăng</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv-mau" aria-label="Mục đích của khu vực Bài đăng">
+              <span class="itip-bub" id="tip-kv-mau" role="tooltip">Bài dùng chung của đội (phải duyệt mới gửi được) và bài cá nhân của anh/chị. Bấm để mở thư viện và sao chép tin Zalo hoặc đường dẫn.</span>
             </button>
-            <span class="sec-act"><a class="btn btn-primary btn-sm" href="chia-se.html">Tạo link từ mẫu</a></span>
+            <span class="sec-act"><a class="btn btn-primary btn-sm" href="chia-se.html">Tạo link</a></span>
           </div>
           <div class="stack" id="kv-mau-list"></div>
         </section>
@@ -2116,9 +2114,9 @@ document.addEventListener('DOMContentLoaded', function () {
       return aa - bb;
     });
     if (!list.length) {
-      box.innerHTML = RECO_DATA.empty('Chưa có mẫu chia sẻ',
-        'Mở màn Chia sẻ để dùng mẫu đội hoặc tạo mẫu của anh/chị.',
-        '<a class="btn btn-primary" href="' + RECO.link('chia-se.html') + '">Mở thư viện mẫu</a>');
+      box.innerHTML = RECO_DATA.empty('Chưa có bài đăng',
+        'Mở Bài đăng để dùng mẫu chung hoặc tạo bài của anh/chị.',
+        '<a class="btn btn-primary" href="' + RECO.link('chia-se.html') + '">Mở Bài đăng</a>');
       return;
     }
     box.innerHTML = list.map(function (t) {
@@ -2130,7 +2128,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return '<div class="card card-pad"><div class="spread">' +
         '<div><b>' + esc(t.title) + '</b><div class="row-tight mt-1">' + chip + ticks + '</div>' +
           '<p class="small muted mt-1" style="margin:0">' + esc(t.body) + '</p></div>' +
-        '<a class="btn btn-outline btn-sm" href="' + goQs('chia-se.html', 'tpl=' + encodeURIComponent(t.id)) + '">Mở mẫu</a>' +
+        '<a class="btn btn-outline btn-sm" href="' + goQs('chia-se.html', 'tpl=' + encodeURIComponent(t.id)) + '">Mở bài</a>' +
       '</div></div>';
     }).join('');
   }

@@ -32,27 +32,22 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
-    <div class="spread mb-3">
-      <div>
-        <span class="eyebrow">MH-05 · Thư viện tài liệu</span>
-        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Tài liệu</h1>
-        <p class="lead mt-1" style="font-size:.98rem;max-width:70ch">
-          Mỗi tài liệu hiển thị rõ nguồn: tệp RECO tự lưu trên kho của hệ thống, hoặc liên kết sống tới Google Drive do Chủ đầu tư sở hữu.
-        </p>
-      </div>
-      <div class="row-tight">
-        <div class="seg" role="group" aria-label="Chế độ xem tài liệu">
-          <a href="cay-thu-muc.html" role="button">Cây thư mục</a>
-          <button type="button" aria-pressed="true">Danh sách</button>
+    <div class="page-head">
+      <h1>Tài liệu</h1>
+      <div class="page-head-end">
+        <div class="view-toggle" role="group" aria-label="Chế độ xem tài liệu">
+          <a href="cay-thu-muc.html" role="button" aria-pressed="false" aria-label="Cây thư mục" title="Cây thư mục">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
+          </a>
+          <button type="button" aria-pressed="true" aria-label="Danh sách" title="Danh sách">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          </button>
         </div>
-        <button type="button" class="btn btn-primary" id="tl-new" data-roles="tkkd gddu gd mkt">+ Tải tài liệu lên</button>
+        <button type="button" class="btn btn-primary btn-sm" id="tl-new" data-roles="tkkd gddu gd mkt">+ Tải lên</button>
       </div>
     </div>
 
-    <div class="note mb-3">
-      <strong>Tải xuống luôn là bản có dấu nhận diện.</strong>
-      Tệp Excel và Word được chuyển sang PDF có dấu nhận diện người tải trước khi phát — hệ thống không phát bản gốc.
-    </div>
+    <p class="micro muted mb-3">Tải xuống luôn là bản có dấu nhận diện. Excel và Word được chuyển sang PDF có dấu người tải — hệ thống không phát bản gốc.</p>
 
     <div class="filterbar mb-3" data-filter-sheet>
       <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
@@ -89,17 +84,12 @@
         <option value="internal">Nội bộ</option>
         <option value="restricted">Nội bộ hạn chế</option>
       </select>
-      <button type="button" class="btn btn-quiet btn-sm" id="f-reset">Bỏ lọc</button>
+      <button type="button" class="icon-btn" id="f-reset" aria-label="Xóa lọc" title="Xóa lọc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
 
-    <div class="spread mb-2">
-      <div>
-        <p class="small muted" id="count" style="margin:0">Đang hiển thị 0 tài liệu</p>
-        <p class="micro muted" id="f-sum" style="margin:2px 0 0" hidden></p>
-        <p class="micro muted" id="hid-note" style="margin:2px 0 0" hidden></p>
-      </div>
-      <a class="btn btn-quiet btn-sm" href="cay-thu-muc.html">Xem theo cây thư mục →</a>
-    </div>
+    <p class="small muted mb-2" id="count" style="margin:0">Đang hiển thị 0 tài liệu</p>
+    <p class="micro muted" id="f-sum" style="margin:0 0 8px" hidden></p>
+    <p class="micro muted" id="hid-note" style="margin:0 0 8px" hidden></p>
 
     <div class="card" id="ds"></div>
 
