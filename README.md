@@ -10,7 +10,7 @@
 
 Màn hình chỉ nằm trong `gd01/` và `gd02/`. Thư mục gốc chỉ còn cổng `index.html`, `assets/` dùng chung, và công cụ kiểm thử (`_check*.html`, `check-all.ps1`).
 
-Không cần cài đặt. Mở `index.html` hoặc `gd01/trang-dau.html`. Đẩy `main` là GitHub Pages cập nhật.
+Không cần cài đặt. Mở `index.html` hoặc `gd01/trang-dau.html`. Đẩy `main` là GitHub Pages cập nhật. Agent: user nói **ship đi** với demo này → luôn **push `main`** (không để PR treo).
 
 ## Ba nút trên thanh đen
 

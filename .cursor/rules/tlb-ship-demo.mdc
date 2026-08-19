@@ -1,0 +1,13 @@
+---
+description: Reco demo — khi user nói ship đi thì đẩy thẳng main (GitHub Pages)
+alwaysApply: true
+---
+
+# Ship demo GĐ1 / reco-sales-hub-demo
+
+Khi user nói **ship đi**, **@ship**, hoặc tương đương **với repo demo này**:
+
+1. GitHub Pages (`https://dungnt1702.github.io/reco-sales-hub-demo/`) **chỉ phục vụ `main`**.
+2. `git pull --rebase origin main` → commit trên `main` (hoặc merge nhánh vào `main`) → **`git push origin main`** (không `--force`).
+3. **Không** dừng ở feature branch + PR chưa merge — reload Pages sẽ không thấy thay đổi.
+4. Account `dungnt1702`. Không commit secrets. Chi tiết: `dev-guides/ai-agent-guidelines/cursor-agents/git-shipper.md`.
