@@ -39,7 +39,7 @@
     position: fixed; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 35;
     box-shadow: var(--shadow-float);
   }
-  @media (min-width: 1024px) { .fab { bottom: 24px; } }
+  @media (min-width: 768px) { .fab { bottom: 24px; } }
   /* upick chứ không phải pick: bản gói gộp CSS của mọi màn, .pick đã bị màn soạn nội dung dùng */
   /* Dưới 768px mỗi hàng là một thẻ, ô chọn phải rộng như các ô còn lại */
   @media (min-width: 768px) { .tbl th.upick, .tbl td.upick { width: 36px; } }
@@ -198,7 +198,7 @@
               <span class="itip-bub" id="tip-kv3" role="tooltip">Các điểm bán hàng chính dùng khi tư vấn. Mỗi điểm mang nhãn quyền riêng — chỉ điểm Công khai mới được đưa vào trang gửi khách.</span>
             </button>
             <span class="sec-act row-tight">
-              <span class="open-q" title="DX-018 — cách biểu diễn điểm bán hàng còn chờ RECO chốt">Cần RECO xác nhận</span>
+              <span class="open-q" data-roles-not="nvbh" title="DX-018 — cách biểu diễn điểm bán hàng còn chờ RECO chốt">Cần RECO xác nhận</span>
               <button class="btn btn-outline btn-sm" data-sec-new="point" data-roles="tkkd gddu gd">+ Thêm điểm bán</button>
             </span>
           </div>
@@ -297,7 +297,7 @@
           </div>
           <p class="micro muted mt-2" hidden>
             <span id="bh-count" role="status"></span>
-            <span class="open-q" title="DX-017 — bộ thông tin bắt buộc của từng căn/lô">Cần RECO xác nhận</span>
+            <span class="open-q" data-roles-not="nvbh" title="DX-017 — bộ thông tin bắt buộc của từng căn/lô">Cần RECO xác nhận</span>
           </p>
 
           <div class="card card-pad mt-3" hidden>
@@ -2081,7 +2081,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var u = S.find('units', h.unitId);
       var tpl = tplForHot(h);
       var gui = tpl
-        ? '<a class="btn btn-primary btn-sm" href="' + goQs('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>'
+        ? '<a class="btn btn-primary btn-sm" data-roles="gd gddu tkkd qlkd nvbh mkt" href="' + goQs('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>'
         : '';
       return '<div class="card card-pad reco-slide-item' + (n === 0 ? ' on' : '') + '">' +
         '<div class="row-tight mb-1"><b>' + esc(u.id) + '</b><span class="chip">' + esc(u.kind) + '</span></div>' +
@@ -2093,6 +2093,7 @@ document.addEventListener('DOMContentLoaded', function () {
           gui +
         '</div></div>';
     }).join('');
+    RECO.applyRoles(box);
     var wrap = id('kv-hot-slide');
     if (wrap) RECO.bindSlide(wrap, { prev: '#kv-hot-prev', next: '#kv-hot-next', dots: '#kv-hot-dots' });
   }

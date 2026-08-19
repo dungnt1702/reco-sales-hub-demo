@@ -197,6 +197,35 @@ var CASES = [
    function (d) { return d.querySelector('.nav a[href*="danh-muc-san-pham"]') !== null; }, true],
   ['trang-dau', 'nvbh', 'Thanh điều hướng Giai đoạn 1 có mục Tài liệu',
    function (d) { return d.querySelector('.nav a[href*="cay-thu-muc"]') !== null; }, true],
+  ['trang-dau', 'nvbh', 'Dock NVBH 4 mục walk + Thêm, không có Tài liệu',
+   function (d) {
+     var dock = d.querySelector('.dock');
+     if (!dock) return false;
+     var hrefs = Array.prototype.map.call(dock.querySelectorAll('a[href]'), function (a) { return a.getAttribute('href') || ''; }).join(' ');
+     return dock.querySelectorAll('a').length === 5 && /chia-se/.test(hrefs) && !/cay-thu-muc/.test(hrefs);
+   }, true],
+  ['trang-dau', 'nvbh', 'Phone không dùng burger trùng dock-more',
+   function (d) { return d.querySelector('.burger') !== null && d.querySelector('#dock-more') !== null; }, true],
+  ['trang-dau', 'nvbh', 'NAV nvbh không có Tính năng & báo giá',
+   function (d) { return d.querySelector('.nav a[href*="tinh-nang"]') === null; }, true],
+  ['trang-dau', 'nvbh', 'Drawer nvbh không có sitemap báo giá',
+   function (d) { return d.querySelector('#nav-drawer a[href*="sitemap"]') === null; }, true],
+  ['trang-dau', 'gddu', 'NAV GĐDA có Tính năng & báo giá',
+   function (d) { return d.querySelector('.nav a[href*="tinh-nang"]') !== null; }, true],
+  ['danh-muc-san-pham', 'nvbh', 'Catalog NVBH có tùy chọn Dự án được giao',
+   function (d) { return d.querySelector('#f-pj option[value="__mine__"]') !== null; }, true],
+  ['danh-muc-san-pham', 'gd', 'Catalog TGĐ không lọc theo dự án được giao',
+   function (d) { return d.querySelector('#f-pj option[value="__mine__"]') === null; }, true],
+  ['mau', 'hcns', 'HCNS không soạn mẫu mới',
+   function (d) { return d.getElementById('mau-save') === null; }, true, 'new=1'],
+  ['mau', 'ktoan', 'Kế toán không soạn mẫu mới',
+   function (d) { return d.getElementById('mau-save') === null; }, true, 'new=1'],
+  ['du-an-chi-tiet', 'nvbh', 'NVBH không thấy chip Cần RECO xác nhận',
+   function (d) {
+     var els = d.querySelectorAll('.open-q[data-roles-not]');
+     for (var i = 0; i < els.length; i++) if (!els[i].hidden) return false;
+     return els.length > 0;
+   }, true],
   ['cay-thu-muc', 'nvbh', 'Man cay thu muc co nut chuyen sang danh sach',
    function (d) { return d.querySelector('.seg a[href*="thu-vien-tai-lieu"]') !== null; }, true],
   ['thu-vien-tai-lieu', 'nvbh', 'Man danh sach co nut quay ve cay thu muc',
@@ -319,7 +348,7 @@ var out = document.getElementById('out'), frames = document.getElementById('fram
 function run(c) {
   return new Promise(function (res) {
     var f = document.createElement('iframe');
-    f.src = PHASE + '/' + c[0] + '.html?bare=1&role=' + c[1];
+    f.src = PHASE + '/' + c[0] + '.html?bare=1&role=' + c[1] + (c[5] ? '&' + c[5] : '');
     f.onload = function () {
       var got;
       try { got = c[3](f.contentDocument); } catch (e) { got = 'LOI: ' + e.message; }

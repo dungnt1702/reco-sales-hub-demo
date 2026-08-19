@@ -34,36 +34,24 @@
 
 <main id="page" class="pad-b">
   <div class="wrap page">
+  <div class="home-fold">
 
-    <!-- Lời chào + tìm kiếm 2/3 · vinh danh 1/3 (PC) / khối riêng dưới search (mobile) -->
+    <!-- Lời chào + tìm kiếm. Vinh danh: cạnh hero từ tablet; thẻ ngang dưới KPI trên phone. -->
     <section class="hero home-hero with-img" style="background-image:linear-gradient(100deg, rgba(5,31,53,.98) 34%, rgba(9,49,82,.9)), url('../assets/img/reco-opening.jpg')">
-      <div class="home-hero-grid">
-        <div>
-          <span class="eyebrow light" id="greet-role">Giám đốc dự án · 3 dự án phụ trách</span>
-          <h1 style="font-size:clamp(1.7rem,3.6vw,2.5rem);max-width:20ch">Chào anh Huy, hôm nay bắt đầu từ đâu?</h1>
-          <div class="home-search mt-3">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" style="width:19px;flex:none" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="search" id="hero-q" placeholder="Tìm dự án, tài liệu hoặc câu hỏi tư vấn…" aria-label="Tìm kiếm">
-            <button type="button" class="btn btn-primary btn-sm" id="hero-go">Tìm</button>
-          </div>
-          <div class="row-tight mt-2" id="hero-chips">
-            <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=canho" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Căn hộ chung cư</a>
-            <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=datnen" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Đất nền</a>
-            <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=thaptang" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Nhà thấp tầng, biệt thự</a>
-            <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=tamlinh" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Bất động sản tâm linh</a>
-          </div>
+      <div>
+        <span class="eyebrow light" id="greet-role">Nhân viên bán hàng · Nội dung được phép xem</span>
+        <h1 style="font-size:clamp(1.7rem,3.6vw,2.5rem);max-width:20ch">Chào chị Thu Hà, hôm nay bắt đầu từ đâu?</h1>
+        <div class="home-search mt-3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" style="width:19px;flex:none" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" id="hero-q" placeholder="Tìm dự án, mã căn, tài liệu…" aria-label="Tìm kiếm">
+          <button type="button" class="btn btn-primary btn-sm" id="hero-go">Tìm</button>
         </div>
-        <aside class="honor-rail" id="honor-rail" aria-label="Vinh danh nhân viên vừa bán được hàng">
-          <div class="honor-head">
-            <span class="eyebrow">Vinh danh · vừa chốt</span>
-            <div class="reco-slide-nav">
-              <button type="button" class="reco-slide-btn honor-btn" id="honor-prev" aria-label="Tin trước">‹</button>
-              <button type="button" class="reco-slide-btn honor-btn" id="honor-next" aria-label="Tin sau">›</button>
-            </div>
-          </div>
-          <div class="honor-slides" id="honor-slides"></div>
-          <div class="honor-dots reco-slide-dots" id="honor-dots"></div>
-        </aside>
+        <div class="row-tight mt-2" id="hero-chips">
+          <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=canho" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Căn hộ chung cư</a>
+          <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=datnen" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Đất nền</a>
+          <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=thaptang" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Nhà thấp tầng, biệt thự</a>
+          <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=tamlinh" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Bất động sản tâm linh</a>
+        </div>
       </div>
     </section>
 
@@ -72,10 +60,9 @@
     </button>
 
     <!-- Bốn số liệu nhanh -->
-    <section class="mt-3">
+    <section class="mt-3 home-kpi">
       <div class="spread mb-2">
         <h2 style="font-size:1.15rem">Số liệu nhanh của tôi</h2>
-        <span class="open-q" title="Tài liệu ghi: cần xác nhận có hiển thị báo cáo nhanh tại Trang đầu hay không">Cần RECO xác nhận</span>
       </div>
       <div class="grid g-4">
         <a class="tile" id="tl-duan" href="du-an.html"><span class="k">Dự án được giao</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Xem danh sách →</span></a>
@@ -85,6 +72,19 @@
         <a class="tile" id="tl-denghi" data-roles="nvbh qlkd hcns" href="de-nghi-sua.html"><span class="k">Đề nghị sửa tôi đã gửi</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Theo dõi trạng thái →</span></a>
       </div>
     </section>
+
+    <aside class="honor-rail mt-3" id="honor-rail" aria-label="Vinh danh nhân viên vừa bán được hàng">
+      <div class="honor-head">
+        <span class="eyebrow">Vinh danh · vừa chốt</span>
+        <div class="reco-slide-nav">
+          <button type="button" class="reco-slide-btn honor-btn" id="honor-prev" aria-label="Tin trước">‹</button>
+          <button type="button" class="reco-slide-btn honor-btn" id="honor-next" aria-label="Tin sau">›</button>
+        </div>
+      </div>
+      <div class="honor-slides" id="honor-slides"></div>
+      <div class="honor-dots reco-slide-dots" id="honor-dots"></div>
+    </aside>
+  </div>
 
     <!-- Việc cần làm -->
     <section class="mt-4" data-roles="gd gddu tkkd mkt">
@@ -276,7 +276,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var track = document.getElementById('alert-track');
     var bar = document.getElementById('alert-ticker');
     if (!track || !bar) return;
-    var list = S.get('alerts');
+    var ids = mineIds();
+    var list = S.get('alerts').filter(function (a) { return ids.indexOf(a.pj) >= 0; });
     if (!list.length) { bar.hidden = true; return; }
     var html = list.map(function (a) {
       return '<span data-alert="' + a.id + '">⚠ ' + esc(a.ticker) + '</span>';
@@ -460,8 +461,10 @@ document.addEventListener('DOMContentLoaded', function () {
       var to = RECO.link(page);
       return qs ? to + (to.indexOf('?') >= 0 ? '&' : '?') + qs : to;
     }
+    var ids = mineIds();
     var rows = S.get('hotProducts').filter(function (h) {
-      return h.active && S.find('units', h.unitId);
+      var u = S.find('units', h.unitId);
+      return h.active && u && ids.indexOf(u.pj) >= 0;
     }).sort(function (a, b) { return (a.sort || 0) - (b.sort || 0); });
     if (!rows.length) {
       box.innerHTML = RECO_DATA.empty('Chưa có sản phẩm Hot', 'Thư ký kinh doanh gắn căn đang đẩy ở màn Quản trị.');
@@ -473,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var line = (h.pitch || '').split(/[.\n]/)[0].trim();
       var tpl = S.tplForUnit(u.id);
       var gui = tpl
-        ? '<a class="btn btn-primary btn-sm" href="' + go('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>'
+        ? '<a class="btn btn-primary btn-sm" data-roles="gd gddu tkkd qlkd nvbh mkt" href="' + go('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>'
         : '';
       return '<div class="card card-pad reco-slide-item' + (n === 0 ? ' on' : '') + '">' +
         '<div class="row-tight mb-1"><b>' + esc(u.id) + '</b><span class="chip">' + esc(u.kind) + '</span></div>' +
@@ -484,15 +487,21 @@ document.addEventListener('DOMContentLoaded', function () {
           gui +
         '</div></div>';
     }).join('');
+    RECO.applyRoles(box);
     var wrap = document.getElementById('hot-home-slide');
     if (wrap) RECO.bindSlide(wrap, { prev: '#hot-home-prev', next: '#hot-home-next', dots: '#hot-home-dots' });
   }
 
   /* ---------- Lời chào theo vai trò ---------- */
+  var GREET = {
+    gd: ['anh', 'Quang'], gddu: ['anh', 'Tuấn'], tkkd: ['chị', 'Lan'], qlkd: ['anh', 'Đăng'],
+    nvbh: ['chị', 'Thu Hà'], hcns: ['chị', 'Chi'], ktoan: ['anh', 'Bình'], mkt: ['chị', 'Ngọc']
+  };
   var g = document.getElementById('greet-role');
   if (g) g.textContent = RECO.current.name + ' · ' + RECO.current.scope;
   var h1 = document.querySelector('.home-hero h1');
-  if (h1) h1.textContent = 'Chào ' + RECO.current.who.split(' ').slice(-2).join(' ') + ', hôm nay bắt đầu từ đâu?';
+  var call = GREET[RECO.role];
+  if (h1 && call) h1.textContent = 'Chào ' + call[0] + ' ' + call[1] + ', hôm nay bắt đầu từ đâu?';
 
   function homeTpl() {
     var box = document.getElementById('home-tpl');
@@ -501,8 +510,9 @@ document.addEventListener('DOMContentLoaded', function () {
       var to = RECO.link(page);
       return qs ? to + (to.indexOf('?') >= 0 ? '&' : '?') + qs : to;
     }
+    var ids = mineIds();
     var list = S.get('shareTemplates').filter(function (t) {
-      return t.scope === 'shared' && t.approved;
+      return t.scope === 'shared' && t.approved && ids.indexOf(t.projectId) >= 0;
     }).slice(0, 3);
     if (!list.length) {
       box.innerHTML = RECO_DATA.empty('Chưa có mẫu đội đã duyệt', 'Giám đốc dự án duyệt mẫu ở màn Chia sẻ.');

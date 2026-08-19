@@ -20,25 +20,60 @@
         <span class="eyebrow">Catalog căn đang tư vấn</span>
         <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Sản phẩm</h1>
         <p class="lead mt-1" style="max-width:70ch">
-          Tám căn đang đẩy tuần này ở trên. Dưới là căn khác để so với khách — cùng lưới, thẻ nhẹ hơn.
+          Tìm mã căn, lọc dự án, loại hình, số phòng và tình trạng. Tám căn đang đẩy tuần này ở trên.
           Không hiện giá: giá nằm trên bảng hàng Chủ đầu tư.
         </p>
       </div>
     </div>
 
-    <section class="mb-4">
+    <div class="filterbar" data-filter-sheet>
+      <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="f-q" placeholder="Tìm mã căn, loại, hướng, dự án…" aria-label="Tìm sản phẩm">
+      </div>
+      <select class="inp" id="f-pj" aria-label="Dự án"><option value="">Mọi dự án</option></select>
+      <select class="inp" id="f-type" aria-label="Loại hình">
+        <option value="">Mọi loại hình</option>
+        <option value="canho">Căn hộ</option>
+        <option value="shop">Liền kề / shophouse</option>
+        <option value="dat">Đất / khuôn viên</option>
+      </select>
+      <select class="inp" id="f-beds" aria-label="Số phòng ngủ">
+        <option value="">Mọi số PN</option>
+        <option value="1">1 PN</option>
+        <option value="2">2 PN</option>
+        <option value="3">3 PN</option>
+        <option value="4">4 PN trở lên</option>
+      </select>
+      <select class="inp" id="f-st" aria-label="Tình trạng">
+        <option value="">Mọi tình trạng</option>
+        <option value="con">Còn hàng</option>
+        <option value="giu">Đang giữ chỗ</option>
+        <option value="ban">Đã bán</option>
+      </select>
+      <button type="button" class="btn btn-quiet btn-sm" id="f-reset">Xóa lọc</button>
+    </div>
+
+    <div class="spread mt-3 mb-2">
+      <p class="small muted" id="sp-count" style="margin:0" role="status"></p>
+      <span class="micro muted">Không lọc theo giá — đối chiếu bảng hàng Chủ đầu tư</span>
+    </div>
+
+    <div id="sp-empty" hidden></div>
+
+    <section class="mb-4" id="hot-sec">
       <div class="spread mb-2">
         <div>
           <span class="eyebrow">Đang đẩy</span>
           <h2 style="font-size:1.25rem">Sản phẩm Hot</h2>
         </div>
-        <p class="micro muted" style="margin:0">8 căn · 2 hàng trên máy tính · 2 cột trên điện thoại</p>
+        <p class="micro muted" id="hot-meta" style="margin:0">8 căn · 2 hàng trên máy tính · 2 cột trên điện thoại</p>
       </div>
       <div class="ucard-grid" id="hot-grid"></div>
       <p class="micro muted mt-2">Ảnh minh họa nội thất — không phải ảnh căn thật của Chủ đầu tư.</p>
     </section>
 
-    <section>
+    <section id="other-sec">
       <div class="spread mb-2">
         <div>
           <span class="eyebrow">Cùng danh mục</span>
@@ -55,28 +90,159 @@
 document.addEventListener('DOMContentLoaded', function () {
   if (!document.getElementById('hot-grid')) return;
   var S = RECO.store;
-  var hotIds = {};
-  var hots = S.get('hotProducts').filter(function (h) {
-    return h.active && S.find('units', h.unitId);
-  }).sort(function (a, b) { return (a.sort || 0) - (b.sort || 0); });
-  hots.forEach(function (h) { hotIds[h.unitId] = true; });
+  var fQ = document.getElementById('f-q');
+  var fPj = document.getElementById('f-pj');
+  var fType = document.getElementById('f-type');
+  var fBeds = document.getElementById('f-beds');
+  var fSt = document.getElementById('f-st');
+  var fReset = document.getElementById('f-reset');
+  var SCOPE = {
+    gddu: ['celestine', 'la-perle', 'palmy'],
+    tkkd: ['celestine', 'la-perle', 'palmy'],
+    nvbh: ['celestine', 'palmy'],
+    mkt: ['celestine', 'thien-duong']
+  };
+  var didInitPj = false;
+  function mineIds() { return SCOPE[RECO.role] || []; }
 
-  document.getElementById('hot-grid').innerHTML = hots.map(function (h) {
-    return RECO_DATA.unitCard(S.unitView(h.unitId), { hot: true });
-  }).join('');
-
-  var others = S.get('unitProfiles').filter(function (p) {
-    return p.catalog && !hotIds[p.unitId] && S.find('units', p.unitId);
-  }).map(function (p) { return S.unitView(p.unitId); });
-  var box = document.getElementById('other-grid');
-  if (!others.length) {
-    box.innerHTML = RECO_DATA.empty('Chưa có căn khác trong catalog', 'Thư ký kinh doanh gắn hồ sơ bán hàng cho căn còn hàng.');
-  } else {
-    box.innerHTML = others.map(function (u) { return RECO_DATA.unitCard(u); }).join('');
+  function qs() {
+    var h = location.hash, i = h.indexOf('?');
+    return new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search);
   }
-  document.querySelectorAll('#page a[href]').forEach(function (a) {
-    a.setAttribute('href', RECO.link(a.getAttribute('href')));
+  function typeKey(u) {
+    var k = RECO.norm((u.kind || '') + ' ' + (u.block || ''));
+    if (u.pj === 'thien-duong') return 'dat';
+    if (u.pj === 'palmy') return 'shop';
+    if (/khuon vien|dat biet|dat nen/.test(k)) return 'dat';
+    if (/lo tieu chuan|lo lien ke/.test(k)) return 'dat';
+    if (/lien ke|lo goc|shop|nha pho|thuong mai/.test(k)) return 'shop';
+    if (u.pj === 'central') return 'dat';
+    return 'canho';
+  }
+  function bedsOf(u) {
+    if (typeof u.beds === 'number' && u.beds > 0) return u.beds;
+    var m = String(u.kind || '').match(/(\d)\s*PN/i);
+    return m ? Number(m[1]) : 0;
+  }
+  function hay(u) {
+    var p = S.find('projects', u.pj);
+    return [u.id, u.kind, u.dir, u.block, u.pitch, p ? p.name : '', p ? p.area : ''].join(' ');
+  }
+  function match(u) {
+    var q = RECO.norm(fQ.value || '');
+    if (q && RECO.norm(hay(u)).indexOf(q) < 0) return false;
+    if (fPj.value === '__mine__') {
+      if (mineIds().indexOf(u.pj) < 0) return false;
+    } else if (fPj.value && u.pj !== fPj.value) return false;
+    if (fType.value && typeKey(u) !== fType.value) return false;
+    if (fBeds.value) {
+      var n = bedsOf(u);
+      if (fBeds.value === '4') { if (n < 4) return false; }
+      else if (n !== Number(fBeds.value)) return false;
+    }
+    if (fSt.value && u.state !== fSt.value) return false;
+    return true;
+  }
+  function fillProjects() {
+    var qp = qs().get('pj') || '';
+    var keep = fPj.value;
+    var seen = {};
+    S.get('unitProfiles').forEach(function (p) {
+      if (!p.catalog) return;
+      var u = S.find('units', p.unitId);
+      if (u) seen[u.pj] = true;
+    });
+    var mineOpt = SCOPE[RECO.role]
+      ? '<option value="__mine__">Dự án được giao</option>'
+      : '';
+    fPj.innerHTML = '<option value="">Mọi dự án</option>' + mineOpt +
+      S.get('projects').filter(function (p) { return seen[p.id]; }).map(function (p) {
+        return '<option value="' + RECO_DATA.esc(p.id) + '">' + RECO_DATA.esc(p.name) + '</option>';
+      }).join('');
+    if (keep === '__mine__' && SCOPE[RECO.role]) fPj.value = '__mine__';
+    else if (seen[keep]) fPj.value = keep;
+    else if (qp && seen[qp]) fPj.value = qp;
+    else if (!didInitPj && SCOPE[RECO.role]) fPj.value = '__mine__';
+    else fPj.value = '';
+    didInitPj = true;
+  }
+  function paint() {
+    var hotIds = {};
+    var hots = S.get('hotProducts').filter(function (h) {
+      return h.active && S.find('units', h.unitId);
+    }).sort(function (a, b) { return (a.sort || 0) - (b.sort || 0); });
+    hots.forEach(function (h) { hotIds[h.unitId] = true; });
+
+    var hotViews = hots.map(function (h) { return S.unitView(h.unitId); }).filter(Boolean).filter(match);
+    var others = S.get('unitProfiles').filter(function (p) {
+      return p.catalog && !hotIds[p.unitId] && S.find('units', p.unitId);
+    }).map(function (p) { return S.unitView(p.unitId); }).filter(Boolean).filter(match);
+
+    var total = hotViews.length + others.length;
+    var filtered = !!(fQ.value || fPj.value || fType.value || fBeds.value || fSt.value);
+    document.getElementById('sp-count').textContent = filtered
+      ? 'Đang hiện ' + total + ' căn khớp bộ lọc'
+      : 'Đang hiện ' + total + ' căn trong catalog';
+
+    var empty = document.getElementById('sp-empty');
+    var hotSec = document.getElementById('hot-sec');
+    var otherSec = document.getElementById('other-sec');
+    var hotGrid = document.getElementById('hot-grid');
+    var otherGrid = document.getElementById('other-grid');
+    var hotMeta = document.getElementById('hot-meta');
+
+    if (!total) {
+      empty.hidden = false;
+      empty.innerHTML = RECO_DATA.empty(
+        'Chưa có căn nào khớp bộ lọc',
+        'Anh/chị thử bỏ bớt điều kiện, đổi dự án, hoặc xóa ô tìm.',
+        '<button type="button" class="btn btn-primary" id="sp-empty-reset">Bỏ bộ lọc</button>'
+      );
+      var b = document.getElementById('sp-empty-reset');
+      if (b) b.addEventListener('click', reset);
+      hotSec.hidden = true;
+      otherSec.hidden = true;
+      hotGrid.innerHTML = '';
+      otherGrid.innerHTML = '';
+      return;
+    }
+    empty.hidden = true;
+    empty.innerHTML = '';
+
+    hotSec.hidden = !hotViews.length;
+    hotGrid.innerHTML = hotViews.map(function (u) {
+      return RECO_DATA.unitCard(u, { hot: true });
+    }).join('');
+    hotMeta.textContent = hotViews.length + ' căn · 2 hàng trên máy tính · 2 cột trên điện thoại';
+
+    otherSec.hidden = !others.length;
+    otherGrid.innerHTML = others.length
+      ? others.map(function (u) { return RECO_DATA.unitCard(u); }).join('')
+      : '';
+
+    document.querySelectorAll('#page a[href]').forEach(function (a) {
+      a.setAttribute('href', RECO.link(a.getAttribute('href')));
+    });
+  }
+  function reset() {
+    fQ.value = '';
+    fPj.value = '';
+    fType.value = '';
+    fBeds.value = '';
+    fSt.value = '';
+    paint();
+  }
+
+  fillProjects();
+  paint();
+  [fQ, fPj, fType, fBeds, fSt].forEach(function (el) {
+    el.addEventListener('input', paint);
+    el.addEventListener('change', paint);
   });
+  if (fReset) fReset.addEventListener('click', reset);
+  S.on('hotProducts', paint);
+  S.on('unitProfiles', paint);
+  S.on('units', function () { fillProjects(); paint(); });
 });
 </script>
 </body>

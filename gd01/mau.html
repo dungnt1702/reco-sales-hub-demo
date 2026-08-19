@@ -213,6 +213,40 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
+  function postBlocks(src, openU) {
+    var p = S.find('projects', src.projectId);
+    var u = unitOfTpl(src, openU);
+    var hot = hotOfTpl(src, openU);
+    var hero = '';
+    if (hasTick(src, 'unitGallery') && u && u.gallery && u.gallery[0]) {
+      hero = '<img class="mau-hero" src="' + RECO.asset(u.gallery[0]) + '" alt="">';
+    } else if (hasTick(src, 'gallery') && p) {
+      hero = '<img class="mau-hero" src="' + RECO.asset(p.img) + '" alt="">';
+    }
+    var blocks = '';
+    if (p && hasTick(src, 'overview')) blocks += blockOverview(p);
+    if (p && hasTick(src, 'place')) blocks += blockPlace(p);
+    if (p && hasTick(src, 'amenity')) blocks += blockAmenity(p);
+    if (p && hasTick(src, 'gallery') && p.img && !hero) {
+      blocks += '<div class="mau-block"><h3>Ảnh dự án</h3><img class="mau-hero" src="' + RECO.asset(p.img) + '" alt=""></div>';
+    }
+    var wantUnit = UNIT_TICKS.some(function (k) { return hasTick(src, k); });
+    if (wantUnit && !u) {
+      blocks += '<div class="mau-block mau-need"><p class="small muted" style="margin:0">Chọn căn catalog hoặc sản phẩm Hot để hiện khối sản phẩm trên mẫu.</p></div>';
+    }
+    if (u && hasTick(src, 'spec')) blocks += blockSpec(u);
+    if (u && hasTick(src, 'view')) blocks += blockView(u);
+    if (u && hasTick(src, 'unitGallery')) blocks += blockUnitGal(u);
+    if (hasTick(src, 'pitch') || hasTick(src, 'hot')) blocks += blockPitch(u, hot);
+    if (p && hasTick(src, 'bank')) blocks += blockBank(p);
+    var body = (src.body || '').trim();
+    var lead = body
+      ? '<p class="lead mt-3" id="mau-lead">' + E(body) + '</p>'
+      : '<p class="lead mt-3 muted" id="mau-lead">Nội dung tin sẽ hiện ở đây…</p>';
+    return hero + lead + blocks +
+      '<p class="micro muted mt-3">Giá và CSBH không nằm trong tin gửi khách trên Hub.</p>';
+  }
+
   var CHANNELS = [
     { name: 'Zalo', href: 'https://chat.zalo.me/', letter: 'Z' },
     { name: 'Facebook', href: 'https://www.facebook.com/', letter: 'f' },
@@ -225,38 +259,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderView() {
     var p = S.find('projects', t.projectId);
-    var u = unitOfTpl(t, openUnit);
-    var hot = hotOfTpl(t, openUnit);
     var locked = !canSendTpl(t);
+    document.getElementById('mau-layout').classList.remove('is-edit');
     document.title = t.title + ' · Mẫu tin · RECO Sales Hub';
     document.getElementById('mau-h').textContent = t.title;
     document.getElementById('mau-sub').innerHTML = E(p ? p.name : '') + ' · ' + ticksHtml(t) +
       (t.approved ? '' : ' <span class="st st-wait">Chưa duyệt</span>');
-    var hero = '';
-    if (hasTick(t, 'unitGallery') && u && u.gallery && u.gallery[0]) {
-      hero = '<img class="mau-hero" src="' + RECO.asset(u.gallery[0]) + '" alt="">';
-    } else if (hasTick(t, 'gallery') && p) {
-      hero = '<img class="mau-hero" src="' + RECO.asset(p.img) + '" alt="">';
-    }
-    var blocks = '';
-    if (p && hasTick(t, 'overview')) blocks += blockOverview(p);
-    if (p && hasTick(t, 'place')) blocks += blockPlace(p);
-    if (p && hasTick(t, 'amenity')) blocks += blockAmenity(p);
-    if (p && hasTick(t, 'gallery') && p.img && !hero) {
-      blocks += '<div class="mau-block"><h3>Ảnh dự án</h3><img class="mau-hero" src="' + RECO.asset(p.img) + '" alt=""></div>';
-    }
-    if (u && hasTick(t, 'spec')) blocks += blockSpec(u);
-    if (u && hasTick(t, 'view')) blocks += blockView(u);
-    if (u && hasTick(t, 'unitGallery')) blocks += blockUnitGal(u);
-    if (hasTick(t, 'pitch') || hasTick(t, 'hot')) blocks += blockPitch(u, hot);
-    if (p && hasTick(t, 'bank')) blocks += blockBank(p);
-
     document.getElementById('mau-root').innerHTML =
-      '<article class="card card-pad mau-post">' + hero +
-        '<p class="lead mt-3">' + E(t.body) + '</p>' +
-        blocks +
+      '<article class="card card-pad mau-post">' + postBlocks(t, openUnit) +
         (locked ? '<p class="note note-navy mt-3">Mẫu chưa duyệt — nhân viên bán hàng không gửi được.</p>' : '') +
-        '<p class="micro muted mt-3">Giá và CSBH không nằm trong tin gửi khách trên Hub.</p>' +
       '</article>';
 
     var guestRec = null;
@@ -289,14 +300,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function doZalo() {
       RECO.copy(zaloText(t, openUnit)).then(function (ok) {
-        RECO.toast(ok ? 'Đã sao chép tin Zalo' : 'Trình duyệt chặn sao chép', { danger: !ok });
+        if (ok) RECO.confirmBar('Đã sao chép tin Zalo', { href: 'https://chat.zalo.me/', cta: 'Mở Zalo' });
+        else RECO.toast('Trình duyệt chặn sao chép', { danger: true });
       });
     }
     function doLink() {
       var rec = ensureLink();
-      RECO.copy(clipSafe(guestUrl(rec.slug))).then(function (ok) {
-        RECO.toast(ok ? 'Đã tạo đường dẫn và sao chép' : 'Đã tạo ' + rec.slug, { danger: !ok });
-      });
+        RECO.copy(clipSafe(guestUrl(rec.slug))).then(function (ok) {
+          if (ok) RECO.confirmBar('Đã tạo đường dẫn và sao chép');
+          else RECO.toast('Đã tạo ' + rec.slug, { danger: true });
+        });
     }
     var z = document.getElementById('m-copy-zalo');
     var l = document.getElementById('m-copy-link');
@@ -310,7 +323,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var href = btn.getAttribute('data-href');
         try { window.open(href, '_blank', 'noopener,noreferrer'); } catch (e) {}
         RECO.copy(payload).then(function (ok) {
-          RECO.toast(ok ? 'Đã sao chép, dán vào form ' + name : 'Đã mở ' + name + ' — sao chép thủ công', { danger: !ok });
+          if (ok) RECO.confirmBar('Đã sao chép, dán vào form ' + name, { href: href, cta: 'Mở ' + name });
+          else RECO.toast('Đã mở ' + name + ' — sao chép thủ công', { danger: true });
         });
       });
     });
@@ -330,14 +344,10 @@ document.addEventListener('DOMContentLoaded', function () {
       hotId: '', unitId: '', scope: 'personal', approved: true
     };
     var projects = S.get('projects').filter(function (p) { return !p.hidden; });
-    document.getElementById('mau-h').textContent = isNew ? 'Tạo mẫu chia sẻ' : ('Sửa · ' + draft.title);
-    document.getElementById('mau-sub').textContent = 'Chọn khối từ dự án và từ căn, rồi viết tin như bài đăng gửi khách — không ghi giá.';
+    var cancelHref = t ? goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) : goPage('chia-se.html');
+    document.getElementById('mau-layout').classList.add('is-edit');
+    document.getElementById('mau-eye').textContent = 'Xem trước tin gửi khách';
     document.getElementById('mau-cta').hidden = false;
-    document.getElementById('mau-cta').innerHTML =
-      '<div class="card card-pad"><div class="stack-actions">' +
-        '<a class="btn btn-outline" href="' + (t ? goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) : goPage('chia-se.html')) + '">Hủy</a>' +
-        '<button type="button" class="btn btn-primary" id="mau-save">Lưu mẫu</button>' +
-      '</div></div>';
 
     function unitOpts(pj, selected) {
       var rows = S.get('unitProfiles').filter(function (x) {
@@ -360,70 +370,114 @@ document.addEventListener('DOMContentLoaded', function () {
       }).join('');
     }
 
-    var root = document.getElementById('mau-root');
-    root.innerHTML = '<div class="card card-pad">' +
-      '<label class="field"><span class="lab">Dự án</span>' +
-        '<select class="inp" id="nm-pj">' + projects.map(function (p) {
-          return '<option value="' + E(p.id) + '"' + (p.id === draft.projectId ? ' selected' : '') + '>' + E(p.name) + '</option>';
-        }).join('') + '</select></label>' +
-      '<label class="field"><span class="lab">Tiêu đề</span>' +
-        '<input class="inp" type="text" id="nm-title" data-required data-msg="Đặt tiêu đề để tìm lại mẫu." value="' + E(draft.title) + '"></label>' +
-      '<label class="field"><span class="lab">Nội dung tin — như bài đăng gửi khách</span>' +
-        '<textarea class="inp" id="nm-body" rows="8" data-required data-msg="Nhập nội dung tin gửi khách.">' + E(draft.body) + '</textarea></label>' +
-      tickChecks(draft.ticks || [], PROJ_TICKS, 'Thành phần lấy từ dự án') +
-      '<label class="field mt-2"><span class="lab">Gắn căn (catalog)</span><select class="inp" id="nm-unit"></select></label>' +
-      tickChecks(draft.ticks || [], UNIT_TICKS, 'Thành phần lấy từ sản phẩm') +
-      '<label class="field mt-2"><span class="lab">Sản phẩm Hot</span><select class="inp" id="nm-hot"></select></label>' +
-      '<fieldset class="field mt-2" style="border:0;padding:0"><span class="lab">Lưu thành</span>' +
-        '<div class="tick-list mt-1">' +
-          '<label class="pick-row"><input type="radio" name="nm-scope" value="personal"' + (draft.scope !== 'shared' ? ' checked' : '') + '> Mẫu của tôi</label>' +
-          '<label class="pick-row"><input type="radio" name="nm-scope" value="shared"' + (draft.scope === 'shared' ? ' checked' : '') + '> Mẫu đội' + (IS_SALE ? ' (chờ duyệt)' : '') + '</label>' +
-        '</div></fieldset>' +
-    '</div>';
+    function readDraft() {
+      var ticks = [];
+      document.querySelectorAll('#mau-cta .tick-list input[type="checkbox"]:checked').forEach(function (c) {
+        ticks.push(c.value);
+      });
+      var scopeEl = document.querySelector('#mau-cta input[name="nm-scope"]:checked');
+      return {
+        projectId: document.getElementById('nm-pj').value,
+        title: document.getElementById('nm-title').value.trim(),
+        body: document.getElementById('nm-body').value,
+        ticks: ticks,
+        unitId: document.getElementById('nm-unit').value || '',
+        hotId: document.getElementById('nm-hot').value || '',
+        scope: scopeEl ? scopeEl.value : 'personal'
+      };
+    }
+    function paintPreview() {
+      var d = readDraft();
+      var p = S.find('projects', d.projectId);
+      document.getElementById('mau-h').textContent = d.title || (isNew ? 'Tạo mẫu chia sẻ' : 'Sửa mẫu');
+      document.getElementById('mau-sub').innerHTML = E(p ? p.name : '') +
+        (d.ticks.length ? ' · ' + ticksHtml(d) : ' · Tick thành phần để hiện khối trên mẫu');
+      document.getElementById('mau-root').innerHTML =
+        '<article class="card card-pad mau-post">' + postBlocks(d, d.unitId || null) + '</article>';
+    }
+
+    var aside = document.getElementById('mau-cta');
+    aside.innerHTML =
+      '<div class="card card-pad mau-composer">' +
+        '<label class="field"><span class="lab">Dự án</span>' +
+          '<select class="inp" id="nm-pj">' + projects.map(function (p) {
+            return '<option value="' + E(p.id) + '"' + (p.id === draft.projectId ? ' selected' : '') + '>' + E(p.name) + '</option>';
+          }).join('') + '</select></label>' +
+        '<label class="field"><span class="lab">Tiêu đề</span>' +
+          '<input class="inp" type="text" id="nm-title" data-required data-msg="Đặt tiêu đề để tìm lại mẫu." value="' + E(draft.title) + '"></label>' +
+        '<label class="field"><span class="lab">Nội dung tin</span>' +
+          '<textarea class="inp" id="nm-body" rows="5" data-required data-msg="Nhập nội dung tin gửi khách.">' + E(draft.body) + '</textarea></label>' +
+        tickChecks(draft.ticks || [], PROJ_TICKS, 'Thành phần từ dự án') +
+        '<label class="field mt-2"><span class="lab">Gắn căn (catalog)</span><select class="inp" id="nm-unit"></select></label>' +
+        tickChecks(draft.ticks || [], UNIT_TICKS, 'Thành phần từ sản phẩm') +
+        '<label class="field mt-2"><span class="lab">Sản phẩm Hot</span><select class="inp" id="nm-hot"></select></label>' +
+        '<fieldset class="field mt-2" style="border:0;padding:0"><span class="lab">Lưu thành</span>' +
+          '<div class="tick-list mt-1">' +
+            '<label class="pick-row"><input type="radio" name="nm-scope" value="personal"' + (draft.scope !== 'shared' ? ' checked' : '') + '> Mẫu của tôi</label>' +
+            '<label class="pick-row"><input type="radio" name="nm-scope" value="shared"' + (draft.scope === 'shared' ? ' checked' : '') + '> Mẫu đội' + (IS_SALE ? ' (chờ duyệt)' : '') + '</label>' +
+          '</div></fieldset>' +
+        '<div class="stack-actions mt-3">' +
+          '<button type="button" class="btn btn-primary" id="mau-save">Lưu mẫu</button>' +
+          '<a class="btn btn-outline" href="' + cancelHref + '">Hủy</a>' +
+        '</div>' +
+      '</div>';
 
     function fillSelects() {
       var pj = document.getElementById('nm-pj').value;
-      document.getElementById('nm-unit').innerHTML = unitOpts(pj, draft.unitId || openUnit || '');
-      document.getElementById('nm-hot').innerHTML = hotOpts(pj, draft.hotId || '');
+      var keepU = document.getElementById('nm-unit').value || draft.unitId || openUnit || '';
+      var keepH = document.getElementById('nm-hot').value || draft.hotId || '';
+      document.getElementById('nm-unit').innerHTML = unitOpts(pj, keepU);
+      document.getElementById('nm-hot').innerHTML = hotOpts(pj, keepH);
     }
     fillSelects();
-    document.getElementById('nm-pj').addEventListener('change', fillSelects);
+    paintPreview();
+    aside.addEventListener('input', paintPreview);
+    aside.addEventListener('change', function (e) {
+      if (e.target && e.target.id === 'nm-pj') fillSelects();
+      paintPreview();
+    });
 
     document.getElementById('mau-save').addEventListener('click', function () {
-      if (!RECO.validate(root)) return;
-      var ticks = [];
-      root.querySelectorAll('.tick-list input:checked').forEach(function (c) { ticks.push(c.value); });
-      var scopeEl = root.querySelector('input[name="nm-scope"]:checked');
-      var scope = scopeEl ? scopeEl.value : 'personal';
+      if (!RECO.validate(aside)) return;
+      var d = readDraft();
       var payload = {
-        projectId: document.getElementById('nm-pj').value,
-        title: document.getElementById('nm-title').value.trim(),
-        body: document.getElementById('nm-body').value.trim(),
-        ticks: ticks,
-        unitId: document.getElementById('nm-unit').value || null,
-        hotId: document.getElementById('nm-hot').value || null,
-        scope: scope
+        projectId: d.projectId,
+        title: d.title,
+        body: d.body.trim(),
+        ticks: d.ticks,
+        unitId: d.unitId || null,
+        hotId: d.hotId || null,
+        scope: d.scope
       };
       if (isNew) {
-        payload.ownerUserId = scope === 'personal' ? currentUserId() : null;
-        payload.approved = !(IS_SALE && scope === 'shared');
+        payload.ownerUserId = d.scope === 'personal' ? currentUserId() : null;
+        payload.approved = !(IS_SALE && d.scope === 'shared');
         var rec = S.add('shareTemplates', payload);
         var nid = rec && rec.id ? rec.id : S.get('shareTemplates')[S.get('shareTemplates').length - 1].id;
         RECO.toast(payload.approved ? 'Đã lưu mẫu' : 'Đã lưu — mẫu đội chờ duyệt');
         location.href = goPage('mau.html', 'tpl=' + encodeURIComponent(nid));
       } else {
-        if (scope === 'personal') payload.ownerUserId = t.ownerUserId || currentUserId();
+        if (d.scope === 'personal') payload.ownerUserId = t.ownerUserId || currentUserId();
         else payload.ownerUserId = null;
-        payload.approved = !(IS_SALE && scope === 'shared');
+        payload.approved = !(IS_SALE && d.scope === 'shared');
         S.update('shareTemplates', t.id, payload);
-        RECO.toast(IS_SALE && scope === 'shared' ? 'Đã lưu — mẫu đội chờ duyệt lại' : 'Đã lưu mẫu');
+        RECO.toast(IS_SALE && d.scope === 'shared' ? 'Đã lưu — mẫu đội chờ duyệt lại' : 'Đã lưu mẫu');
         location.href = goPage('mau.html', 'tpl=' + encodeURIComponent(t.id));
       }
     });
   }
 
   if (editing && CAN_EDIT) renderEdit();
-  else renderView();
+  else if (isNew && !CAN_EDIT) {
+    document.getElementById('mau-h').textContent = 'Không soạn mẫu';
+    document.getElementById('mau-sub').textContent = 'HCNS và Kế toán xem tài liệu, không soạn tin gửi khách.';
+    document.getElementById('mau-root').innerHTML = RECO_DATA.empty(
+      'Vai trò này không soạn mẫu',
+      'Chọn vai trò bán hàng hoặc quản trị trên thanh prototype để tạo mẫu tin.',
+      '<a class="btn btn-outline" href="' + goPage('chia-se.html') + '">Thư viện mẫu</a>'
+    );
+    document.getElementById('mau-cta').hidden = true;
+  } else renderView();
 });
 </script>
 </body>

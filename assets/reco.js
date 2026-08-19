@@ -26,7 +26,7 @@
        Trong bản mô phỏng, chọn vai trò này chỉ mở đúng phần khách được phép thấy. */
     { id: 'khach', name: 'Khách hàng', short: 'KH', scope: 'Nội dung được nhân viên chia sẻ', who: 'Khách của Lê Thu Hà', outside: true }
   ];
-  var DEFAULT_ROLE = 'gddu';
+  var DEFAULT_ROLE = 'nvbh';
 
   function roleOf(id) {
     for (var i = 0; i < ROLES.length; i++) if (ROLES[i].id === id) return ROLES[i];
@@ -164,7 +164,7 @@
     { href: 'cay-thu-muc.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
     { href: 'chia-se.html', label: 'Chia sẻ', key: 'chia-se', icon: 'share' },
     { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' },
-    { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
+    { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd' }
   ] : [
     { href: 'trang-dau.html', label: 'Trang đầu', key: 'trang-dau', icon: 'home' },
     { href: 'du-an.html', label: 'Dự án', key: 'du-an', icon: 'layers' },
@@ -180,9 +180,9 @@
   var MORE = inGd01() ? [
     { href: 'de-nghi-sua.html', label: 'Đề nghị sửa nội dung' },
     { href: 'nguoi-dung.html', label: 'Người dùng và quyền', roles: 'gd hcns' },
-    { href: 'sitemap.html', label: 'Bản đồ hệ thống · đối chiếu SaleHUB', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' },
-    { href: 'bao-tri.html', label: 'Lịch bàn giao và bảo trì', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' },
-    { href: 'ha-tang.html', label: 'Hạ tầng và chi phí vận hành', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' },
+    { href: 'sitemap.html', label: 'Bản đồ hệ thống · đối chiếu SaleHUB', roles: 'gd gddu tkkd' },
+    { href: 'bao-tri.html', label: 'Lịch bàn giao và bảo trì', roles: 'gd gddu tkkd' },
+    { href: 'ha-tang.html', label: 'Hạ tầng và chi phí vận hành', roles: 'gd gddu tkkd' },
     { href: '../index.html', label: 'Cổng Giai đoạn 1 / 2' }
   ] : [
     { href: 'thu-vien-tai-lieu.html', label: 'Danh sách tài liệu · tìm theo bộ lọc' },
@@ -219,13 +219,13 @@
           home +
           '<label for="proto-role">Đang xem với vai trò</label>' +
           '<select id="proto-role" aria-label="Chọn vai trò đang xem">' + opts + '</select>' +
-          '<span class="micro muted no-lg" style="flex-basis:100%">Phạm vi: ' + R.scope + '</span>' +
+          '<span class="micro muted no-lg proto-desk" style="flex-basis:100%">Phạm vi: ' + R.scope + '</span>' +
           '<span class="micro only-lg muted">Phạm vi: ' + R.scope + '</span>' +
           '<span class="proto-spacer"></span>' +
-          '<button type="button" class="proto-btn" id="proto-dev" aria-pressed="' + (device === 'm') + '">' +
+          '<button type="button" class="proto-btn proto-desk" id="proto-dev" aria-pressed="' + (device === 'm') + '">' +
             (device === 'm' ? 'Xem bản desktop' : 'Xem bản điện thoại') + '</button>' +
-          '<button type="button" class="proto-btn" id="proto-reset">Đặt lại dữ liệu demo</button>' +
-          '<button type="button" class="proto-btn" id="proto-bare">Ẩn thanh demo</button>' +
+          '<button type="button" class="proto-btn proto-desk" id="proto-reset">Đặt lại dữ liệu demo</button>' +
+          '<button type="button" class="proto-btn proto-desk" id="proto-bare">Ẩn thanh demo</button>' +
         '</div>' +
       '</div>';
   }
@@ -241,6 +241,7 @@
           '<a class="brand" href="' + link('trang-dau.html') + '"><b>RECO</b><span>Sales Hub</span></a>' +
           '<nav class="nav" aria-label="Điều hướng chính">' + nav + '</nav>' +
           '<div class="topbar-end">' +
+            '<button type="button" class="icon-btn nav-more-top" id="nav-more-top" aria-label="Thêm">' + svg('dots') + '</button>' +
             '<div class="gs">' +
               '<div class="searchbox">' + svg('search') +
                 '<input type="search" id="gs-input" placeholder="Tìm dự án, tài liệu, mã căn…" aria-label="Tìm kiếm" autocomplete="off">' +
@@ -282,8 +283,14 @@
   }
 
   function buildDock(active) {
-    var nDock = inGd01() ? 5 : 4;
-    var items = NAV.filter(allowed).slice(0, nDock).map(function (n) {
+    var pool = NAV.filter(allowed);
+    var keys = inGd01() ? ['trang-dau', 'du-an', 'san-pham', 'chia-se'] : null;
+    var pick = keys
+      ? keys.map(function (k) {
+          return pool.filter(function (n) { return n.key === k; })[0];
+        }).filter(Boolean)
+      : pool.slice(0, 4);
+    var items = pick.map(function (n) {
       return '<a href="' + link(n.href) + '"' + (n.key === active ? ' aria-current="page"' : '') + '>' + svg(n.icon) + '<span>' + n.label + '</span></a>';
     }).join('');
     return '<nav class="dock" aria-label="Điều hướng nhanh">' + items +
@@ -340,16 +347,15 @@
       if (norm(d.name).indexOf(t) < 0) return;
       push('Tài liệu', 'file', d.name, S.projectName(d.pj) + ' · ' + S.LABELS[d.label].text, 'thu-vien-tai-lieu.html');
     });
-    S.get('qas').forEach(function (qa) {
-      /* Hỏi đáp cũng có ba cấp nhãn: câu Nội bộ (ví dụ so sánh với dự án đối thủ) không được
-         lọt ra ô tìm chung của vai trò không được phép xem, và câu chưa duyệt chưa phải nội dung
-         chính thức. Kèm `pj` vào đường dẫn, nếu không thì bấm câu của dự án khác vẫn mở dự án mặc định. */
-      if (!S.canSee(qa.label, role)) return;
-      if (qa.state !== 'approved' && qa.state !== 'pending_info') return;
-      if (norm(qa.q + ' ' + qa.a).indexOf(t) < 0) return;
-      push('Hỏi đáp', 'file', qa.q, S.projectName(qa.pj) + ' · ' + (S.TOPICS[qa.topic] || ''),
-        'du-an-chi-tiet.html?pj=' + qa.pj + '#kv7');
-    });
+    if (!inGd01()) {
+      S.get('qas').forEach(function (qa) {
+        if (!S.canSee(qa.label, role)) return;
+        if (qa.state !== 'approved' && qa.state !== 'pending_info') return;
+        if (norm(qa.q + ' ' + qa.a).indexOf(t) < 0) return;
+        push('Hỏi đáp', 'file', qa.q, S.projectName(qa.pj) + ' · ' + (S.TOPICS[qa.topic] || ''),
+          'du-an-chi-tiet.html?pj=' + qa.pj + '#kv7');
+      });
+    }
     return out;
   }
 
@@ -360,7 +366,7 @@
     var html = '';
     if (!q.trim()) {
       var rec = S ? S.get('recent') : [];
-      html = '<p class="gs-head">' + (rec.length ? 'Gần đây' : 'Gõ để tìm dự án, căn hộ, tài liệu hoặc câu hỏi tư vấn') + '</p>';
+      html = '<p class="gs-head">' + (rec.length ? 'Gần đây' : 'Gõ để tìm dự án, mã căn hoặc tài liệu') + '</p>';
       rec.slice(0, 5).forEach(function (r) {
         html += '<a class="gs-item" href="' + link(r.href) + '">' + svg(r.icon || 'clock') +
           '<span><b>' + r.title + '</b><small>' + (r.sub || '') + '</small></span></a>';
@@ -369,7 +375,7 @@
       var res = search(q);
       if (!res.length) {
         html = '<p class="gs-head">Không tìm thấy “' + q + '”</p>' +
-          '<p class="gs-none">Thử tên dự án, mã căn như A-12.05, tên tài liệu hoặc từ khóa trong câu hỏi.</p>';
+          '<p class="gs-none">Thử tên dự án, mã căn như T1-08.02, hoặc tên tài liệu.</p>';
       } else {
         html = '<p class="gs-head">' + res.length + ' kết quả</p>';
         res.forEach(function (r) {
@@ -605,6 +611,97 @@
                : 'Trình duyệt chặn sao chép tự động. Anh/chị bôi đen rồi nhấn Ctrl+C.',
             { danger: !ok });
       return ok;
+    });
+  }
+
+  function confirmBar(msg, opts) {
+    opts = opts || {};
+    var bar = document.getElementById('reco-confirm');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'reco-confirm';
+      bar.className = 'confirm-bar';
+      bar.setAttribute('role', 'status');
+      document.body.appendChild(bar);
+    }
+    bar.innerHTML = '<span></span>';
+    bar.querySelector('span').textContent = msg;
+    if (opts.href && opts.cta) {
+      var a = document.createElement('a');
+      a.className = 'btn btn-primary btn-sm';
+      a.href = opts.href;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = opts.cta;
+      bar.appendChild(a);
+    }
+    bar.hidden = false;
+    clearTimeout(bar._t);
+    bar._t = setTimeout(function () { bar.hidden = true; }, opts.ms || 4200);
+    return bar;
+  }
+
+  function initFilterSheets() {
+    document.querySelectorAll('[data-filter-sheet]').forEach(function (bar) {
+      if (bar.querySelector('.filter-extras')) return;
+      var extras = [];
+      Array.prototype.forEach.call(bar.children, function (el) {
+        if (el.classList && el.classList.contains('searchbox')) return;
+        if (el.tagName === 'INPUT' && (el.type === 'search' || el.id && el.id.indexOf('-q') >= 0)) return;
+        extras.push(el);
+      });
+      if (!extras.length) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'filter-extras';
+      extras.forEach(function (el) { wrap.appendChild(el); });
+      var head = document.createElement('div');
+      head.className = 'spread fsheet-head';
+      head.innerHTML = '<b>Lọc</b>';
+      var closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'icon-btn';
+      closeBtn.setAttribute('aria-label', 'Đóng');
+      closeBtn.innerHTML = svg('x');
+      head.appendChild(closeBtn);
+      wrap.insertBefore(head, wrap.firstChild);
+      var open = document.createElement('button');
+      open.type = 'button';
+      open.className = 'btn btn-outline btn-sm fsheet-open';
+      open.textContent = 'Lọc';
+      bar.appendChild(open);
+      bar.appendChild(wrap);
+      var scrim = document.getElementById('fsheet-scrim');
+      if (!scrim) {
+        scrim = document.createElement('div');
+        scrim.id = 'fsheet-scrim';
+        scrim.className = 'fsheet-scrim';
+        scrim.hidden = true;
+        document.body.appendChild(scrim);
+      }
+      function count() {
+        var n = 0;
+        wrap.querySelectorAll('select').forEach(function (s) { if (s.value) n++; });
+        wrap.querySelectorAll('input[type="search"], input[type="text"]').forEach(function (s) {
+          if (s.value && s.value.trim()) n++;
+        });
+        open.textContent = n ? 'Lọc (' + n + ')' : 'Lọc';
+      }
+      function close() {
+        wrap.classList.remove('open');
+        scrim.hidden = true;
+        releaseScroll();
+      }
+      function show() {
+        wrap.classList.add('open');
+        scrim.hidden = false;
+        document.body.style.overflow = 'hidden';
+      }
+      open.addEventListener('click', show);
+      closeBtn.addEventListener('click', close);
+      scrim.addEventListener('click', close);
+      wrap.addEventListener('change', count);
+      wrap.addEventListener('input', count);
+      count();
     });
   }
 
@@ -845,10 +942,31 @@
     var obs = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
-        links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id); });
+        var href = '#' + en.target.id;
+        links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === href); });
+        var chipsNav = document.querySelector('.zone-chips');
+        if (chipsNav) {
+          chipsNav.querySelectorAll('a').forEach(function (a) {
+            a.classList.toggle('on', a.getAttribute('href') === href);
+          });
+        }
       });
     }, { rootMargin: '-25% 0px -65% 0px', threshold: 0 });
     secs.forEach(function (s) { obs.observe(s); });
+    var grid = document.querySelector('.detail-grid');
+    if (grid && !document.querySelector('.zone-chips')) {
+      var chips = document.createElement('nav');
+      chips.className = 'zone-chips';
+      chips.setAttribute('aria-label', 'Khu vực nội dung');
+      links.forEach(function (a) {
+        var c = document.createElement('a');
+        c.href = a.getAttribute('href');
+        c.textContent = a.textContent.replace(/\s+/g, ' ').trim();
+        if (a.classList.contains('on')) c.classList.add('on');
+        chips.appendChild(c);
+      });
+      grid.parentNode.insertBefore(chips, grid);
+    }
   }
 
   /* Slider một thẻ / một tin: giữ mọi phần tử trong DOM, chỉ một cái có .on */
@@ -902,6 +1020,20 @@
     }
     if (prev) prev.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); go(idx - 1); });
     if (next) next.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); go(idx + 1); });
+    var startX = 0, startY = 0, tracking = false;
+    root.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.buttons !== 1) return;
+      tracking = true; startX = e.clientX; startY = e.clientY;
+    });
+    function endPointer(e) {
+      if (!tracking) return;
+      tracking = false;
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+      go(dx < 0 ? idx + 1 : idx - 1);
+    }
+    root.addEventListener('pointerup', endPointer);
+    root.addEventListener('pointercancel', function () { tracking = false; });
     go(0);
     return { go: go, index: function () { return idx; } };
   }
@@ -1092,16 +1224,19 @@
     initTopbarPanels();
     initTabs();
     initSecnav();
+    initFilterSheets();
     initBits();
 
     var open = document.getElementById('nav-open');
     var close = document.getElementById('nav-close');
     var scrim = document.getElementById('nav-scrim');
     var more = document.getElementById('dock-more');
+    var moreTop = document.getElementById('nav-more-top');
     if (open) open.addEventListener('click', openDrawer);
     if (close) close.addEventListener('click', closeDrawer);
     if (scrim) scrim.addEventListener('click', closeDrawer);
     if (more) more.addEventListener('click', function (e) { e.preventDefault(); openDrawer(); });
+    if (moreTop) moreTop.addEventListener('click', openDrawer);
     // Focus trap trong drawer
     var drawer = document.getElementById('nav-drawer');
     if (drawer) {
@@ -1207,7 +1342,7 @@
     svg: svg, link: link, toast: toast, asset: asset, assetBase: assetBase,
     openModal: openModal, closeModal: closeModal, applyRoles: applyRoles,
     confirm: confirmBox, guardLabel: guardLabel, busy: busy, validate: validate, fieldError: fieldError,
-    copy: copy, copyWithToast: copyWithToast, today: today, now: now,
+    copy: copy, copyWithToast: copyWithToast, confirmBar: confirmBar, today: today, now: now,
     download: download, downloadWithToast: downloadWithToast,
     /* Đọc tham số của màn ở cả bản nhiều trang (?q=) lẫn bản gói (#du-an?q=) */
     param: function (name) {

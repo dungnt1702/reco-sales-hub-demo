@@ -12,7 +12,7 @@
 <script defer src="../assets/data.js"></script>
 <style>
   .tree-grid { display: grid; gap: 20px; }
-  @media (min-width: 1024px) { .tree-grid { grid-template-columns: 340px minmax(0,1fr); gap: 28px; align-items: start; } }
+  @media (min-width: 768px) { .tree-grid { grid-template-columns: 340px minmax(0,1fr); gap: 28px; align-items: start; } }
   .tree-panel { position: sticky; top: calc(var(--proto-h) + var(--header-h) + 16px); }
   body.proto-off .tree-panel { top: calc(var(--header-h) + 16px); }
   @media (max-width: 1023px) { .tree-panel { position: static; } }

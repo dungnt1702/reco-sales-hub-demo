@@ -24,7 +24,7 @@
       <div>
         <span class="eyebrow">MH-03 · Tìm kiếm và danh sách dự án</span>
         <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Dự án</h1>
-        <p class="lead mt-1" style="font-size:.98rem">Dự án nổi bật luôn được đặt trước. Mỗi dự án hiển thị khu vực, loại sản phẩm, khoảng giá, diện tích và tình trạng bán.</p>
+        <p class="lead mt-1" style="font-size:.98rem">Dự án nổi bật luôn được đặt trước. Mỗi dự án hiển thị khu vực, loại sản phẩm, diện tích và tình trạng bán.</p>
       </div>
       <div class="seg" role="group" aria-label="Chế độ hiển thị">
         <button type="button" data-view="card" data-view-target="ket-qua" aria-pressed="true">
@@ -39,7 +39,7 @@
     </div>
 
     <!-- Bộ lọc -->
-    <div class="filterbar">
+    <div class="filterbar" data-filter-sheet>
       <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
         <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="search" id="f-q" placeholder="Tìm theo tên dự án" aria-label="Tìm theo tên dự án">
@@ -106,9 +106,8 @@
           <button type="button" class="btn btn-primary" id="rong-reset">Bỏ bộ lọc</button>
           <a class="btn btn-outline" href="trang-dau.html">Về Trang đầu</a>
         </div>
-        <p class="mt-3"><span class="open-q">Cần RECO xác nhận</span></p>
-        <p class="micro muted mt-1" style="max-width:52ch;margin-inline:auto">
-          Tài liệu ghi cách xử lý khi tìm kiếm không có kết quả là điểm còn mở của Luồng 1. Bản mô phỏng đang chọn phương án gợi ý bỏ bớt bộ lọc kèm ba dự án gần nhất.
+        <p class="micro muted mt-3" style="max-width:52ch;margin-inline:auto">
+          Thử bỏ bớt một điều kiện, hoặc xem ba dự án được cập nhật gần đây nhất bên dưới.
         </p>
       </div>
       <h3 class="mt-4 mb-2">Ba dự án cập nhật gần nhất</h3>

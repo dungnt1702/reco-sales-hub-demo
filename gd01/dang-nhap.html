@@ -18,7 +18,7 @@
     display: flex; flex-direction: column; justify-content: space-between; gap: 28px;
   }
   @media (min-width: 900px) { .login-art { padding: 48px 52px; } }
-  .login-form { display: flex; align-items: center; justify-content: center; padding: 34px var(--gutter) 60px; }
+  .login-form { display: flex; align-items: center; justify-content: center; padding: 34px var(--gutter) 80px; }
   .login-form .inner { width: 100%; max-width: 400px; }
   .login-art h2, .login-art h3 { color: #fff; }
   .login-art .pt { display: flex; gap: 12px; align-items: flex-start; }
@@ -136,6 +136,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   remember.addEventListener('change', paintPolicy);
   paintPolicy();
+
+  var formPane = document.querySelector('.login-form');
+  if (formPane && window.visualViewport) {
+    function fitKb() {
+      var vv = window.visualViewport;
+      formPane.style.paddingBottom = Math.max(80, Math.round(window.innerHeight - vv.height) + 24) + 'px';
+    }
+    window.visualViewport.addEventListener('resize', fitKb);
+  }
 
   function fail(title, body) {
     boxT.textContent = title;
