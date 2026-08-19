@@ -1,0 +1,14 @@
+---
+description: Reco/TLB — khi user yêu cầu tạo issue hoặc log bug, agent tự điền form, assign và gắn Project reco
+alwaysApply: true
+---
+
+# Log issue reco / TLB
+
+Khi user nói **tạo issue**, **log bug**, **logbug**, **ghi issue**, **tạo bug** (hoặc tương tự):
+
+1. Đọc và làm theo skill `log-issue` (`dev-guides/ai-agent-guidelines/claude-skills/log-issue/SKILL.md` hoặc `~/.cursor/skills/log-issue/SKILL.md`). Có thể spawn `issue-logger` / `bug-logger`.
+2. Repo: `TLB-LTD/tlb-devops`. Account: `dungnt1702`. **`--assignee dungnt1702` bắt buộc.**
+3. Label `product:reco` + `bug` | `feature` | `task`. Thêm vào Project [reco](https://github.com/orgs/TLB-LTD/projects/2) (`gh project item-add 2 --owner TLB-LTD`).
+4. Điền đủ trường form từ context. **Luôn** có khối BR ngắn (Ai / Cần gì / Vì sao / Xong khi) và link file BR + spec nếu tìm thấy trong `docs/`. **Không** bảo user tự gán Assignee / Priority / Project ở sidebar.
+5. Chỉ hỏi nếu không suy được mô tả lỗi/yêu cầu. Không bịa mã đơn/SĐT/tiền.
