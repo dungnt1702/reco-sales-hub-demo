@@ -10,14 +10,14 @@
 (function () {
   'use strict';
 
-  var KEY = 'reco-salehub-demo-gd01-v2';
+  var KEY = 'reco-salehub-demo-gd01-v3';
 
   /* ---------- Dữ liệu gốc ---------- */
   function seed() {
     var G2 = ['unit-2pn-1.jpg', 'unit-2pn-2.jpg', 'unit-2pn-3.jpg', 'unit-2pn-4.jpg'];
     var G3 = ['unit-3pn-1.jpg', 'unit-3pn-2.jpg', 'unit-3pn-3.jpg', 'unit-living.jpg'];
     var GPH = ['unit-ph-1.jpg', 'unit-ph-2.jpg', 'unit-ph-3.jpg', 'unit-view.jpg'];
-    var GSH = ['unit-shop-1.jpg', 'unit-shop-2.jpg', 'unit-shop-3.jpg'];
+    var GSH = ['unit-shop-1.jpg', 'unit-shop-2.jpg', 'unit-shop-3.jpg', 'unit-living.jpg'];
     return {
       /* Dự án — nguồn cho thẻ dự án, danh sách, quản trị */
       projects: [
@@ -1240,7 +1240,19 @@
         { id: 'st5', projectId: 'celestine', title: 'Chốt 2PN view Hồ Tây — đợt 1', scope: 'shared', ownerUserId: null, approved: true,
           unitId: 'T1-08.02',
           body: 'Anh/chị ơi, Celestine Westlake — 300 Võ Chí Công, Tây Hồ.\n\nCăn em đang đẩy: T1-08.02\n· 2PN, 78,4 m², ban công Đông Nam view Hồ Tây\n· Tầng 8 tháp T1 — dẫn khách xem nhà dễ\n· Bàn giao bếp tủ âm, TBVS châu Âu\n· Đợt 1 sắp kết thúc, căn còn hàng\n\n2 tháp 23 tầng, 216 căn, CĐT VINAENCO, bàn giao từ 2027. Giá và CSBH em gửi theo bảng hàng CĐT, không ghi trên tin.',
-          ticks: ['overview', 'place', 'gallery', 'hot', 'spec', 'view', 'unitGallery', 'pitch', 'amenity'], hotId: 'hp1' }
+          ticks: ['overview', 'place', 'gallery', 'hot', 'spec', 'view', 'unitGallery', 'pitch', 'amenity'], hotId: 'hp1' },
+        { id: 'st6', projectId: 'opening', title: 'Chốt 3PN+1 Five Seasons — ở ngay', scope: 'shared', ownerUserId: null, approved: true,
+          unitId: 'GS-FS.2501',
+          body: 'Anh/chị ơi, Gold Season 47 Nguyễn Tuân — tòa Five Seasons.\n\nCăn em đang đẩy: GS-FS.2501\n· 3PN+1, 170 m², Đông Nam, tầng 25\n· Hàng chuyển nhượng, nhận nhà ở ngay Thanh Xuân\n· Gần Nguyễn Trãi / Royal City\n\nẢnh căn minh họa nội thất. Giá chuyển nhượng em đối chiếu sổ và bảng hàng, không ghi trên tin.',
+          ticks: ['overview', 'place', 'gallery', 'hot', 'spec', 'view', 'unitGallery', 'pitch'], hotId: 'hp6' },
+        { id: 'st7', projectId: 'la-perle', title: 'Chốt 2PN+1 Nha Trang tầng 18', scope: 'shared', ownerUserId: null, approved: true,
+          unitId: 'LPH-A.18.02',
+          body: 'Anh/chị ơi, La Perle Héritage Nha Trang — tháp căn hộ.\n\nCăn em đang đẩy: LPH-A.18.02\n· 2PN+1, 74,5 m², Đông Nam, tầng 18\n· Đủ ở và phòng phụ, khách miền Nam hay hỏi căn biển loại này\n\nSố liệu trang dự án recogroup.vn đã rút — em xác nhận lại với CĐT trước khi chốt. Giá không ghi trên tin.',
+          ticks: ['overview', 'place', 'gallery', 'hot', 'spec', 'view', 'unitGallery', 'pitch'], hotId: 'hp7' },
+        { id: 'st8', projectId: 'palmy', title: 'Chốt lô góc 5 tầng Palmy', scope: 'shared', ownerUserId: null, approved: true,
+          unitId: 'PBT-TM3.01',
+          body: 'Anh/chị ơi, Palmy Biztown Thanh Liệt — lô góc dãy TM3.\n\nCăn em đang đẩy: PBT-TM3.01\n· 148 m² đất, 5 tầng, Đông Nam hai mặt\n· Khách vừa ở vừa mở cửa hàng mặt tiền hay chốt lô góc\n\nNhà thô, khách tự hoàn thiện. Giá đất và CSBH trên bảng hàng CĐT, em không ghi trên tin.',
+          ticks: ['overview', 'place', 'gallery', 'hot', 'spec', 'view', 'unitGallery', 'pitch'], hotId: 'hp8' }
       ],
 
       /* Người dùng — MH-10 */
@@ -1657,6 +1669,23 @@
     var p = find('projects', (v || u).pj);
     return p ? p.img : 'reco-banner.jpg';
   }
+  /* Mẫu đã duyệt cùng dự án với căn — không fallback sang dự án khác. */
+  function tplForUnit(unitId) {
+    var u = find('units', unitId);
+    if (!u) return null;
+    var list = get('shareTemplates');
+    var hot = get('hotProducts').filter(function (h) { return h.unitId === unitId && h.active; })[0];
+    if (hot) {
+      var byHot = list.filter(function (t) { return t.hotId === hot.id && t.approved; })[0];
+      if (byHot) return byHot.id;
+    }
+    var byPjHot = list.filter(function (t) {
+      return t.projectId === u.pj && t.approved && (t.ticks || []).indexOf('hot') >= 0;
+    })[0];
+    if (byPjHot) return byPjHot.id;
+    var byPj = list.filter(function (t) { return t.projectId === u.pj && t.approved; })[0];
+    return byPj ? byPj.id : null;
+  }
   /* Ai được xem nội dung mang nhãn này. Danh sách restricted theo QD-027:
      chính sách hoa hồng mở cho Tổng giám đốc, Giám đốc dự án, Quản lý kinh doanh,
      Hành chính nhân sự và Kế toán. */
@@ -1672,7 +1701,7 @@
     LABELS: LABELS, UNIT_STATE: UNIT_STATE, BRANCHES: BRANCHES, TOPICS: TOPICS, QA_GROUP_DEFAULT: QA_GROUP_DEFAULT, TYPES: TYPES, SEGMENTS: SEGMENTS,
     BRANCH_LABEL: BRANCH_LABEL, RANK: RANK,
     label: label, money: money, billion: billion, projectName: projectName, canSee: canSee,
-    unitView: unitView, unitCover: unitCover,
+    unitView: unitView, unitCover: unitCover, tplForUnit: tplForUnit,
     myProjects: myProjects,
     atLeastAsStrict: atLeastAsStrict, stricter: stricter, canGrant: canGrant,
     TODAY: TODAY, parseVN: parseVN, daysLeft: daysLeft, lifeState: lifeState,

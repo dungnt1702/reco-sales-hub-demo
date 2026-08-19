@@ -2049,14 +2049,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return qs ? to + (to.indexOf('?') >= 0 ? '&' : '?') + qs : to;
   }
   function tplForHot(h) {
-    var exact = S.get('shareTemplates').filter(function (t) {
-      return t.projectId === PJ && t.hotId === h.id && t.approved;
-    })[0];
-    if (exact) return exact.id;
-    var any = S.get('shareTemplates').filter(function (t) {
-      return t.projectId === PJ && t.approved && (t.ticks || []).indexOf('hot') >= 0;
-    })[0];
-    return any ? any.id : 'st2';
+    return S.tplForUnit(h.unitId);
   }
   function floorLabel(u) {
     return esc(u.block) + (u.floor ? ' · tầng ' + u.floor : '');
@@ -2076,6 +2069,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     box.innerHTML = rows.map(function (h) {
       var u = S.find('units', h.unitId);
+      var tpl = tplForHot(h);
+      var gui = tpl
+        ? '<a class="btn btn-primary btn-sm" href="' + goQs('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>'
+        : '';
       return '<div class="card card-pad">' +
         '<div class="row-tight mb-1"><b>' + esc(u.id) + '</b><span class="chip">' + esc(u.kind) + '</span></div>' +
         '<p class="small" style="margin:0">' + esc(h.pitch) + '</p>' +
@@ -2083,7 +2080,7 @@ document.addEventListener('DOMContentLoaded', function () {
           String(u.area).replace('.', ',') + ' m²</p>' +
         '<div class="row mt-2">' +
           '<a class="btn btn-outline btn-sm" href="' + goQs('san-pham.html', 'pj=' + encodeURIComponent(PJ) + '&unit=' + encodeURIComponent(u.id)) + '">Xem căn</a>' +
-          '<a class="btn btn-primary btn-sm" href="' + goQs('mau.html', 'tpl=' + encodeURIComponent(tplForHot(h)) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>' +
+          gui +
         '</div></div>';
     }).join('');
   }

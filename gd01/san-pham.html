@@ -134,19 +134,15 @@ document.addEventListener('DOMContentLoaded', function () {
     (p ? cell('Bàn giao', esc(p.handover || '—')) : '') +
     cell('Giá', 'Liên hệ / xem bảng hàng CĐT');
 
-  var tpl = 'st2';
-  if (hot) {
-    var byHot = S.get('shareTemplates').filter(function (t) { return t.hotId === hot.id && t.approved; })[0];
-    if (byHot) tpl = byHot.id;
-    else {
-      var byPj = S.get('shareTemplates').filter(function (t) {
-        return t.projectId === u.pj && t.approved && (t.ticks || []).indexOf('hot') >= 0;
-      })[0];
-      if (byPj) tpl = byPj.id;
-    }
+  var tpl = S.tplForUnit(u.id);
+  var gui = document.getElementById('sp-gui');
+  if (tpl) {
+    gui.hidden = false;
+    gui.setAttribute('href',
+      go('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id) + '&pj=' + encodeURIComponent(pj)));
+  } else {
+    gui.hidden = true;
   }
-  document.getElementById('sp-gui').setAttribute('href',
-    go('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id) + '&pj=' + encodeURIComponent(pj)));
   document.getElementById('sp-pj').setAttribute('href', go('du-an-chi-tiet.html', 'pj=' + encodeURIComponent(pj)));
   document.getElementById('sp-copy').addEventListener('click', function () {
     RECO.copy(pitch).then(function (ok) {

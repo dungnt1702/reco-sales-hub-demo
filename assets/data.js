@@ -108,7 +108,10 @@
     var p = S.find('projects', u.pj);
     var cover = S.unitCover(u);
     var line = (u.pitch || '').split(/\n/)[0];
-    var meta = esc(u.kind) + ' · ' + areaTxt(u.area) + (u.dir ? ' · ' + esc(u.dir) : '');
+    var meta = hot
+      ? esc(u.kind) + ' · ' + areaTxt(u.area) + (u.dir ? ' · ' + esc(u.dir) : '') +
+        (u.block ? ' · ' + esc(u.block) + (u.floor ? ' tầng ' + u.floor : '') : '')
+      : esc(u.kind) + ' · ' + areaTxt(u.area);
     return '<a class="ucard' + (hot ? ' ucard-hot' : ' ucard-quiet') + '" href="' + unitHref(u) + '">' +
       '<div class="ucard-media">' +
         '<img src="' + RECO.asset(cover) + '" alt="' + esc(u.id) + '" loading="lazy">' +
@@ -117,7 +120,7 @@
       '<div class="ucard-body">' +
         '<div class="row-tight"><span class="ucard-id">' + esc(u.id) + '</span><span class="st ' + st.cls + '">' + esc(st.text) + '</span></div>' +
         '<p class="micro">' + esc(p ? p.name : '') + '</p>' +
-        '<p class="micro muted">' + meta + (u.block ? ' · ' + esc(u.block) + (u.floor ? ' tầng ' + u.floor : '') : '') + '</p>' +
+        '<p class="micro muted">' + meta + '</p>' +
         (hot && line ? '<p class="ucard-pitch">' + esc(line) + '</p>' : '') +
       '</div></a>';
   }

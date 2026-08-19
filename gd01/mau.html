@@ -337,7 +337,11 @@ document.addEventListener('DOMContentLoaded', function () {
       '<label class="field mt-2"><span class="lab">Gắn căn (catalog)</span><select class="inp" id="nm-unit"></select></label>' +
       tickChecks(draft.ticks || [], UNIT_TICKS, 'Thành phần lấy từ sản phẩm') +
       '<label class="field mt-2"><span class="lab">Sản phẩm Hot</span><select class="inp" id="nm-hot"></select></label>' +
-      (isNew ? '' : '<p class="micro muted mt-2">Mẫu đội sau khi sửa vẫn giữ phạm vi ' + (draft.scope === 'shared' ? 'đội' : 'của tôi') + '.</p>') +
+      '<fieldset class="field mt-2" style="border:0;padding:0"><span class="lab">Lưu thành</span>' +
+        '<div class="tick-list mt-1">' +
+          '<label class="pick-row"><input type="radio" name="nm-scope" value="personal"' + (draft.scope !== 'shared' ? ' checked' : '') + '> Mẫu của tôi</label>' +
+          '<label class="pick-row"><input type="radio" name="nm-scope" value="shared"' + (draft.scope === 'shared' ? ' checked' : '') + '> Mẫu đội' + (IS_SALE ? ' (chờ duyệt)' : '') + '</label>' +
+        '</div></fieldset>' +
     '</div>';
 
     function fillSelects() {
@@ -352,28 +356,30 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!RECO.validate(root)) return;
       var ticks = [];
       root.querySelectorAll('.tick-list input:checked').forEach(function (c) { ticks.push(c.value); });
+      var scopeEl = root.querySelector('input[name="nm-scope"]:checked');
+      var scope = scopeEl ? scopeEl.value : 'personal';
       var payload = {
         projectId: document.getElementById('nm-pj').value,
         title: document.getElementById('nm-title').value.trim(),
         body: document.getElementById('nm-body').value.trim(),
         ticks: ticks,
         unitId: document.getElementById('nm-unit').value || null,
-        hotId: document.getElementById('nm-hot').value || null
+        hotId: document.getElementById('nm-hot').value || null,
+        scope: scope
       };
       if (isNew) {
-        payload.scope = 'personal';
-        payload.ownerUserId = currentUserId();
-        payload.approved = true;
+        payload.ownerUserId = scope === 'personal' ? currentUserId() : null;
+        payload.approved = !(IS_SALE && scope === 'shared');
         var rec = S.add('shareTemplates', payload);
         var nid = rec && rec.id ? rec.id : S.get('shareTemplates')[S.get('shareTemplates').length - 1].id;
-        RECO.toast('Đã lưu mẫu của anh/chị');
+        RECO.toast(payload.approved ? 'Đã lưu mẫu' : 'Đã lưu — mẫu đội chờ duyệt');
         location.href = goPage('mau.html', 'tpl=' + encodeURIComponent(nid));
       } else {
-        if (t.scope === 'shared' && IS_SALE) {
-          payload.approved = false;
-        }
+        if (scope === 'personal') payload.ownerUserId = t.ownerUserId || currentUserId();
+        else payload.ownerUserId = null;
+        payload.approved = !(IS_SALE && scope === 'shared');
         S.update('shareTemplates', t.id, payload);
-        RECO.toast(IS_SALE && t.scope === 'shared' ? 'Đã lưu — mẫu đội chờ duyệt lại' : 'Đã lưu mẫu');
+        RECO.toast(IS_SALE && scope === 'shared' ? 'Đã lưu — mẫu đội chờ duyệt lại' : 'Đã lưu mẫu');
         location.href = goPage('mau.html', 'tpl=' + encodeURIComponent(t.id));
       }
     });
