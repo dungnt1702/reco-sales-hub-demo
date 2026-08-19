@@ -15,9 +15,10 @@
    Đo bằng hình học thật (getBoundingClientRect) chứ không đọc CSS: lề chồng nhau,
    lề âm và khoảng cách do lưới sinh ra chỉ lộ ra sau khi trình duyệt dựng xong. */
 var PHASE = 'gd01';
-var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet','san-pham','thu-vien-tai-lieu','cay-thu-muc',
-             'soan-noi-dung','chia-se','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua','xem-truoc-gd2',
+var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet','danh-muc-san-pham','san-pham','thu-vien-tai-lieu','cay-thu-muc',
+             'soan-noi-dung','chia-se','mau','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua','xem-truoc-gd2',
              'bao-tri','tinh-nang-gd1','chi-tiet-gd1','tinh-nang-gd2','chi-tiet-gd2','ha-tang'];
+var PAGE_QS = { mau: 'tpl=st5', 'san-pham': 'unit=T1-08.02' };
 
 /* Nhịp hợp lệ. 26 là khoảng cách giữa hai khu vực nội dung (.sec + .sec) của màn
    chi tiết dự án; 12 và 14 là nhịp bên trong các khối đặc thù của trang công khai. */
@@ -34,7 +35,7 @@ function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 function nap(page) {
   return new Promise(function (resolve) {
     var f = document.createElement('iframe');
-    f.src = PHASE + '/' + page + '.html?bare=1';
+    f.src = PHASE + '/' + page + '.html?bare=1' + (PAGE_QS[page] ? '&' + PAGE_QS[page] : '');
     f.onload = function () { resolve(f); };
     frames.appendChild(f);
   });

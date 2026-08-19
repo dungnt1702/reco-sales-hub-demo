@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mẫu tin gửi khách · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  .tick-list { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+  .mau-hero { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-lg); display: block; }
+  .mau-block { margin-top: 14px; }
+  .mau-block h3 { font-size: 1.02rem; margin: 0 0 6px; }
+</style>
+</head>
+<body data-shell="app" data-page="chia-se">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+    <p class="small muted mb-2"><a href="chia-se.html">← Thư viện mẫu</a></p>
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow" id="mau-eye">Mẫu tin gửi khách</span>
+        <h1 id="mau-h" style="font-size:clamp(1.6rem,3vw,2.1rem)">Mẫu</h1>
+        <p class="lead mt-1" id="mau-sub"></p>
+      </div>
+      <div class="row" id="mau-cta"></div>
+    </div>
+    <div id="mau-root"></div>
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (!document.getElementById('mau-root')) return;
+  var S = RECO.store, E = RECO_DATA.esc;
+  var TICK_LAB = {
+    overview: 'Tổng quan', place: 'Vị trí', gallery: 'Ảnh dự án', amenity: 'Tiện ích',
+    bank: 'STK đặt cọc', hot: 'SP Hot', spec: 'Thông số căn', view: 'Hướng và view',
+    unitGallery: 'Ảnh căn', pitch: 'Mô tả căn'
+  };
+  var PROJ_TICKS = ['overview', 'place', 'gallery', 'amenity', 'bank'];
+  var UNIT_TICKS = ['spec', 'view', 'unitGallery', 'pitch', 'hot'];
+  var CAN_SEND = ['gd', 'gddu', 'tkkd', 'qlkd', 'nvbh', 'mkt'].indexOf(RECO.role) >= 0;
+  var CAN_EDIT = CAN_SEND;
+  var IS_SALE = RECO.role === 'nvbh';
+
+  function qs() {
+    var h = location.hash, i = h.indexOf('?');
+    return new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search);
+  }
+  function goPage(page, extra) {
+    var to = RECO.link(page);
+    return extra ? to + (to.indexOf('?') >= 0 ? '&' : '?') + extra : to;
+  }
+  function currentUserId() {
+    var who = RECO.current.who;
+    var hit = S.get('users').filter(function (u) { return u.name === who; })[0];
+    if (hit) return hit.id;
+    return ({ gd: 'u1', gddu: 'u2', tkkd: 'u3', qlkd: 'u4', nvbh: 'u5', mkt: 'u6', hcns: 'u7', ktoan: 'u9' })[RECO.role] || 'u5';
+  }
+  function currentAgent() {
+    var u = S.find('users', currentUserId()) || {};
+    return {
+      name: u.name || RECO.current.who,
+      roleName: u.roleName || RECO.current.name,
+      phone: u.phone || '0966 808 404',
+      ini: u.ini || RECO.current.short
+    };
+  }
+  function clipSafe(s) {
+    return String(s || '').replace(/https?:\/\/(?:drive|docs)\.google\.com\S*/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  function guestUrl(slug) {
+    var href = goPage('trang-gui-khach.html', 'slug=' + encodeURIComponent(slug));
+    try { return new URL(href, location.href).href; } catch (e) { return href; }
+  }
+  function slugify(s) {
+    return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+  function stamp() {
+    var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' · ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+  function hasTick(t, k) { return (t.ticks || []).indexOf(k) >= 0; }
+  function canSendTpl(t) {
+    if (!CAN_SEND) return false;
+    if (t.scope === 'shared' && !t.approved && IS_SALE) return false;
+    return true;
+  }
+  function hotOfTpl(t, openUnit) {
+    if (openUnit) {
+      var byUnit = S.get('hotProducts').filter(function (h) { return h.unitId === openUnit && h.active; })[0];
+      if (byUnit) return byUnit;
+    }
+    return t.hotId ? S.find('hotProducts', t.hotId) : null;
+  }
+  function unitOfTpl(t, openUnit) {
+    if (openUnit) return S.unitView(openUnit);
+    if (t.unitId) return S.unitView(t.unitId);
+    var hot = hotOfTpl(t);
+    return hot ? S.unitView(hot.unitId) : null;
+  }
+  function areaTxt(n) { return String(n).replace('.', ',') + ' m²'; }
+
+  function zaloText(t, openUnit) {
+    var agent = currentAgent();
+    var u = unitOfTpl(t, openUnit);
+    var parts = [t.body];
+    if (u && hasTick(t, 'spec')) {
+      parts.push('Căn ' + u.id + ' · ' + u.kind + ' · ' + areaTxt(u.area) + (u.dir ? ' · ' + u.dir : ''));
+    }
+    if (u && hasTick(t, 'pitch') && u.pitch) parts.push(u.pitch.split('\n\n')[0]);
+    else {
+      var hot = hotOfTpl(t, openUnit);
+      if (hot && hot.pitch) parts.push(hot.pitch);
+    }
+    parts.push(agent.name + ' · ' + agent.phone);
+    return clipSafe(parts.join('\n\n'));
+  }
+  function makeLink(t, openUnit) {
+    var hot = hotOfTpl(t, openUnit);
+    var unit = openUnit || t.unitId || (hot && hot.unitId) || null;
+    var slug = '/t/' + slugify(t.projectId) + '-' + Math.random().toString(36).slice(2, 6);
+    S.get('shareLinks').forEach(function (x) { if (x.fresh) x.fresh = false; });
+    var rec = {
+      slug: slug, pj: t.projectId, kind: 'mau',
+      note: t.title, by: RECO.current.who, at: stamp(),
+      days: null, state: 'live', fresh: true,
+      ticks: (t.ticks || []).slice(),
+      templateId: t.id,
+      hotId: hot ? hot.id : (t.hotId || null),
+      unitId: unit,
+      agent: currentAgent()
+    };
+    S.add('shareLinks', rec);
+    return rec;
+  }
+
+  function ticksHtml(t) {
+    return (t.ticks || []).map(function (k) {
+      return '<span class="chip">' + E(TICK_LAB[k] || k) + '</span>';
+    }).join(' ');
+  }
+
+  function blockOverview(p) {
+    return '<div class="mau-block"><h3>Tổng quan dự án</h3>' +
+      '<p class="small" style="margin:0">' + E(p.name) + ' · ' + E(p.place) + '<br>' +
+      E(p.struct || '') + (p.owner ? ' · CĐT ' + E(p.owner) : '') +
+      (p.handover ? ' · Bàn giao ' + E(p.handover) : '') + '</p></div>';
+  }
+  function blockPlace(p) {
+    return '<div class="mau-block"><h3>Vị trí</h3><p class="small" style="margin:0">' + E(p.place) +
+      (p.area ? ' · ' + E(p.area) : '') + '</p></div>';
+  }
+  function blockAmenity(p) {
+    return '<div class="mau-block"><h3>Tiện ích nổi</h3><p class="small" style="margin:0">' +
+      E(p.struct || 'Tiện ích nội khu theo tài liệu Chủ đầu tư.') + '</p></div>';
+  }
+  function blockBank(p) {
+    if (!p.bank) return '<div class="mau-block"><h3>STK đặt cọc</h3><p class="small muted">Dự án này chưa có khối tài khoản công khai trên Hub.</p></div>';
+    var b = p.bank;
+    return '<div class="mau-block"><h3>Tài khoản nhận cọc</h3><p class="small" style="margin:0">' +
+      E(b.holder) + '<br>' + E(b.no) + ' · ' + E(b.at) + '<br>Nội dung: ' + E(b.memo) + '</p></div>';
+  }
+  function blockSpec(u) {
+    return '<div class="mau-block"><h3>Thông số căn</h3><div class="kv kv-3">' +
+      '<div><div class="k">Mã</div><div class="v">' + E(u.id) + '</div></div>' +
+      '<div><div class="k">Loại</div><div class="v">' + E(u.kind) + '</div></div>' +
+      '<div><div class="k">Diện tích</div><div class="v">' + areaTxt(u.area) + '</div></div>' +
+      '<div><div class="k">PN / WC</div><div class="v">' + (u.beds || '—') + ' / ' + (u.baths || '—') + '</div></div>' +
+      '<div><div class="k">Tòa · tầng</div><div class="v">' + E(u.block || '—') + (u.floor ? ' · ' + u.floor : '') + '</div></div>' +
+      '<div><div class="k">Tình trạng</div><div class="v">' + E((S.UNIT_STATE[u.state] || {}).text) + '</div></div></div>' +
+      '<p class="micro muted mt-1">Giá: Liên hệ / xem bảng hàng CĐT</p></div>';
+  }
+  function blockView(u) {
+    return '<div class="mau-block"><h3>Hướng và view</h3><p class="small" style="margin:0">' +
+      E(u.dir || '—') + (u.view ? ' · ' + E(u.view) : '') + '</p></div>';
+  }
+  function blockUnitGal(u) {
+    var g = (u.gallery || []).slice(0, 4);
+    if (!g.length) return '';
+    return '<div class="mau-block"><h3>Ảnh căn</h3><div class="ugallery-thumbs">' +
+      g.map(function (img) { return '<img src="' + RECO.asset(img) + '" alt="">'; }).join('') +
+      '</div><p class="micro muted mt-1">Ảnh minh họa nội thất.</p></div>';
+  }
+  function blockPitch(u, hot) {
+    var text = (u && u.pitch) || (hot && hot.pitch) || '';
+    if (!text) return '';
+    return '<div class="mau-block"><h3>Mô tả căn</h3><p class="small" style="white-space:pre-wrap;margin:0">' + E(text) + '</p></div>';
+  }
+
+  var q = qs();
+  var isNew = q.get('new') === '1';
+  var editing = isNew || q.get('edit') === '1';
+  var tplId = q.get('tpl');
+  var openUnit = q.get('unit') || null;
+  var t = tplId ? S.find('shareTemplates', tplId) : null;
+  if (!t && !isNew) {
+    document.getElementById('mau-h').textContent = 'Không tìm thấy mẫu';
+    document.getElementById('mau-root').innerHTML = RECO_DATA.empty('Mẫu không còn trong thư viện',
+      'Quay lại thư viện để chọn mẫu đội hoặc mẫu của anh/chị.',
+      '<a class="btn btn-primary" href="' + goPage('chia-se.html') + '">Thư viện mẫu</a>');
+    return;
+  }
+
+  function renderView() {
+    var p = S.find('projects', t.projectId);
+    var u = unitOfTpl(t, openUnit);
+    var hot = hotOfTpl(t, openUnit);
+    var locked = !canSendTpl(t);
+    document.title = t.title + ' · Mẫu tin · RECO Sales Hub';
+    document.getElementById('mau-h').textContent = t.title;
+    document.getElementById('mau-sub').innerHTML = E(p ? p.name : '') + ' · ' + ticksHtml(t) +
+      (t.approved ? '' : ' <span class="st st-wait">Chưa duyệt</span>');
+    var hero = '';
+    if (hasTick(t, 'unitGallery') && u && u.gallery && u.gallery[0]) {
+      hero = '<img class="mau-hero" src="' + RECO.asset(u.gallery[0]) + '" alt="">';
+    } else if (hasTick(t, 'gallery') && p) {
+      hero = '<img class="mau-hero" src="' + RECO.asset(p.img) + '" alt="">';
+    }
+    var blocks = '';
+    if (p && hasTick(t, 'overview')) blocks += blockOverview(p);
+    if (p && hasTick(t, 'place')) blocks += blockPlace(p);
+    if (p && hasTick(t, 'amenity')) blocks += blockAmenity(p);
+    if (p && hasTick(t, 'gallery') && p.img && !hero) {
+      blocks += '<div class="mau-block"><h3>Ảnh dự án</h3><img class="mau-hero" src="' + RECO.asset(p.img) + '" alt=""></div>';
+    }
+    if (u && hasTick(t, 'spec')) blocks += blockSpec(u);
+    if (u && hasTick(t, 'view')) blocks += blockView(u);
+    if (u && hasTick(t, 'unitGallery')) blocks += blockUnitGal(u);
+    if (hasTick(t, 'pitch') || hasTick(t, 'hot')) blocks += blockPitch(u, hot);
+    if (p && hasTick(t, 'bank')) blocks += blockBank(p);
+
+    document.getElementById('mau-root').innerHTML =
+      '<article class="card card-pad mau-post">' + hero +
+        '<p class="lead mt-3">' + E(t.body) + '</p>' +
+        blocks +
+        (locked ? '<p class="note note-navy mt-3">Mẫu chưa duyệt — nhân viên bán hàng không gửi được.</p>' : '') +
+        '<p class="micro muted mt-3">Giá và CSBH không nằm trong tin gửi khách trên Hub.</p>' +
+      '</article>';
+
+    var cta = '';
+    if (CAN_EDIT) cta += '<a class="btn btn-outline" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id) + (openUnit ? '&unit=' + encodeURIComponent(openUnit) : '') + '&edit=1') + '">Sửa mẫu</a>';
+    cta += '<button type="button" class="btn btn-outline" id="m-copy-zalo"' + (locked ? ' disabled' : '') + '>Sao chép tin Zalo</button>';
+    cta += '<button type="button" class="btn btn-outline" id="m-copy-link"' + (locked ? ' disabled' : '') + '>Sao chép đường dẫn</button>';
+    cta += '<button type="button" class="btn btn-outline" id="m-copy-both"' + (locked ? ' disabled' : '') + '>Sao chép tin và đường dẫn</button>';
+    if (!locked) {
+      cta += '<a class="btn btn-primary" id="m-view-guest" href="' +
+        goPage('trang-gui-khach.html', 'pj=' + encodeURIComponent(t.projectId) + (openUnit ? '&unit=' + encodeURIComponent(openUnit) : '')) +
+        '">Xem trang khách</a>';
+    }
+    document.getElementById('mau-cta').innerHTML = cta;
+
+    function doZalo() {
+      RECO.copy(zaloText(t, openUnit)).then(function (ok) {
+        RECO.toast(ok ? 'Đã sao chép tin Zalo' : 'Trình duyệt chặn sao chép', { danger: !ok });
+      });
+    }
+    function doLink() {
+      var rec = makeLink(t, openUnit);
+      RECO.copy(clipSafe(guestUrl(rec.slug))).then(function (ok) {
+        RECO.toast(ok ? 'Đã tạo đường dẫn và sao chép' : 'Đã tạo ' + rec.slug, { danger: !ok });
+      });
+    }
+    var z = document.getElementById('m-copy-zalo');
+    var l = document.getElementById('m-copy-link');
+    var b = document.getElementById('m-copy-both');
+    if (z) z.addEventListener('click', doZalo);
+    if (l) l.addEventListener('click', doLink);
+    if (b) b.addEventListener('click', function () {
+      var rec = makeLink(t, openUnit);
+      RECO.copy(clipSafe(zaloText(t, openUnit) + '\n\n' + guestUrl(rec.slug))).then(function (ok) {
+        RECO.toast(ok ? 'Đã sao chép tin Zalo và đường dẫn' : 'Đã tạo đường dẫn', { danger: !ok });
+      });
+    });
+  }
+
+  function tickChecks(selected, keys, legend) {
+    return '<fieldset class="field" style="border:0;padding:0"><span class="lab">' + legend + '</span>' +
+      '<div class="tick-list mt-1">' + keys.map(function (k) {
+        var on = selected.indexOf(k) >= 0;
+        return '<label class="pick-row"><input type="checkbox" value="' + k + '"' + (on ? ' checked' : '') + '> ' + E(TICK_LAB[k]) + '</label>';
+      }).join('') + '</div></fieldset>';
+  }
+
+  function renderEdit() {
+    var draft = t || {
+      title: '', body: '', projectId: 'celestine', ticks: ['overview', 'place', 'gallery'],
+      hotId: '', unitId: '', scope: 'personal', approved: true
+    };
+    var projects = S.get('projects').filter(function (p) { return !p.hidden; });
+    document.getElementById('mau-h').textContent = isNew ? 'Tạo mẫu chia sẻ' : ('Sửa · ' + draft.title);
+    document.getElementById('mau-sub').textContent = 'Chọn khối từ dự án và từ căn, rồi viết tin như bài đăng gửi khách — không ghi giá.';
+    document.getElementById('mau-cta').innerHTML =
+      '<a class="btn btn-outline" href="' + (t ? goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) : goPage('chia-se.html')) + '">Hủy</a>' +
+      '<button type="button" class="btn btn-primary" id="mau-save">Lưu mẫu</button>';
+
+    function unitOpts(pj, selected) {
+      var rows = S.get('unitProfiles').filter(function (x) {
+        var u = S.find('units', x.unitId);
+        return x.catalog && u && u.pj === pj;
+      });
+      return '<option value="">— Không gắn căn —</option>' + rows.map(function (x) {
+        var u = S.find('units', x.unitId);
+        return '<option value="' + E(x.unitId) + '"' + (selected === x.unitId ? ' selected' : '') + '>' + E(u.id) + ' · ' + E(u.kind) + '</option>';
+      }).join('');
+    }
+    function hotOpts(pj, selected) {
+      var hots = S.get('hotProducts').filter(function (h) {
+        var u = S.find('units', h.unitId);
+        return h.active && u && u.pj === pj;
+      });
+      return '<option value="">— Không gắn Hot —</option>' + hots.map(function (h) {
+        var u = S.find('units', h.unitId);
+        return '<option value="' + E(h.id) + '"' + (selected === h.id ? ' selected' : '') + '>' + E(u.id) + ' — ' + E(h.pitch).slice(0, 42) + '</option>';
+      }).join('');
+    }
+
+    var root = document.getElementById('mau-root');
+    root.innerHTML = '<div class="card card-pad">' +
+      '<label class="field"><span class="lab">Dự án</span>' +
+        '<select class="inp" id="nm-pj">' + projects.map(function (p) {
+          return '<option value="' + E(p.id) + '"' + (p.id === draft.projectId ? ' selected' : '') + '>' + E(p.name) + '</option>';
+        }).join('') + '</select></label>' +
+      '<label class="field"><span class="lab">Tiêu đề</span>' +
+        '<input class="inp" type="text" id="nm-title" data-required data-msg="Đặt tiêu đề để tìm lại mẫu." value="' + E(draft.title) + '"></label>' +
+      '<label class="field"><span class="lab">Nội dung tin — như bài đăng gửi khách</span>' +
+        '<textarea class="inp" id="nm-body" rows="8" data-required data-msg="Nhập nội dung tin gửi khách.">' + E(draft.body) + '</textarea></label>' +
+      tickChecks(draft.ticks || [], PROJ_TICKS, 'Thành phần lấy từ dự án') +
+      '<label class="field mt-2"><span class="lab">Gắn căn (catalog)</span><select class="inp" id="nm-unit"></select></label>' +
+      tickChecks(draft.ticks || [], UNIT_TICKS, 'Thành phần lấy từ sản phẩm') +
+      '<label class="field mt-2"><span class="lab">Sản phẩm Hot</span><select class="inp" id="nm-hot"></select></label>' +
+      (isNew ? '' : '<p class="micro muted mt-2">Mẫu đội sau khi sửa vẫn giữ phạm vi ' + (draft.scope === 'shared' ? 'đội' : 'của tôi') + '.</p>') +
+    '</div>';
+
+    function fillSelects() {
+      var pj = document.getElementById('nm-pj').value;
+      document.getElementById('nm-unit').innerHTML = unitOpts(pj, draft.unitId || openUnit || '');
+      document.getElementById('nm-hot').innerHTML = hotOpts(pj, draft.hotId || '');
+    }
+    fillSelects();
+    document.getElementById('nm-pj').addEventListener('change', fillSelects);
+
+    document.getElementById('mau-save').addEventListener('click', function () {
+      if (!RECO.validate(root)) return;
+      var ticks = [];
+      root.querySelectorAll('.tick-list input:checked').forEach(function (c) { ticks.push(c.value); });
+      var payload = {
+        projectId: document.getElementById('nm-pj').value,
+        title: document.getElementById('nm-title').value.trim(),
+        body: document.getElementById('nm-body').value.trim(),
+        ticks: ticks,
+        unitId: document.getElementById('nm-unit').value || null,
+        hotId: document.getElementById('nm-hot').value || null
+      };
+      if (isNew) {
+        payload.scope = 'personal';
+        payload.ownerUserId = currentUserId();
+        payload.approved = true;
+        var rec = S.add('shareTemplates', payload);
+        var nid = rec && rec.id ? rec.id : S.get('shareTemplates')[S.get('shareTemplates').length - 1].id;
+        RECO.toast('Đã lưu mẫu của anh/chị');
+        location.href = goPage('mau.html', 'tpl=' + encodeURIComponent(nid));
+      } else {
+        if (t.scope === 'shared' && IS_SALE) {
+          payload.approved = false;
+        }
+        S.update('shareTemplates', t.id, payload);
+        RECO.toast(IS_SALE && t.scope === 'shared' ? 'Đã lưu — mẫu đội chờ duyệt lại' : 'Đã lưu mẫu');
+        location.href = goPage('mau.html', 'tpl=' + encodeURIComponent(t.id));
+      }
+    });
+  }
+
+  if (editing && CAN_EDIT) renderEdit();
+  else renderView();
+});
+</script>
+</body>
+</html>

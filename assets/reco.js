@@ -153,12 +153,14 @@
 
   /* ---------- Nav ---------- */
   function inGd01() {
+    if (window.RECO_PHASE === 'gd01') return true;
     try { return /(?:^|\/)gd01\//.test(location.pathname || ''); } catch (e) { return false; }
   }
 
   var NAV = inGd01() ? [
     { href: 'trang-dau.html', label: 'Trang đầu', key: 'trang-dau', icon: 'home' },
     { href: 'du-an.html', label: 'Dự án', key: 'du-an', icon: 'layers' },
+    { href: 'danh-muc-san-pham.html', label: 'Sản phẩm', key: 'san-pham', icon: 'grid' },
     { href: 'chia-se.html', label: 'Chia sẻ', key: 'chia-se', icon: 'share' },
     { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' },
     { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
@@ -324,9 +326,12 @@
     });
     S.get('units').forEach(function (u) {
       if (norm(u.id + ' ' + u.kind).indexOf(t) < 0) return;
+      var href = S.unitView && S.unitView(u.id) && S.unitView(u.id).catalog
+        ? 'san-pham.html?pj=' + u.pj + '&unit=' + encodeURIComponent(u.id)
+        : 'du-an-chi-tiet.html?pj=' + u.pj + '#kv5';
       push('Căn/lô', 'grid', u.id + ' · ' + u.kind,
         S.projectName(u.pj) + ' · ' + u.area + ' m² · ' + S.UNIT_STATE[u.state].text,
-        'du-an-chi-tiet.html?pj=' + u.pj + '#kv5');
+        href);
     });
     S.get('documents').forEach(function (d) {
       if (!S.canSee(d.label, role)) return;
@@ -404,12 +409,18 @@
     var all = document.getElementById('bell-all');
     if (all) all.addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();
-      myNotifications().forEach(function (n) { window.RECO.store.update('notifications', n.id, { read: true }); });
+      myNotifications().forEach(function (n) {
+        if (n.kind === 'alert') return;
+        window.RECO.store.update('notifications', n.id, { read: true });
+      });
       renderBell();
       toast('Đã đánh dấu tất cả là đã đọc');
     });
     panel.querySelectorAll('[data-nid]').forEach(function (a) {
       a.addEventListener('click', function () {
+        var rec = window.RECO.store.find('notifications', a.getAttribute('data-nid'));
+        /* Cảnh báo ticker: đóng popup / mở chuông không đánh dấu đã đọc — tin vẫn nằm trong chuông. */
+        if (rec && rec.kind === 'alert') return;
         window.RECO.store.update('notifications', a.getAttribute('data-nid'), { read: true });
       });
     });

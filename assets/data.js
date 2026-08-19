@@ -97,7 +97,33 @@
       '</div>';
   }
 
+  function areaTxt(n) { return String(n).replace('.', ',') + ' m²'; }
+  function unitHref(u) {
+    return 'san-pham.html?pj=' + encodeURIComponent(u.pj) + '&unit=' + encodeURIComponent(u.id);
+  }
+  function unitCard(u, opts) {
+    opts = opts || {};
+    var hot = !!opts.hot;
+    var st = S.UNIT_STATE[u.state] || S.UNIT_STATE.con;
+    var p = S.find('projects', u.pj);
+    var cover = S.unitCover(u);
+    var line = (u.pitch || '').split(/\n/)[0];
+    var meta = esc(u.kind) + ' · ' + areaTxt(u.area) + (u.dir ? ' · ' + esc(u.dir) : '');
+    return '<a class="ucard' + (hot ? ' ucard-hot' : ' ucard-quiet') + '" href="' + unitHref(u) + '">' +
+      '<div class="ucard-media">' +
+        '<img src="' + RECO.asset(cover) + '" alt="' + esc(u.id) + '" loading="lazy">' +
+        (hot ? '<span class="top-left hot">HOT</span>' : '') +
+      '</div>' +
+      '<div class="ucard-body">' +
+        '<div class="row-tight"><span class="ucard-id">' + esc(u.id) + '</span><span class="st ' + st.cls + '">' + esc(st.text) + '</span></div>' +
+        '<p class="micro">' + esc(p ? p.name : '') + '</p>' +
+        '<p class="micro muted">' + meta + (u.block ? ' · ' + esc(u.block) + (u.floor ? ' tầng ' + u.floor : '') : '') + '</p>' +
+        (hot && line ? '<p class="ucard-pitch">' + esc(line) + '</p>' : '') +
+      '</div></a>';
+  }
+
   window.RECO_DATA = {
-    projects: projects, card: card, row: row, paint: paint, bindPins: bindPins, empty: empty, esc: esc
+    projects: projects, card: card, row: row, paint: paint, bindPins: bindPins, empty: empty, esc: esc,
+    unitCard: unitCard, areaTxt: areaTxt, unitHref: unitHref
   };
 })();

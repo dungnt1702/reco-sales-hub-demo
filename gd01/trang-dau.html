@@ -37,22 +37,35 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
-    <!-- Lời chào + tìm kiếm -->
+    <!-- Lời chào + tìm kiếm 2/3 · vinh danh 1/3 (PC) / khối riêng dưới search (mobile) -->
     <section class="hero home-hero with-img" style="background-image:linear-gradient(100deg, rgba(5,31,53,.98) 34%, rgba(9,49,82,.9)), url('../assets/img/reco-opening.jpg')">
-      <span class="eyebrow light" id="greet-role">Giám đốc dự án · 3 dự án phụ trách</span>
-      <h1 style="font-size:clamp(1.7rem,3.6vw,2.5rem);max-width:20ch">Chào anh Huy, hôm nay bắt đầu từ đâu?</h1>
-      <div class="home-search mt-3" style="max-width:640px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" style="width:19px;flex:none" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="search" id="hero-q" placeholder="Tìm dự án, tài liệu hoặc câu hỏi tư vấn…" aria-label="Tìm kiếm">
-        <button type="button" class="btn btn-primary btn-sm" id="hero-go">Tìm</button>
-      </div>
-      <div class="row-tight mt-2" id="hero-chips">
-        <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=canho" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Căn hộ chung cư</a>
-        <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=datnen" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Đất nền</a>
-        <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=thaptang" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Nhà thấp tầng, biệt thự</a>
-        <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=tamlinh" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Bất động sản tâm linh</a>
+      <div class="home-hero-grid">
+        <div>
+          <span class="eyebrow light" id="greet-role">Giám đốc dự án · 3 dự án phụ trách</span>
+          <h1 style="font-size:clamp(1.7rem,3.6vw,2.5rem);max-width:20ch">Chào anh Huy, hôm nay bắt đầu từ đâu?</h1>
+          <div class="home-search mt-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" style="width:19px;flex:none" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" id="hero-q" placeholder="Tìm dự án, tài liệu hoặc câu hỏi tư vấn…" aria-label="Tìm kiếm">
+            <button type="button" class="btn btn-primary btn-sm" id="hero-go">Tìm</button>
+          </div>
+          <div class="row-tight mt-2" id="hero-chips">
+            <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=canho" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Căn hộ chung cư</a>
+            <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=datnen" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Đất nền</a>
+            <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=thaptang" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Nhà thấp tầng, biệt thự</a>
+            <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=tamlinh" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Bất động sản tâm linh</a>
+          </div>
+        </div>
+        <aside class="honor-rail" id="honor-rail" aria-label="Vinh danh nhân viên vừa bán được hàng">
+          <span class="eyebrow">Vinh danh · vừa chốt</span>
+          <div id="honor-slides"></div>
+          <div class="honor-dots" id="honor-dots"></div>
+        </aside>
       </div>
     </section>
+
+    <button type="button" class="alert-ticker" id="alert-ticker" aria-label="Cảnh báo bán hàng — bấm để xem chi tiết">
+      <div class="alert-track" id="alert-track"></div>
+    </button>
 
     <!-- Bốn số liệu nhanh -->
     <section class="mt-3">
@@ -92,6 +105,7 @@
           <h2 style="font-size:1.35rem">Sản phẩm Hot</h2>
           <p class="small muted mt-1">Căn đang tư vấn tuần này — không hiện giá trên thẻ.</p>
         </div>
+        <a class="btn btn-quiet btn-sm" href="danh-muc-san-pham.html">Xem catalog Sản phẩm →</a>
       </div>
       <div class="hot-strip" id="hot-home"></div>
     </section>
@@ -136,6 +150,23 @@
   </div>
 </main>
 
+<div class="modal" id="m-alert" hidden role="dialog" aria-modal="true" aria-labelledby="m-alert-t">
+  <div class="modal-box" style="max-width:640px">
+    <div class="modal-head">
+      <div><span class="eyebrow">Cảnh báo bán hàng</span><h3 id="m-alert-t">Cảnh báo</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <img class="alert-hero" id="m-alert-img" alt="">
+      <p class="small" id="m-alert-body" style="white-space:pre-wrap"></p>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-outline" data-close="1">Đóng — dòng cảnh báo vẫn chạy</button>
+      <a class="btn btn-primary" id="m-alert-go" href="du-an-chi-tiet.html">Mở dự án</a>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   var S = RECO.store, esc = RECO_DATA.esc;
@@ -173,7 +204,88 @@ document.addEventListener('DOMContentLoaded', function () {
     return args ? to + (to.indexOf('?') >= 0 ? '&' : '?') + args : to;
   }
 
-  /* ---------- Ô tìm ở hero ---------- */
+  /* ---------- Vinh danh + ticker cảnh báo ---------- */
+  var honorIdx = 0, honorTimer = null;
+  function paintHonors() {
+    var box = document.getElementById('honor-slides');
+    var dots = document.getElementById('honor-dots');
+    if (!box) return;
+    var list = S.get('honors');
+    if (!list.length) { box.innerHTML = '<p class="small" style="margin:0">Chưa có tin vinh danh.</p>'; return; }
+    box.innerHTML = list.map(function (h, n) {
+      var p = S.find('projects', h.pj);
+      var ava = h.avatar
+        ? '<img src="' + RECO.asset(h.avatar) + '" alt="">'
+        : '<span class="honor-ava">' + esc(h.ini || '') + '</span>';
+      return '<div class="honor-slide' + (n === 0 ? ' on' : '') + '" data-hi="' + n + '">' +
+        ava +
+        '<div><b>' + esc(h.name) + '</b>' +
+          '<span class="micro" style="display:block;color:rgba(255,255,255,.82)">' + esc(h.action) + ' · ' + esc(h.unitId) + '</span>' +
+          '<span class="micro" style="display:block;color:rgba(255,255,255,.7)">' + esc(p ? p.name : '') + ' · ' + esc(h.at) + '</span>' +
+        '</div></div>';
+    }).join('');
+    dots.innerHTML = list.map(function (_, n) {
+      return '<button type="button" aria-label="Tin ' + (n + 1) + '"' +
+        (n === 0 ? ' aria-current="true" aria-pressed="true"' : ' aria-pressed="false"') + '></button>';
+    }).join('');
+    function goHonor(n) {
+      honorIdx = (n + list.length) % list.length;
+      box.querySelectorAll('.honor-slide').forEach(function (el, i) {
+        el.classList.toggle('on', i === honorIdx);
+      });
+      dots.querySelectorAll('button').forEach(function (b, i) {
+        var on = i === honorIdx;
+        if (on) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+    function startHonorTimer() {
+      if (honorTimer) return;
+      if (/(?:^|[?&])bare=1(?:&|$)/.test(location.search) || /[?&]bare=1/.test(location.hash)) return;
+      honorTimer = setInterval(function () { goHonor(honorIdx + 1); }, 4200);
+    }
+    dots.querySelectorAll('button').forEach(function (b, n) {
+      b.addEventListener('click', function (e) { e.stopPropagation(); goHonor(n); });
+    });
+    if (honorTimer) clearInterval(honorTimer);
+    honorTimer = null;
+    startHonorTimer();
+    var rail = document.getElementById('honor-rail');
+    rail.addEventListener('mouseenter', function () { if (honorTimer) { clearInterval(honorTimer); honorTimer = null; } });
+    rail.addEventListener('mouseleave', startHonorTimer);
+  }
+
+  function openAlert(id) {
+    var a = S.find('alerts', id) || S.get('alerts')[0];
+    if (!a) return;
+    document.getElementById('m-alert-t').textContent = a.title;
+    document.getElementById('m-alert-body').textContent = a.body;
+    var img = document.getElementById('m-alert-img');
+    img.src = RECO.asset(a.img);
+    img.alt = a.title;
+    document.getElementById('m-alert-go').setAttribute('href', goTo('du-an-chi-tiet.html', 'pj=' + encodeURIComponent(a.pj)));
+    RECO.openModal('m-alert');
+  }
+  function paintTicker() {
+    var track = document.getElementById('alert-track');
+    var bar = document.getElementById('alert-ticker');
+    if (!track || !bar) return;
+    var list = S.get('alerts');
+    if (!list.length) { bar.hidden = true; return; }
+    var html = list.map(function (a) {
+      return '<span data-alert="' + a.id + '">⚠ ' + esc(a.ticker) + '</span>';
+    }).join('');
+    track.innerHTML = html + html;
+    if (/(?:^|[?&])bare=1(?:&|$)/.test(location.search) || /[?&]bare=1/.test(location.hash)) {
+      track.style.animation = 'none';
+    }
+    bar.addEventListener('click', function () { openAlert(list[0].id); });
+  }
+  var wantAlert = new URLSearchParams((location.hash.indexOf('?') >= 0 ? location.hash.slice(location.hash.indexOf('?') + 1) : location.search)).get('alert');
+  if (wantAlert) setTimeout(function () { openAlert(wantAlert); }, 200);
+
+  paintHonors();
+  paintTicker();
   var q = document.getElementById('hero-q');
   function search() {
     var v = q.value.trim();
@@ -350,13 +462,18 @@ document.addEventListener('DOMContentLoaded', function () {
       var u = S.find('units', h.unitId);
       var p = S.find('projects', u.pj);
       var line = (h.pitch || '').split(/[.\n]/)[0].trim();
+      var tpl = (S.get('shareTemplates').filter(function (t) {
+        return t.hotId === h.id && t.approved;
+      })[0] || S.get('shareTemplates').filter(function (t) {
+        return t.projectId === u.pj && t.approved && (t.ticks || []).indexOf('hot') >= 0;
+      })[0] || { id: 'st2' }).id;
       return '<div class="card card-pad">' +
         '<div class="row-tight mb-1"><b>' + esc(u.id) + '</b><span class="chip">' + esc(u.kind) + '</span></div>' +
         '<p class="small" style="margin:0">' + esc(line) + '</p>' +
         '<p class="micro muted mt-1">' + esc(p ? p.name : '') + '</p>' +
         '<div class="row mt-2">' +
           '<a class="btn btn-outline btn-sm" href="' + go('san-pham.html', 'pj=' + encodeURIComponent(u.pj) + '&unit=' + encodeURIComponent(u.id)) + '">Xem</a>' +
-          '<a class="btn btn-primary btn-sm" href="' + go('chia-se.html', 'tpl=st2&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>' +
+          '<a class="btn btn-primary btn-sm" href="' + go('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>' +
         '</div></div>';
     }).join('');
   }
@@ -386,7 +503,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return '<div class="card card-pad spread">' +
         '<div><b>' + esc(t.title) + '</b>' +
           '<p class="small muted mt-1" style="margin-bottom:0">' + esc(p ? p.name : '') + ' · ' + esc((t.body || '').slice(0, 90)) + '</p></div>' +
-        '<a class="btn btn-outline btn-sm" href="' + go('chia-se.html', 'tpl=' + encodeURIComponent(t.id)) + '">Dùng mẫu</a>' +
+        '<a class="btn btn-outline btn-sm" href="' + go('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Dùng mẫu</a>' +
       '</div>';
     }).join('');
   }

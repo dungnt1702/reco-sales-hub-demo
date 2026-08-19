@@ -1202,6 +1202,80 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
   .rmap-poi, .rmap-poi.is-hi, .rmap-poi:hover { transition: none; }
 }
 
+/* ---------- Catalog sản phẩm · vinh danh · ticker cảnh báo ---------- */
+.ucard-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (min-width: 1024px) { .ucard-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; } }
+.ucard {
+  display: flex; flex-direction: column; background: var(--white); color: inherit;
+  border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden;
+  text-decoration: none; min-width: 0;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.ucard:hover { transform: translateY(-3px); box-shadow: var(--shadow-card-hover); color: inherit; }
+.ucard-hot { border-color: color-mix(in srgb, var(--orange) 55%, var(--line)); box-shadow: var(--shadow-card); }
+.ucard-media { position: relative; aspect-ratio: 4 / 3; background: var(--soft); overflow: hidden; }
+.ucard-quiet .ucard-media { aspect-ratio: 16 / 10; }
+.ucard-media img { width: 100%; height: 100%; object-fit: cover; }
+.ucard-media .top-left { position: absolute; left: 10px; top: 10px; z-index: 2; }
+.ucard-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.ucard-quiet .ucard-body { padding: 10px 12px 12px; }
+.ucard-id { font-family: var(--font-display); font-weight: 700; font-size: .95rem; letter-spacing: -.02em; }
+.ucard-quiet .ucard-id { font-size: .88rem; }
+.ucard-pitch { font-size: .78rem; color: var(--muted); margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ucard .micro { margin: 0; }
+
+.home-hero-grid { display: grid; gap: 16px; }
+@media (min-width: 1024px) {
+  .home-hero-grid { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: stretch; }
+}
+.honor-rail {
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.22);
+  border-radius: var(--radius-lg); padding: 14px 16px 16px; min-width: 0; position: relative;
+  color: #fff; overflow: hidden;
+}
+.honor-rail .eyebrow { color: var(--accent-light); }
+.honor-slide { display: none; gap: 12px; align-items: center; }
+.honor-slide.on { display: flex; }
+.honor-slide img, .honor-ava {
+  width: 52px; height: 52px; border-radius: 50%; object-fit: cover; flex: none;
+  background: rgba(255,255,255,.18); display: grid; place-items: center;
+  font-weight: 700; font-size: .85rem;
+}
+.honor-slide b { display: block; font-size: .95rem; }
+.honor-dots { display: flex; gap: 6px; margin-top: 12px; }
+.honor-dots button {
+  width: 8px; height: 8px; border-radius: 50%; padding: 0; border: 0;
+  background: rgba(255,255,255,.35); cursor: pointer;
+}
+.honor-dots button[aria-current="true"] { background: #fff; }
+
+.alert-ticker {
+  overflow: hidden; background: var(--danger); color: #fff;
+  border-radius: var(--radius-md); cursor: pointer;
+  margin-top: 12px; width: 100%; border: 0; font: inherit; text-align: left; display: block; padding: 0;
+}
+.alert-ticker:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.alert-track {
+  display: flex; gap: 48px; width: max-content;
+  animation: reco-ticker 32s linear infinite;
+  padding: 9px 0; font-size: .82rem; font-weight: 700; letter-spacing: .01em;
+}
+.alert-track span { white-space: nowrap; padding-inline: 18px; }
+@keyframes reco-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .alert-track { animation: none; }
+}
+
+.ugallery-main { border-radius: var(--radius-lg); overflow: hidden; background: var(--soft); }
+.ugallery-main img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+.ugallery-thumbs { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; margin-top: 8px; }
+.ugallery-thumbs button { padding: 0; border: 2px solid transparent; border-radius: var(--radius-sm); overflow: hidden; background: none; cursor: pointer; }
+.ugallery-thumbs button[aria-current="true"] { border-color: var(--orange); }
+.ugallery-thumbs img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.alert-hero { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-md); display: block; margin-bottom: 12px; }
+.mau-post { max-width: 72ch; }
+.mau-post .lead { white-space: pre-wrap; }
+
 /* ---------- Utilities ---------- */
 .hide { display: none !important; }
 .only-lg { display: none; }

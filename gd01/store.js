@@ -10,10 +10,14 @@
 (function () {
   'use strict';
 
-  var KEY = 'reco-salehub-demo-gd01';
+  var KEY = 'reco-salehub-demo-gd01-v2';
 
   /* ---------- Dữ liệu gốc ---------- */
   function seed() {
+    var G2 = ['unit-2pn-1.jpg', 'unit-2pn-2.jpg', 'unit-2pn-3.jpg', 'unit-2pn-4.jpg'];
+    var G3 = ['unit-3pn-1.jpg', 'unit-3pn-2.jpg', 'unit-3pn-3.jpg', 'unit-living.jpg'];
+    var GPH = ['unit-ph-1.jpg', 'unit-ph-2.jpg', 'unit-ph-3.jpg', 'unit-view.jpg'];
+    var GSH = ['unit-shop-1.jpg', 'unit-shop-2.jpg', 'unit-shop-3.jpg'];
     return {
       /* Dự án — nguồn cho thẻ dự án, danh sách, quản trị */
       projects: [
@@ -1104,25 +1108,139 @@
 
       /* SP Hot — entity riêng, không cờ trên unit, không trường giá (QD-075) */
       hotProducts: [
-        { id: 'hp1', unitId: 'LPP-A.21.03', pitch: 'Căn góc Đông Nam, view công viên nội khu — tâm điểm tư vấn tuần này.', sort: 1, active: true },
-        { id: 'hp2', unitId: 'T1-08.02', pitch: '2PN view Hồ Tây, tầng thấp dễ dẫn khách xem nhà.', sort: 2, active: true },
-        { id: 'hp3', unitId: 'T2-11.02', pitch: '2PN+1 cân diện tích cho gia đình bốn người khi so sánh hai tháp.', sort: 3, active: true }
+        { id: 'hp1', unitId: 'T1-08.02', pitch: '2PN view Hồ Tây, tầng 8 dễ dẫn khách xem nhà — đợt 1 sắp đóng.', sort: 1, active: true },
+        { id: 'hp2', unitId: 'T2-11.02', pitch: '2PN+1 cân diện tích cho gia đình bốn người khi so hai tháp.', sort: 2, active: true },
+        { id: 'hp3', unitId: 'LPP-A.21.03', pitch: 'Căn góc Đông Nam, view công viên nội khu — tâm điểm tư vấn tuần này.', sort: 3, active: true },
+        { id: 'hp4', unitId: 'LPP-B.24.02', pitch: '3PN+1 tòa B tầng 24 — so sánh phân khúc gia đình ParkCity.', sort: 4, active: true },
+        { id: 'hp5', unitId: 'T1-23.01', pitch: 'Penthouse tháp T1 — khách đầu tư, view Tây Bắc ra Hồ Tây.', sort: 5, active: true },
+        { id: 'hp6', unitId: 'GS-FS.2501', pitch: '3PN+1 Five Seasons chuyển nhượng — khách cần ở ngay Thanh Xuân.', sort: 6, active: true },
+        { id: 'hp7', unitId: 'LPH-A.18.02', pitch: '2PN+1 Nha Trang tầng 18 — khách miền Nam hỏi căn biển.', sort: 7, active: true },
+        { id: 'hp8', unitId: 'PBT-TM3.01', pitch: 'Lô góc 5 tầng Palmy — khách vừa ở vừa kinh doanh mặt tiền.', sort: 8, active: true }
+      ],
+
+      /* Hồ sơ bán hàng của căn trong catalog — không giá. Ảnh minh họa nội thất, không phải ảnh CĐT. */
+      unitProfiles: [
+        { unitId: 'T1-08.02', catalog: true, beds: 2, baths: 2, view: 'Hồ Tây', fit: 'Bàn giao bếp, tủ âm, TBVS châu Âu',
+          gallery: G2,
+          pitch: 'Anh/chị ơi, căn em đang đẩy tuần này là T1-08.02 Celestine Westlake — 2 phòng ngủ, 78,4 m², ban công Đông Nam nhìn ra Hồ Tây.\n\nTầng 8 nên dẫn khách xem nhà rất thuận: không phải chờ thang lâu, vẫn đủ cao để lấy tầm nhìn hồ. Khối đế 3 tầng tiện ích ngay dưới chân, Lotte Mall Tây Hồ và Ciputra trong bán kính vài phút.\n\nĐợt 1 sắp kết thúc, căn này còn hàng. Giá và tiến độ thanh toán em đối chiếu bảng hàng Chủ đầu tư rồi gửi riêng — trên Hub không ghi giá.',
+          bul: ['2PN · 78,4 m² · ban công Đông Nam', 'Tầng 8 tháp T1 — dẫn khách xem nhà dễ', 'View Hồ Tây, gần Lotte Mall Tây Hồ', 'Bàn giao bếp tủ âm, thiết bị vệ sinh châu Âu', 'Đợt 1 sắp đóng — còn hàng'] },
+        { unitId: 'T2-11.02', catalog: true, beds: 2, baths: 2, view: 'Đông Nam nội khu', fit: 'Bàn giao bếp tủ âm',
+          gallery: G2,
+          pitch: 'T2-11.02 là căn 2PN+1 tháp T2 — 96,4 m², đủ phòng đa năng cho gia đình bốn người khi khách so hai tháp Celestine.\n\nHướng Đông Nam, tầng 11: sáng, không bị nhìn sang nhà đối diện. Loại B cân diện tích hơn căn 2PN thuần, khách ở lâu dài thường chốt loại này.\n\nEm đang giữ chỗ ảo cho khách xem cuối tuần. Giá xem bảng hàng CĐT.',
+          bul: ['2PN+1 · 96,4 m² · Đông Nam', 'Tháp T2 tầng 11', 'Phòng đa năng cho gia đình 4 người', 'So được với căn 2PN tháp T1', 'Còn hàng — đang tư vấn'] },
+        { unitId: 'LPP-A.21.03', catalog: true, beds: 2, baths: 2, view: 'Công viên nội khu ParkCity', fit: 'Bàn giao cơ bản, khách tự hoàn thiện một phần',
+          gallery: G2,
+          pitch: 'LPP-A.21.03 — căn góc tòa A Le Parc Place, 2PN loại A1, 72,4 m², Đông Nam nhìn công viên nội khu ParkCity.\n\nTòa A gần LINC Mall và trường quốc tế, khách gia đình Hà Đông hay hỏi căn này trước. Tầng 21 lấy gió, không bị khuất tầm nhìn sân chơi dưới chân tòa.\n\nTâm điểm tư vấn tuần này. Giá và chính sách trên bảng hàng ParkCity — Hub không ghi giá.',
+          bul: ['Căn góc 2PN · 72,4 m² · Đông Nam', 'Tòa A tầng 21 — view công viên', 'Gần LINC Mall và trường quốc tế', 'Loại A1 đang được hỏi nhiều', 'Còn hàng'] },
+        { unitId: 'LPP-B.24.02', catalog: true, beds: 3, baths: 2, view: 'Đông Nam công viên + trục nội khu', fit: 'Bàn giao cơ bản',
+          gallery: G3,
+          pitch: 'LPP-B.24.02 là 3PN+1 tòa B, 112,5 m², Đông Nam — căn em dùng khi khách Le Parc hỏi “căn 2PN có chật không”.\n\nTầng 24 đủ cao, view trục nội khu ParkCity. Loại B có phòng phụ, ông bà ở cùng được. So với sky villa thì đây là căn gia đình ở thật, không phải căn khoe.\n\nCòn hàng. Giá đối chiếu bảng hàng CĐT.',
+          bul: ['3PN+1 · 112,5 m² · Đông Nam', 'Tòa B tầng 24', 'Phòng phụ cho ông bà', 'So được với 2PN tòa A', 'Còn hàng'] },
+        { unitId: 'T1-23.01', catalog: true, beds: 4, baths: 3, view: 'Tây Bắc Hồ Tây — sông Hồng', fit: 'Bàn giao cao cấp, bếp tủ, TBVS châu Âu',
+          gallery: GPH,
+          pitch: 'Penthouse PH01 tháp T1 Celestine — 220 m², tầng 23, Tây Bắc ra Hồ Tây và sông Hồng.\n\nCăn này em chỉ mở với khách đầu tư hoặc gia đình cần không gian lớn. Hai tháp chỉ 216 căn, penthouse không nhiều. Khối đế 3 tầng + 4 hầm, bàn giao từ 2027.\n\nCòn hàng. Không báo giá trên Hub — em gửi phiếu CĐT khi khách hỏi thật.',
+          bul: ['Penthouse 220 m² · Tây Bắc', 'Tầng 23 tháp T1 — view hồ và sông', 'Khách đầu tư / gia đình lớn', 'Dự án 216 căn, hàng hiếm', 'Còn hàng'] },
+        { unitId: 'GS-FS.2501', catalog: true, beds: 3, baths: 3, view: 'Đông Nam Nguyễn Tuân', fit: 'Đầy đủ nội thất, nhận nhà ở ngay',
+          gallery: G3,
+          pitch: 'GS-FS.2501 — 3PN+1 tòa Five Seasons, Gold Season 47 Nguyễn Tuân, 170 m², Đông Nam. Hàng chuyển nhượng, khách nhận nhà ở ngay.\n\nThanh Xuân, gần Royal City / Nguyễn Trãi, khách đang thuê hết hạn hay chốt căn này vì không chờ bàn giao. Tòa Five Seasons tầng 25, thoáng, không bị khuất.\n\nĐang còn. Giá chuyển nhượng em đối chiếu sổ và bảng hàng RECO, không ghi trên thẻ.',
+          bul: ['3PN+1 · 170 m² · Đông Nam', 'Five Seasons tầng 25', 'Chuyển nhượng — ở ngay', 'Thanh Xuân, gần Nguyễn Trãi', 'Còn hàng'] },
+        { unitId: 'LPH-A.18.02', catalog: true, beds: 2, baths: 2, view: 'Đông Nam biển / đô thị Nha Trang', fit: 'Bàn giao nội thất cơ bản',
+          gallery: G2,
+          pitch: 'LPH-A.18.02 — 2PN+1 La Perle Héritage, 74,5 m², Đông Nam, tầng 18 tháp căn hộ Nha Trang.\n\nKhách miền Nam hỏi căn biển em mở căn này trước: đủ phòng khách ở và phòng phụ. Dự án có 41 nhà liền kề nếu khách so thấp tầng.\n\nLưu ý: trang dự án trên recogroup.vn đã rút — số liệu cần CĐT xác nhận lại trước khi chốt. Giá không hiện trên Hub.',
+          bul: ['2PN+1 · 74,5 m² · Đông Nam', 'Tầng 18 tháp căn hộ Nha Trang', 'Khách miền Nam hỏi căn biển', 'Có thể so với nhà liền kề cùng dự án', 'Còn hàng · cần xác nhận số liệu'] },
+        { unitId: 'PBT-TM3.01', catalog: true, beds: 0, baths: 0, view: 'Hai hướng, lô góc Đông Nam', fit: 'Nhà thô 5 tầng, khách tự hoàn thiện',
+          gallery: GSH,
+          pitch: 'PBT-TM3.01 — lô góc dãy TM3 Palmy Biztown, 148 m² đất, 5 tầng, Đông Nam. Khách vừa ở vừa mở cửa hàng mặt tiền hay chốt lô góc.\n\nThanh Liệt, Thanh Trì — khách Hà Nội hỏi shophouse gần vành đai. 142 căn liên kế, lô góc không nhiều.\n\nCòn hàng. Giá đất và CSBH trên bảng hàng CĐT.',
+          bul: ['Lô góc 5 tầng · 148 m² đất', 'Dãy TM3 Palmy Biztown', 'Đông Nam, hai mặt', 'Vừa ở vừa kinh doanh', 'Còn hàng'] },
+        { unitId: 'LPP-A.28.05', catalog: true, beds: 3, baths: 2, view: 'Tây Nam nội khu', fit: 'Bàn giao cơ bản', gallery: G3,
+          pitch: 'LPP-A.28.05 — 3PN loại A4 tòa A, 98,6 m², Tây Nam. Đang giữ chỗ. Khách so với căn góc 2PN A.21.03 khi cần thêm phòng.',
+          bul: ['3PN · 98,6 m² · Tây Nam', 'Tòa A tầng 28', 'Đang giữ chỗ'] },
+        { unitId: 'LPP-B.12.07', catalog: true, beds: 1, baths: 1, view: 'Đông trục nội khu', fit: 'Bàn giao cơ bản', gallery: G2,
+          pitch: 'LPP-B.12.07 — 1PN+1 loại B2, 62 m², Đông, tầng 12. Căn nhỏ cho khách độc thân hoặc giữ làm căn thứ hai.',
+          bul: ['1PN+1 · 62 m² · Đông', 'Tòa B tầng 12', 'Còn hàng'] },
+        { unitId: 'LPP-C.09.04', catalog: true, beds: 2, baths: 2, view: 'Nam công viên', fit: 'Bàn giao cơ bản', gallery: G2,
+          pitch: 'LPP-C.09.04 — 2PN loại C1 tòa C, 76,2 m², Nam. Tòa C sắp bung hàng tuần này, căn tầng 9 dễ dẫn khách.',
+          bul: ['2PN · 76,2 m² · Nam', 'Tòa C tầng 9', 'Còn hàng'] },
+        { unitId: 'LPP-C.18.01', catalog: true, beds: 4, baths: 3, view: 'Đông Nam công viên', fit: 'Bàn giao cơ bản', gallery: G3,
+          pitch: 'LPP-C.18.01 — 4PN+1 loại C, 138 m², Đông Nam. Căn lớn tòa C cho khách đại gia đình, so được penthouse Celestine.',
+          bul: ['4PN+1 · 138 m² · Đông Nam', 'Tòa C tầng 18', 'Còn hàng'] },
+        { unitId: 'LPP-D.22.03', catalog: true, beds: 3, baths: 2, view: 'Đông Nam', fit: 'Bàn giao thô', gallery: G3,
+          pitch: 'LPP-D.22.03 — 3PN thô loại D2 tòa D, 104 m², Đông Nam. Khách muốn tự hoàn thiện hay chọn căn thô.',
+          bul: ['3PN thô · 104 m² · Đông Nam', 'Tòa D tầng 22', 'Còn hàng'] },
+        { unitId: 'T1-12.05', catalog: true, beds: 3, baths: 2, view: 'Tây Bắc Hồ Tây', fit: 'Bàn giao bếp tủ âm', gallery: G3,
+          pitch: 'T1-12.05 — 3PN loại A3 tháp T1, 112,6 m², Tây Bắc. Đang giữ chỗ. View hồ, khách gia đình so với 2PN+1 tháp T2.',
+          bul: ['3PN · 112,6 m² · Tây Bắc', 'Tháp T1 tầng 12', 'Đang giữ chỗ'] },
+        { unitId: 'T1-18.01', catalog: true, beds: 3, baths: 2, view: 'Tây Hồ Tây', fit: 'Bàn giao bếp tủ âm', gallery: G3,
+          pitch: 'T1-18.01 — 3PN+1 loại A, 128 m², Tây. Tầng 18 lấy tầm hồ rõ hơn căn tầng 8, khách nâng diện tích hay hỏi căn này.',
+          bul: ['3PN+1 · 128 m² · Tây', 'Tháp T1 tầng 18', 'Còn hàng'] },
+        { unitId: 'T2-06.04', catalog: true, beds: 2, baths: 2, view: 'Đông nội khu', fit: 'Bàn giao bếp tủ âm', gallery: G2,
+          pitch: 'T2-06.04 — 2PN loại B1 tháp T2, 80,2 m², Đông. Tầng thấp, dẫn khách nhanh, so với T1-08.02 khi khách không cần view hồ.',
+          bul: ['2PN · 80,2 m² · Đông', 'Tháp T2 tầng 6', 'Còn hàng'] },
+        { unitId: 'T2-09.05', catalog: true, beds: 2, baths: 2, view: 'Nam nội khu', fit: 'Bàn giao bếp tủ âm', gallery: G2,
+          pitch: 'T2-09.05 — 2PN loại B2, 78 m², Nam. Đang giữ chỗ. Diện tích gần T1-08.02, khách so hai tháp.',
+          bul: ['2PN · 78 m² · Nam', 'Tháp T2 tầng 9', 'Đang giữ chỗ'] },
+        { unitId: 'GS-AU.1205', catalog: true, beds: 2, baths: 2, view: 'Đông Nam Nguyễn Tuân', fit: 'Đầy đủ nội thất, ở ngay', gallery: G2,
+          pitch: 'GS-AU.1205 — 2PN tòa Autumn, Gold Season, 64 m², Đông Nam. Chuyển nhượng, khách cần căn nhỏ ở ngay Thanh Xuân.',
+          bul: ['2PN · 64 m² · Đông Nam', 'Autumn tầng 12', 'Chuyển nhượng — ở ngay'] },
+        { unitId: 'LPH-A.12.04', catalog: true, beds: 2, baths: 2, view: 'Đông đô thị Nha Trang', fit: 'Bàn giao nội thất cơ bản', gallery: G2,
+          pitch: 'LPH-A.12.04 — 2PN, 60,2 m², Đông, tầng 12. Căn nhỏ hơn 2PN+1 tầng 18, khách ngân sách gọn hay hỏi căn này.',
+          bul: ['2PN · 60,2 m² · Đông', 'Tầng 12 Nha Trang', 'Còn hàng'] },
+        { unitId: 'PBT-TM2.03', catalog: true, beds: 0, baths: 0, view: 'Tây Nam dãy TM2', fit: 'Nhà thô 5 tầng', gallery: GSH,
+          pitch: 'PBT-TM2.03 — liên kế 5 tầng dãy TM2, 112 m² đất, Tây Nam. Không phải lô góc — khách so với TM3.01 khi không cần hai mặt tiền.',
+          bul: ['Liên kế 5 tầng · 112 m² đất', 'Dãy TM2 Palmy', 'Còn hàng'] }
+      ],
+
+      /* Vinh danh — số minh họa, không phải giao dịch thật */
+      honors: [
+        { id: 'ho1', name: 'Lê Thu Hà', ini: 'TH', avatar: 'avatar-thuha.jpg', action: 'Đặt cọc',
+          unitId: 'T1-08.02', pj: 'celestine', at: '2 giờ trước', note: 'Khách gia đình 3 người, xem nhà tầng 8.' },
+        { id: 'ho2', name: 'Phạm Hải Đăng', ini: 'HĐ', avatar: 'avatar-dang.jpg', action: 'Giữ chỗ',
+          unitId: 'LPP-A.21.03', pj: 'leparc', at: 'sáng nay', note: 'Khách so hai căn góc tòa A.' },
+        { id: 'ho3', name: 'Ngô Thanh Tùng', ini: 'TT', avatar: 'avatar-tung.jpg', action: 'Đặt cọc',
+          unitId: 'GS-AU.1205', pj: 'opening', at: 'hôm qua', note: 'Khách chuyển nhượng — nhận nhà ở ngay.' },
+        { id: 'ho4', name: 'Lê Thu Hà', ini: 'TH', avatar: 'avatar-thuha.jpg', action: 'Giữ chỗ',
+          unitId: 'T2-11.02', pj: 'celestine', at: 'hôm qua', note: 'Khách gia đình bốn người so hai tháp.' },
+        { id: 'ho5', name: 'Phạm Hải Đăng', ini: 'HĐ', avatar: 'avatar-dang.jpg', action: 'Đặt cọc',
+          unitId: 'PBT-TM3.01', pj: 'palmy', at: '2 ngày trước', note: 'Khách vừa ở vừa mở cửa hàng mặt tiền.' },
+        { id: 'ho6', name: 'Trịnh Mai Lan', ini: 'ML', avatar: 'avatar-lan.jpg', action: 'Giữ chỗ',
+          unitId: 'LPP-B.24.02', pj: 'leparc', at: '2 ngày trước', note: 'Hỗ trợ sale chốt căn 3PN+1 tòa B.' }
+      ],
+
+      /* Cảnh báo chạy ticker — đóng popup không tắt dòng, thông báo vẫn trong chuông */
+      alerts: [
+        { id: 'al1', pj: 'celestine', img: 'celestine-westlake.jpg',
+          ticker: 'Celestine đợt 1 sắp kết thúc — còn ít căn tháp T1',
+          title: 'Celestine Westlake · Đợt 1 sắp kết thúc',
+          body: 'Đợt mở bán 1 tháp T1 sắp đóng. Còn ít căn 2PN view Hồ Tây. Nhân viên đang tư vấn nên chốt lịch xem nhà trong tuần — đợt 2 sẽ mở bản khác, không giữ giá và giỏ hàng đợt 1.\n\nGiá và giỏ hàng chính thức nằm trên Drive Chủ đầu tư. Hub chỉ cảnh báo tiến độ bán.' },
+        { id: 'al2', pj: 'celestine', img: 'celestine-westlake.jpg',
+          ticker: 'Celestine đợt 2 chuẩn bị mở bán — giữ lịch khách quan tâm tháp T2',
+          title: 'Celestine Westlake · Đợt 2 chuẩn bị mở bán',
+          body: 'Chủ đầu tư chuẩn bị bung đợt 2, tập trung tháp T2 và căn lớn. Khách đã xem đợt 1 mà chưa chốt nên được giữ lịch ưu tiên.\n\nChưa công bố giá đợt 2 trên Hub. Khi có bảng hàng mới, Thư ký kinh doanh sẽ gắn vào thẻ Drive.' },
+        { id: 'al3', pj: 'leparc', img: 'reco-banner.jpg',
+          ticker: 'Le Parc Place tòa C sắp bung hàng tuần này',
+          title: 'Le Parc Place · Tòa C sắp bung hàng',
+          body: 'Tòa C (loại C1 2PN và C 4PN+1) dự kiến bung hàng tuần này. Căn C.09.04 tầng 9 đang trong catalog để sale dẫn khách xem trước.\n\nBảng giá Rumor tòa C, D trên Drive CĐT — chưa công bố, không đưa vào tin gửi khách.' }
       ],
 
       /* Thư viện mẫu chia sẻ tin (QD-076): shared phải duyệt; personal chỉ owner */
       shareTemplates: [
-        { id: 'st1', projectId: 'leparc', title: 'Giới thiệu lần đầu', scope: 'shared', ownerUserId: null, approved: true,
-          body: 'Em gửi anh/chị thông tin Le Parc Place — ParkCity Hà Đông. Trang có tổng quan, vị trí và ảnh đã duyệt.',
-          ticks: ['overview', 'place', 'gallery'] },
-        { id: 'st2', projectId: 'leparc', title: 'Chốt căn đang đẩy', scope: 'shared', ownerUserId: null, approved: true,
-          body: 'Căn em đang tư vấn: mã, diện tích, hướng. Chi tiết trong đường dẫn.',
-          ticks: ['overview', 'gallery', 'hot'], hotId: 'hp1' },
+        { id: 'st1', projectId: 'leparc', title: 'Giới thiệu lần đầu — Le Parc Place', scope: 'shared', ownerUserId: null, approved: true,
+          body: 'Anh/chị ơi, em gửi thông tin Le Parc Place — ParkCity Hà Đông.\n\n· 4 tòa A/B/C/D, 29–35 tầng, 802 căn trên 16.234 m²\n· Gần LINC Mall, ParkCity Club, trường quốc tế\n· Chủ đầu tư ParkCity Holdings, sở hữu lâu dài\n\nTrang có tổng quan, vị trí và ảnh đã duyệt. Giá và bảng hàng em đối chiếu Drive Chủ đầu tư rồi gửi riêng — không ghi trên tin này.',
+          ticks: ['overview', 'place', 'gallery', 'amenity'] },
+        { id: 'st2', projectId: 'leparc', title: 'Chốt căn góc tòa A đang đẩy', scope: 'shared', ownerUserId: null, approved: true,
+          unitId: 'LPP-A.21.03',
+          body: 'Anh/chị ơi, căn em đang tư vấn tuần này:\n\nLPP-A.21.03 — Le Parc Place tòa A tầng 21\n· 2PN loại A1, 72,4 m², căn góc Đông Nam\n· View công viên nội khu ParkCity\n· Gần LINC Mall và trường quốc tế\n\nẢnh căn và tổng quan dự án trong đường dẫn. Giá xem bảng hàng CĐT, em không ghi trên tin.',
+          ticks: ['overview', 'gallery', 'hot', 'spec', 'unitGallery', 'pitch'], hotId: 'hp3' },
         { id: 'st3', projectId: 'leparc', title: 'Khách hỏi STK đặt cọc', scope: 'personal', ownerUserId: 'u5', approved: true,
-          body: 'Cú pháp chuyển khoản đúng nội dung trên trang, đối chiếu sao kê trong 24 giờ.',
+          body: 'Anh/chị chuyển khoản đúng cú pháp trên trang giúp em đối chiếu sao kê trong 24 giờ.\n\nChủ tài khoản: Công Ty Cổ Phần Nhà Ở Ngay Reco\nSố TK: 774668888 · VPBank\nNội dung: <Tên khách> đặt cọc <mã căn> dự án Le Parc Place',
           ticks: ['bank'] },
         { id: 'st4', projectId: 'celestine', title: 'Giới thiệu Celestine — nháp', scope: 'shared', ownerUserId: null, approved: false,
           body: 'Bản nháp chưa duyệt — sale không gửi được.',
-          ticks: ['overview', 'place'] }
+          ticks: ['overview', 'place'] },
+        { id: 'st5', projectId: 'celestine', title: 'Chốt 2PN view Hồ Tây — đợt 1', scope: 'shared', ownerUserId: null, approved: true,
+          unitId: 'T1-08.02',
+          body: 'Anh/chị ơi, Celestine Westlake — 300 Võ Chí Công, Tây Hồ.\n\nCăn em đang đẩy: T1-08.02\n· 2PN, 78,4 m², ban công Đông Nam view Hồ Tây\n· Tầng 8 tháp T1 — dẫn khách xem nhà dễ\n· Bàn giao bếp tủ âm, TBVS châu Âu\n· Đợt 1 sắp kết thúc, căn còn hàng\n\n2 tháp 23 tầng, 216 căn, CĐT VINAENCO, bàn giao từ 2027. Giá và CSBH em gửi theo bảng hàng CĐT, không ghi trên tin.',
+          ticks: ['overview', 'place', 'gallery', 'hot', 'spec', 'view', 'unitGallery', 'pitch', 'amenity'], hotId: 'hp1' }
       ],
 
       /* Người dùng — MH-10 */
@@ -1200,7 +1318,19 @@
         { id: 'nt4', kind: 'req', title: 'Đề nghị sửa mới', body: 'Lê Thu Hà báo sai diện tích căn T1-12.05.',
           at: 'hôm qua', to: 'gd gddu tkkd mkt', read: true, go: 'de-nghi-sua.html' },
         { id: 'nt5', kind: 'ok', title: 'Đề nghị của anh/chị đã được cập nhật', body: 'Bảng hàng đã bổ sung cột hướng ban công.',
-          at: '09/08', to: 'nvbh qlkd', read: true, go: 'de-nghi-sua.html' }
+          at: '09/08', to: 'nvbh qlkd', read: true, go: 'de-nghi-sua.html' },
+        { id: 'nt6', kind: 'alert', title: 'Celestine đợt 1 sắp kết thúc',
+          body: 'Còn ít căn tháp T1. Đóng popup cảnh báo không tắt dòng chạy; mở lại từ chuông.',
+          at: '07:40 hôm nay', to: 'gd gddu tkkd qlkd nvbh mkt', read: false,
+          go: 'trang-dau.html?alert=al1', alertId: 'al1' },
+        { id: 'nt7', kind: 'alert', title: 'Celestine đợt 2 chuẩn bị mở bán',
+          body: 'Giữ lịch khách quan tâm tháp T2. Giá đợt 2 chưa công bố trên Hub.',
+          at: '07:40 hôm nay', to: 'gd gddu tkkd qlkd nvbh mkt', read: false,
+          go: 'trang-dau.html?alert=al2', alertId: 'al2' },
+        { id: 'nt8', kind: 'alert', title: 'Le Parc tòa C sắp bung hàng',
+          body: 'Tuần này bung loại C1 và 4PN+1. Bảng giá Rumor chưa công bố.',
+          at: 'hôm qua', to: 'gd gddu tkkd qlkd nvbh mkt', read: false,
+          go: 'trang-dau.html?alert=al3', alertId: 'al3' }
       ],
 
       /* Màn vừa xem — phục vụ ô tìm kiếm toàn cục */
@@ -1507,6 +1637,26 @@
     var p = find('projects', id);
     return p ? p.name : id;
   }
+  /* Hồ sơ bán hàng (pitch, ảnh, PN) gắn theo căn — không có thì trả đúng bản ghi units. */
+  function unitView(id) {
+    var u = typeof id === 'string' ? find('units', id) : id;
+    if (!u) return null;
+    var list = get('unitProfiles');
+    var extra = null;
+    for (var i = 0; i < list.length; i++) if (list[i].unitId === u.id) { extra = list[i]; break; }
+    if (!extra) return u;
+    var o = {};
+    var k;
+    for (k in u) if (Object.prototype.hasOwnProperty.call(u, k)) o[k] = u[k];
+    for (k in extra) if (k !== 'unitId' && Object.prototype.hasOwnProperty.call(extra, k)) o[k] = extra[k];
+    return o;
+  }
+  function unitCover(u) {
+    var v = unitView(u.id || u);
+    if (v && v.gallery && v.gallery.length) return v.gallery[0];
+    var p = find('projects', (v || u).pj);
+    return p ? p.img : 'reco-banner.jpg';
+  }
   /* Ai được xem nội dung mang nhãn này. Danh sách restricted theo QD-027:
      chính sách hoa hồng mở cho Tổng giám đốc, Giám đốc dự án, Quản lý kinh doanh,
      Hành chính nhân sự và Kế toán. */
@@ -1522,6 +1672,7 @@
     LABELS: LABELS, UNIT_STATE: UNIT_STATE, BRANCHES: BRANCHES, TOPICS: TOPICS, QA_GROUP_DEFAULT: QA_GROUP_DEFAULT, TYPES: TYPES, SEGMENTS: SEGMENTS,
     BRANCH_LABEL: BRANCH_LABEL, RANK: RANK,
     label: label, money: money, billion: billion, projectName: projectName, canSee: canSee,
+    unitView: unitView, unitCover: unitCover,
     myProjects: myProjects,
     atLeastAsStrict: atLeastAsStrict, stricter: stricter, canGrant: canGrant,
     TODAY: TODAY, parseVN: parseVN, daysLeft: daysLeft, lifeState: lifeState,

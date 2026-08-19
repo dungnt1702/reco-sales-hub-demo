@@ -30,7 +30,7 @@
           Không đưa liên kết Google Drive vào tin gửi khách.
         </p>
       </div>
-      <button class="btn btn-primary" id="lk-new" data-roles="gd gddu tkkd qlkd nvbh mkt">Tạo mẫu của tôi</button>
+      <a class="btn btn-primary" id="lk-new" href="mau.html?new=1" data-roles="gd gddu tkkd qlkd nvbh mkt">Tạo mẫu của tôi</a>
     </div>
 
     <div class="note note-navy mb-3" data-roles="hcns ktoan">
@@ -53,7 +53,7 @@
       <div role="tabpanel" id="p-toi" aria-labelledby="t-toi" class="card-body" hidden>
         <div class="spread mb-3">
           <p class="small muted" style="margin:0">Chỉ mình anh/chị thấy. Không hiện với vai trò khác.</p>
-          <button class="btn btn-outline btn-sm" id="tpl-new" data-roles="gd gddu tkkd qlkd nvbh mkt">+ Tạo mẫu</button>
+          <a class="btn btn-outline btn-sm" id="tpl-new" href="mau.html?new=1" data-roles="gd gddu tkkd qlkd nvbh mkt">+ Tạo mẫu</a>
         </div>
         <div id="tpl-toi" class="stack"></div>
       </div>
@@ -99,72 +99,17 @@
   </div>
 </main>
 
-<!-- Xem trước mẫu + sao chép -->
-<div class="modal" id="m-mau" hidden role="dialog" aria-modal="true" aria-labelledby="m-mau-t">
-  <div class="modal-box">
-    <div class="modal-head">
-      <div><span class="eyebrow">Gửi khách từ mẫu</span><h3 id="m-mau-t">Mẫu</h3></div>
-      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-    </div>
-    <div class="modal-body">
-      <p class="small" id="m-mau-body"></p>
-      <p class="micro muted mt-2" id="m-mau-ticks"></p>
-      <div class="note mt-2" id="m-mau-hot" hidden></div>
-      <p class="small muted mt-2" id="m-mau-lock" hidden>Mẫu chưa duyệt — nhân viên bán hàng không gửi được. Giám đốc dự án hoặc Thư ký kinh doanh duyệt trước.</p>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline" id="m-copy-zalo">Copy tin Zalo</button>
-      <button class="btn btn-outline" id="m-copy-link">Copy link</button>
-      <button class="btn btn-primary" id="m-copy-both">Cả hai</button>
-    </div>
-  </div>
-</div>
-
-<!-- Tạo mẫu cá nhân -->
-<div class="modal" id="m-taomau" hidden role="dialog" aria-modal="true" aria-labelledby="m-taomau-t">
-  <div class="modal-box">
-    <div class="modal-head">
-      <div><span class="eyebrow">Mẫu của tôi</span><h3 id="m-taomau-t">Tạo mẫu chia sẻ</h3></div>
-      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-    </div>
-    <div class="modal-body">
-      <label class="field"><span class="lab">Dự án</span>
-        <select class="inp" id="nm-pj"></select>
-      </label>
-      <label class="field"><span class="lab">Tiêu đề</span>
-        <input class="inp" type="text" id="nm-title" data-required data-msg="Đặt tiêu đề để tìm lại mẫu.">
-      </label>
-      <label class="field"><span class="lab">Nội dung tin Zalo</span>
-        <textarea class="inp" id="nm-body" rows="4" data-required data-msg="Nhập nội dung tin gửi khách."></textarea>
-      </label>
-      <fieldset class="field" style="border:0;padding:0">
-        <span class="lab">Khối hiện trên trang khách</span>
-        <div class="tick-list mt-1">
-          <label class="pick-row"><input type="checkbox" value="overview" checked> Tổng quan</label>
-          <label class="pick-row"><input type="checkbox" value="place"> Vị trí</label>
-          <label class="pick-row"><input type="checkbox" value="gallery"> Ảnh</label>
-          <label class="pick-row"><input type="checkbox" value="hot"> SP Hot</label>
-          <label class="pick-row"><input type="checkbox" value="bank"> STK đặt cọc</label>
-        </div>
-      </fieldset>
-      <label class="field"><span class="lab">Sản phẩm Hot (tuỳ chọn)</span>
-        <select class="inp" id="nm-hot"><option value="">— Không gắn —</option></select>
-      </label>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline" data-close="1">Hủy</button>
-      <button class="btn btn-primary" id="nm-ok">Lưu mẫu</button>
-    </div>
-  </div>
-</div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   if (!document.getElementById('lk-body')) return;
 
   var S = RECO.store, E = RECO_DATA.esc;
   var copyText = RECO.copy;
-  var TICK_LAB = { overview: 'Tổng quan', place: 'Vị trí', gallery: 'Ảnh', hot: 'SP Hot', bank: 'STK đặt cọc' };
+  var TICK_LAB = {
+    overview: 'Tổng quan', place: 'Vị trí', gallery: 'Ảnh dự án', amenity: 'Tiện ích',
+    bank: 'STK đặt cọc', hot: 'SP Hot', spec: 'Thông số căn', view: 'Hướng và view',
+    unitGallery: 'Ảnh căn', pitch: 'Mô tả căn'
+  };
   var CAN_SEND = ['gd', 'gddu', 'tkkd', 'qlkd', 'nvbh', 'mkt'].indexOf(RECO.role) >= 0;
   var CAN_APPROVE = ['gd', 'gddu', 'tkkd'].indexOf(RECO.role) >= 0;
   var IS_SALE = RECO.role === 'nvbh';
@@ -214,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------- Mẫu ---------- */
-  var openTpl = null, openUnit = qs().get('unit') || null;
+  var openUnit = qs().get('unit') || null;
 
   function canSendTpl(t) {
     if (!CAN_SEND) return false;
@@ -226,91 +171,6 @@ document.addEventListener('DOMContentLoaded', function () {
       return '<span class="chip">' + E(TICK_LAB[k] || k) + '</span>';
     }).join(' ');
   }
-  function hotOfTpl(t) {
-    if (openUnit) {
-      var byUnit = S.get('hotProducts').filter(function (h) { return h.unitId === openUnit && h.active; })[0];
-      if (byUnit) return byUnit;
-    }
-    return t.hotId ? S.find('hotProducts', t.hotId) : null;
-  }
-  function zaloText(t) {
-    var agent = currentAgent();
-    var hot = hotOfTpl(t);
-    var u = hot ? S.find('units', hot.unitId) : (openUnit ? S.find('units', openUnit) : null);
-    var parts = [t.body];
-    if (hot && hot.pitch) parts.push(hot.pitch);
-    else if (u) parts.push('Căn ' + u.id + ' · ' + u.kind + ' · ' + String(u.area).replace('.', ',') + ' m² · ' + (u.dir || ''));
-    parts.push(agent.name + ' · ' + agent.phone);
-    return clipSafe(parts.join('\n\n'));
-  }
-  function makeLink(t) {
-    var hot = hotOfTpl(t);
-    var unit = openUnit || (hot && hot.unitId) || null;
-    var pj = t.projectId;
-    var slug = '/t/' + slugify(pj) + '-' + Math.random().toString(36).slice(2, 6);
-    S.get('shareLinks').forEach(function (x) { if (x.fresh) x.fresh = false; });
-    var rec = {
-      slug: slug, pj: pj, kind: 'mau',
-      note: t.title, by: RECO.current.who, at: stamp(),
-      days: null, state: 'live', fresh: true,
-      ticks: (t.ticks || []).slice(),
-      templateId: t.id,
-      hotId: hot ? hot.id : (t.hotId || null),
-      unitId: unit,
-      agent: currentAgent()
-    };
-    S.add('shareLinks', rec);
-    return rec;
-  }
-
-  function openSheet(t) {
-    openTpl = t;
-    document.getElementById('m-mau-t').textContent = t.title;
-    document.getElementById('m-mau-body').textContent = t.body;
-    document.getElementById('m-mau-ticks').innerHTML = 'Khối trên trang: ' + (ticksHtml(t) || '—');
-    var hot = hotOfTpl(t);
-    var hotBox = document.getElementById('m-mau-hot');
-    if (hot) {
-      var u = S.find('units', hot.unitId);
-      hotBox.hidden = false;
-      hotBox.innerHTML = '<strong>' + E(u ? u.id : hot.unitId) + '</strong> — ' + E(hot.pitch);
-    } else { hotBox.hidden = true; }
-    var locked = !canSendTpl(t);
-    document.getElementById('m-mau-lock').hidden = !locked;
-    document.getElementById('m-copy-zalo').disabled = locked;
-    document.getElementById('m-copy-link').disabled = locked;
-    document.getElementById('m-copy-both').disabled = locked;
-    RECO.openModal('m-mau');
-  }
-
-  function copyZalo() {
-    if (!openTpl || !canSendTpl(openTpl)) return;
-    var text = zaloText(openTpl);
-    copyText(text).then(function (ok) {
-      RECO.toast(ok ? 'Đã sao chép tin Zalo' : 'Trình duyệt chặn sao chép — anh/chị chép tay tin trong hộp xem trước', { danger: !ok });
-    });
-  }
-  function copyLink() {
-    if (!openTpl || !canSendTpl(openTpl)) return;
-    var rec = makeLink(openTpl);
-    var url = guestUrl(rec.slug);
-    copyText(clipSafe(url)).then(function (ok) {
-      RECO.closeModal('m-mau');
-      RECO.toast(ok ? 'Đã tạo đường dẫn và sao chép' : 'Đã tạo ' + rec.slug + ' — trình duyệt chặn sao chép', { danger: !ok });
-    });
-  }
-  function copyBoth() {
-    if (!openTpl || !canSendTpl(openTpl)) return;
-    var rec = makeLink(openTpl);
-    var blob = clipSafe(zaloText(openTpl) + '\n\n' + guestUrl(rec.slug));
-    copyText(blob).then(function (ok) {
-      RECO.closeModal('m-mau');
-      RECO.toast(ok ? 'Đã sao chép tin Zalo và đường dẫn' : 'Đã tạo đường dẫn — trình duyệt chặn sao chép', { danger: !ok });
-    });
-  }
-  document.getElementById('m-copy-zalo').addEventListener('click', copyZalo);
-  document.getElementById('m-copy-link').addEventListener('click', copyLink);
-  document.getElementById('m-copy-both').addEventListener('click', copyBoth);
 
   function paintTeam() {
     var box = document.getElementById('tpl-doi');
@@ -326,8 +186,8 @@ document.addEventListener('DOMContentLoaded', function () {
         ? '<button class="btn btn-outline btn-sm" data-appr="' + E(t.id) + '" data-roles="gddu tkkd gd">Duyệt</button>'
         : '';
       var send = ok
-        ? '<button class="btn btn-primary btn-sm" data-open-tpl="' + E(t.id) + '">Mở mẫu</button>'
-        : '<button class="btn btn-primary btn-sm" disabled>Không gửi được</button>';
+        ? '<a class="btn btn-primary btn-sm" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id) + (openUnit ? '&unit=' + encodeURIComponent(openUnit) : '')) + '">Mở mẫu</a>'
+        : '<a class="btn btn-outline btn-sm" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Xem mẫu</a>';
       return '<div class="card card-pad"><div class="spread">' +
         '<div><b>' + E(t.title) + '</b> <span class="micro muted">' + E(S.projectName(t.projectId)) + '</span>' +
           '<div class="row-tight mt-1">' + locked + ticksHtml(t) + '</div>' +
@@ -346,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!list.length) {
       box.innerHTML = RECO_DATA.empty('Anh/chị chưa có mẫu riêng',
         'Tạo mẫu với các khối tổng quan, vị trí, ảnh, SP Hot hoặc STK.',
-        '<button class="btn btn-primary" data-act="newmine" data-roles="gd gddu tkkd qlkd nvbh mkt">+ Tạo mẫu</button>');
+        '<a class="btn btn-primary" href="' + goPage('mau.html', 'new=1') + '" data-roles="gd gddu tkkd qlkd nvbh mkt">+ Tạo mẫu</a>');
       RECO.applyRoles(box);
       return;
     }
@@ -355,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function () {
         '<div><b>' + E(t.title) + '</b> <span class="micro muted">' + E(S.projectName(t.projectId)) + '</span>' +
           '<div class="row-tight mt-1">' + ticksHtml(t) + '</div>' +
           '<p class="small muted mt-1" style="margin:0">' + E(t.body) + '</p></div>' +
-        '<button class="btn btn-primary btn-sm" data-open-tpl="' + E(t.id) + '">Mở mẫu</button></div></div>';
+        '<a class="btn btn-primary btn-sm" href="' + goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Mở mẫu</a></div></div>';
     }).join('');
   }
 
@@ -375,77 +235,20 @@ document.addEventListener('DOMContentLoaded', function () {
           RECO.toast('Đã duyệt mẫu — sale gửi được');
         }
       });
-      return;
     }
-    var op = e.target.closest('[data-open-tpl]');
-    if (op) {
-      var t = S.find('shareTemplates', op.getAttribute('data-open-tpl'));
-      if (t) openSheet(t);
-      return;
-    }
-    if (e.target.closest('[data-act="newmine"]')) openCreate();
   });
 
   S.on('shareTemplates', function () { paintTeam(); paintMine(); });
-  paintTeam(); paintMine();
+  paintTeam();
+  paintMine();
 
-  /* Tạo mẫu cá nhân */
-  var nmPj = document.getElementById('nm-pj'), nmHot = document.getElementById('nm-hot');
-  nmPj.innerHTML = S.get('projects').filter(function (p) { return !p.hidden; }).map(function (p) {
-    return '<option value="' + E(p.id) + '">' + E(p.name) + '</option>';
-  }).join('');
-  function fillHotOpts() {
-    var pj = nmPj.value;
-    var hots = S.get('hotProducts').filter(function (h) {
-      var u = S.find('units', h.unitId);
-      return h.active && u && u.pj === pj;
-    });
-    nmHot.innerHTML = '<option value="">— Không gắn —</option>' +
-      hots.map(function (h) {
-        var u = S.find('units', h.unitId);
-        return '<option value="' + E(h.id) + '">' + E(u.id) + ' — ' + E(h.pitch).slice(0, 48) + '</option>';
-      }).join('');
-  }
-  nmPj.addEventListener('change', fillHotOpts);
-  fillHotOpts();
-
-  function openCreate() {
-    document.getElementById('nm-title').value = '';
-    document.getElementById('nm-body').value = '';
-    fillHotOpts();
-    selectTab('t-toi');
-    RECO.openModal('m-taomau');
-  }
-  document.getElementById('lk-new').addEventListener('click', openCreate);
-  document.getElementById('tpl-new').addEventListener('click', openCreate);
-  document.getElementById('nm-ok').addEventListener('click', function () {
-    var box = document.getElementById('m-taomau');
-    if (!RECO.validate(box)) return;
-    var ticks = [];
-    box.querySelectorAll('.tick-list input:checked').forEach(function (c) { ticks.push(c.value); });
-    S.add('shareTemplates', {
-      projectId: nmPj.value,
-      title: document.getElementById('nm-title').value.trim(),
-      scope: 'personal',
-      ownerUserId: currentUserId(),
-      approved: true,
-      body: document.getElementById('nm-body').value.trim(),
-      ticks: ticks,
-      hotId: nmHot.value || null
-    });
-    RECO.closeModal('m-taomau');
-    selectTab('t-toi');
-    RECO.toast('Đã lưu mẫu của anh/chị');
-  });
-
-  /* Mở sẵn mẫu nếu URL có ?tpl= */
+  /* Mở mẫu trên màn riêng */
   var want = qs().get('tpl');
   if (want) {
-    var t0 = S.find('shareTemplates', want);
-    if (t0) {
-      selectTab(t0.scope === 'personal' ? 't-toi' : 't-doi');
-      openSheet(t0);
-    }
+    var extra = 'tpl=' + encodeURIComponent(want);
+    if (openUnit) extra += '&unit=' + encodeURIComponent(openUnit);
+    location.replace(goPage('mau.html', extra));
+    return;
   }
 
   /* ---------- Đã gửi · nhật ký đường dẫn ---------- */

@@ -185,10 +185,30 @@ var CASES = [
   var f3 = await load(PHASE + '/trang-dau.html?bare=1', 1440);
   var d3 = f3.contentDocument;
   if (!ok(d3.querySelectorAll('.tips .tip').length === 0, 'Trang đầu không còn thẻ .tip')) bad++;
-  if (!ok(d3.querySelectorAll('#hot-home .card').length > 0, 'Trang đầu có dải SP Hot')) bad++;
+  if (!ok(d3.querySelectorAll('#hot-home .card').length >= 8, 'Trang đầu có dải SP Hot (8 căn)')) bad++;
+  if (!ok(!!d3.querySelector('#honor-rail'), 'Trang đầu có khối vinh danh')) bad++;
+  if (!ok(!!d3.querySelector('#alert-ticker'), 'Trang đầu có dòng cảnh báo')) bad++;
   if (!ok(d3.querySelectorAll('#home-tpl .card').length > 0, 'Trang đầu có mẫu đội')) bad++;
   if (!ok(d3.querySelectorAll('.itip').length === 0, 'Trang đầu không dùng lớp .itip')) bad++;
   f3.remove();
+
+  say('');
+  say('--- Catalog Sản phẩm + mẫu tin ---');
+  var fc = await load(PHASE + '/danh-muc-san-pham.html?bare=1', 1440);
+  var dc = fc.contentDocument;
+  if (!ok(dc.querySelectorAll('#hot-grid .ucard-hot').length === 8, 'catalog: 8 thẻ Hot')) bad++;
+  if (!ok(dc.querySelectorAll('#other-grid .ucard-quiet').length >= 10, 'catalog: ≥10 thẻ căn khác')) bad++;
+  fc.remove();
+  var fm = await load(PHASE + '/mau.html?bare=1&tpl=st5', 1440);
+  var dm = fm.contentDocument;
+  if (!ok(!!dm.querySelector('.mau-post'), 'mau.html xem mẫu có bài đăng')) bad++;
+  if (!ok(!!dm.getElementById('m-copy-zalo') && !!dm.getElementById('m-view-guest'), 'mau.html có Sao chép Zalo và Xem trang khách')) bad++;
+  fm.remove();
+  var fs = await load(PHASE + '/san-pham.html?bare=1&unit=T1-08.02', 1440);
+  var ds = fs.contentDocument;
+  if (!ok(ds.getElementById('sp-id').textContent.indexOf('T1-08.02') >= 0, 'chi tiết căn T1-08.02')) bad++;
+  if (!ok(ds.querySelectorAll('#sp-thumbs button').length >= 4, 'chi tiết căn có gallery')) bad++;
+  fs.remove();
 
   say('');
   say('--- Bản gói một tệp ---');

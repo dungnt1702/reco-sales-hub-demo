@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sản phẩm · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+</head>
+<body data-shell="app" data-page="san-pham">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">Catalog căn đang tư vấn</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Sản phẩm</h1>
+        <p class="lead mt-1" style="max-width:70ch">
+          Tám căn đang đẩy tuần này ở trên. Dưới là căn khác để so với khách — cùng lưới, thẻ nhẹ hơn.
+          Không hiện giá: giá nằm trên bảng hàng Chủ đầu tư.
+        </p>
+      </div>
+    </div>
+
+    <section class="mb-4">
+      <div class="spread mb-2">
+        <div>
+          <span class="eyebrow">Đang đẩy</span>
+          <h2 style="font-size:1.25rem">Sản phẩm Hot</h2>
+        </div>
+        <p class="micro muted" style="margin:0">8 căn · 2 hàng trên máy tính · 2 cột trên điện thoại</p>
+      </div>
+      <div class="ucard-grid" id="hot-grid"></div>
+    </section>
+
+    <section>
+      <div class="spread mb-2">
+        <div>
+          <span class="eyebrow">Cùng danh mục</span>
+          <h2 style="font-size:1.25rem">Sản phẩm khác</h2>
+          <p class="small muted mt-1">Căn còn hàng hoặc đang giữ chỗ — thẻ gọn để lướt nhanh khi khách so sánh.</p>
+        </div>
+      </div>
+      <div class="ucard-grid" id="other-grid"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (!document.getElementById('hot-grid')) return;
+  var S = RECO.store;
+  var hotIds = {};
+  var hots = S.get('hotProducts').filter(function (h) {
+    return h.active && S.find('units', h.unitId);
+  }).sort(function (a, b) { return (a.sort || 0) - (b.sort || 0); });
+  hots.forEach(function (h) { hotIds[h.unitId] = true; });
+
+  document.getElementById('hot-grid').innerHTML = hots.map(function (h) {
+    return RECO_DATA.unitCard(S.unitView(h.unitId), { hot: true });
+  }).join('');
+
+  var others = S.get('unitProfiles').filter(function (p) {
+    return p.catalog && !hotIds[p.unitId] && S.find('units', p.unitId);
+  }).map(function (p) { return S.unitView(p.unitId); });
+  var box = document.getElementById('other-grid');
+  if (!others.length) {
+    box.innerHTML = RECO_DATA.empty('Chưa có căn khác trong catalog', 'Thư ký kinh doanh gắn hồ sơ bán hàng cho căn còn hàng.');
+  } else {
+    box.innerHTML = others.map(function (u) { return RECO_DATA.unitCard(u); }).join('');
+  }
+  document.querySelectorAll('#page a[href]').forEach(function (a) {
+    a.setAttribute('href', RECO.link(a.getAttribute('href')));
+  });
+});
+</script>
+</body>
+</html>

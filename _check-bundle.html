@@ -7,9 +7,10 @@
 <pre id="out">Đang chạy…</pre>
 <div id="frames"></div>
 <script>
-var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet','san-pham',
-             'thu-vien-tai-lieu','cay-thu-muc','chia-se','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua','xem-truoc-gd2',
+var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet','danh-muc-san-pham','san-pham',
+             'thu-vien-tai-lieu','cay-thu-muc','chia-se','mau','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua','xem-truoc-gd2',
              'bao-tri','tinh-nang-gd1','chi-tiet-gd1','tinh-nang-gd2','chi-tiet-gd2','ha-tang'];
+var PAGE_QS = { mau: 'tpl=st5', 'san-pham': 'unit=T1-08.02' };
 var lines = [], fail = 0;
 var out = document.getElementById('out');
 function say(ok, msg) { if (!ok) fail++; lines.push((ok ? 'OK   ' : 'HONG ') + msg); }
@@ -57,7 +58,7 @@ function overflow(f, w) {
     var f = await frame(w);
     f.contentWindow.addEventListener('error', function (e) { errs.push('[' + w + '] ' + e.message); });
     for (var i = 0; i < PAGES.length; i++) {
-      await goto(f, '#' + PAGES[i]);
+      await goto(f, '#' + PAGES[i] + (PAGE_QS[PAGES[i]] ? '?' + PAGE_QS[PAGES[i]] : ''));
       var d = f.contentDocument;
       var app = d.getElementById('app');
       say(app && app.children.length > 0, '[' + w + '] ' + PAGES[i] + ' — dựng được nội dung');
@@ -71,7 +72,7 @@ function overflow(f, w) {
   var f2 = await frame(1280);
   var seen = {};
   for (var i = 0; i < PAGES.length; i++) {
-    await goto(f2, '#' + PAGES[i]);
+    await goto(f2, '#' + PAGES[i] + (PAGE_QS[PAGES[i]] ? '?' + PAGE_QS[PAGES[i]] : ''));
     var d = f2.contentDocument;
     d.querySelectorAll('a[href^="#"]').forEach(function (a) {
       var h = a.getAttribute('href').slice(1).split('?')[0];
@@ -87,7 +88,7 @@ function overflow(f, w) {
   // 3. Ảnh: mọi <img> đều có nguồn nhúng, không còn đường dẫn tương đối
   var rel = [];
   for (var i = 0; i < PAGES.length; i++) {
-    await goto(f2, '#' + PAGES[i]);
+    await goto(f2, '#' + PAGES[i] + (PAGE_QS[PAGES[i]] ? '?' + PAGE_QS[PAGES[i]] : ''));
     f2.contentDocument.querySelectorAll('img').forEach(function (im) {
       var s = im.getAttribute('src') || '';
       // Ảnh chỗ trống của lớp phủ xem ảnh lớn chưa có nguồn cho tới khi người dùng bấm — bỏ qua

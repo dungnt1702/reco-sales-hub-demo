@@ -31,8 +31,8 @@ const PAGES_DEFAULT = [
   'tinh-nang-gd1', 'chi-tiet-gd1', 'tinh-nang-gd2', 'chi-tiet-gd2', 'ha-tang'
 ];
 const PAGES_GD01 = [
-  'index', 'sitemap', 'dang-nhap', 'trang-dau', 'du-an', 'du-an-chi-tiet', 'san-pham',
-  'thu-vien-tai-lieu', 'cay-thu-muc', 'chia-se',
+  'index', 'sitemap', 'dang-nhap', 'trang-dau', 'du-an', 'du-an-chi-tiet', 'danh-muc-san-pham', 'san-pham',
+  'thu-vien-tai-lieu', 'cay-thu-muc', 'chia-se', 'mau',
   'trang-gui-khach', 'link-het-han', 'quan-tri', 'nguoi-dung', 'de-nghi-sua',
   'xem-truoc-gd2', 'bao-tri',
   'tinh-nang-gd1', 'chi-tiet-gd1', 'tinh-nang-gd2', 'chi-tiet-gd2', 'ha-tang'
@@ -174,6 +174,7 @@ ${css}
 <div id="app"></div>
 <script>
 window.RECO_BUNDLE = true;
+window.RECO_PHASE = '${phase}';
 window.RECO_IMG = ${JSON.stringify(Object.fromEntries(img))};
 window.RECO_TILES = ${JSON.stringify(Object.fromEntries(tiles))};
 window.RECO_PAGES = ${JSON.stringify(pages)};

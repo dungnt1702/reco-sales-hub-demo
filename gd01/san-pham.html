@@ -7,27 +7,50 @@
 <meta name="theme-color" content="#09263c">
 <link rel="icon" href="../assets/img/reco-logo.png">
 <link rel="stylesheet" href="../assets/reco.css">
+<style>
+  .sp-grid { display: grid; gap: 22px; }
+  @media (min-width: 1024px) { .sp-grid { grid-template-columns: minmax(0, 1.45fr) minmax(260px, .75fr); align-items: start; } }
+</style>
 <script defer src="../assets/reco.js"></script>
 <script defer src="store.js"></script>
 <script defer src="../assets/data.js"></script>
 </head>
-<body data-shell="app" data-page="du-an">
+<body data-shell="app" data-page="san-pham">
 
 <main id="page" class="pad-b">
   <div class="wrap page">
-    <p class="small muted mb-2" id="sp-crumb"><a href="du-an-chi-tiet.html">Chi tiết dự án</a></p>
+    <p class="small muted mb-2" id="sp-crumb"><a href="danh-muc-san-pham.html">Sản phẩm</a></p>
     <div class="spread mb-3">
       <div>
-        <span class="eyebrow">Sản phẩm</span>
+        <span class="eyebrow" id="sp-eye">Sản phẩm</span>
         <h1 id="sp-id" style="font-size:clamp(1.6rem,3vw,2.1rem)">—</h1>
         <p class="lead mt-1" id="sp-sub"></p>
       </div>
-      <a class="btn btn-primary" id="sp-gui" href="chia-se.html?tpl=st2">Gửi</a>
+      <div class="row" id="sp-cta">
+        <button type="button" class="btn btn-outline" id="sp-copy">Sao chép pitch</button>
+        <a class="btn btn-outline" id="sp-pj" href="du-an-chi-tiet.html">Mở dự án</a>
+        <a class="btn btn-primary" id="sp-gui" href="mau.html?tpl=st2">Gửi mẫu</a>
+      </div>
     </div>
 
-    <div class="card card-pad" id="sp-card">
-      <div class="kv kv-3" id="sp-kv"></div>
-      <div class="note mt-3" id="sp-pitch" hidden></div>
+    <div class="sp-grid">
+      <div>
+        <div class="ugallery-main"><img id="sp-hero" alt=""></div>
+        <div class="ugallery-thumbs" id="sp-thumbs"></div>
+        <p class="micro muted mt-1">Ảnh minh họa nội thất — không phải ảnh căn thật của Chủ đầu tư.</p>
+
+        <div class="card card-pad mt-3" id="sp-pitch-card">
+          <h2 style="font-size:1.1rem;margin:0">Mô tả dùng khi trao đổi với khách</h2>
+          <p class="small mt-2" id="sp-pitch" style="white-space:pre-wrap;margin:0"></p>
+          <ul class="mt-2" id="sp-bul" style="padding-left:1.1em"></ul>
+        </div>
+      </div>
+      <aside>
+        <div class="card card-pad">
+          <div class="kv" id="sp-kv"></div>
+          <p class="micro muted mt-3" style="margin-bottom:0">Giá và chính sách bán hàng trên bảng hàng Chủ đầu tư. Hub không hiện giá trên sản phẩm Hot.</p>
+        </div>
+      </aside>
     </div>
   </div>
 </main>
@@ -40,47 +63,96 @@ document.addEventListener('DOMContentLoaded', function () {
   var q = new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search);
   var pj = q.get('pj') || 'leparc';
   var uid = q.get('unit');
-  var p = S.find('projects', pj);
-  var u = uid ? S.find('units', uid) : null;
+  var u = uid ? S.unitView(uid) : null;
   if (u && u.pj) pj = u.pj;
-  p = S.find('projects', pj) || p;
+  var p = S.find('projects', pj);
 
   function go(page, qs) {
     var to = RECO.link(page);
     return qs ? to + (to.indexOf('?') >= 0 ? '&' : '?') + qs : to;
   }
+  function areaTxt(n) { return String(n).replace('.', ',') + ' m²'; }
 
   var back = document.getElementById('sp-crumb');
-  back.innerHTML = '<a href="' + go('du-an-chi-tiet.html', 'pj=' + encodeURIComponent(pj)) + '">← ' +
-    esc(p ? p.name : 'Chi tiết dự án') + '</a>';
+  back.innerHTML = '<a href="' + go('danh-muc-san-pham.html') + '">← Catalog sản phẩm</a> · ' +
+    '<a href="' + go('du-an-chi-tiet.html', 'pj=' + encodeURIComponent(pj)) + '">' + esc(p ? p.name : 'Dự án') + '</a>';
 
   if (!u) {
     document.getElementById('sp-id').textContent = 'Không tìm thấy căn';
     document.getElementById('sp-sub').textContent = 'Mã căn trên đường dẫn không khớp bảng hàng.';
-    document.getElementById('sp-gui').hidden = true;
+    document.getElementById('sp-cta').hidden = true;
     return;
   }
 
+  var hot = S.get('hotProducts').filter(function (x) { return x.unitId === u.id && x.active; })[0];
   document.title = u.id + ' · ' + (p ? p.name : 'RECO') + ' · RECO Sales Hub';
+  document.getElementById('sp-eye').textContent = hot ? 'Sản phẩm Hot' : 'Sản phẩm';
   document.getElementById('sp-id').textContent = u.id;
-  document.getElementById('sp-sub').textContent = (p ? p.name + ' · ' : '') + u.kind;
-  document.getElementById('sp-kv').innerHTML =
-    '<div><div class="k">Loại</div><div class="v">' + esc(u.kind) + '</div></div>' +
-    '<div><div class="k">Diện tích</div><div class="v">' + String(u.area).replace('.', ',') + ' m²</div></div>' +
-    '<div><div class="k">Hướng</div><div class="v">' + esc(u.dir || '—') + '</div></div>' +
-    '<div><div class="k">Tòa · tầng</div><div class="v">' + esc(u.block) + (u.floor ? ' · tầng ' + u.floor : '') + '</div></div>' +
-    '<div><div class="k">Tình trạng</div><div class="v">' + esc((S.UNIT_STATE[u.state] || {}).text || '—') + '</div></div>' +
-    (p ? '<div><div class="k">Dự án</div><div class="v">' + esc(p.name) + '</div></div>' : '');
+  document.getElementById('sp-sub').textContent = (p ? p.name + ' · ' : '') + u.kind +
+    (u.block ? ' · ' + u.block + (u.floor ? ' tầng ' + u.floor : '') : '');
 
-  var hot = S.get('hotProducts').filter(function (h) { return h.unitId === u.id && h.active; })[0];
-  var pitch = document.getElementById('sp-pitch');
-  if (hot && hot.pitch) {
-    pitch.hidden = false;
-    pitch.innerHTML = '<strong>Sản phẩm Hot.</strong> ' + esc(hot.pitch);
+  var gallery = (u.gallery && u.gallery.length) ? u.gallery.slice() : [p ? p.img : 'reco-banner.jpg'];
+  var hero = document.getElementById('sp-hero');
+  function show(idx) {
+    hero.src = RECO.asset(gallery[idx]);
+    hero.alt = u.id + ' — ảnh ' + (idx + 1);
+    document.querySelectorAll('#sp-thumbs button').forEach(function (b, n) {
+      var on = n === idx;
+      b.setAttribute('aria-current', on ? 'true' : 'false');
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
   }
+  document.getElementById('sp-thumbs').innerHTML = gallery.map(function (g, n) {
+    return '<button type="button" aria-label="Ảnh ' + (n + 1) + '"><img src="' + RECO.asset(g) + '" alt=""></button>';
+  }).join('');
+  document.querySelectorAll('#sp-thumbs button').forEach(function (b, n) {
+    b.addEventListener('click', function () { show(n); });
+  });
+  show(0);
 
+  var pitch = u.pitch || (hot && hot.pitch) || (u.kind + ' · ' + areaTxt(u.area) + (u.dir ? ' · ' + u.dir : ''));
+  document.getElementById('sp-pitch').textContent = pitch;
+  var bul = document.getElementById('sp-bul');
+  bul.innerHTML = (u.bul || []).map(function (x) { return '<li class="small">' + esc(x) + '</li>'; }).join('');
+
+  function cell(k, v) {
+    return '<div><div class="k">' + k + '</div><div class="v">' + (v || '—') + '</div></div>';
+  }
+  document.getElementById('sp-kv').innerHTML =
+    cell('Mã căn', esc(u.id)) +
+    cell('Loại', esc(u.kind)) +
+    cell('Diện tích', areaTxt(u.area)) +
+    cell('Phòng ngủ', u.beds ? String(u.beds) + ' PN' : '—') +
+    cell('WC', u.baths ? String(u.baths) : '—') +
+    cell('Hướng', esc(u.dir || '—')) +
+    cell('View', esc(u.view || '—')) +
+    cell('Tòa · tầng', esc(u.block || '—') + (u.floor ? ' · tầng ' + u.floor : '')) +
+    cell('Nội thất', esc(u.fit || '—')) +
+    cell('Tình trạng', esc((S.UNIT_STATE[u.state] || {}).text || '—')) +
+    (p ? cell('Chủ đầu tư', esc(p.owner || '—')) : '') +
+    (p ? cell('Vị trí', esc(p.place || '—')) : '') +
+    (p ? cell('Bàn giao', esc(p.handover || '—')) : '') +
+    cell('Giá', 'Liên hệ / xem bảng hàng CĐT');
+
+  var tpl = 'st2';
+  if (hot) {
+    var byHot = S.get('shareTemplates').filter(function (t) { return t.hotId === hot.id && t.approved; })[0];
+    if (byHot) tpl = byHot.id;
+    else {
+      var byPj = S.get('shareTemplates').filter(function (t) {
+        return t.projectId === u.pj && t.approved && (t.ticks || []).indexOf('hot') >= 0;
+      })[0];
+      if (byPj) tpl = byPj.id;
+    }
+  }
   document.getElementById('sp-gui').setAttribute('href',
-    go('chia-se.html', 'tpl=st2&unit=' + encodeURIComponent(u.id) + '&pj=' + encodeURIComponent(pj)));
+    go('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id) + '&pj=' + encodeURIComponent(pj)));
+  document.getElementById('sp-pj').setAttribute('href', go('du-an-chi-tiet.html', 'pj=' + encodeURIComponent(pj)));
+  document.getElementById('sp-copy').addEventListener('click', function () {
+    RECO.copy(pitch).then(function (ok) {
+      RECO.toast(ok ? 'Đã sao chép pitch' : 'Trình duyệt chặn sao chép — anh/chị chép tay phần mô tả', { danger: !ok });
+    });
+  });
 });
 </script>
 </body>

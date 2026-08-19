@@ -2083,11 +2083,15 @@ document.addEventListener('DOMContentLoaded', function () {
           String(u.area).replace('.', ',') + ' m²</p>' +
         '<div class="row mt-2">' +
           '<a class="btn btn-outline btn-sm" href="' + goQs('san-pham.html', 'pj=' + encodeURIComponent(PJ) + '&unit=' + encodeURIComponent(u.id)) + '">Xem căn</a>' +
-          '<a class="btn btn-primary btn-sm" href="' + goQs('chia-se.html', 'tpl=' + encodeURIComponent(tplForHot(h)) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>' +
+          '<a class="btn btn-primary btn-sm" href="' + goQs('mau.html', 'tpl=' + encodeURIComponent(tplForHot(h)) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>' +
         '</div></div>';
     }).join('');
   }
-  var TICK_LAB = { overview: 'Tổng quan', place: 'Vị trí', gallery: 'Ảnh', hot: 'SP Hot', bank: 'STK đặt cọc' };
+  var TICK_LAB = {
+    overview: 'Tổng quan', place: 'Vị trí', gallery: 'Ảnh dự án', amenity: 'Tiện ích',
+    bank: 'STK đặt cọc', hot: 'SP Hot', spec: 'Thông số căn', view: 'Hướng và view',
+    unitGallery: 'Ảnh căn', pitch: 'Mô tả căn'
+  };
   function paintMau() {
     var box = id('kv-mau-list');
     if (!box) return;

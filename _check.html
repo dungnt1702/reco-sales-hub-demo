@@ -11,8 +11,8 @@
 <div id="frames"></div>
 <script>
 var PHASE = 'gd01';
-var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet','san-pham','thu-vien-tai-lieu','cay-thu-muc',
-             'soan-noi-dung','chia-se','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua','xem-truoc-gd2',
+var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet','danh-muc-san-pham','san-pham','thu-vien-tai-lieu','cay-thu-muc',
+             'soan-noi-dung','chia-se','mau','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua','xem-truoc-gd2',
              'bao-tri','tinh-nang-gd1','chi-tiet-gd1','tinh-nang-gd2','chi-tiet-gd2','ha-tang'];
 /* 1024–1280 nằm trong danh sách vì đó là dải hay hỏng nhất và trước đây phải đo tay:
    thanh điều hướng đủ chỗ ở 1440 nhưng chưa gãy xuống hàng ở 1024 là tràn ngang. */
@@ -24,13 +24,14 @@ var lines = [], allHrefs = {}, allIds = {};
    `#thu-hoi` / `#het-han` để chọn lý do hiển thị cho khách, không có phần tử nào
    mang id đó và cũng không cần. Neo trỏ tới các trang này được miễn soát. */
 var HASH_AS_PARAM = ['link-het-han'];
+var PAGE_QS = { mau: 'tpl=st5', 'san-pham': 'unit=T1-08.02' };
 
 function load(page, w) {
   return new Promise(function (res) {
     var f = document.createElement('iframe');
     f.style.width = w + 'px';
     f.style.height = '900px';
-    f.src = PHASE + '/' + page + '.html?bare=1';
+    f.src = PHASE + '/' + page + '.html?bare=1' + (PAGE_QS[page] ? '&' + PAGE_QS[page] : '');
     f.onload = function () {
       var r;
       try {

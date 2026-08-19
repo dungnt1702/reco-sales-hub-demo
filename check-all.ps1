@@ -30,7 +30,8 @@ foreach ($s in $suites) {
   Write-Host "=== $($s.label) ===" -ForegroundColor Cyan
   Start-Process -FilePath $chrome -Wait -NoNewWindow -ArgumentList @(
     '--headless=new', '--disable-gpu', '--allow-file-access-from-files',
-    "--virtual-time-budget=$($s.budget)", '--dump-dom', $url
+    "--virtual-time-budget=$($s.budget)", "--timeout=$($s.budget + 25000)",
+    '--dump-dom', $url
   ) -RedirectStandardOutput $tmp
 
   $html = Get-Content $tmp -Raw

@@ -12,12 +12,13 @@
    Toast không tính là đổi — toast nằm ngoài #page nên không lọt vào chữ ký so sánh. */
 
 var PHASE = 'gd01';
-var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet','san-pham','thu-vien-tai-lieu','cay-thu-muc',
-             'soan-noi-dung','chia-se','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua','xem-truoc-gd2',
+var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet','danh-muc-san-pham','san-pham','thu-vien-tai-lieu','cay-thu-muc',
+             'soan-noi-dung','chia-se','mau','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua','xem-truoc-gd2',
              'bao-tri','tinh-nang-gd1','chi-tiet-gd1','tinh-nang-gd2','chi-tiet-gd2','ha-tang'];
 
 /* Vai trò dùng để mở khóa các nút bị ẩn theo quyền */
 var ROLE_BY_PAGE = { 'quan-tri': 'gddu', 'nguoi-dung': 'hcns', 'de-nghi-sua': 'tkkd', 'cay-thu-muc': 'gddu' };
+var PAGE_QS = { mau: 'tpl=st5', 'san-pham': 'unit=T1-08.02' };
 
 /* Hành động khó hoàn tác — bắt buộc phải hỏi lại trước khi đổi trạng thái */
 var MUST_CONFIRM = [
@@ -75,7 +76,7 @@ function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 function load(page, role) {
   return new Promise(function (res) {
     var f = document.createElement('iframe');
-    f.src = PHASE + '/' + page + '.html?bare=1' + (role ? '&role=' + role : '');
+    f.src = PHASE + '/' + page + '.html?bare=1' + (PAGE_QS[page] ? '&' + PAGE_QS[page] : '') + (role ? '&role=' + role : '');
     f.onload = function () { setTimeout(function () { res(f); }, 400); };
     frames.appendChild(f);
   });
