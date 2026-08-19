@@ -165,8 +165,7 @@
     { href: 'danh-muc-san-pham.html', label: 'Sản phẩm', key: 'san-pham', icon: 'grid' },
     { href: 'cay-thu-muc.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
     { href: 'chia-se.html', label: 'Chia sẻ', key: 'chia-se', icon: 'share' },
-    { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' },
-    { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd' }
+    { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' }
   ] : [
     { href: 'trang-dau.html', label: 'Trang đầu', key: 'trang-dau', icon: 'home' },
     { href: 'du-an.html', label: 'Dự án', key: 'du-an', icon: 'layers' },
@@ -182,7 +181,9 @@
   var MORE = inGd01() ? [
     { href: 'de-nghi-sua.html', label: 'Đề nghị sửa nội dung' },
     { href: 'nguoi-dung.html', label: 'Người dùng và quyền', roles: 'gd hcns' },
-    { href: 'sitemap.html', label: 'Bản đồ hệ thống · đối chiếu SaleHUB', roles: 'gd gddu tkkd' },
+    /* Giá và phạm vi — không lên NAV, chỉ menu Thêm / drawer của GĐ và TKKD. */
+    { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', roles: 'gd gddu tkkd' },
+    { href: 'sitemap.html', label: 'Bản đồ hệ thống · đối chiếu SaleHUB', key: 'sitemap', roles: 'gd gddu tkkd' },
     { href: 'bao-tri.html', label: 'Lịch bàn giao và bảo trì', roles: 'gd gddu tkkd' },
     { href: 'ha-tang.html', label: 'Hạ tầng và chi phí vận hành', roles: 'gd gddu tkkd' },
     { href: '../index.html', label: 'Cổng Giai đoạn 1 / 2' }
@@ -272,7 +273,7 @@
       return '<a href="' + link(n.href) + '"' + (n.key === active ? ' aria-current="page"' : '') + '>' + n.label + '</a>';
     }).join('');
     var more = MORE.filter(allowed).map(function (n) {
-      return '<a href="' + link(n.href) + '">' + n.label + '</a>';
+      return '<a href="' + link(n.href) + '"' + (n.key && n.key === active ? ' aria-current="page"' : '') + '>' + n.label + '</a>';
     }).join('');
     return '' +
       '<div class="scrim" id="nav-scrim"></div>' +
