@@ -11,12 +11,11 @@
 <script defer src="store.js"></script>
 <script defer src="../assets/data.js"></script>
 <style>
-  .home-hero { position: relative; overflow: hidden; }
   .home-search {
-    display: flex; align-items: center; gap: 10px; background: #fff;
-    border-radius: var(--radius-pill); padding: 6px 6px 6px 18px; box-shadow: var(--shadow-float);
+    display: flex; align-items: center; gap: 8px; background: #fff;
+    border-radius: var(--radius-pill); padding: 4px 4px 4px 14px; box-shadow: var(--shadow-float);
   }
-  .home-search input { flex: 1; border: 0; outline: 0; font: inherit; font-size: .98rem; min-width: 0; padding: 10px 0; }
+  .home-search input { flex: 1; border: 0; outline: 0; font: inherit; font-size: .9rem; min-width: 0; padding: 7px 0; }
   .tips { display: grid; gap: 12px; }
   @media (min-width: 768px) { .tips { grid-template-columns: repeat(3, minmax(0,1fr)); } }
   .tip { display: block; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; text-decoration: none; color: inherit; transition: transform .2s ease, box-shadow .2s ease; }
@@ -36,17 +35,17 @@
   <div class="wrap page">
   <div class="home-fold">
 
-    <!-- Lời chào + tìm kiếm. Vinh danh: cạnh hero từ tablet; thẻ ngang dưới KPI trên phone. -->
-    <section class="hero home-hero with-img" style="background-image:linear-gradient(100deg, rgba(5,31,53,.98) 34%, rgba(9,49,82,.9)), url('../assets/img/reco-opening.jpg')">
+    <!-- Chào/tìm gọn. Honor: desktop 1/3 phải span KPI; tablet 1/2 phải, KPI dưới; mobile ô 2. -->
+    <section class="hero home-hero">
       <div>
         <span class="eyebrow light" id="greet-role">Nhân viên bán hàng · Nội dung được phép xem</span>
-        <h1 style="font-size:clamp(1.7rem,3.6vw,2.5rem);max-width:20ch">Chào chị Thu Hà, hôm nay bắt đầu từ đâu?</h1>
-        <div class="home-search mt-3">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" style="width:19px;flex:none" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+        <h1>Chào chị Thu Hà, hôm nay bắt đầu từ đâu?</h1>
+        <div class="home-search mt-2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" style="width:18px;flex:none" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
           <input type="search" id="hero-q" placeholder="Tìm dự án, mã căn, tài liệu…" aria-label="Tìm kiếm">
           <button type="button" class="btn btn-primary btn-sm" id="hero-go">Tìm</button>
         </div>
-        <div class="row-tight mt-2" id="hero-chips">
+        <div class="row-tight mt-1 home-hero-chips" id="hero-chips">
           <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=canho" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Căn hộ chung cư</a>
           <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=datnen" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Đất nền</a>
           <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=thaptang" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Nhà thấp tầng, biệt thự</a>
@@ -55,25 +54,7 @@
       </div>
     </section>
 
-    <button type="button" class="alert-ticker" id="alert-ticker" aria-label="Cảnh báo bán hàng — bấm để xem chi tiết">
-      <div class="alert-track" id="alert-track"></div>
-    </button>
-
-    <!-- Bốn số liệu nhanh -->
-    <section class="mt-3 home-kpi">
-      <div class="spread mb-2">
-        <h2 style="font-size:1.15rem">Số liệu nhanh của tôi</h2>
-      </div>
-      <div class="grid g-4">
-        <a class="tile" id="tl-duan" href="du-an.html"><span class="k">Dự án được giao</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Xem danh sách →</span></a>
-        <a class="tile" id="tl-link" href="chia-se.html"><span class="k">Đường dẫn gửi khách còn hiệu lực</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Mở nhật ký chia sẻ →</span></a>
-        <a class="tile" id="tl-hethan" href="thu-vien-tai-lieu.html"><span class="k">Tài liệu sắp hết hiệu lực</span><span class="num" style="color:var(--orange-text)">—</span><span class="micro muted" data-sub>Nhắc trước 7 ngày</span><span class="go">Xem tài liệu →</span></a>
-        <a class="tile" id="tl-duyet" data-roles="gd gddu tkkd mkt" href="quan-tri.html"><span class="k">Chờ tôi duyệt</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Mở hàng chờ duyệt →</span></a>
-        <a class="tile" id="tl-denghi" data-roles="nvbh qlkd hcns" href="de-nghi-sua.html"><span class="k">Đề nghị sửa tôi đã gửi</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Theo dõi trạng thái →</span></a>
-      </div>
-    </section>
-
-    <aside class="honor-rail mt-3" id="honor-rail" aria-label="Vinh danh nhân viên vừa bán được hàng">
+    <aside class="honor-rail" id="honor-rail" aria-label="Vinh danh nhân viên vừa bán được hàng">
       <div class="honor-head">
         <span class="eyebrow">Vinh danh · vừa chốt</span>
         <div class="reco-slide-nav">
@@ -84,6 +65,24 @@
       <div class="honor-slides" id="honor-slides"></div>
       <div class="honor-dots reco-slide-dots" id="honor-dots"></div>
     </aside>
+
+    <button type="button" class="alert-ticker" id="alert-ticker" aria-label="Cảnh báo bán hàng — bấm để xem chi tiết">
+      <div class="alert-track" id="alert-track"></div>
+    </button>
+
+    <!-- Bốn số liệu nhanh -->
+    <section class="home-kpi">
+      <div class="spread mb-2">
+        <h2>Số liệu nhanh của tôi</h2>
+      </div>
+      <div class="grid g-4">
+        <a class="tile" id="tl-duan" href="du-an.html"><span class="k">Dự án được giao</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Xem danh sách →</span></a>
+        <a class="tile" id="tl-link" href="chia-se.html"><span class="k">Đường dẫn gửi khách còn hiệu lực</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Mở nhật ký chia sẻ →</span></a>
+        <a class="tile" id="tl-hethan" href="thu-vien-tai-lieu.html"><span class="k">Tài liệu sắp hết hiệu lực</span><span class="num" style="color:var(--orange-text)">—</span><span class="micro muted" data-sub>Nhắc trước 7 ngày</span><span class="go">Xem tài liệu →</span></a>
+        <a class="tile" id="tl-duyet" data-roles="gd gddu tkkd mkt" href="quan-tri.html"><span class="k">Chờ tôi duyệt</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Mở hàng chờ duyệt →</span></a>
+        <a class="tile" id="tl-denghi" data-roles="nvbh qlkd hcns" href="de-nghi-sua.html"><span class="k">Đề nghị sửa tôi đã gửi</span><span class="num">—</span><span class="micro muted" data-sub></span><span class="go">Theo dõi trạng thái →</span></a>
+      </div>
+    </section>
   </div>
 
     <!-- Việc cần làm -->
@@ -231,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ? '<img src="' + RECO.asset(h.avatar) + '" alt="">'
         : '<span class="honor-ava">' + esc(h.ini || '') + '</span>';
       var bg = p && p.img
-        ? ' style="background-image:linear-gradient(180deg, rgba(5,31,53,.28) 0%, rgba(5,31,53,.88) 70%), url(\'' + RECO.asset(p.img) + '\')"'
+        ? ' style="background-image:linear-gradient(180deg, rgba(5,31,53,.18) 0%, rgba(5,31,53,.92) 68%), url(\'' + RECO.asset(p.img) + '\')"'
         : '';
       return '<div class="honor-slide' + (n === 0 ? ' on' : '') + '" data-hi="' + n + '"' + bg + '>' +
         ava +
@@ -247,17 +246,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     function startHonorTimer() {
       if (honorTimer) return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       if (/(?:^|[?&])bare=1(?:&|$)/.test(location.search) || /[?&]bare=1/.test(location.hash)) return;
       honorTimer = setInterval(function () { slider.go(slider.index() + 1); }, 4200);
     }
-    if (honorTimer) { clearInterval(honorTimer); honorTimer = null; }
+    function stopHonorTimer() {
+      if (honorTimer) { clearInterval(honorTimer); honorTimer = null; }
+    }
+    stopHonorTimer();
     startHonorTimer();
     if (!rail.dataset.honorHover) {
       rail.dataset.honorHover = '1';
-      rail.addEventListener('mouseenter', function () {
-        if (honorTimer) { clearInterval(honorTimer); honorTimer = null; }
-      });
+      rail.addEventListener('mouseenter', stopHonorTimer);
       rail.addEventListener('mouseleave', startHonorTimer);
+      rail.addEventListener('focusin', stopHonorTimer);
+      rail.addEventListener('focusout', function () {
+        if (!rail.contains(document.activeElement)) startHonorTimer();
+      });
     }
   }
 
