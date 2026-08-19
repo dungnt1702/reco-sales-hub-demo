@@ -1343,6 +1343,7 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
   font-size: 1.2rem; line-height: 1; cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
 }
+.reco-slide-btn[hidden] { display: none; }
 .honor-btn {
   width: 32px; height: 32px;
   border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.16); color: #fff;
@@ -1650,7 +1651,7 @@ body.proto-off .zone-chips { top: var(--header-h); }
   }
   .honor-slides { min-height: 100%; }
   .home-fold .home-kpi .spread { margin-bottom: 8px; }
-  .home-fold .home-kpi .grid { gap: 10px; }
+  .home-fold .home-kpi .grid { gap: 16px; }
   .home-fold .home-kpi .tile { padding: 12px 14px; }
   .home-fold .home-kpi .tile .num { font-size: 1.55rem; }
   .home-fold .home-kpi .tile .go { margin-top: 6px; }

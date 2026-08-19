@@ -1146,6 +1146,8 @@
       var gap = parseFloat(window.getComputedStyle(track).columnGap || window.getComputedStyle(track).gap) || 16;
       var step = (stage.clientWidth + gap) / p;
       track.style.transform = 'translateX(-' + (idx * step) + 'px)';
+      if (prev) prev.hidden = max === 0;
+      if (next) next.hidden = max === 0;
       paintDots();
     }
     if (prev) prev.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); go(idx - 1, true); });
