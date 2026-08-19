@@ -157,6 +157,7 @@
             <div><div class="k">Hướng ban công</div><div class="v" id="u-dir">—</div></div>
             <div><div class="k">Tòa · tầng</div><div class="v" id="u-block">—</div></div>
           </div>
+          <div class="mau-media-row mt-2" id="pub-unit-gal"></div>
         </div>
       </div>
     </section>
@@ -471,19 +472,21 @@ document.addEventListener('DOMContentLoaded', function () {
     overview: !ticks || ticks.indexOf('overview') >= 0,
     place: !ticks || ticks.indexOf('place') >= 0,
     gallery: !ticks || ticks.indexOf('gallery') >= 0,
+    amenity: !ticks || ticks.indexOf('amenity') >= 0 || ticks.indexOf('overview') >= 0,
     hot: !!(hotId || (ticks && ticks.indexOf('hot') >= 0) || link.unitId),
     bank: !!(ticks && ticks.indexOf('bank') >= 0)
   };
   if (ticks) {
-    vis.hot = ticks.indexOf('hot') >= 0;
+    vis.hot = ['hot', 'spec', 'view', 'unitGallery', 'pitch'].some(function (k) { return ticks.indexOf(k) >= 0; }) || !!link.unitId;
     vis.bank = ticks.indexOf('bank') >= 0;
+    vis.amenity = ticks.indexOf('amenity') >= 0;
   }
   function hideSec(id, on) {
     var el = document.getElementById(id);
     if (el) el.hidden = !on;
   }
   hideSec('pub-overview', vis.overview);
-  hideSec('pub-points', vis.overview);
+  hideSec('pub-points', vis.amenity);
   hideSec('pub-place', vis.place);
   hideSec('pub-gallery', vis.gallery);
   hideSec('pub-hot', vis.hot && !!u);
@@ -492,16 +495,78 @@ document.addEventListener('DOMContentLoaded', function () {
   hideSec('pub-ptg', false);
   hideSec('yeu-cau', false);
 
-  /* ---------- Thư viện ảnh: chỉ ảnh đã duyệt mang nhãn Công khai ---------- */
+  if (ticks && ticks.length) {
+    var wrap = document.querySelector('.pub-wrap');
+    var tickSec = {
+      amenity: 'pub-points', place: 'pub-place', gallery: 'pub-gallery',
+      unitGallery: 'pub-hot', spec: 'pub-hot', view: 'pub-hot', pitch: 'pub-hot', hot: 'pub-hot',
+      bank: 'pub-bank'
+    };
+    var seenSec = {}, ordered = [];
+    ticks.forEach(function (k) {
+      var sid = tickSec[k];
+      if (!sid || seenSec[sid]) return;
+      seenSec[sid] = true;
+      var el = document.getElementById(sid);
+      if (el) ordered.push(el);
+    });
+    if (wrap && ordered.length) {
+      var last = wrap.querySelector('.pub-sec:last-of-type');
+      ordered.forEach(function (el) { wrap.insertBefore(el, last); });
+    }
+  }
+
+  function mediaThumb(m, i, asButton) {
+    var cover = RECO.asset(S.mediaCover(m));
+    var name = m.name || (m.type === 'video' ? 'Video' : 'Ảnh');
+    if (m.type === 'video') {
+      return '<a class="mau-vid" href="' + E(m.src) + '" target="_blank" rel="noopener" aria-label="' + E(name) + '">' +
+        '<img src="' + cover + '" alt="' + E(name) + '" loading="lazy"><span class="mau-play" aria-hidden="true"></span></a>';
+    }
+    if (!asButton) return '<img src="' + RECO.asset(m.src) + '" alt="' + E(name) + '" loading="lazy">';
+    return '<button type="button" data-i="' + i + '" aria-label="Xem ảnh lớn: ' + E(name) + '">' +
+      '<img src="' + cover + '" alt="' + E(name) + '" loading="lazy"></button>';
+  }
+
+  /* ---------- Thư viện ảnh: media đã chọn trên bài, không thì ảnh công khai ---------- */
   var gal = document.getElementById('gal');
-  var shots = S.get('media').filter(function (m) {
-    return m.pj === PJ && m.state === 'approved' && m.label === 'public';
-  }).slice(0, 4);
-  if (shots.length) {
-    gal.innerHTML = shots.map(function (m, i) {
-      return '<button type="button" data-i="' + i + '" aria-label="Xem ảnh lớn: ' + E(m.name) + '">' +
-        '<img src="' + S.imgSrc(m) + '" alt="' + E(m.name) + '" loading="lazy"></button>';
-    }).join('');
+  var pickedGal = (link.galleryMedia && link.galleryMedia.length)
+    ? link.galleryMedia
+    : (tpl && tpl.galleryMedia && tpl.galleryMedia.length ? tpl.galleryMedia : null);
+  var shots = [];
+  if (pickedGal) {
+    var html = '', shotI = 0;
+    shots = [];
+    pickedGal.forEach(function (m) {
+      if (m.type === 'video') {
+        html += mediaThumb(m, 0, false);
+      } else {
+        shots.push({ name: m.name || 'Ảnh', img: m.src, thumb: RECO.asset(S.mediaCover(m)) });
+        html += mediaThumb(m, shotI, true);
+        shotI++;
+      }
+    });
+    gal.innerHTML = html;
+  } else {
+    shots = S.get('media').filter(function (m) {
+      return m.pj === PJ && m.state === 'approved' && m.label === 'public';
+    }).slice(0, 4);
+    if (shots.length) {
+      gal.innerHTML = shots.map(function (m, i) {
+        return '<button type="button" data-i="' + i + '" aria-label="Xem ảnh lớn: ' + E(m.name) + '">' +
+          '<img src="' + S.imgSrc(m) + '" alt="' + E(m.name) + '" loading="lazy"></button>';
+      }).join('');
+    }
+  }
+
+  var unitGal = document.getElementById('pub-unit-gal');
+  if (unitGal && u) {
+    var pickedUnit = (link.unitMedia && link.unitMedia.length)
+      ? link.unitMedia
+      : (tpl && tpl.unitMedia && tpl.unitMedia.length ? tpl.unitMedia : S.unitMedia(u.id).slice(0, 4));
+    var showUnitGal = !ticks || ticks.indexOf('unitGallery') >= 0;
+    unitGal.innerHTML = showUnitGal ? pickedUnit.map(function (m, i) { return mediaThumb(m, i, false); }).join('') : '';
+    unitGal.hidden = !showUnitGal || !pickedUnit.length;
   }
 
   /* ---------- Xem ảnh lớn ---------- */

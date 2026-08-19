@@ -97,7 +97,7 @@
         <h1 id="pj-title">Le Parc Place — ParkCity Hanoi</h1>
         <p class="lead mt-1" style="color:rgba(255,255,255,.85)">Dương Nội, Hà Đông, Hà Nội · Chung cư · 4 tòa · 29–35 tầng · 802 căn</p>
         <div class="row mt-3">
-          <a class="btn btn-primary" href="mau.html?new=1">Tạo link</a>
+          <a class="icon-btn icon-btn-fill" id="pj-cta-new" href="mau.html?new=1" aria-label="Tạo bài" title="Tạo bài"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></a>
           <a class="icon-btn" href="chia-se.html" aria-label="Bài đăng" title="Bài đăng" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28);color:#fff">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>
           </a>
@@ -379,7 +379,7 @@
           <p class="small muted mb-2">Nội dung chuẩn do Giám đốc dự án duyệt. Giai đoạn 1 không tự sinh nội dung.</p>
           <!-- Hàng trên: tìm kiếm và công tắc bản trả lời. Công tắc là ĐỔI CHẾ ĐỘ XEM,
                không phải bộ lọc, nên đứng tách khỏi hàng chip chủ đề bên dưới. -->
-          <div class="filterbar mb-2">
+          <div class="filterbar mb-2" data-filter-sheet>
             <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
               <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
               <input type="search" id="qa-q" placeholder="Tìm trong hỏi đáp" aria-label="Tìm trong hỏi đáp">
@@ -847,6 +847,8 @@ document.addEventListener('DOMContentLoaded', function () {
       pin.setAttribute('aria-pressed', p.pinned ? 'true' : 'false');
       pin.setAttribute('aria-label', p.pinned ? 'Bỏ ghim dự án' : 'Ghim dự án');
     }
+    var ctaNew = id('pj-cta-new');
+    if (ctaNew) ctaNew.setAttribute('href', goQs('mau.html', 'new=1&pj=' + encodeURIComponent(p.id)));
     var hero = id('pj-hero');
     if (hero && p.img) {
       hero.style.backgroundImage =
@@ -2077,10 +2079,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     box.innerHTML = rows.map(function (h, n) {
       var u = S.find('units', h.unitId);
-      var tpl = tplForHot(h);
-      var gui = tpl
-        ? '<a class="btn btn-primary btn-sm" data-roles="gd gddu tkkd qlkd nvbh mkt" href="' + goQs('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>'
-        : '';
+      var gui = '<a class="btn btn-primary btn-sm" data-roles="gd gddu tkkd qlkd nvbh mkt" href="' +
+        goQs('mau.html', 'new=1&unit=' + encodeURIComponent(u.id) + '&pj=' + encodeURIComponent(PJ)) + '">Gửi</a>';
       return '<div class="card card-pad reco-slide-item' + (n === 0 ? ' on' : '') + '">' +
         '<div class="row-tight mb-1"><b>' + esc(u.id) + '</b><span class="chip">' + esc(u.kind) + '</span></div>' +
         '<p class="small" style="margin:0">' + esc(h.pitch) + '</p>' +
@@ -2095,11 +2095,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var wrap = id('kv-hot-slide');
     if (wrap) RECO.bindSlide(wrap, { prev: '#kv-hot-prev', next: '#kv-hot-next', dots: '#kv-hot-dots', per: 'pj' });
   }
-  var TICK_LAB = {
-    overview: 'Tổng quan', place: 'Vị trí', gallery: 'Ảnh dự án', amenity: 'Tiện ích',
-    bank: 'STK đặt cọc', hot: 'SP Hot', spec: 'Thông số căn', view: 'Hướng và view',
-    unitGallery: 'Ảnh căn', pitch: 'Mô tả căn'
-  };
   function paintMau() {
     var box = id('kv-mau-list');
     if (!box) return;
@@ -2114,22 +2109,27 @@ document.addEventListener('DOMContentLoaded', function () {
       return aa - bb;
     });
     if (!list.length) {
+      box.className = 'stack';
       box.innerHTML = RECO_DATA.empty('Chưa có bài đăng',
         'Mở Bài đăng để dùng mẫu chung hoặc tạo bài của anh/chị.',
         '<a class="btn btn-primary" href="' + RECO.link('chia-se.html') + '">Mở Bài đăng</a>');
       return;
     }
+    box.className = 'post-grid';
     box.innerHTML = list.map(function (t) {
-      var ticks = (t.ticks || []).map(function (k) {
-        return '<span class="chip">' + esc(TICK_LAB[k] || k) + '</span>';
-      }).join('');
-      var chip = t.scope === 'personal' ? '<span class="chip">Của tôi</span>'
-        : (t.approved ? '<span class="st st-live">Đã duyệt</span>' : '<span class="st st-wait">Chưa duyệt</span>');
-      return '<div class="card card-pad"><div class="spread">' +
-        '<div><b>' + esc(t.title) + '</b><div class="row-tight mt-1">' + chip + ticks + '</div>' +
-          '<p class="small muted mt-1" style="margin:0">' + esc(t.body) + '</p></div>' +
-        '<a class="btn btn-outline btn-sm" href="' + goQs('chia-se.html', 'tpl=' + encodeURIComponent(t.id)) + '">Mở bài</a>' +
-      '</div></div>';
+      var intent = S.intentOf(S.tplIntent(t));
+      var chip = t.scope === 'personal' ? '<span class="st st-live">Của tôi</span>'
+        : (t.approved ? '' : '<span class="st st-wait">Chưa duyệt</span>');
+      return '<article class="pcard">' +
+        '<div class="pcard-media">' +
+          '<img src="' + RECO.asset(S.tplCover(t)) + '" alt="' + esc(t.title) + '" loading="lazy">' +
+          '<span class="top-left"><span class="chip-reply">Trả lời · ' + esc(intent.short) + '</span></span>' +
+          (chip ? '<span class="top-right">' + chip + '</span>' : '') +
+          '<span class="on-media"><h3>' + esc(t.title) + '</h3><span class="place">' + esc(S.projectName(t.projectId)) + '</span></span>' +
+        '</div>' +
+        '<div class="pcard-body"><div class="pcard-foot">' +
+          '<a class="btn btn-outline btn-sm" href="' + goQs('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Mở bài</a>' +
+        '</div></div></article>';
     }).join('');
   }
   function paintDriveDocs() {

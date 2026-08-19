@@ -516,25 +516,26 @@ document.addEventListener('DOMContentLoaded', function () {
       return 0;
     }).slice(0, 6);
     if (!list.length) {
-      box.classList.remove('grid', 'g-3');
+      box.classList.remove('grid', 'g-3', 'post-grid');
       box.innerHTML = RECO_DATA.empty('Chưa có mẫu chung đã duyệt', 'Giám đốc dự án duyệt bài ở màn Bài đăng.');
       return;
     }
-    box.classList.add('grid', 'g-3');
+    box.classList.remove('grid', 'g-3');
+    box.classList.add('post-grid');
     box.innerHTML = list.map(function (t) {
       var p = S.find('projects', t.projectId);
       var isHot = !!(t.hotId && hotSort[t.hotId] != null);
-      var img = p && p.img ? RECO.asset(p.img) : RECO.asset('reco-banner.jpg');
-      var excerpt = esc((t.body || '').replace(/\s+/g, ' ').slice(0, 90));
+      var img = RECO.asset(S.tplCover(t));
+      var intent = S.intentOf(S.tplIntent(t));
       return '<a class="pcard" href="' + go('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">' +
         '<div class="pcard-media">' +
           '<img src="' + img + '" alt="' + esc(t.title) + '" loading="lazy">' +
-          (isHot ? '<span class="top-left hot">HOT</span>' : '') +
+          '<span class="top-left">' + (isHot ? '<span class="hot">HOT</span> ' : '') +
+            '<span class="chip-reply">Trả lời · ' + esc(intent.short) + '</span></span>' +
           '<span class="on-media"><h3>' + esc(t.title) + '</h3>' +
             '<span class="place">' + esc(p ? p.name : '') + '</span></span>' +
         '</div>' +
         '<div class="pcard-body">' +
-          '<p class="small muted" style="margin:0">' + excerpt + (t.body && t.body.length > 90 ? '…' : '') + '</p>' +
           '<div class="pcard-foot"><span class="micro muted">Mẫu chung đã duyệt</span><span class="go">Dùng bài</span></div>' +
         '</div></a>';
     }).join('');

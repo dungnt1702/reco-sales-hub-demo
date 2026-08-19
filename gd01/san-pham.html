@@ -134,15 +134,8 @@ document.addEventListener('DOMContentLoaded', function () {
     (p ? cell('Bàn giao', esc(p.handover || '—')) : '') +
     cell('Giá', 'Liên hệ / xem bảng hàng CĐT');
 
-  var tpl = S.tplForUnit(u.id);
-  var gui = document.getElementById('sp-gui');
-  if (tpl) {
-    gui.hidden = false;
-    gui.setAttribute('href',
-      go('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id) + '&pj=' + encodeURIComponent(pj)));
-  } else {
-    gui.hidden = true;
-  }
+  document.getElementById('sp-gui').setAttribute('href',
+    go('mau.html', 'new=1&unit=' + encodeURIComponent(u.id) + '&pj=' + encodeURIComponent(pj)));
   document.getElementById('sp-pj').setAttribute('href', go('du-an-chi-tiet.html', 'pj=' + encodeURIComponent(pj)));
   document.getElementById('sp-copy').addEventListener('click', function () {
     RECO.copy(pitch).then(function (ok) {

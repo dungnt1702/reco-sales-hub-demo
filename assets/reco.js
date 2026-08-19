@@ -167,6 +167,8 @@
     grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
     list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
+    grip: '<circle cx="9" cy="6" r="1.35"/><circle cx="15" cy="6" r="1.35"/><circle cx="9" cy="12" r="1.35"/><circle cx="15" cy="12" r="1.35"/><circle cx="9" cy="18" r="1.35"/><circle cx="15" cy="18" r="1.35"/>',
+    play: '<circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4V8"/>',
     edit: '<path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/>',
     copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
@@ -695,6 +697,38 @@
   }
 
   function initFilterSheets() {
+    var scrim = document.getElementById('fsheet-scrim');
+    if (!scrim) {
+      scrim = document.createElement('div');
+      scrim.id = 'fsheet-scrim';
+      scrim.className = 'fsheet-scrim';
+      scrim.hidden = true;
+      document.body.appendChild(scrim);
+    }
+    var openWrap = null;
+    function closeSheet() {
+      if (openWrap) openWrap.classList.remove('open');
+      openWrap = null;
+      scrim.hidden = true;
+      releaseScroll();
+    }
+    function showSheet(wrap) {
+      if (openWrap && openWrap !== wrap) openWrap.classList.remove('open');
+      wrap.classList.add('open');
+      openWrap = wrap;
+      scrim.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+    if (!scrim._bound) {
+      scrim._bound = true;
+      scrim.addEventListener('click', closeSheet);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && openWrap) {
+          e.preventDefault();
+          closeSheet();
+        }
+      });
+    }
     document.querySelectorAll('[data-filter-sheet]').forEach(function (bar) {
       if (bar.querySelector('.filter-extras')) return;
       var extras = [];
@@ -727,14 +761,6 @@
       open.innerHTML = svg('filter');
       bar.appendChild(open);
       bar.appendChild(wrap);
-      var scrim = document.getElementById('fsheet-scrim');
-      if (!scrim) {
-        scrim = document.createElement('div');
-        scrim.id = 'fsheet-scrim';
-        scrim.className = 'fsheet-scrim';
-        scrim.hidden = true;
-        document.body.appendChild(scrim);
-      }
       function count() {
         var n = 0;
         wrap.querySelectorAll('select').forEach(function (s) { if (s.value) n++; });
@@ -743,19 +769,11 @@
         });
         open.innerHTML = svg('filter') + (n ? '<span class="fsheet-n">' + n + '</span>' : '');
       }
-      function close() {
-        wrap.classList.remove('open');
-        scrim.hidden = true;
-        releaseScroll();
-      }
-      function show() {
-        wrap.classList.add('open');
-        scrim.hidden = false;
-        document.body.style.overflow = 'hidden';
-      }
-      open.addEventListener('click', show);
-      closeBtn.addEventListener('click', close);
-      scrim.addEventListener('click', close);
+      open.addEventListener('click', function () {
+        if (wrap.classList.contains('open')) closeSheet();
+        else showSheet(wrap);
+      });
+      closeBtn.addEventListener('click', closeSheet);
       wrap.addEventListener('change', count);
       wrap.addEventListener('input', count);
       count();

@@ -10,7 +10,7 @@
 (function () {
   'use strict';
 
-  var KEY = 'reco-salehub-demo-gd01-v3';
+  var KEY = 'reco-salehub-demo-gd01-v4';
 
   /* ---------- Dữ liệu gốc ---------- */
   function seed() {
@@ -1225,34 +1225,45 @@
       /* Thư viện mẫu chia sẻ tin (QD-076): shared phải duyệt; personal chỉ owner */
       shareTemplates: [
         { id: 'st1', projectId: 'leparc', title: 'Giới thiệu lần đầu — Le Parc Place', scope: 'shared', ownerUserId: null, approved: true,
+          intent: 'intro',
           body: 'Anh/chị ơi, em gửi thông tin Le Parc Place — ParkCity Hà Đông.\n\n· 4 tòa A/B/C/D, 29–35 tầng, 802 căn trên 16.234 m²\n· Gần LINC Mall, ParkCity Club, trường quốc tế\n· Chủ đầu tư ParkCity Holdings, sở hữu lâu dài\n\nTrang có tổng quan, vị trí và ảnh đã duyệt. Giá và bảng hàng em đối chiếu Drive Chủ đầu tư rồi gửi riêng — không ghi trên tin này.',
           ticks: ['overview', 'place', 'gallery', 'amenity'] },
-        { id: 'st2', projectId: 'leparc', title: 'Chốt căn góc tòa A đang đẩy', scope: 'shared', ownerUserId: null, approved: true,
-          unitId: 'LPP-A.21.03',
-          body: 'Anh/chị ơi, căn em đang tư vấn tuần này:\n\nLPP-A.21.03 — Le Parc Place tòa A tầng 21\n· 2PN loại A1, 72,4 m², căn góc Đông Nam\n· View công viên nội khu ParkCity\n· Gần LINC Mall và trường quốc tế\n\nẢnh căn và tổng quan dự án trong đường dẫn. Giá xem bảng hàng CĐT, em không ghi trên tin.',
-          ticks: ['overview', 'gallery', 'hot', 'spec', 'unitGallery', 'pitch'], hotId: 'hp3' },
-        { id: 'st3', projectId: 'leparc', title: 'Khách hỏi STK đặt cọc', scope: 'personal', ownerUserId: 'u5', approved: true,
+        { id: 'st2', projectId: 'leparc', title: 'Khi khách hỏi: căn LPP-A.21.03 — 2PN view công viên', scope: 'shared', ownerUserId: null, approved: true,
+          intent: 'unit', unitId: 'LPP-A.21.03',
+          body: 'Anh/chị ơi, căn em đang tư vấn tuần này:\n\nLPP-A.21.03 — Le Parc Place tòa A tầng 21\n· 2PN loại A1, 72,4 m², căn góc Đông Nam\n· View công viên nội khu ParkCity\n· Gần LINC Mall và trường quốc tế\n\nẢnh căn trong đường dẫn. Giá xem bảng hàng CĐT, em không ghi trên tin.',
+          ticks: ['spec', 'view', 'unitGallery', 'pitch', 'gallery'], hotId: 'hp3' },
+        { id: 'st3', projectId: 'leparc', title: 'Khi khách hỏi: STK đặt cọc Le Parc', scope: 'personal', ownerUserId: 'u5', approved: true,
+          intent: 'bank',
           body: 'Anh/chị chuyển khoản đúng cú pháp trên trang giúp em đối chiếu sao kê trong 24 giờ.\n\nChủ tài khoản: Công Ty Cổ Phần Nhà Ở Ngay Reco\nSố TK: 774668888 · VPBank\nNội dung: <Tên khách> đặt cọc <mã căn> dự án Le Parc Place',
-          ticks: ['bank'] },
+          ticks: ['bank', 'overview'] },
         { id: 'st4', projectId: 'celestine', title: 'Giới thiệu Celestine — nháp', scope: 'shared', ownerUserId: null, approved: false,
+          intent: 'intro',
           body: 'Bản nháp chưa duyệt — sale không gửi được.',
           ticks: ['overview', 'place'] },
-        { id: 'st5', projectId: 'celestine', title: 'Chốt 2PN view Hồ Tây — đợt 1', scope: 'shared', ownerUserId: null, approved: true,
-          unitId: 'T1-08.02',
-          body: 'Anh/chị ơi, Celestine Westlake — 300 Võ Chí Công, Tây Hồ.\n\nCăn em đang đẩy: T1-08.02\n· 2PN, 78,4 m², ban công Đông Nam view Hồ Tây\n· Tầng 8 tháp T1 — dẫn khách xem nhà dễ\n· Bàn giao bếp tủ âm, TBVS châu Âu\n· Đợt 1 sắp kết thúc, căn còn hàng\n\n2 tháp 23 tầng, 216 căn, CĐT VINAENCO, bàn giao từ 2027. Giá và CSBH em gửi theo bảng hàng CĐT, không ghi trên tin.',
-          ticks: ['overview', 'place', 'gallery', 'hot', 'spec', 'view', 'unitGallery', 'pitch', 'amenity'], hotId: 'hp1' },
-        { id: 'st6', projectId: 'opening', title: 'Chốt 3PN+1 Five Seasons — ở ngay', scope: 'shared', ownerUserId: null, approved: true,
-          unitId: 'GS-FS.2501',
-          body: 'Anh/chị ơi, Gold Season 47 Nguyễn Tuân — tòa Five Seasons.\n\nCăn em đang đẩy: GS-FS.2501\n· 3PN+1, 170 m², Đông Nam, tầng 25\n· Hàng chuyển nhượng, nhận nhà ở ngay Thanh Xuân\n· Gần Nguyễn Trãi / Royal City\n\nẢnh căn minh họa nội thất. Giá chuyển nhượng em đối chiếu sổ và bảng hàng, không ghi trên tin.',
-          ticks: ['overview', 'place', 'gallery', 'hot', 'spec', 'view', 'unitGallery', 'pitch'], hotId: 'hp6' },
-        { id: 'st7', projectId: 'la-perle', title: 'Chốt 2PN+1 Nha Trang tầng 18', scope: 'shared', ownerUserId: null, approved: true,
-          unitId: 'LPH-A.18.02',
-          body: 'Anh/chị ơi, La Perle Héritage Nha Trang — tháp căn hộ.\n\nCăn em đang đẩy: LPH-A.18.02\n· 2PN+1, 74,5 m², Đông Nam, tầng 18\n· Đủ ở và phòng phụ, khách miền Nam hay hỏi căn biển loại này\n\nSố liệu trang dự án recogroup.vn đã rút — em xác nhận lại với CĐT trước khi chốt. Giá không ghi trên tin.',
-          ticks: ['overview', 'place', 'gallery', 'hot', 'spec', 'view', 'unitGallery', 'pitch'], hotId: 'hp7' },
-        { id: 'st8', projectId: 'palmy', title: 'Chốt lô góc 5 tầng Palmy', scope: 'shared', ownerUserId: null, approved: true,
-          unitId: 'PBT-TM3.01',
-          body: 'Anh/chị ơi, Palmy Biztown Thanh Liệt — lô góc dãy TM3.\n\nCăn em đang đẩy: PBT-TM3.01\n· 148 m² đất, 5 tầng, Đông Nam hai mặt\n· Khách vừa ở vừa mở cửa hàng mặt tiền hay chốt lô góc\n\nNhà thô, khách tự hoàn thiện. Giá đất và CSBH trên bảng hàng CĐT, em không ghi trên tin.',
-          ticks: ['overview', 'place', 'gallery', 'hot', 'spec', 'view', 'unitGallery', 'pitch'], hotId: 'hp8' }
+        { id: 'st5', projectId: 'celestine', title: 'Khi khách hỏi: căn T1-08.02 — 2PN view Hồ Tây', scope: 'shared', ownerUserId: null, approved: true,
+          intent: 'unit', unitId: 'T1-08.02',
+          body: 'Anh/chị ơi, căn em đang đẩy: T1-08.02 Celestine Westlake.\n\n· 2PN, 78,4 m², ban công Đông Nam view Hồ Tây\n· Tầng 8 tháp T1 — dẫn khách xem nhà dễ\n· Bàn giao bếp tủ âm, TBVS châu Âu\n· Đợt 1 sắp kết thúc, căn còn hàng\n\nẢnh căn trong đường dẫn. Giá và CSBH em gửi theo bảng hàng CĐT, không ghi trên tin.',
+          ticks: ['spec', 'view', 'unitGallery', 'pitch', 'gallery'], hotId: 'hp1' },
+        { id: 'st6', projectId: 'opening', title: 'Khi khách hỏi: căn GS-FS.2501 — 3PN+1 ở ngay', scope: 'shared', ownerUserId: null, approved: true,
+          intent: 'unit', unitId: 'GS-FS.2501',
+          body: 'Anh/chị ơi, căn em đang đẩy: GS-FS.2501 — Gold Season tòa Five Seasons.\n\n· 3PN+1, 170 m², Đông Nam, tầng 25\n· Hàng chuyển nhượng, nhận nhà ở ngay Thanh Xuân\n· Gần Nguyễn Trãi / Royal City\n\nẢnh căn minh họa nội thất. Giá chuyển nhượng em đối chiếu sổ và bảng hàng, không ghi trên tin.',
+          ticks: ['spec', 'view', 'unitGallery', 'pitch', 'gallery'], hotId: 'hp6' },
+        { id: 'st7', projectId: 'la-perle', title: 'Khi khách hỏi: căn LPH-A.18.02 — 2PN+1 Nha Trang', scope: 'shared', ownerUserId: null, approved: true,
+          intent: 'unit', unitId: 'LPH-A.18.02',
+          body: 'Anh/chị ơi, căn em đang đẩy: LPH-A.18.02 — La Perle Héritage Nha Trang.\n\n· 2PN+1, 74,5 m², Đông Nam, tầng 18\n· Đủ ở và phòng phụ, khách miền Nam hay hỏi căn biển loại này\n\nSố liệu trang dự án recogroup.vn đã rút — em xác nhận lại với CĐT trước khi chốt. Giá không ghi trên tin.',
+          ticks: ['spec', 'view', 'unitGallery', 'pitch', 'gallery'], hotId: 'hp7' },
+        { id: 'st8', projectId: 'palmy', title: 'Khi khách hỏi: lô góc PBT-TM3.01 Palmy', scope: 'shared', ownerUserId: null, approved: true,
+          intent: 'unit', unitId: 'PBT-TM3.01',
+          body: 'Anh/chị ơi, lô em đang tư vấn: PBT-TM3.01 — Palmy Biztown dãy TM3.\n\n· 148 m² đất, 5 tầng, Đông Nam hai mặt\n· Khách vừa ở vừa mở cửa hàng mặt tiền hay chốt lô góc\n\nNhà thô, khách tự hoàn thiện. Giá đất và CSBH trên bảng hàng CĐT, em không ghi trên tin.',
+          ticks: ['spec', 'view', 'unitGallery', 'pitch', 'gallery'], hotId: 'hp8' },
+        { id: 'st9', projectId: 'celestine', title: 'Khi khách hỏi: Celestine ở đâu / gần gì', scope: 'shared', ownerUserId: null, approved: true,
+          intent: 'place',
+          body: 'Anh/chị ơi, Celestine Westlake ở 300 Võ Chí Công, Tây Hồ — sát Lotte Mall và Ciputra, tầm nhìn Hồ Tây.\n\nEm gửi ảnh dự án và tổng quan ngắn. Giá xem bảng hàng CĐT, em không ghi trên tin.',
+          ticks: ['place', 'gallery', 'overview'] },
+        { id: 'st10', projectId: 'celestine', title: 'Khi khách hỏi: ảnh/video căn T1-08.02', scope: 'shared', ownerUserId: null, approved: true,
+          intent: 'media', unitId: 'T1-08.02', hotId: 'hp1',
+          body: 'Anh/chị ơi, em gửi ảnh căn T1-08.02 đã duyệt trên Hub — nội thất minh họa, video flycam nếu có.\n\nGiá không ghi trên tin, em đối chiếu bảng hàng CĐT.',
+          ticks: ['unitGallery', 'gallery'] }
       ],
 
       /* Người dùng — MH-10 */
@@ -1669,6 +1680,100 @@
     var p = find('projects', (v || u).pj);
     return p ? p.img : 'reco-banner.jpg';
   }
+  var TICK_LAB = {
+    overview: 'Tổng quan', place: 'Vị trí', gallery: 'Ảnh dự án', amenity: 'Tiện ích',
+    bank: 'STK đặt cọc', hot: 'SP Hot', spec: 'Thông số căn', view: 'Hướng và view',
+    unitGallery: 'Ảnh căn', pitch: 'Mô tả căn'
+  };
+  var INTENTS = [
+    { id: 'intro', lab: 'Giới thiệu lần đầu', short: 'Giới thiệu', ticks: ['overview', 'place', 'gallery', 'amenity'] },
+    { id: 'place', lab: 'Khách hỏi vị trí', short: 'Vị trí', ticks: ['place', 'gallery', 'overview'] },
+    { id: 'unit', lab: 'Khách hỏi căn này', short: 'Căn', ticks: ['spec', 'view', 'unitGallery', 'pitch', 'gallery'] },
+    { id: 'media', lab: 'Khách hỏi ảnh/video', short: 'Ảnh/video', ticks: ['unitGallery', 'gallery'] },
+    { id: 'bank', lab: 'Khách hỏi cọc/STK', short: 'STK', ticks: ['bank', 'overview'] }
+  ];
+  var DEMO_VIDEO = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+  var PROJECT_VIDEOS = {
+    leparc: [{ type: 'video', src: DEMO_VIDEO, poster: 'reco-banner.jpg', name: 'Flycam Le Parc Place (minh họa)' }],
+    celestine: [{ type: 'video', src: DEMO_VIDEO, poster: 'celestine-westlake.jpg', name: 'Flycam Celestine Westlake (minh họa)' }]
+  };
+  var UNIT_VIDEOS = {
+    'T1-08.02': [{ type: 'video', src: DEMO_VIDEO, poster: 'unit-2pn-1.jpg', name: 'Video căn T1-08.02 (minh họa)' }]
+  };
+  function mediaKey(m) { return (m.type || 'image') + ':' + (m.src || m.img || ''); }
+  function pushMedia(out, seen, item) {
+    if (!item || !(item.src || item.img)) return;
+    var row = {
+      type: item.type || 'image',
+      src: item.src || item.img,
+      poster: item.poster || '',
+      name: item.name || ''
+    };
+    var k = mediaKey(row);
+    if (seen[k]) return;
+    seen[k] = true;
+    out.push(row);
+  }
+  function projectMedia(pjId) {
+    var p = find('projects', pjId);
+    var out = [], seen = {};
+    if (p && p.img) pushMedia(out, seen, { type: 'image', src: p.img, name: p.name });
+    get('media').forEach(function (m) {
+      if (m.pj === pjId && m.state === 'approved' && m.label === 'public' && m.img) {
+        pushMedia(out, seen, { type: 'image', src: m.img, name: m.name });
+      }
+    });
+    (PROJECT_VIDEOS[pjId] || []).forEach(function (v) { pushMedia(out, seen, v); });
+    return out;
+  }
+  function unitMedia(unitId) {
+    var v = unitView(unitId);
+    var out = [], seen = {};
+    if (v && v.gallery) {
+      v.gallery.forEach(function (src, i) {
+        pushMedia(out, seen, { type: 'image', src: src, name: (v.id || unitId) + ' · ảnh ' + (i + 1) });
+      });
+    }
+    (UNIT_VIDEOS[unitId] || []).forEach(function (vid) { pushMedia(out, seen, vid); });
+    return out;
+  }
+  function mediaCover(m) {
+    if (!m) return '';
+    if (typeof m === 'string') return m;
+    return m.poster || m.src || m.img || '';
+  }
+  function tplUnitId(t) {
+    if (!t) return '';
+    if (t.unitId) return t.unitId;
+    if (!t.hotId) return '';
+    var hot = find('hotProducts', t.hotId);
+    return hot ? hot.unitId : '';
+  }
+  function tplIntent(t) {
+    if (t && t.intent) return t.intent;
+    var ticks = (t && t.ticks) || [];
+    var k = ticks[0];
+    if (k === 'place') return 'place';
+    if (k === 'bank') return 'bank';
+    if (k === 'unitGallery') return 'media';
+    if (k === 'spec' || k === 'view' || k === 'pitch' || (t && (t.unitId || t.hotId))) return 'unit';
+    return 'intro';
+  }
+  function tplCover(t) {
+    var uid = tplUnitId(t);
+    if (uid) {
+      if (t.unitMedia && t.unitMedia.length) return mediaCover(t.unitMedia[0]);
+      var uc = unitCover(uid);
+      if (uc) return uc;
+    }
+    if (t.galleryMedia && t.galleryMedia.length) return mediaCover(t.galleryMedia[0]);
+    var p = find('projects', t.projectId);
+    return p && p.img ? p.img : 'reco-banner.jpg';
+  }
+  function intentOf(id) {
+    for (var i = 0; i < INTENTS.length; i++) if (INTENTS[i].id === id) return INTENTS[i];
+    return INTENTS[0];
+  }
   /* Mẫu đã duyệt cùng dự án với căn — không fallback sang dự án khác. */
   function tplForUnit(unitId) {
     var u = find('units', unitId);
@@ -1702,6 +1807,8 @@
     BRANCH_LABEL: BRANCH_LABEL, RANK: RANK,
     label: label, money: money, billion: billion, projectName: projectName, canSee: canSee,
     unitView: unitView, unitCover: unitCover, tplForUnit: tplForUnit,
+    TICK_LAB: TICK_LAB, INTENTS: INTENTS, tplIntent: tplIntent, tplCover: tplCover, tplUnitId: tplUnitId,
+    projectMedia: projectMedia, unitMedia: unitMedia, mediaCover: mediaCover, intentOf: intentOf,
     myProjects: myProjects,
     atLeastAsStrict: atLeastAsStrict, stricter: stricter, canGrant: canGrant,
     TODAY: TODAY, parseVN: parseVN, daysLeft: daysLeft, lifeState: lifeState,

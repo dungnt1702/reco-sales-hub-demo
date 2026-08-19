@@ -37,16 +37,13 @@
 document.addEventListener('DOMContentLoaded', function () {
   if (!document.getElementById('mau-root')) return;
   var S = RECO.store, E = RECO_DATA.esc;
-  var TICK_LAB = {
-    overview: 'Tổng quan', place: 'Vị trí', gallery: 'Ảnh dự án', amenity: 'Tiện ích',
-    bank: 'STK đặt cọc', hot: 'SP Hot', spec: 'Thông số căn', view: 'Hướng và view',
-    unitGallery: 'Ảnh căn', pitch: 'Mô tả căn'
-  };
-  var PROJ_TICKS = ['overview', 'place', 'gallery', 'amenity', 'bank'];
+  var TICK_LAB = S.TICK_LAB;
+  var ALL_TICKS = ['overview', 'place', 'gallery', 'amenity', 'bank', 'spec', 'view', 'unitGallery', 'pitch', 'hot'];
   var UNIT_TICKS = ['spec', 'view', 'unitGallery', 'pitch', 'hot'];
   var CAN_SEND = ['gd', 'gddu', 'tkkd', 'qlkd', 'nvbh', 'mkt'].indexOf(RECO.role) >= 0;
   var CAN_EDIT = CAN_SEND;
   var IS_SALE = RECO.role === 'nvbh';
+  var PRICE_CLOSE = 'Giá và chính sách trên bảng hàng CĐT, em không ghi trên tin.';
 
   function qs() {
     var h = location.hash, i = h.indexOf('?');
@@ -108,19 +105,58 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function areaTxt(n) { return String(n).replace('.', ',') + ' m²'; }
 
+  function galleryItems(src) {
+    if (src.galleryMedia && src.galleryMedia.length) return src.galleryMedia;
+    return S.projectMedia(src.projectId).filter(function (m) { return m.type === 'image'; }).slice(0, 1);
+  }
+  function unitItems(src, openU) {
+    if (src.unitMedia && src.unitMedia.length) return src.unitMedia;
+    var u = unitOfTpl(src, openU);
+    return u ? S.unitMedia(u.id).filter(function (m) { return m.type === 'image'; }).slice(0, 4) : [];
+  }
+  function mediaHtml(items) {
+    if (!items || !items.length) return '';
+    return '<div class="mau-media-row">' + items.map(function (m) {
+      var cover = RECO.asset(S.mediaCover(m));
+      if (m.type === 'video') {
+        return '<a class="mau-vid" href="' + E(m.src) + '" target="_blank" rel="noopener">' +
+          '<img src="' + cover + '" alt="' + E(m.name || 'Video') + '"><span class="mau-play" aria-hidden="true"></span></a>';
+      }
+      return '<img src="' + RECO.asset(m.src) + '" alt="' + E(m.name || '') + '">';
+    }).join('') + '</div>';
+  }
+
+  function zaloBit(k, src, openU) {
+    var p = S.find('projects', src.projectId);
+    var u = unitOfTpl(src, openU);
+    var hot = hotOfTpl(src, openU);
+    if (k === 'overview' && p) return p.name + (p.struct ? ' · ' + p.struct : '') + (p.owner ? ' · CĐT ' + p.owner : '');
+    if (k === 'place' && p) return 'Vị trí: ' + p.place + (p.area ? ' · ' + p.area : '');
+    if (k === 'amenity' && p) return 'Tiện ích: ' + (p.struct || 'Nội khu theo tài liệu CĐT');
+    if (k === 'gallery') return 'Ảnh dự án trong đường dẫn.';
+    if (k === 'bank' && p && p.bank) {
+      return 'STK đặt cọc: ' + p.bank.holder + ' · ' + p.bank.no + ' · ' + p.bank.at + '\nNội dung: ' + p.bank.memo;
+    }
+    if (k === 'spec' && u) return 'Căn ' + u.id + ' · ' + u.kind + ' · ' + areaTxt(u.area) + (u.dir ? ' · ' + u.dir : '');
+    if (k === 'view' && u) return 'Hướng/view: ' + (u.dir || '—') + (u.view ? ' · ' + u.view : '');
+    if (k === 'unitGallery') return 'Ảnh căn trong đường dẫn.';
+    if (k === 'pitch') {
+      var text = (u && u.pitch) || (hot && hot.pitch) || '';
+      return text ? text.split('\n\n')[0] : '';
+    }
+    if (k === 'hot' && hot && hot.pitch) return hot.pitch;
+    return '';
+  }
   function zaloText(t, openUnit) {
     var agent = currentAgent();
-    var u = unitOfTpl(t, openUnit);
-    var parts = [t.body];
-    if (u && hasTick(t, 'spec')) {
-      parts.push('Căn ' + u.id + ' · ' + u.kind + ' · ' + areaTxt(u.area) + (u.dir ? ' · ' + u.dir : ''));
-    }
-    if (u && hasTick(t, 'pitch') && u.pitch) parts.push(u.pitch.split('\n\n')[0]);
-    else {
-      var hot = hotOfTpl(t, openUnit);
-      if (hot && hot.pitch) parts.push(hot.pitch);
-    }
+    var parts = [];
+    if ((t.body || '').trim()) parts.push(t.body.trim());
+    (t.ticks || []).forEach(function (k) {
+      var line = zaloBit(k, t, openUnit);
+      if (line) parts.push(line);
+    });
     parts.push(agent.name + ' · ' + agent.phone);
+    parts.push(PRICE_CLOSE);
     return clipSafe(parts.join('\n\n'));
   }
   function makeLink(t, openUnit) {
@@ -134,6 +170,9 @@ document.addEventListener('DOMContentLoaded', function () {
       days: null, state: 'live', fresh: true,
       ticks: (t.ticks || []).slice(),
       templateId: t.id,
+      intent: t.intent || S.tplIntent(t),
+      galleryMedia: (t.galleryMedia || []).slice(),
+      unitMedia: (t.unitMedia || []).slice(),
       hotId: hot ? hot.id : (t.hotId || null),
       unitId: unit,
       agent: currentAgent()
@@ -149,27 +188,27 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function blockOverview(p) {
-    return '<div class="mau-block"><h3>Tổng quan dự án</h3>' +
+    return '<div class="mau-block" data-block="overview"><h3>Tổng quan dự án</h3>' +
       '<p class="small" style="margin:0">' + E(p.name) + ' · ' + E(p.place) + '<br>' +
       E(p.struct || '') + (p.owner ? ' · CĐT ' + E(p.owner) : '') +
       (p.handover ? ' · Bàn giao ' + E(p.handover) : '') + '</p></div>';
   }
   function blockPlace(p) {
-    return '<div class="mau-block"><h3>Vị trí</h3><p class="small" style="margin:0">' + E(p.place) +
+    return '<div class="mau-block" data-block="place"><h3>Vị trí</h3><p class="small" style="margin:0">' + E(p.place) +
       (p.area ? ' · ' + E(p.area) : '') + '</p></div>';
   }
   function blockAmenity(p) {
-    return '<div class="mau-block"><h3>Tiện ích nổi</h3><p class="small" style="margin:0">' +
+    return '<div class="mau-block" data-block="amenity"><h3>Tiện ích nổi</h3><p class="small" style="margin:0">' +
       E(p.struct || 'Tiện ích nội khu theo tài liệu Chủ đầu tư.') + '</p></div>';
   }
   function blockBank(p) {
-    if (!p.bank) return '<div class="mau-block"><h3>STK đặt cọc</h3><p class="small muted">Dự án này chưa có khối tài khoản công khai trên Hub.</p></div>';
+    if (!p.bank) return '<div class="mau-block" data-block="bank"><h3>STK đặt cọc</h3><p class="small muted">Dự án này chưa có khối tài khoản công khai trên Hub.</p></div>';
     var b = p.bank;
-    return '<div class="mau-block"><h3>Tài khoản nhận cọc</h3><p class="small" style="margin:0">' +
+    return '<div class="mau-block" data-block="bank"><h3>Tài khoản nhận cọc</h3><p class="small" style="margin:0">' +
       E(b.holder) + '<br>' + E(b.no) + ' · ' + E(b.at) + '<br>Nội dung: ' + E(b.memo) + '</p></div>';
   }
   function blockSpec(u) {
-    return '<div class="mau-block"><h3>Thông số căn</h3><div class="kv kv-3">' +
+    return '<div class="mau-block" data-block="spec"><h3>Thông số căn</h3><div class="kv kv-3">' +
       '<div><div class="k">Mã</div><div class="v">' + E(u.id) + '</div></div>' +
       '<div><div class="k">Loại</div><div class="v">' + E(u.kind) + '</div></div>' +
       '<div><div class="k">Diện tích</div><div class="v">' + areaTxt(u.area) + '</div></div>' +
@@ -179,20 +218,40 @@ document.addEventListener('DOMContentLoaded', function () {
       '<p class="micro muted mt-1">Giá: Liên hệ / xem bảng hàng CĐT</p></div>';
   }
   function blockView(u) {
-    return '<div class="mau-block"><h3>Hướng và view</h3><p class="small" style="margin:0">' +
+    return '<div class="mau-block" data-block="view"><h3>Hướng và view</h3><p class="small" style="margin:0">' +
       E(u.dir || '—') + (u.view ? ' · ' + E(u.view) : '') + '</p></div>';
   }
-  function blockUnitGal(u) {
-    var g = (u.gallery || []).slice(0, 4);
+  function blockUnitGal(src, openU) {
+    var g = unitItems(src, openU);
     if (!g.length) return '';
-    return '<div class="mau-block"><h3>Ảnh căn</h3><div class="ugallery-thumbs">' +
-      g.map(function (img) { return '<img src="' + RECO.asset(img) + '" alt="">'; }).join('') +
-      '</div><p class="micro muted mt-1">Ảnh minh họa nội thất.</p></div>';
+    return '<div class="mau-block" data-block="unitGallery"><h3>Ảnh căn</h3>' + mediaHtml(g) +
+      '<p class="micro muted mt-1">Ảnh minh họa nội thất.</p></div>';
+  }
+  function blockGallery(src) {
+    var g = galleryItems(src);
+    if (!g.length) return '';
+    return '<div class="mau-block" data-block="gallery"><h3>Ảnh dự án</h3>' + mediaHtml(g) + '</div>';
   }
   function blockPitch(u, hot) {
     var text = (u && u.pitch) || (hot && hot.pitch) || '';
     if (!text) return '';
-    return '<div class="mau-block"><h3>Mô tả căn</h3><p class="small" style="white-space:pre-wrap;margin:0">' + E(text) + '</p></div>';
+    return '<div class="mau-block" data-block="pitch"><h3>Mô tả căn</h3><p class="small" style="white-space:pre-wrap;margin:0">' + E(text) + '</p></div>';
+  }
+
+  function renderBlock(k, src, openU) {
+    var p = S.find('projects', src.projectId);
+    var u = unitOfTpl(src, openU);
+    var hot = hotOfTpl(src, openU);
+    if (k === 'overview' && p) return blockOverview(p);
+    if (k === 'place' && p) return blockPlace(p);
+    if (k === 'amenity' && p) return blockAmenity(p);
+    if (k === 'gallery') return blockGallery(src);
+    if (k === 'bank' && p) return blockBank(p);
+    if (k === 'spec' && u) return blockSpec(u);
+    if (k === 'view' && u) return blockView(u);
+    if (k === 'unitGallery') return blockUnitGal(src, openU);
+    if (k === 'pitch' || k === 'hot') return blockPitch(u, hot);
+    return '';
   }
 
   var q = qs();
@@ -200,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var editing = isNew || q.get('edit') === '1';
   var tplId = q.get('tpl');
   var openUnit = q.get('unit') || null;
+  var qPj = q.get('pj') || null;
   var t = tplId ? S.find('shareTemplates', tplId) : null;
   if (!t && !isNew) {
     document.getElementById('mau-h').textContent = 'Không tìm thấy bài';
@@ -213,35 +273,42 @@ document.addEventListener('DOMContentLoaded', function () {
   function postBlocks(src, openU) {
     var p = S.find('projects', src.projectId);
     var u = unitOfTpl(src, openU);
-    var hot = hotOfTpl(src, openU);
+    var ticks = src.ticks || [];
     var hero = '';
-    if (hasTick(src, 'unitGallery') && u && u.gallery && u.gallery[0]) {
-      hero = '<img class="mau-hero" src="' + RECO.asset(u.gallery[0]) + '" alt="">';
-    } else if (hasTick(src, 'gallery') && p) {
+    var unitMediaList = hasTick(src, 'unitGallery') ? unitItems(src, openU) : [];
+    var galMediaList = hasTick(src, 'gallery') ? galleryItems(src) : [];
+    var heroItem = unitMediaList[0] || galMediaList[0] || null;
+    if (heroItem) {
+      hero = '<img class="mau-hero" src="' + RECO.asset(S.mediaCover(heroItem)) + '" alt="">';
+    } else if (p && p.img) {
       hero = '<img class="mau-hero" src="' + RECO.asset(p.img) + '" alt="">';
     }
     var blocks = '';
-    if (p && hasTick(src, 'overview')) blocks += blockOverview(p);
-    if (p && hasTick(src, 'place')) blocks += blockPlace(p);
-    if (p && hasTick(src, 'amenity')) blocks += blockAmenity(p);
-    if (p && hasTick(src, 'gallery') && p.img && !hero) {
-      blocks += '<div class="mau-block"><h3>Ảnh dự án</h3><img class="mau-hero" src="' + RECO.asset(p.img) + '" alt=""></div>';
-    }
     var wantUnit = UNIT_TICKS.some(function (k) { return hasTick(src, k); });
     if (wantUnit && !u) {
       blocks += '<div class="mau-block mau-need"><p class="small muted" style="margin:0">Chọn căn catalog hoặc sản phẩm Hot để hiện khối sản phẩm trên mẫu.</p></div>';
     }
-    if (u && hasTick(src, 'spec')) blocks += blockSpec(u);
-    if (u && hasTick(src, 'view')) blocks += blockView(u);
-    if (u && hasTick(src, 'unitGallery')) blocks += blockUnitGal(u);
-    if (hasTick(src, 'pitch') || hasTick(src, 'hot')) blocks += blockPitch(u, hot);
-    if (p && hasTick(src, 'bank')) blocks += blockBank(p);
+    var firstMediaTick = null;
+    ticks.forEach(function (k) {
+      if (!firstMediaTick && (k === 'gallery' || k === 'unitGallery')) firstMediaTick = k;
+    });
+    ticks.forEach(function (k) {
+      if (k === firstMediaTick && heroItem) {
+        var list = k === 'unitGallery' ? unitMediaList : galMediaList;
+        var rest = list.slice(1);
+        if (rest.length) {
+          blocks += '<div class="mau-block" data-block="' + k + '"><h3>' + E(TICK_LAB[k]) + '</h3>' + mediaHtml(rest) + '</div>';
+        }
+        return;
+      }
+      blocks += renderBlock(k, src, openU);
+    });
     var body = (src.body || '').trim();
     var lead = body
       ? '<p class="lead mt-3" id="mau-lead">' + E(body) + '</p>'
       : '<p class="lead mt-3 muted" id="mau-lead">Nội dung tin sẽ hiện ở đây…</p>';
     return hero + lead + blocks +
-      '<p class="micro muted mt-3">Giá và CSBH không nằm trong tin gửi khách trên Hub.</p>';
+      '<p class="micro muted mt-3">' + E(PRICE_CLOSE) + '</p>';
   }
 
   var CHANNELS = [
@@ -327,19 +394,61 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function tickChecks(selected, keys, legend) {
-    return '<fieldset class="field" style="border:0;padding:0"><span class="lab">' + legend + '</span>' +
-      '<div class="tick-list mt-1">' + keys.map(function (k) {
-        var on = selected.indexOf(k) >= 0;
-        return '<label class="pick-row"><input type="checkbox" value="' + k + '"' + (on ? ' checked' : '') + '> ' + E(TICK_LAB[k]) + '</label>';
-      }).join('') + '</div></fieldset>';
+  function intentBody(intent, pjId, unitId) {
+    var p = S.find('projects', pjId) || {};
+    var u = unitId ? S.unitView(unitId) : null;
+    if (intent === 'intro') {
+      return 'Anh/chị ơi, em gửi thông tin ' + (p.name || 'dự án') + '.\n\n· ' + (p.struct || '') +
+        '\n· ' + (p.place || '') + '\n\nGiá và bảng hàng em đối chiếu CĐT rồi gửi riêng — không ghi trên tin này.';
+    }
+    if (intent === 'place') {
+      return 'Anh/chị ơi, ' + (p.name || 'dự án') + ' ở ' + (p.place || '') +
+        (p.area ? ', ' + p.area : '') + '.\n\nEm gửi ảnh và tổng quan ngắn. ' + PRICE_CLOSE;
+    }
+    if (intent === 'unit') {
+      if (!u) return 'Anh/chị ơi, căn em đang tư vấn:\n\nChọn căn catalog bên dưới. ' + PRICE_CLOSE;
+      return 'Anh/chị ơi, căn em đang tư vấn:\n\n' + u.id + ' — ' + (p.name || '') +
+        '\n· ' + u.kind + ', ' + areaTxt(u.area) + (u.dir ? ', ' + u.dir : '') +
+        (u.view ? ', view ' + u.view : '') + '\n\nẢnh căn trong đường dẫn. ' + PRICE_CLOSE;
+    }
+    if (intent === 'media') return 'Anh/chị ơi, em gửi ảnh/căn đã duyệt trên Hub, video nếu dự án có.\n\n' + PRICE_CLOSE;
+    if (intent === 'bank' && p.bank) {
+      return 'Anh/chị chuyển khoản đúng cú pháp trên trang giúp em đối chiếu sao kê trong 24 giờ.\n\nChủ tài khoản: ' +
+        p.bank.holder + '\nSố TK: ' + p.bank.no + ' · ' + p.bank.at + '\nNội dung: ' + p.bank.memo;
+    }
+    return '';
   }
 
   function renderEdit() {
+    var fromUnit = !!(isNew && openUnit);
+    var startIntent = (t && S.tplIntent(t)) || (fromUnit ? 'unit' : 'intro');
+    var startTicks = (t && t.ticks && t.ticks.length)
+      ? t.ticks.slice()
+      : S.intentOf(startIntent).ticks.slice();
+    var startPj = (t && t.projectId) || qPj || (openUnit && (S.find('units', openUnit) || {}).pj) || 'celestine';
+    var startUnit = (t && t.unitId) || openUnit || '';
+    var startHot = (t && t.hotId) || '';
+    if (fromUnit && !startHot) {
+      var uh = S.get('hotProducts').filter(function (h) { return h.unitId === openUnit && h.active; })[0];
+      if (uh) startHot = uh.id;
+    }
     var draft = t || {
-      title: '', body: '', projectId: 'celestine', ticks: ['overview', 'place', 'gallery'],
-      hotId: '', unitId: '', scope: 'personal', approved: true
+      title: '', body: '', projectId: startPj, ticks: startTicks,
+      hotId: startHot, unitId: startUnit, scope: 'personal', approved: true, intent: startIntent
     };
+    if (isNew && !t) {
+      draft.projectId = startPj;
+      draft.ticks = startTicks;
+      draft.unitId = startUnit;
+      draft.hotId = startHot;
+      draft.intent = startIntent;
+      draft.body = intentBody(startIntent, startPj, startUnit);
+    }
+    var tickOrder = (draft.ticks || []).slice();
+    var intent = draft.intent || startIntent;
+    var galleryMedia = (draft.galleryMedia || []).slice();
+    var unitMediaSel = (draft.unitMedia || []).slice();
+    var bodyTouched = !!(t && t.body);
     var projects = S.get('projects').filter(function (p) { return !p.hidden; });
     var cancelHref = t ? goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) : goPage('chia-se.html');
     document.getElementById('mau-layout').classList.add('is-edit');
@@ -367,19 +476,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function readDraft() {
-      var ticks = [];
-      document.querySelectorAll('#mau-cta .tick-list input[type="checkbox"]:checked').forEach(function (c) {
-        ticks.push(c.value);
-      });
       var scopeEl = document.querySelector('#mau-cta input[name="nm-scope"]:checked');
       return {
         projectId: document.getElementById('nm-pj').value,
         title: document.getElementById('nm-title').value.trim(),
         body: document.getElementById('nm-body').value,
-        ticks: ticks,
+        ticks: tickOrder.slice(),
         unitId: document.getElementById('nm-unit').value || '',
         hotId: document.getElementById('nm-hot').value || '',
-        scope: scopeEl ? scopeEl.value : 'personal'
+        scope: scopeEl ? scopeEl.value : 'personal',
+        intent: intent,
+        galleryMedia: galleryMedia.slice(),
+        unitMedia: unitMediaSel.slice()
       };
     }
     function paintPreview() {
@@ -390,11 +498,164 @@ document.addEventListener('DOMContentLoaded', function () {
         (d.ticks.length ? ' · ' + ticksHtml(d) : ' · Tick thành phần để hiện khối trên mẫu');
       document.getElementById('mau-root').innerHTML =
         '<article class="card card-pad mau-post">' + postBlocks(d, d.unitId || null) + '</article>';
+      var nGal = document.getElementById('pick-gal-n');
+      var nUnit = document.getElementById('pick-unit-n');
+      if (nGal) nGal.textContent = galleryMedia.length ? ('Đã chọn ' + galleryMedia.length) : 'Mặc định 1 ảnh bìa';
+      if (nUnit) nUnit.textContent = unitMediaSel.length ? ('Đã chọn ' + unitMediaSel.length) : 'Mặc định ảnh căn';
+    }
+
+    function tickRow(k, on) {
+      return '<div class="tick-row" data-tick="' + k + '">' +
+        '<label class="pick-row"><input type="checkbox" value="' + k + '"' + (on ? ' checked' : '') + '> ' + E(TICK_LAB[k]) + '</label>' +
+        (on ? '<button type="button" class="tick-grip" aria-label="Kéo đổi thứ tự">' + RECO.svg('grip') + '</button>' : '') +
+      '</div>';
+    }
+    function paintTicks() {
+      var onBox = document.getElementById('tick-on');
+      var offBox = document.getElementById('tick-off');
+      if (!onBox) return;
+      onBox.innerHTML = tickOrder.map(function (k) { return tickRow(k, true); }).join('');
+      offBox.innerHTML = ALL_TICKS.filter(function (k) { return tickOrder.indexOf(k) < 0; })
+        .map(function (k) { return tickRow(k, false); }).join('');
+      var showGal = tickOrder.indexOf('gallery') >= 0;
+      var showUnit = tickOrder.indexOf('unitGallery') >= 0;
+      var galBtn = document.getElementById('pick-gal');
+      var unitBtn = document.getElementById('pick-unit');
+      if (galBtn) galBtn.hidden = !showGal;
+      if (unitBtn) unitBtn.hidden = !showUnit;
+    }
+    function bindTickDrag(box) {
+      var drag = null;
+      box.addEventListener('pointerdown', function (e) {
+        var grip = e.target.closest('.tick-grip');
+        if (!grip) return;
+        var row = grip.closest('[data-tick]');
+        if (!row) return;
+        e.preventDefault();
+        drag = { row: row };
+        row.classList.add('is-drag');
+        try { grip.setPointerCapture(e.pointerId); } catch (err) {}
+      });
+      box.addEventListener('pointermove', function (e) {
+        if (!drag) return;
+        var rows = Array.prototype.slice.call(box.querySelectorAll('[data-tick]'));
+        var over = null;
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i] === drag.row) continue;
+          var b = rows[i].getBoundingClientRect();
+          if (e.clientY < b.top + b.height / 2) { over = rows[i]; break; }
+        }
+        if (over) box.insertBefore(drag.row, over);
+        else box.appendChild(drag.row);
+      });
+      function endDrag() {
+        if (!drag) return;
+        drag.row.classList.remove('is-drag');
+        tickOrder = Array.prototype.map.call(box.querySelectorAll('[data-tick]'), function (r) {
+          return r.getAttribute('data-tick');
+        });
+        drag = null;
+        paintPreview();
+      }
+      box.addEventListener('pointerup', endDrag);
+      box.addEventListener('pointercancel', endDrag);
+    }
+
+    function applyIntent(id, forceBody) {
+      var spec = S.intentOf(id);
+      intent = spec.id;
+      tickOrder = spec.ticks.slice();
+      document.querySelectorAll('#intent-chips [data-intent]').forEach(function (b) {
+        b.setAttribute('aria-pressed', b.getAttribute('data-intent') === id ? 'true' : 'false');
+      });
+      if (forceBody || !bodyTouched) {
+        var dPj = document.getElementById('nm-pj').value;
+        var dUnit = document.getElementById('nm-unit').value;
+        document.getElementById('nm-body').value = intentBody(id, dPj, dUnit);
+      }
+      paintTicks();
+      paintPreview();
+    }
+
+    function openPicker(kind) {
+      var pj = document.getElementById('nm-pj').value;
+      var uid = document.getElementById('nm-unit').value;
+      var items = kind === 'gallery' ? S.projectMedia(pj) : S.unitMedia(uid);
+      if (kind === 'unitGallery' && !uid) {
+        RECO.toast('Chọn căn catalog trước khi chọn ảnh căn', { danger: true });
+        return;
+      }
+      var selected = (kind === 'gallery' ? galleryMedia : unitMediaSel).slice();
+      var old = document.getElementById('m-media');
+      if (old) old.remove();
+      var m = document.createElement('div');
+      m.className = 'modal';
+      m.id = 'm-media';
+      m.setAttribute('role', 'dialog');
+      m.setAttribute('aria-modal', 'true');
+      var vids = items.filter(function (x) { return x.type === 'video'; });
+      var imgs = items.filter(function (x) { return x.type !== 'video'; });
+      function thumb(it, i) {
+        var on = selected.some(function (s) { return s.type === it.type && s.src === it.src; });
+        var cover = RECO.asset(S.mediaCover(it));
+        return '<button type="button" data-i="' + i + '" aria-pressed="' + on + '" aria-label="' + E(it.name || 'Ảnh') + '">' +
+          '<img src="' + cover + '" alt="">' +
+          (it.type === 'video' ? '<span class="vid-play">' + RECO.svg('play') + '</span>' : '') +
+        '</button>';
+      }
+      var body = '';
+      if (imgs.length) {
+        body += '<p class="micro muted mb-1">Ảnh</p><div class="media-thumbs" data-kind="img">' +
+          imgs.map(function (it) { return thumb(it, items.indexOf(it)); }).join('') + '</div>';
+      }
+      if (vids.length) {
+        body += '<p class="micro muted mb-1 mt-2">Video</p><div class="media-thumbs" data-kind="vid">' +
+          vids.map(function (it) { return thumb(it, items.indexOf(it)); }).join('') + '</div>';
+      }
+      if (!items.length) body = '<p class="small muted">Chưa có ảnh/video công khai cho mục này.</p>';
+      m.innerHTML =
+        '<div class="modal-box" style="max-width:640px">' +
+          '<div class="modal-head"><div><span class="eyebrow">Chọn media</span><h3>' +
+            (kind === 'gallery' ? 'Ảnh / video dự án' : 'Ảnh / video căn') + '</h3></div>' +
+            '<button class="icon-btn" data-x aria-label="Đóng">' + RECO.svg('x') + '</button></div>' +
+          '<div class="modal-body">' + body +
+            '<p class="micro muted mt-2">Chọn một hoặc nhiều. Video mở đường dẫn xem, không tải tệp lên Hub.</p></div>' +
+          '<div class="modal-foot">' +
+            '<button class="btn btn-outline" data-x>Hủy</button>' +
+            '<button class="btn btn-primary" data-ok>Dùng các ảnh đã chọn</button>' +
+          '</div></div>';
+      document.body.appendChild(m);
+      document.body.style.overflow = 'hidden';
+      function close() { m.remove(); document.body.style.overflow = ''; }
+      m.querySelectorAll('[data-x]').forEach(function (b) { b.addEventListener('click', close); });
+      m.addEventListener('click', function (e) { if (e.target === m) close(); });
+      m.querySelectorAll('.media-thumbs button').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var it = items[+btn.getAttribute('data-i')];
+          var idx = -1;
+          selected.forEach(function (s, n) { if (s.type === it.type && s.src === it.src) idx = n; });
+          if (idx >= 0) selected.splice(idx, 1);
+          else selected.push(it);
+          btn.setAttribute('aria-pressed', idx < 0 ? 'true' : 'false');
+        });
+      });
+      m.querySelector('[data-ok]').addEventListener('click', function () {
+        if (kind === 'gallery') galleryMedia = selected.slice();
+        else unitMediaSel = selected.slice();
+        close();
+        paintPreview();
+      });
     }
 
     var aside = document.getElementById('mau-cta');
     aside.innerHTML =
       '<div class="card card-pad mau-composer">' +
+        '<div class="field"><span class="lab">Khách hỏi</span>' +
+          '<div class="intent-chips mt-1" id="intent-chips" role="group" aria-label="Câu khách hỏi">' +
+            S.INTENTS.map(function (it) {
+              return '<button type="button" data-intent="' + it.id + '" aria-pressed="' + (it.id === intent ? 'true' : 'false') + '">' + E(it.lab) + '</button>';
+            }).join('') +
+          '</div></div>' +
         '<label class="field"><span class="lab">Dự án</span>' +
           '<select class="inp" id="nm-pj">' + projects.map(function (p) {
             return '<option value="' + E(p.id) + '"' + (p.id === draft.projectId ? ' selected' : '') + '>' + E(p.name) + '</option>';
@@ -403,9 +664,17 @@ document.addEventListener('DOMContentLoaded', function () {
           '<input class="inp" type="text" id="nm-title" data-required data-msg="Đặt tiêu đề để tìm lại bài." value="' + E(draft.title) + '"></label>' +
         '<label class="field"><span class="lab">Nội dung tin</span>' +
           '<textarea class="inp" id="nm-body" rows="5" data-required data-msg="Nhập nội dung tin gửi khách.">' + E(draft.body) + '</textarea></label>' +
-        tickChecks(draft.ticks || [], PROJ_TICKS, 'Thành phần từ dự án') +
+        '<div class="field"><span class="lab">Khối đang dùng (kéo góc phải để đổi thứ tự)</span>' +
+          '<div class="tick-rows mt-1" id="tick-on"></div></div>' +
+        '<div class="field mt-2"><span class="lab">Thêm khối</span>' +
+          '<div class="tick-pool mt-1" id="tick-off"></div></div>' +
+        '<div class="field mt-2" id="pick-gal">' +
+          '<button type="button" class="btn btn-outline btn-sm" id="btn-gal">Chọn ảnh/video dự án</button>' +
+          '<span class="micro muted" id="pick-gal-n" style="margin-left:8px"></span></div>' +
+        '<div class="field mt-1" id="pick-unit">' +
+          '<button type="button" class="btn btn-outline btn-sm" id="btn-unit">Chọn ảnh/video căn</button>' +
+          '<span class="micro muted" id="pick-unit-n" style="margin-left:8px"></span></div>' +
         '<label class="field mt-2"><span class="lab">Gắn căn (catalog)</span><select class="inp" id="nm-unit"></select></label>' +
-        tickChecks(draft.ticks || [], UNIT_TICKS, 'Thành phần từ sản phẩm') +
         '<label class="field mt-2"><span class="lab">Sản phẩm Hot</span><select class="inp" id="nm-hot"></select></label>' +
         '<fieldset class="field mt-2" style="border:0;padding:0"><span class="lab">Lưu thành</span>' +
           '<div class="tick-list mt-1">' +
@@ -426,10 +695,49 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('nm-hot').innerHTML = hotOpts(pj, keepH);
     }
     fillSelects();
+    paintTicks();
+    bindTickDrag(document.getElementById('tick-on'));
     paintPreview();
-    aside.addEventListener('input', paintPreview);
+
+    document.getElementById('intent-chips').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-intent]');
+      if (!b) return;
+      applyIntent(b.getAttribute('data-intent'), false);
+    });
+    document.getElementById('nm-body').addEventListener('input', function () { bodyTouched = true; });
+    document.getElementById('btn-gal').addEventListener('click', function () { openPicker('gallery'); });
+    document.getElementById('btn-unit').addEventListener('click', function () { openPicker('unitGallery'); });
+
+    aside.addEventListener('input', function (e) {
+      if (e.target && e.target.id === 'nm-body') return;
+      if (e.target && e.target.closest && e.target.closest('#tick-on, #tick-off')) return;
+      paintPreview();
+    });
     aside.addEventListener('change', function (e) {
-      if (e.target && e.target.id === 'nm-pj') fillSelects();
+      var el = e.target;
+      if (el && el.id === 'nm-pj') {
+        fillSelects();
+        galleryMedia = [];
+        unitMediaSel = [];
+        if (!bodyTouched) {
+          document.getElementById('nm-body').value = intentBody(intent, el.value, document.getElementById('nm-unit').value);
+        }
+      }
+      if (el && el.id === 'nm-unit') {
+        unitMediaSel = [];
+        if (!bodyTouched && (intent === 'unit' || intent === 'media')) {
+          document.getElementById('nm-body').value = intentBody(intent, document.getElementById('nm-pj').value, el.value);
+        }
+      }
+      if (el && el.type === 'checkbox' && el.closest('[data-tick]')) {
+        var k = el.value;
+        if (el.checked) {
+          if (tickOrder.indexOf(k) < 0) tickOrder.push(k);
+        } else {
+          tickOrder = tickOrder.filter(function (x) { return x !== k; });
+        }
+        paintTicks();
+      }
       paintPreview();
     });
 
@@ -443,7 +751,10 @@ document.addEventListener('DOMContentLoaded', function () {
         ticks: d.ticks,
         unitId: d.unitId || null,
         hotId: d.hotId || null,
-        scope: d.scope
+        scope: d.scope,
+        intent: d.intent,
+        galleryMedia: d.galleryMedia,
+        unitMedia: d.unitMedia
       };
       if (isNew) {
         payload.ownerUserId = d.scope === 'personal' ? currentUserId() : null;

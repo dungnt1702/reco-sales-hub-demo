@@ -37,7 +37,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
           </button>
         </div>
-        <a class="btn btn-primary btn-sm" id="lk-new" href="mau.html?new=1" data-roles="gd gddu tkkd qlkd nvbh mkt">Tạo bài của tôi</a>
+        <a class="icon-btn icon-btn-fill" id="lk-new" href="mau.html?new=1" data-roles="gd gddu tkkd qlkd nvbh mkt" aria-label="Tạo bài của tôi" title="Tạo bài của tôi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></a>
       </div>
     </div>
 
@@ -55,6 +55,14 @@
           <option value="">Mọi loại</option>
           <option value="pj">Bài dự án</option>
           <option value="unit">Bài sản phẩm</option>
+        </select>
+        <select class="inp" id="tf-intent" aria-label="Khi khách hỏi">
+          <option value="">Mọi câu hỏi</option>
+          <option value="intro">Giới thiệu lần đầu</option>
+          <option value="place">Vị trí</option>
+          <option value="unit">Căn này</option>
+          <option value="media">Ảnh/video</option>
+          <option value="bank">Cọc/STK</option>
         </select>
       </div>
     </div>
@@ -113,11 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var S = RECO.store, E = RECO_DATA.esc;
   var copyText = RECO.copy;
-  var TICK_LAB = {
-    overview: 'Tổng quan', place: 'Vị trí', gallery: 'Ảnh dự án', amenity: 'Tiện ích',
-    bank: 'STK đặt cọc', hot: 'SP Hot', spec: 'Thông số căn', view: 'Hướng và view',
-    unitGallery: 'Ảnh căn', pitch: 'Mô tả căn'
-  };
+  var TICK_LAB = S.TICK_LAB;
   var CAN_SEND = ['gd', 'gddu', 'tkkd', 'qlkd', 'nvbh', 'mkt'].indexOf(RECO.role) >= 0;
   var CAN_APPROVE = ['gd', 'gddu', 'tkkd'].indexOf(RECO.role) >= 0;
   var IS_SALE = RECO.role === 'nvbh';
@@ -172,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var tfPj = document.getElementById('tf-pj');
   var tfUnit = document.getElementById('tf-unit');
   var tfKind = document.getElementById('tf-kind');
+  var tfIntent = document.getElementById('tf-intent');
   var tfWrap = document.getElementById('tpl-filter-wrap');
 
   function canSendTpl(t) {
@@ -199,6 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var isUnit = !!(t.unitId || t.hotId);
     if (tfKind.value === 'pj' && isUnit) return false;
     if (tfKind.value === 'unit' && !isUnit) return false;
+    if (tfIntent.value && S.tplIntent(t) !== tfIntent.value) return false;
     return true;
   }
   function fillUnitSelect(pjId) {
@@ -230,15 +236,26 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function wrapModes(cardHtml, listHtml) {
     var mode = viewMode();
-    return '<div data-mode="card"' + (mode === 'list' ? ' hidden' : '') + '>' + cardHtml + '</div>' +
+    return '<div data-mode="card" class="post-grid"' + (mode === 'list' ? ' hidden' : '') + '>' + cardHtml + '</div>' +
       '<div data-mode="list"' + (mode === 'card' ? ' hidden' : '') + '>' + listHtml + '</div>';
   }
+  function replyChip(t) {
+    var intent = S.intentOf(S.tplIntent(t));
+    var k = (t.ticks || [])[0];
+    var lab = (intent && intent.short) || TICK_LAB[k] || 'Tổng quan';
+    return '<span class="chip-reply">Trả lời · ' + E(lab) + '</span>';
+  }
   function postCard(t, actions, extra) {
-    return '<div class="post"><div class="spread">' +
-      '<div><b>' + E(t.title) + '</b> <span class="micro muted">' + E(S.projectName(t.projectId)) + '</span>' +
-        '<div class="row-tight mt-1">' + (extra || '') + ticksHtml(t) + '</div>' +
-        '<p class="small muted mt-1" style="margin:0">' + E(t.body) + '</p></div>' +
-      '<div class="row-tight">' + actions + '</div></div></div>';
+    var img = RECO.asset(S.tplCover(t));
+    return '<article class="pcard">' +
+      '<div class="pcard-media">' +
+        '<img src="' + img + '" alt="' + E(t.title) + '" loading="lazy">' +
+        '<span class="top-left">' + replyChip(t) + '</span>' +
+        (extra ? '<span class="top-right">' + extra + '</span>' : '') +
+        '<span class="on-media"><h3>' + E(t.title) + '</h3>' +
+          '<span class="place">' + E(S.projectName(t.projectId)) + '</span></span>' +
+      '</div>' +
+      '<div class="pcard-body"><div class="pcard-foot row-tight">' + actions + '</div></div></article>';
   }
   function postRow(t, actions, extra) {
     return '<div class="post spread">' +
@@ -328,6 +345,7 @@ document.addEventListener('DOMContentLoaded', function () {
   fillTplFilters();
   tfQ.addEventListener('input', function () { paintTeam(); paintMine(); });
   tfKind.addEventListener('change', function () { paintTeam(); paintMine(); });
+  tfIntent.addEventListener('change', function () { paintTeam(); paintMine(); });
   tfUnit.addEventListener('change', function () { paintTeam(); paintMine(); });
   tfPj.addEventListener('change', function () {
     fillUnitSelect(tfPj.value);
