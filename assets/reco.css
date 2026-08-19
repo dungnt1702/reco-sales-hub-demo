@@ -660,6 +660,50 @@ body.device-mobile .dock { position: sticky; }
 }
 .pcard .pcard-foot { flex-wrap: wrap; justify-content: flex-end; }
 
+/* Thẻ bài đăng: tiêu đề + dự án trái, CTA góc dưới phải — không hàng chân riêng */
+.pcard-post .pcard-media::after { display: none; }
+.pcard-body-post {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 10px 12px 12px;
+}
+.pcard-copy { min-width: 0; flex: 1; }
+.pcard-copy h3 {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pcard-copy .place {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pcard-cta {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.pcard-cta .btn { min-height: 32px; padding: 5px 11px; font-size: 0.78rem; }
+
+#tpl-filter-wrap { margin-bottom: 14px; }
+#tpl-filter-wrap .filterbar { padding-block: 0; }
+@media (min-width: 768px) { #tpl-filter-wrap { margin-bottom: 16px; } }
+
 .intent-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .intent-chips button {
   border: 1px solid var(--line); background: var(--white); color: var(--navy);
@@ -677,15 +721,18 @@ body.device-mobile .dock { position: sticky; }
   background: var(--white);
 }
 .tick-row .pick-row { flex: 1; margin: 0; min-width: 0; }
+.tick-row:has(.tick-grip) { touch-action: none; user-select: none; }
+.tick-row:has(.tick-grip) .pick-row { touch-action: manipulation; user-select: auto; }
 .tick-grip {
   width: 36px; height: 36px; flex: none;
   display: inline-flex; align-items: center; justify-content: center;
   border: 0; background: transparent; color: var(--muted); cursor: grab;
   touch-action: none; border-radius: var(--radius-md);
+  -webkit-user-select: none; user-select: none;
 }
 .tick-grip:active { cursor: grabbing; }
 .tick-grip svg { width: 16px; height: 16px; pointer-events: none; }
-.tick-row.is-drag { opacity: 0.9; box-shadow: var(--shadow-card); }
+.tick-row.is-drag { opacity: 0.9; box-shadow: var(--shadow-card); z-index: 1; }
 .tick-pool { display: flex; flex-direction: column; gap: 6px; }
 .tick-pool .tick-row { background: var(--soft); }
 .media-thumbs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }

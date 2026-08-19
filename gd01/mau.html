@@ -507,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function tickRow(k, on) {
       return '<div class="tick-row" data-tick="' + k + '">' +
         '<label class="pick-row"><input type="checkbox" value="' + k + '"' + (on ? ' checked' : '') + '> ' + E(TICK_LAB[k]) + '</label>' +
-        (on ? '<button type="button" class="tick-grip" aria-label="Kéo đổi thứ tự">' + RECO.svg('grip') + '</button>' : '') +
+        (on ? '<span class="tick-grip" role="button" tabindex="0" aria-label="Kéo đổi thứ tự">' + RECO.svg('grip') + '</span>' : '') +
       '</div>';
     }
     function paintTicks() {
@@ -526,39 +526,56 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     function bindTickDrag(box) {
       var drag = null;
+      function rowList() {
+        return Array.prototype.filter.call(box.children, function (el) {
+          return el.getAttribute && el.getAttribute('data-tick');
+        });
+      }
+      function onMove(e) {
+        if (!drag) return;
+        e.preventDefault();
+        var list = rowList();
+        var y = e.clientY;
+        var over = null;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i] === drag.row) continue;
+          var b = list[i].getBoundingClientRect();
+          if (y < b.top + b.height / 2) { over = list[i]; break; }
+        }
+        if (over) {
+          if (drag.row.nextElementSibling !== over) box.insertBefore(drag.row, over);
+        } else if (drag.row.nextElementSibling) {
+          box.appendChild(drag.row);
+        }
+      }
+      function endDrag(e) {
+        if (!drag) return;
+        if (e && drag.pointerId != null) {
+          try { drag.grip.releasePointerCapture(drag.pointerId); } catch (err) {}
+        }
+        drag.row.classList.remove('is-drag');
+        tickOrder = rowList().map(function (r) { return r.getAttribute('data-tick'); });
+        drag = null;
+        document.removeEventListener('pointermove', onMove, true);
+        document.removeEventListener('pointerup', endDrag, true);
+        document.removeEventListener('pointercancel', endDrag, true);
+        paintPreview();
+      }
       box.addEventListener('pointerdown', function (e) {
         var grip = e.target.closest('.tick-grip');
-        if (!grip) return;
+        if (!grip || !box.contains(grip)) return;
+        if (e.button != null && e.button !== 0) return;
         var row = grip.closest('[data-tick]');
         if (!row) return;
         e.preventDefault();
-        drag = { row: row };
+        e.stopPropagation();
+        drag = { row: row, grip: grip, pointerId: e.pointerId };
         row.classList.add('is-drag');
         try { grip.setPointerCapture(e.pointerId); } catch (err) {}
+        document.addEventListener('pointermove', onMove, true);
+        document.addEventListener('pointerup', endDrag, true);
+        document.addEventListener('pointercancel', endDrag, true);
       });
-      box.addEventListener('pointermove', function (e) {
-        if (!drag) return;
-        var rows = Array.prototype.slice.call(box.querySelectorAll('[data-tick]'));
-        var over = null;
-        for (var i = 0; i < rows.length; i++) {
-          if (rows[i] === drag.row) continue;
-          var b = rows[i].getBoundingClientRect();
-          if (e.clientY < b.top + b.height / 2) { over = rows[i]; break; }
-        }
-        if (over) box.insertBefore(drag.row, over);
-        else box.appendChild(drag.row);
-      });
-      function endDrag() {
-        if (!drag) return;
-        drag.row.classList.remove('is-drag');
-        tickOrder = Array.prototype.map.call(box.querySelectorAll('[data-tick]'), function (r) {
-          return r.getAttribute('data-tick');
-        });
-        drag = null;
-        paintPreview();
-      }
-      box.addEventListener('pointerup', endDrag);
-      box.addEventListener('pointercancel', endDrag);
     }
 
     function applyIntent(id, forceBody) {

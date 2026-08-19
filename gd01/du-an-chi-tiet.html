@@ -2120,16 +2120,18 @@ document.addEventListener('DOMContentLoaded', function () {
       var intent = S.intentOf(S.tplIntent(t));
       var chip = t.scope === 'personal' ? '<span class="st st-live">Của tôi</span>'
         : (t.approved ? '' : '<span class="st st-wait">Chưa duyệt</span>');
-      return '<article class="pcard">' +
+      return '<article class="pcard pcard-post">' +
         '<div class="pcard-media">' +
           '<img src="' + RECO.asset(S.tplCover(t)) + '" alt="' + esc(t.title) + '" loading="lazy">' +
           '<span class="top-left"><span class="chip-reply">Trả lời · ' + esc(intent.short) + '</span></span>' +
           (chip ? '<span class="top-right">' + chip + '</span>' : '') +
-          '<span class="on-media"><h3>' + esc(t.title) + '</h3><span class="place">' + esc(S.projectName(t.projectId)) + '</span></span>' +
         '</div>' +
-        '<div class="pcard-body"><div class="pcard-foot">' +
-          '<a class="btn btn-outline btn-sm" href="' + goQs('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Mở bài</a>' +
-        '</div></div></article>';
+        '<div class="pcard-body pcard-body-post">' +
+          '<div class="pcard-copy"><h3>' + esc(t.title) + '</h3>' +
+            '<span class="place">' + esc(S.projectName(t.projectId)) + '</span></div>' +
+          '<div class="pcard-cta">' +
+            '<a class="btn btn-outline btn-sm" href="' + goQs('mau.html', 'tpl=' + encodeURIComponent(t.id)) + '">Mở bài</a>' +
+          '</div></div></article>';
     }).join('');
   }
   function paintDriveDocs() {

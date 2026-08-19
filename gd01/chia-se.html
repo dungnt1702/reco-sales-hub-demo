@@ -69,11 +69,11 @@
 
     <div id="tpl-ket-qua">
       <div role="tabpanel" id="p-doi" aria-labelledby="t-doi">
-        <div id="tpl-doi" class="stack"></div>
+        <div id="tpl-doi"></div>
       </div>
 
       <div role="tabpanel" id="p-toi" aria-labelledby="t-toi" hidden>
-        <div id="tpl-toi" class="stack"></div>
+        <div id="tpl-toi"></div>
       </div>
 
       <div role="tabpanel" id="p-gui" aria-labelledby="t-gui" hidden>
@@ -247,15 +247,17 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function postCard(t, actions, extra) {
     var img = RECO.asset(S.tplCover(t));
-    return '<article class="pcard">' +
+    return '<article class="pcard pcard-post">' +
       '<div class="pcard-media">' +
         '<img src="' + img + '" alt="' + E(t.title) + '" loading="lazy">' +
         '<span class="top-left">' + replyChip(t) + '</span>' +
         (extra ? '<span class="top-right">' + extra + '</span>' : '') +
-        '<span class="on-media"><h3>' + E(t.title) + '</h3>' +
-          '<span class="place">' + E(S.projectName(t.projectId)) + '</span></span>' +
       '</div>' +
-      '<div class="pcard-body"><div class="pcard-foot row-tight">' + actions + '</div></div></article>';
+      '<div class="pcard-body pcard-body-post">' +
+        '<div class="pcard-copy"><h3>' + E(t.title) + '</h3>' +
+          '<span class="place">' + E(S.projectName(t.projectId)) + '</span></div>' +
+        '<div class="pcard-cta">' + actions + '</div>' +
+      '</div></article>';
   }
   function postRow(t, actions, extra) {
     return '<div class="post spread">' +
