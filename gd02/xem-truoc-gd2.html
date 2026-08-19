@@ -1,0 +1,269 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xem trước Giai đoạn 2 · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/vendor/leaflet.css">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<script defer src="../assets/vendor/leaflet.js"></script>
+<script defer src="../assets/geo.js"></script>
+<script defer src="../assets/reco-map.js"></script>
+<style>
+  /* Nhãn gắn vào TỪNG thẻ. Gắn vào lưới thì nó neo ở góc lưới và đè lên thẻ cuối hàng. */
+  .fake { position: relative; padding-top: 34px; }
+  .fake::after {
+    content: 'SỐ LIỆU MINH HỌA'; position: absolute; right: 18px; top: 16px;
+    font-size: .62rem; letter-spacing: .1em; font-weight: 800; color: var(--muted);
+    border: 1px dashed var(--line); border-radius: 999px; padding: 3px 9px; background: var(--white);
+  }
+  /* Hai thẻ cùng hàng đã được ghép sao cho lượng nội dung tương đương, nên không đẩy
+     nội dung xuống chân thẻ: khoảng cách tiêu đề → nội dung giống nhau ở cả sáu thẻ
+     quan trọng hơn việc đáy thẻ thẳng hàng tuyệt đối. */
+  .rp { display: flex; flex-direction: column; }
+  .barline { height: 8px; border-radius: 999px; background: var(--soft); overflow: hidden; }
+  .barline i { display: block; height: 100%; background: var(--orange-button); }
+  .bars > div + div { margin-top: 12px; }
+  .kpi b { font-family: var(--font-display); font-size: 1.5rem; display: block; margin: 2px 0; }
+</style>
+</head>
+<body data-shell="app" data-page="xem-truoc-gd2">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">Giai đoạn 2 · chưa nằm trong gói hiện tại</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Xem trước: báo cáo giao dịch và hoa hồng</h1>
+        <p class="lead mt-1" style="font-size:.98rem;max-width:74ch">
+          Màn này dựng theo đúng bảy báo cáo tuần và bảng kê hoa hồng RECO đang làm trên Excel,
+          để hình dung phân hệ Giai đoạn 2 sẽ trông như thế nào.
+        </p>
+      </div>
+      <span class="chip-gd2">Ngoài gói 198.800.000 VNĐ</span>
+    </div>
+
+    <div class="note note-navy mb-4">
+      <strong>Toàn bộ số liệu trên màn này là số giả.</strong>
+      Dữ liệu thật của RECO có họ tên khách hàng, họ tên và thư điện tử nhân viên, hoa hồng từng người,
+      lương đóng bảo hiểm và thuế thu nhập cá nhân — những thứ không bao giờ được đưa lên một bản mô phỏng công khai.
+      Phạm vi và tạm tính của phân hệ này nằm ở tài liệu <em>Danh mục hạng mục ngoài phạm vi</em> (GD2-01 và GD2-02).
+    </div>
+
+    <!-- Bốn số liệu đầu kỳ -->
+    <p class="micro muted mb-1" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">Bốn số liệu đầu kỳ · số liệu minh hoạ</p>
+    <div class="grid g-4 mb-4">
+      <div class="card card-pad kpi"><span class="micro muted">Giao dịch trong tuần</span><b>128</b><span class="micro muted">+14 so với tuần trước</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Tiền hàng</span><b>386,7 tỷ</b><span class="micro muted">Tổng giá trị sản phẩm</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Doanh thu môi giới</span><b>11,89 tỷ</b><span class="micro muted">Tỷ lệ phí bình quân 3,1%</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Nhân viên có phát sinh</span><b>96</b><span class="micro muted">Trên tổng 690 nhân sự bán</span></div>
+    </div>
+
+    <div class="grid g-2 mb-4">
+      <!-- Hàng 1: bảng 5 dòng ↔ 5 thanh -->
+      <section class="card card-pad fake rp">
+        <div>
+          <span class="eyebrow">Báo cáo 1</span>
+          <h2 style="font-size:1.15rem">Theo khu vực địa lý</h2>
+          <p class="micro muted">Năm khu vực phát sinh nhiều nhất trong kỳ.</p>
+        </div>
+        <!-- Bong bóng theo doanh thu của bốn khu vực có toạ độ; "Khác" chỉ nằm ở bảng. -->
+        <div id="gd2-map" class="mt-2"></div>
+        <div class="tbl-wrap mt-2">
+          <table class="tbl">
+            <thead><tr><th>Khu vực</th><th class="r">Số lượng</th><th class="r">Tiền hàng</th><th class="r">Doanh thu</th></tr></thead>
+            <tbody>
+              <tr><td data-l="Khu vực">Hà Nội</td><td data-l="Số lượng" class="r">61</td><td data-l="Tiền hàng" class="r">187,7 tỷ</td><td data-l="Doanh thu" class="r">4,94 tỷ</td></tr>
+              <tr><td data-l="Khu vực">Quảng Bình</td><td data-l="Số lượng" class="r">27</td><td data-l="Tiền hàng" class="r">37,1 tỷ</td><td data-l="Doanh thu" class="r">1,68 tỷ</td></tr>
+              <tr><td data-l="Khu vực">Bắc Giang</td><td data-l="Số lượng" class="r">8</td><td data-l="Tiền hàng" class="r">14,4 tỷ</td><td data-l="Doanh thu" class="r">0,64 tỷ</td></tr>
+              <tr><td data-l="Khu vực">Thanh Hóa</td><td data-l="Số lượng" class="r">7</td><td data-l="Tiền hàng" class="r">44,3 tỷ</td><td data-l="Doanh thu" class="r">1,52 tỷ</td></tr>
+              <tr><td data-l="Khu vực">Khác</td><td data-l="Số lượng" class="r">25</td><td data-l="Tiền hàng" class="r">103,2 tỷ</td><td data-l="Doanh thu" class="r">3,11 tỷ</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card card-pad fake rp">
+        <div>
+          <span class="eyebrow">Báo cáo 2</span>
+          <h2 style="font-size:1.15rem">Theo loại hình sản phẩm</h2>
+          <p class="micro muted">Sáu loại hình theo danh mục chuẩn đã chốt tại QD-057, mở rộng thêm Bất động sản tâm linh tại QD-071.</p>
+        </div>
+        <div class="bars mt-2" id="loaihinh"></div>
+      </section>
+
+      <!-- Hàng 2: 3 thanh ↔ 3 thanh -->
+      <section class="card card-pad fake rp">
+        <div>
+          <span class="eyebrow">Báo cáo 3</span>
+          <h2 style="font-size:1.15rem">Theo phân khúc giá</h2>
+          <p class="micro muted">Phân khúc tính theo đơn giá mỗi mét vuông.</p>
+        </div>
+        <div class="bars mt-2" id="phankhuc"></div>
+      </section>
+
+      <section class="card card-pad fake rp">
+        <div>
+          <span class="eyebrow">Báo cáo 7</span>
+          <h2 style="font-size:1.15rem">Theo số phòng ngủ</h2>
+          <p class="micro muted">Chỉ tính phần sản phẩm căn hộ trong kỳ.</p>
+        </div>
+        <div class="bars mt-2" id="sopn"></div>
+      </section>
+
+      <!-- Hàng 3: 5 thanh ↔ 5 thanh -->
+      <section class="card card-pad fake rp">
+        <div>
+          <span class="eyebrow">Báo cáo 4</span>
+          <h2 style="font-size:1.15rem">Theo đơn vị bán</h2>
+          <p class="micro muted">Năm đơn vị dẫn đầu về số lượng giao dịch.</p>
+        </div>
+        <div class="bars mt-2" id="donvi"></div>
+      </section>
+
+      <section class="card card-pad fake rp">
+        <div>
+          <span class="eyebrow">Báo cáo 6</span>
+          <h2 style="font-size:1.15rem">Nhân sự bán hàng theo đơn vị</h2>
+          <p class="micro muted">Tỷ lệ nhân viên có phát sinh giao dịch trên tổng nhân sự — chỉ số KPI của Hành chính nhân sự.</p>
+        </div>
+        <div class="bars mt-2" id="nhansu"></div>
+      </section>
+    </div>
+
+    <!-- Báo cáo 5 chiếm trọn bề ngang: xếp hạng dự án cần nhiều cột hơn một nửa lưới -->
+    <section class="card card-pad fake mb-4">
+      <span class="eyebrow">Báo cáo 5</span>
+      <h2 style="font-size:1.15rem">Theo dự án</h2>
+      <p class="micro muted">Xếp hạng theo số lượng giao dịch trong kỳ.</p>
+      <div class="tbl-wrap mt-2">
+        <table class="tbl">
+          <thead><tr><th>Mã dự án</th><th>Dự án</th><th class="r">Số lượng</th><th class="r">Tiền hàng</th><th class="r">Doanh thu</th></tr></thead>
+          <tbody>
+            <tr><td data-l="Mã dự án">DPL</td><td data-l="Dự án">Dolce Penisola</td><td data-l="Số lượng" class="r">27</td><td data-l="Tiền hàng" class="r">37,1 tỷ</td><td data-l="Doanh thu" class="r">1,68 tỷ</td></tr>
+            <tr><td data-l="Mã dự án">NON</td><td data-l="Dự án">Nhà Ở Ngay</td><td data-l="Số lượng" class="r">15</td><td data-l="Tiền hàng" class="r">53,3 tỷ</td><td data-l="Doanh thu" class="r">0,94 tỷ</td></tr>
+            <tr><td data-l="Mã dự án">ISC</td><td data-l="Dự án">Imperia Smart City</td><td data-l="Số lượng" class="r">13</td><td data-l="Tiền hàng" class="r">35,3 tỷ</td><td data-l="Doanh thu" class="r">1,18 tỷ</td></tr>
+            <tr><td data-l="Mã dự án">TCD</td><td data-l="Dự án">Tecco Diamond</td><td data-l="Số lượng" class="r">11</td><td data-l="Tiền hàng" class="r">23,8 tỷ</td><td data-l="Doanh thu" class="r">0,87 tỷ</td></tr>
+            <tr><td data-l="Mã dự án">LPP</td><td data-l="Dự án">Le Parc Place</td><td data-l="Số lượng" class="r">9</td><td data-l="Tiền hàng" class="r">61,4 tỷ</td><td data-l="Doanh thu" class="r">1,84 tỷ</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Bảng kê hoa hồng -->
+    <section class="card card-pad mb-4 fake">
+      <div class="spread mb-1">
+        <div>
+          <span class="eyebrow">Bảng kê hoa hồng · GD2-02</span>
+          <h2 style="font-size:1.15rem">Chi tiết hoa hồng kỳ chi trả</h2>
+        </div>
+        <span class="lb lb-restricted">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Nội bộ hạn chế
+        </span>
+      </div>
+      <p class="small muted">
+        Một giao dịch chia cho nhiều người theo tỷ lệ hỗ trợ, và hoa hồng trả làm nhiều kỳ có trừ tạm ứng —
+        đây là hai quy tắc khó nhất của phân hệ này, đọc được ngay từ tệp Excel RECO gửi.
+      </p>
+      <div class="tbl-wrap mt-2">
+        <table class="tbl">
+          <thead><tr>
+            <th>Mã căn</th><th>Người hưởng</th><th class="r">Tỷ lệ</th><th class="r">Hoa hồng</th>
+            <th class="r">Thuế TNCN</th><th class="r">Kỳ này</th><th class="r">Kỳ sau</th>
+          </tr></thead>
+          <tbody>
+            <tr><td data-l="Mã căn">LPP-A.21.03</td><td data-l="Người hưởng">Nhân viên A</td><td data-l="Tỷ lệ" class="r">75%</td><td data-l="Hoa hồng" class="r">41.896.159 đ</td><td data-l="Thuế TNCN" class="r">4.189.616 đ</td><td data-l="Kỳ này" class="r">21.455.877 đ</td><td data-l="Kỳ sau" class="r">16.250.666 đ</td></tr>
+            <tr><td data-l="Mã căn"></td><td data-l="Người hưởng">Nhân viên B</td><td data-l="Tỷ lệ" class="r">25%</td><td data-l="Hoa hồng" class="r">13.965.386 đ</td><td data-l="Thuế TNCN" class="r">1.396.539 đ</td><td data-l="Kỳ này" class="r">0 đ</td><td data-l="Kỳ sau" class="r">6.284.424 đ</td></tr>
+            <tr><td data-l="Mã căn">LPP-B.24.02</td><td data-l="Người hưởng">Nhân viên C</td><td data-l="Tỷ lệ" class="r">34%</td><td data-l="Hoa hồng" class="r">11.553.674 đ</td><td data-l="Thuế TNCN" class="r">1.155.367 đ</td><td data-l="Kỳ này" class="r">5.199.153 đ</td><td data-l="Kỳ sau" class="r">5.199.153 đ</td></tr>
+            <tr><td data-l="Mã căn"></td><td data-l="Người hưởng">Nhân viên D</td><td data-l="Tỷ lệ" class="r">33%</td><td data-l="Hoa hồng" class="r">11.213.860 đ</td><td data-l="Thuế TNCN" class="r">1.121.386 đ</td><td data-l="Kỳ này" class="r">5.046.237 đ</td><td data-l="Kỳ sau" class="r">5.046.237 đ</td></tr>
+            <tr><td data-l="Mã căn"></td><td data-l="Người hưởng">Nhân viên E</td><td data-l="Tỷ lệ" class="r">33%</td><td data-l="Hoa hồng" class="r">11.213.860 đ</td><td data-l="Thuế TNCN" class="r">1.121.386 đ</td><td data-l="Kỳ này" class="r">5.046.237 đ</td><td data-l="Kỳ sau" class="r">5.046.237 đ</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="micro muted mt-2">Tên người hưởng đã được thay bằng nhãn chung. Bản thật hiển thị mã nhân viên và họ tên.</p>
+    </section>
+
+    <section class="card card-pad">
+      <h2 style="font-size:1.15rem;margin-top:0">Nếu RECO chọn làm phân hệ này</h2>
+      <ul class="small mt-2" style="padding-left:18px;line-height:1.9">
+        <li><b>GD2-01 — Giao dịch, doanh thu và báo cáo kinh doanh:</b> 70 ngày công, tạm tính 64.300.000 đ sau ưu đãi.</li>
+        <li><b>GD2-02 — Hoa hồng và thuế thu nhập cá nhân:</b> 40 ngày công, tạm tính 36.400.000 đ sau ưu đãi.</li>
+        <li>Nên làm GD2-01 trước: doanh thu là gốc dữ liệu của cả hoa hồng lẫn chỉ số KPI nhân sự.</li>
+        <li>Phân hệ hoa hồng cần một kỳ chạy song song với bảng Excel hiện tại trước khi dùng thay thế — sai một dòng là sai tiền và sai thuế của người thật.</li>
+      </ul>
+      <div class="row mt-3">
+        <a class="btn btn-outline" href="index.html">Về bản đồ prototype</a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var box = document.getElementById('loaihinh');
+  if (!box) return;   /* khung điện thoại thay #page bằng iframe */
+  var E = RECO_DATA.esc;
+
+  if (window.RECO.map) RECO.map.overview(document.getElementById('gd2-map'));
+
+  function bars(target, rows) {
+    var max = rows.reduce(function (m, r) { return Math.max(m, r[1]); }, 0);
+    document.getElementById(target).innerHTML = rows.map(function (r) {
+      /* Khoảng cách giữa các thanh do .bars lo, không gắn lề vào từng thanh:
+         gắn vào từng thanh thì thanh cuối cũng có lề và chân thẻ dôi ra một nhịp. */
+      return '<div>' +
+        '<div class="spread"><span class="small">' + E(r[0]) + '</span>' +
+          '<span class="micro muted">' + E(r[2]) + '</span></div>' +
+        '<div class="barline mt-1"><i style="width:' + Math.round(r[1] / max * 100) + '%"></i></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  bars('loaihinh', [
+    ['Chung cư', 90, '90 giao dịch · 7,21 tỷ doanh thu'],
+    ['Nhà đất thổ cư', 16, '16 giao dịch · 0,97 tỷ'],
+    ['Đất nền', 12, '12 giao dịch · 1,08 tỷ'],
+    ['Biệt thự, nhà liền kề, shophouse', 6, '6 giao dịch · 2,48 tỷ'],
+    ['Bất động sản tâm linh', 4, '4 giao dịch · 0,16 tỷ'],
+    ['Cho thuê', 0, 'Chưa phát sinh trong kỳ']
+  ]);
+
+  bars('phankhuc', [
+    ['Cao cấp — từ 35 triệu/m²', 63, '63 giao dịch · 6,89 tỷ doanh thu'],
+    ['Giá thấp — dưới 25 triệu/m²', 39, '39 giao dịch · 2,61 tỷ'],
+    ['Trung cấp — 25–35 triệu/m²', 26, '26 giao dịch · 2,40 tỷ']
+  ]);
+
+  bars('donvi', [
+    ['Nhà Ở Ngay', 15, '15 giao dịch · 0,94 tỷ doanh thu'],
+    ['Bất động sản Bắc Trung Bộ', 14, '14 giao dịch · 0,79 tỷ'],
+    ['Asahi', 11, '11 giao dịch · 0,63 tỷ'],
+    ['Sàn Hội sở', 9, '9 giao dịch · 1,30 tỷ'],
+    ['Sàn Trung Kính', 9, '9 giao dịch · 0,96 tỷ']
+  ]);
+
+  bars('sopn', [
+    ['2 phòng ngủ', 27, '27 giao dịch · 77%'],
+    ['1 phòng ngủ', 4, '4 giao dịch · 11%'],
+    ['3 phòng ngủ', 4, '4 giao dịch · 11%']
+  ]);
+
+  bars('nhansu', [
+    ['Sàn Trung tâm', 33, '33 trên 45 nhân sự · 73%'],
+    ['Sàn Hà Đông', 31, '31 trên 100 · 31%'],
+    ['Sàn Nam Hà Nội', 23, '23 trên 85 · 27%'],
+    ['Sàn Bắc Trung Bộ', 22, '22 trên 120 · 18%'],
+    ['Nhà Ở Ngay', 18, '18 trên 109 · 17%']
+  ]);
+});
+</script>
+
+</body>
+</html>

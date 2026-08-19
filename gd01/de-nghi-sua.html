@@ -1,0 +1,381 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đề nghị sửa nội dung · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  .req-grid { display: grid; gap: 20px; }
+  @media (min-width: 1024px) { .req-grid { grid-template-columns: minmax(0,1fr) 380px; gap: 28px; align-items: start; } }
+  .req-row { cursor: pointer; }
+  .req-row.on { background: color-mix(in srgb, var(--orange) 11%, transparent); box-shadow: inset 3px 0 0 var(--orange-button); }
+  .req-row.on:hover { background: color-mix(in srgb, var(--orange) 14%, transparent); }
+  .req-row:focus-visible { outline: 2px solid var(--navy); outline-offset: -2px; }
+</style>
+</head>
+<body data-shell="app" data-page="tai-lieu">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">MH-13 · Đề nghị sửa nội dung</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Đề nghị sửa nội dung</h1>
+        <p class="lead mt-1" style="font-size:.98rem;max-width:72ch">
+          Nhân viên không sửa trực tiếp dữ liệu gốc. Đề nghị được gửi tới người phụ trách dữ liệu kiểm tra rồi cập nhật hoặc từ chối kèm lý do —
+          nhờ vậy dữ liệu luôn giữ một nguồn sự thật duy nhất.
+        </p>
+      </div>
+      <div class="row-tight">
+        <!-- Chỉ Nhân viên bán hàng và Quản lý kinh doanh gửi đề nghị; các vai trò còn lại là người xử lý. -->
+        <button class="btn btn-primary" id="req-new" data-roles="nvbh qlkd" data-open="m-gui">Gửi đề nghị mới</button>
+        <span class="chip" data-roles="gd gddu tkkd mkt hcns ktoan">Vai trò của anh/chị xử lý đề nghị, không gửi đề nghị mới</span>
+      </div>
+    </div>
+
+    <div class="grid g-4 mb-4">
+      <div class="tile"><span class="k">Mới</span><span class="num" style="color:var(--orange-text)" id="c-new">0</span></div>
+      <div class="tile"><span class="k">Đang xử lý</span><span class="num" id="c-doing">0</span></div>
+      <div class="tile"><span class="k">Đã cập nhật</span><span class="num" style="color:var(--verified)" id="c-done">0</span></div>
+      <div class="tile"><span class="k">Từ chối</span><span class="num" id="c-rej">0</span></div>
+    </div>
+
+    <div class="req-grid">
+
+      <div>
+        <div class="tabs mb-3" role="tablist" aria-label="Lọc theo trạng thái">
+          <button role="tab" id="t-all" aria-controls="p-all" aria-selected="true">Tất cả</button>
+          <button role="tab" id="t-moi" aria-controls="p-moi" aria-selected="false" tabindex="-1">Mới</button>
+          <button role="tab" id="t-xuly" aria-controls="p-xuly" aria-selected="false" tabindex="-1">Đang xử lý</button>
+          <button role="tab" id="t-xong" aria-controls="p-xong" aria-selected="false" tabindex="-1">Đã xử lý</button>
+        </div>
+
+        <div role="tabpanel" id="p-all" aria-labelledby="t-all"><div id="l-all"></div></div>
+        <div role="tabpanel" id="p-moi" aria-labelledby="t-moi" hidden><div id="l-moi"></div></div>
+        <div role="tabpanel" id="p-xuly" aria-labelledby="t-xuly" hidden><div id="l-xuly"></div></div>
+        <div role="tabpanel" id="p-xong" aria-labelledby="t-xong" hidden><div id="l-xong"></div></div>
+      </div>
+
+      <!-- Chi tiết một đề nghị -->
+      <aside id="chi-tiet"></aside>
+
+    </div>
+  </div>
+</main>
+
+<!-- Gửi đề nghị -->
+<div class="modal" id="m-gui" hidden role="dialog" aria-modal="true" aria-labelledby="m-gui-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">MH-13</span><h3 id="m-gui-t">Gửi đề nghị sửa nội dung</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <label class="field"><span class="lab">Tiêu đề đề nghị</span>
+        <input class="inp" type="text" id="g-title" data-required data-msg="Nhập tiêu đề ngắn gọn để người phụ trách nhận ra ngay." placeholder="Ví dụ: Sai diện tích căn T1-12.05">
+      </label>
+      <label class="field"><span class="lab">Nội dung liên quan</span>
+        <select class="inp" id="g-area">
+          <option value="celestine|Khu vực 05 · Bảng hàng">Celestine Westlake — Khu vực 05: Bảng hàng và phiếu tính giá</option>
+          <option value="celestine|Khu vực 07 · Hỏi đáp">Celestine Westlake — Khu vực 07: Hỏi đáp</option>
+          <option value="celestine|Khu vực 03 · Điểm chính">Celestine Westlake — Khu vực 03: Điểm bán hàng chính</option>
+          <option value="palmy|Khu vực 06 · Ảnh và tài liệu">Palmy Biztown — Khu vực 06: Ảnh và tài liệu</option>
+          <option value="la-perle|Khu vực 05 · Bảng hàng">La Perle Héritage — Khu vực 05: Bảng hàng</option>
+        </select>
+      </label>
+      <label class="field"><span class="lab">Phần cần sửa</span>
+        <textarea class="inp" id="g-body" data-required data-msg="Nêu rõ chỗ nào sai và nên sửa thành gì." placeholder="Nêu rõ chỗ nào sai và nên sửa thành gì."></textarea>
+      </label>
+      <label class="field"><span class="lab">Căn cứ (tùy chọn)</span>
+        <input class="inp" type="text" id="g-ref" placeholder="Tên tài liệu hoặc đường dẫn đối chiếu">
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="g-ok">Gửi đề nghị</button>
+    </div>
+  </div>
+</div>
+
+<!-- Từ chối -->
+<div class="modal" id="m-tuchoi" hidden role="dialog" aria-modal="true" aria-labelledby="m-tuchoi-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><h3 id="m-tuchoi-t">Từ chối đề nghị</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted mb-2" id="tc-ctx">Lý do sẽ được gửi lại cho người đề nghị — bắt buộc nhập.</p>
+      <label class="field"><span class="lab">Lý do từ chối</span>
+        <textarea class="inp" id="tc-reason" data-required data-msg="Bắt buộc nhập lý do — người đề nghị cần biết vì sao." placeholder="Ví dụ: hợp đồng mẫu v3 đã hết hiệu lực, bản v4 ghi đúng 72,4 m²."></textarea>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="tc-ok">Từ chối kèm lý do</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var S = RECO.store, esc = RECO_DATA.esc;
+
+  var LISTS = { all: 'l-all', moi: 'l-moi', xuly: 'l-xuly', xong: 'l-xong' };
+  var IN_TAB = {
+    all: function () { return true; },
+    moi: function (r) { return r.state === 'new'; },
+    xuly: function (r) { return r.state === 'doing'; },
+    xong: function (r) { return r.state === 'done' || r.state === 'rejected'; }
+  };
+  var EMPTY = {
+    all: ['Chưa có đề nghị nào', 'Khi nhân viên phát hiện dữ liệu sai, đề nghị sẽ hiện ở đây.'],
+    moi: ['Không còn đề nghị nào chờ nhận', 'Mọi đề nghị gửi lên đều đã có người phụ trách nhận xử lý.'],
+    xuly: ['Không có đề nghị nào đang xử lý', 'Nhận xử lý một đề nghị mới để nó chuyển vào đây.'],
+    xong: ['Chưa có đề nghị nào được đóng', 'Đề nghị đã cập nhật hoặc từ chối kèm lý do sẽ nằm ở đây.']
+  };
+  var ST = {
+    'new': { text: 'Mới', cls: 'st-wait', icon: 'edit', style: 'background:var(--notice);color:var(--orange-text)' },
+    doing: { text: 'Đang xử lý', cls: 'st-off', icon: 'clock', style: '' },
+    done: { text: 'Đã cập nhật', cls: 'st-live', icon: 'check', style: 'background:color-mix(in srgb,var(--verified) 11%,#fff);color:var(--verified)' },
+    rejected: { text: 'Từ chối', cls: 'st-stop', icon: 'x', style: 'background:color-mix(in srgb,var(--danger) 8%,#fff);color:var(--danger)' }
+  };
+  var CAN_HANDLE = 'tkkd gddu gd mkt';
+  var WATCH_ONLY = 'nvbh qlkd hcns';
+
+  var sel = null;
+
+  function all() { return S.get('requests'); }
+  function ini(name) {
+    var w = String(name).trim().split(/\s+/);
+    return (w[0][0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase();
+  }
+  function today() {
+    var t = new Date();
+    return ('0' + t.getDate()).slice(-2) + '/' + ('0' + (t.getMonth() + 1)).slice(-2) + '/' + t.getFullYear();
+  }
+  function now() {
+    var t = new Date();
+    return today() + ' ' + ('0' + t.getHours()).slice(-2) + ':' + ('0' + t.getMinutes()).slice(-2);
+  }
+  /* Vai trò của người gửi — dùng để báo đúng người khi đề nghị được đóng */
+  function roleOfSender(r) {
+    var m = RECO.roles.filter(function (x) { return x.name === r.byRole; })[0];
+    return m ? m.id : 'nvbh';
+  }
+
+  /* ---------- Dòng đề nghị ---------- */
+  function rowActions(r) {
+    if (r.state === 'new') {
+      return '<button type="button" class="btn btn-outline btn-sm" data-act="nhan" data-roles="' + CAN_HANDLE + '">Nhận xử lý</button>' +
+        '<span class="chip" data-roles="' + WATCH_ONLY + '">Chờ người phụ trách dữ liệu</span>';
+    }
+    if (r.state === 'doing') {
+      return '<button type="button" class="btn btn-primary btn-sm" data-act="xong" data-roles="' + CAN_HANDLE + '">Đã cập nhật</button>' +
+        '<span class="chip" data-roles="' + WATCH_ONLY + '">' + esc(r.owner || 'Người phụ trách') + ' đang xử lý</span>';
+    }
+    if (r.state === 'done') {
+      return '<span class="micro muted">Cập nhật bởi ' + esc(r.owner || '—') + ' · ' + esc(r.closedAt || '') + '</span>';
+    }
+    return '<span class="micro muted">Từ chối · ' + esc(r.closedAt || '') + '</span>';
+  }
+
+  function row(r) {
+    var s = ST[r.state] || ST['new'];
+    return '<div class="frow req-row' + (r.id === sel ? ' on' : '') + '" data-req="' + r.id + '" tabindex="0" role="button"' +
+      ' aria-pressed="' + (r.id === sel ? 'true' : 'false') + '">' +
+      '<span class="fico"' + (s.style ? ' style="' + s.style + '"' : '') + '>' + RECO.svg(s.icon) + '</span>' +
+      '<div class="fmeta"><div class="fname">' + esc(r.title) + '</div><div class="fsub">' +
+        '<span>' + esc(r.by) + ' · ' + esc(r.at) + '</span>' +
+        '<span>' + esc(S.projectName(r.pj)) + ' · ' + esc(r.area) + '</span>' +
+        '<span class="st ' + s.cls + '">' + s.text + '</span>' +
+        (r.state === 'rejected' && r.reason ? '<span class="micro muted">Lý do: ' + esc(r.reason) + '</span>' : '') +
+      '</div></div>' +
+      '<div class="fend">' + rowActions(r) + '</div></div>';
+  }
+
+  /* ---------- Khung chi tiết ---------- */
+  function timeline(r) {
+    var nhan = r.state !== 'new';
+    var dong = r.state === 'done' || r.state === 'rejected';
+    function li(cls, t, d) { return '<li' + (cls ? ' class="' + cls + '"' : '') + '><span class="t">' + t + '</span><span class="d">' + d + '</span></li>'; }
+    return '<ul class="timeline">' +
+      li('done', esc(r.at), 'Nhân viên gửi đề nghị') +
+      li(nhan ? 'done' : 'on', nhan ? esc(r.owner || '—') : 'Đang chờ', 'Người phụ trách dữ liệu nhận xử lý') +
+      li(dong ? 'done' : (nhan ? 'on' : ''), dong ? esc(r.closedAt || '') : (nhan ? 'Đang xử lý' : '—'),
+        'Cập nhật dữ liệu gốc hoặc từ chối kèm lý do') +
+      li(dong ? 'done' : '', dong ? 'Đã báo lại' : '—', 'Nhân viên nhận phản hồi trạng thái') +
+      '</ul>';
+  }
+
+  function footActions(r) {
+    if (r.state === 'new') {
+      return '<button type="button" class="btn btn-primary btn-sm" data-act="nhan">Nhận xử lý</button>' +
+        '<button type="button" class="btn btn-outline btn-sm" data-act="tuchoi">Từ chối</button>';
+    }
+    if (r.state === 'doing') {
+      return '<button type="button" class="btn btn-primary btn-sm" data-act="xong">Cập nhật dữ liệu</button>' +
+        '<button type="button" class="btn btn-outline btn-sm" data-act="tuchoi">Từ chối</button>';
+    }
+    return '<span class="micro muted">Đề nghị đã đóng ngày ' + esc(r.closedAt || '') + '. Không đổi được trạng thái nữa.</span>';
+  }
+
+  function detail(r) {
+    var s = ST[r.state] || ST['new'];
+    return '<div class="card">' +
+      '<div class="card-head"><h3 style="font-size:1rem">' + esc(r.title) + '</h3><span class="st ' + s.cls + '">' + s.text + '</span></div>' +
+      '<div class="card-body">' +
+        '<div class="people mb-3"><span class="avatar sm">' + esc(ini(r.by)) + '</span>' +
+        '<span class="who"><b>' + esc(r.by) + '</b><span>' + esc(r.byRole) + ' · ' + esc(r.at) + '</span></span></div>' +
+        '<div class="kv">' +
+          '<div><div class="k">Nội dung liên quan</div><div class="v">' + esc(S.projectName(r.pj)) + ' — ' + esc(r.area) + '</div></div>' +
+          '<div><div class="k">Phần cần sửa</div><div class="v" style="font-weight:400">' + esc(r.body) + '</div></div>' +
+          '<div><div class="k">Căn cứ</div><div class="v" style="font-weight:400">' + esc(r.ref || 'Người gửi không kèm căn cứ.') + '</div></div>' +
+          (r.owner ? '<div><div class="k">Người phụ trách</div><div class="v">' + esc(r.owner) + '</div></div>' : '') +
+          (r.reason ? '<div><div class="k">Lý do từ chối</div><div class="v" style="font-weight:400;color:var(--danger)">' + esc(r.reason) + '</div></div>' : '') +
+        '</div>' +
+        '<h4 class="mt-3 mb-1">Tiến trình</h4>' + timeline(r) +
+      '</div>' +
+      '<div class="card-foot" data-roles="' + CAN_HANDLE + '"><div class="row-tight">' + footActions(r) + '</div></div>' +
+      '<div class="card-foot" data-roles="' + WATCH_ONLY + '">' +
+        '<span class="micro muted">Anh/chị theo dõi trạng thái tại đây. Chỉ người phụ trách dữ liệu mới cập nhật được dữ liệu gốc.</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  /* ---------- Vẽ ---------- */
+  function render() {
+    var list = all();
+    if (!list.length) sel = null;
+    else if (!sel || !S.find('requests', sel)) sel = list[0].id;
+
+    document.getElementById('c-new').textContent = list.filter(IN_TAB.moi).length;
+    document.getElementById('c-doing').textContent = list.filter(IN_TAB.xuly).length;
+    document.getElementById('c-done').textContent = list.filter(function (r) { return r.state === 'done'; }).length;
+    document.getElementById('c-rej').textContent = list.filter(function (r) { return r.state === 'rejected'; }).length;
+
+    Object.keys(LISTS).forEach(function (k) {
+      var part = list.filter(IN_TAB[k]);
+      var host = document.getElementById(LISTS[k]);
+      host.innerHTML = part.length
+        ? '<div class="card">' + part.map(row).join('') + '</div>'
+        : RECO_DATA.empty(EMPTY[k][0], EMPTY[k][1]);
+      RECO.applyRoles(host);
+    });
+
+    var box = document.getElementById('chi-tiet');
+    var r = sel && S.find('requests', sel);
+    box.innerHTML = r ? detail(r) : RECO_DATA.empty('Chưa chọn đề nghị nào', 'Bấm một đề nghị bên trái để xem chi tiết.');
+    RECO.applyRoles(box);
+  }
+
+  /* ---------- Xử lý ---------- */
+  function nhan(r) {
+    S.update('requests', r.id, { state: 'doing', owner: RECO.current.who });
+    RECO.toast('Đã nhận xử lý — đề nghị chuyển sang trạng thái đang xử lý');
+  }
+
+  function baoNguoiGui(r, kind, title, body) {
+    S.add('notifications', {
+      kind: kind, title: title, body: body, at: 'vừa xong',
+      to: roleOfSender(r), read: false, go: 'de-nghi-sua.html'
+    });
+  }
+
+  function xong(r) {
+    RECO.confirm({
+      eyebrow: 'Đề nghị ' + r.title,
+      title: 'Đã cập nhật dữ liệu gốc?',
+      body: '<p class="small muted">' + esc(r.body) + '</p>' +
+            '<p class="small muted mt-2">Đề nghị sẽ đóng lại và ' + esc(r.by) + ' nhận thông báo dữ liệu đã được sửa.</p>',
+      okText: 'Xác nhận đã cập nhật',
+      onOk: function () {
+        S.update('requests', r.id, { state: 'done', closedAt: today(), owner: r.owner || RECO.current.who });
+        baoNguoiGui(r, 'ok', 'Đề nghị của anh/chị đã được cập nhật', r.title + ' — dữ liệu gốc đã sửa theo đề nghị.');
+        RECO.toast('Đã cập nhật dữ liệu gốc và báo lại ' + r.by);
+      }
+    });
+  }
+
+  var tcId = null;
+  function tuchoi(r) {
+    tcId = r.id;
+    document.getElementById('tc-ctx').textContent =
+      'Từ chối đề nghị “' + r.title + '”. Lý do sẽ được gửi lại cho ' + r.by + ' — bắt buộc nhập.';
+    var ta = document.getElementById('tc-reason');
+    ta.value = '';
+    ta.removeAttribute('aria-invalid');
+    RECO.openModal('m-tuchoi');
+  }
+  document.getElementById('tc-ok').addEventListener('click', function () {
+    var box = document.getElementById('m-tuchoi');
+    if (!RECO.validate(box)) return;
+    var r = S.find('requests', tcId);
+    if (!r) return;
+    var reason = document.getElementById('tc-reason').value.trim();
+    S.update('requests', r.id, {
+      state: 'rejected', reason: reason, closedAt: today(), owner: r.owner || RECO.current.who
+    });
+    baoNguoiGui(r, 'req', 'Đề nghị của anh/chị bị từ chối', r.title + ' — lý do: ' + reason);
+    RECO.closeModal(box);
+    RECO.toast('Đã từ chối và gửi lý do cho ' + r.by);
+  });
+
+  var ACT = { nhan: nhan, xong: xong, tuchoi: tuchoi };
+
+  function bindActions(host) {
+    host.addEventListener('click', function (e) {
+      var rowEl = e.target.closest('[data-req]');
+      var b = e.target.closest('[data-act]');
+      var r = null;
+      if (rowEl) { sel = rowEl.getAttribute('data-req'); r = S.find('requests', sel); render(); }
+      else if (b) r = sel && S.find('requests', sel);
+      if (b && r) ACT[b.getAttribute('data-act')](r);
+    });
+  }
+  ['p-all', 'p-moi', 'p-xuly', 'p-xong', 'chi-tiet'].forEach(function (id) {
+    bindActions(document.getElementById(id));
+  });
+  document.querySelector('.req-grid').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var rowEl = e.target.closest && e.target.closest('.req-row');
+    if (!rowEl) return;
+    e.preventDefault();
+    sel = rowEl.getAttribute('data-req');
+    render();
+  });
+
+  /* ---------- Gửi đề nghị mới ---------- */
+  document.getElementById('g-ok').addEventListener('click', function () {
+    var box = document.getElementById('m-gui');
+    if (!RECO.validate(box)) return;
+    var parts = document.getElementById('g-area').value.split('|');
+    var r = S.add('requests', {
+      title: document.getElementById('g-title').value.trim(),
+      pj: parts[0], area: parts[1],
+      by: RECO.current.who, byRole: RECO.current.name, at: now(), state: 'new',
+      body: document.getElementById('g-body').value.trim(),
+      ref: document.getElementById('g-ref').value.trim() || null
+    });
+    /* S.add phát tín hiệu trước khi dòng này chạy, nên phải vẽ lại để panel bám đề nghị vừa gửi */
+    sel = r.id;
+    render();
+    ['g-title', 'g-body', 'g-ref'].forEach(function (id) { document.getElementById(id).value = ''; });
+    RECO.closeModal(box);
+    RECO.toast('Đã gửi đề nghị sửa tới người phụ trách dữ liệu');
+  });
+
+  S.on('requests', render);
+
+  render();
+});
+</script>
+</body>
+</html>

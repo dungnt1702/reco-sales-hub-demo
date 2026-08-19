@@ -22,8 +22,8 @@ $out = Join-Path $root 'screenshots'
 if (-not (Test-Path $out)) { New-Item -ItemType Directory -Path $out | Out-Null }
 
 if (-not $Pages) {
-  $Pages = Get-ChildItem $root -Filter *.html |
-           Where-Object { $_.BaseName -notlike '_*' } |
+  $phase = Join-Path $root 'gd01'
+  $Pages = Get-ChildItem $phase -Filter *.html |
            ForEach-Object { $_.BaseName }
 }
 
@@ -31,7 +31,7 @@ $suffix = ''
 if ($Role) { $suffix = "-$Role" }
 
 foreach ($p in $Pages) {
-  $file = Join-Path $root "$p.html"
+  $file = Join-Path (Join-Path $root 'gd01') "$p.html"
   if (-not (Test-Path $file)) { Write-Host "  bo qua $p (khong co file)"; continue }
   foreach ($w in $Widths) {
     $png = Join-Path $out "$p-$w$suffix.png"

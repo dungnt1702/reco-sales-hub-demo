@@ -1,0 +1,371 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chi tiết và báo giá Giai đoạn 1 · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  .kpi b { font-family: var(--font-display); font-size: 1.5rem; display: block; margin: 2px 0; }
+  .card-head h2 { margin: 0; }
+  /* Hai dòng ngày công/chi phí của từng hạng mục: dùng .kv nhưng thu hẹp lại,
+     không để hai ô giãn hết bề ngang thẻ rồi trông như hai cột rời nhau. */
+  .cost { display: flex; flex-wrap: wrap; gap: 10px 28px; padding-top: 12px; margin-top: 14px; border-top: 1px solid var(--line); }
+  .cost .k { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; display: block; }
+  .cost .v { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-weight: 700; color: var(--navy); font-size: 1rem; }
+  .ladder td:last-child { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-weight: 700; }
+  .ladder tr.tot td { background: color-mix(in srgb, var(--orange) 10%, transparent); color: var(--navy); font-size: 1.02rem; }
+  .side-more { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .side-more a { display: block; padding: 6px 10px; font-size: .84rem; font-weight: 600; color: var(--muted); text-decoration: none; border-radius: var(--radius-md); }
+  .side-more a:hover { color: var(--navy); background: var(--soft); }
+</style>
+</head>
+<body data-shell="app" data-page="tinh-nang">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">Giai đoạn 1 · gói đang có hiệu lực · v0.9</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Chi tiết và báo giá Giai đoạn 1</h1>
+        <p class="lead mt-1" style="font-size:.98rem;max-width:74ch">
+          Mười bốn hạng mục theo đúng thứ tự và đúng con số của bảng báo giá gửi RECO,
+          kèm ba hạng mục bổ sung RECO chọn làm cùng Giai đoạn 1 — không nằm trong 124.300.000 VNĐ.
+        </p>
+      </div>
+      <div class="row-tight">
+        <a class="btn btn-outline btn-sm" href="tinh-nang-gd1.html">Xem dạng cây</a>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+
+      <div class="detail-side">
+        <nav class="secnav" aria-label="Mười bốn hạng mục">
+          <p class="micro muted mb-1" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">Mười bốn hạng mục</p>
+          <ol>
+            <li><a href="#hm-01" class="on">Hạ tầng</a></li>
+            <li><a href="#hm-02">Thiết kế giao diện</a></li>
+            <li><a href="#hm-03">Mô hình dữ liệu</a></li>
+            <li><a href="#hm-04">Xác thực và phiên sử dụng</a></li>
+            <li><a href="#hm-05">Phân quyền</a></li>
+            <li><a href="#hm-06">Quản trị dự án mỏng + thẻ link</a></li>
+            <li><a href="#hm-07">Cây khối/tòa/tầng/căn + SP</a></li>
+            <li><a href="#hm-08">SP Hot + pitch</a></li>
+            <li><a href="#hm-09">Thư viện mẫu</a></li>
+            <li><a href="#hm-10">Soạn tin + trang khách</a></li>
+            <li><a href="#hm-11">Duyệt mẫu</a></li>
+            <li><a href="#hm-12">Kiểm thử</a></li>
+            <li><a href="#hm-13">Dữ liệu mẫu + đào tạo</a></li>
+            <li><a href="#hm-14">Quản lý dự án</a></li>
+            <li><a href="#gia">Cách tính giá thanh toán</a></li>
+            <li><a href="#chua-gom">Chưa bao gồm</a></li>
+          </ol>
+        </nav>
+        <div class="side-more">
+          <a href="#phan-a">◇ Phần A · ba hạng mục bổ sung</a>
+          <a href="bao-tri.html">Lịch và bảo trì</a>
+          <a href="ha-tang.html">Hạ tầng và chi phí vận hành</a>
+        </div>
+      </div>
+
+      <div class="detail-main">
+
+        <section class="sec card card-pad" id="hm-01">
+          <div class="sec-head"><span class="n">HẠNG MỤC 1</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Hạ tầng</h2>
+          <p class="small mt-1">Chuẩn bị kho mã, quy trình kiểm tra tự động, máy chủ, ba môi trường và sao lưu. Ba môi trường tách biệt — phát triển, kiểm thử và chạy thật — để việc thử nội dung mới không bao giờ diễn ra trực tiếp trên dữ liệu thật của RECO. Tiền thuê máy chủ, tên miền và dung lượng lưu trữ không nằm trong hạng mục này — xem <a href="ha-tang.html">hạ tầng và chi phí vận hành</a>.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">10 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">9.730.000 đ</span></div>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-02">
+          <div class="sec-head"><span class="n">HẠNG MỤC 2</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Thiết kế giao diện</h2>
+          <p class="small mt-1">Thiết kế khoảng mười màn hình của Giai đoạn 1 gọn, bộ thành phần dùng chung và cách hiển thị trên ba cỡ thiết bị. Phạm vi màn hình khớp ba trụ đã chốt: thông tin dự án, cây căn + SP Hot, thư viện mẫu và trang khách — không còn lưới bảng hàng, hỏi đáp hay soạn bảy kênh.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">10 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">9.400.000 đ</span></div>
+          </div>
+          <div class="row mt-3"><a class="btn btn-quiet btn-sm" href="index.html">Bản đồ màn hình</a></div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-03">
+          <div class="sec-head"><span class="n">HẠNG MỤC 3</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Mô hình dữ liệu</h2>
+          <p class="small mt-1">Tổ chức dự án, cây khối/tòa/tầng/căn, mẫu chia sẻ và thẻ liên kết. Đây là hạng mục quyết định về sau RECO có thêm được báo cáo hay lưới bảng hàng hay không: dữ liệu Giai đoạn 2 vẫn đọc từ mô hình này, nên làm chặt ngay từ đầu rẻ hơn nhiều so với sửa sau.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">9 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">8.300.000 đ</span></div>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-04">
+          <div class="sec-head"><span class="n">HẠNG MỤC 4 · BR-PQ-03, BR-PQ-08</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Xác thực và phiên sử dụng</h2>
+          <p class="small mt-1">Đăng nhập bằng số điện thoại hoặc email cùng mật khẩu — Giai đoạn 1 không dùng mã xác thực một lần. Kèm quản lý phiên, đăng xuất và đặt lại mật khẩu.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">13 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">11.090.000 đ</span></div>
+          </div>
+          <div class="row mt-3"><a class="btn btn-quiet btn-sm" href="dang-nhap.html">Xem màn đăng nhập</a></div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-05">
+          <div class="sec-head"><span class="n">HẠNG MỤC 5 · BR-PQ-01…08</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Phân quyền</h2>
+          <p class="small mt-1">Vai trò, ba cấp nhãn nội dung — Công khai, Nội bộ, Nội bộ hạn chế — và phạm vi dự án được giao. Nhãn của mục cha kế thừa xuống mục con theo nguyên tắc nghiêm ngặt nhất thắng: nhãn con không được nới lỏng hơn nhãn cha. Nếu RECO duyệt BS-03 thì số vai trò tăng lên chín.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">15 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">12.760.000 đ</span></div>
+          </div>
+          <div class="row mt-3"><a class="btn btn-quiet btn-sm" href="nguoi-dung.html">Xem màn người dùng và quyền</a></div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-06">
+          <div class="sec-head"><span class="n">HẠNG MỤC 6 · QD-074</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Quản trị dự án mỏng + thẻ link</h2>
+          <p class="small mt-1">Hồ sơ dự án đủ để đội bán hàng tra cứu: tên, vị trí, loại sản phẩm, trạng thái và các trường mô tả gọn. Drive của Chủ đầu tư chỉ hiện <strong>thẻ liên kết URL</strong> — hệ thống không kéo tệp vào, không sao chép, không đối chiếu Drive. Nhân viên mở tài liệu bằng cách bấm thẻ.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">18 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">15.300.000 đ</span></div>
+          </div>
+          <div class="row mt-3"><a class="btn btn-quiet btn-sm" href="quan-tri.html">Xem màn quản trị</a></div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-07">
+          <div class="sec-head"><span class="n">HẠNG MỤC 7 · QD-075</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Cây khối/tòa/tầng/căn + SP</h2>
+          <p class="small mt-1">Mỗi dự án có cây khối → tòa → tầng → căn. <strong>Sản phẩm là căn</strong> trong cây đó, không phải dòng trên lưới bảng hàng. Giai đoạn 1 không có lưới bảng hàng Hub và không có form phiếu tính giá — hai khối đó đã cắt khỏi gói (QD-074).</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">14 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">12.250.000 đ</span></div>
+          </div>
+          <div class="row mt-3"><a class="btn btn-quiet btn-sm" href="du-an-chi-tiet.html">Xem màn chi tiết dự án</a></div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-08">
+          <div class="sec-head"><span class="n">HẠNG MỤC 8 · QD-075</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">SP Hot + pitch</h2>
+          <p class="small mt-1">SP Hot là căn được quản lý đánh dấu kèm một đoạn pitch. Không có trường giá trên Hot — giá và chính sách không thuộc Giai đoạn 1. Nhân viên bán hàng không tự gắn Hot; chỉ người được phân quyền quản lý mới gắn và gỡ.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">13 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">11.350.000 đ</span></div>
+          </div>
+          <div class="row mt-3"><a class="btn btn-quiet btn-sm" href="du-an-chi-tiet.html">Xem căn và SP Hot</a></div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-09">
+          <div class="sec-head"><span class="n">HẠNG MỤC 9 · QD-076</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Thư viện mẫu</h2>
+          <p class="small mt-1">Hai kho: mẫu <strong>dùng chung</strong> phải được Giám đốc dự án duyệt, và mẫu <strong>cá nhân</strong> chỉ gắn với người tạo. Cấm nhúng URL Drive trong mẫu. Không đếm lượt xem — thống kê hành vi khách không thuộc Giai đoạn 1.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">17 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">14.680.000 đ</span></div>
+          </div>
+          <div class="row mt-3"><a class="btn btn-quiet btn-sm" href="chia-se.html">Xem thư viện mẫu</a></div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-10">
+          <div class="sec-head"><span class="n">HẠNG MỤC 10 · QD-076</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Soạn tin + trang khách</h2>
+          <p class="small mt-1">Nhân viên tick mục công khai và tối đa <strong>một</strong> mẫu Hot, rồi xuất copy Zalo hoặc gửi liên kết trang khách. Trang khách hiện nội dung đã tick, gắn thông tin nhân viên phụ trách; <strong>không</strong> hiện phiếu tính giá đã duyệt. Soạn tin bảy kênh không thuộc Giai đoạn 1.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">22 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">18.840.000 đ</span></div>
+          </div>
+          <div class="row mt-3">
+            <a class="btn btn-quiet btn-sm" href="chia-se.html">Xem thư viện mẫu</a>
+            <a class="btn btn-quiet btn-sm" href="trang-gui-khach.html">Xem trang gửi khách</a>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-11">
+          <div class="sec-head"><span class="n">HẠNG MỤC 11 · QD-076</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Duyệt mẫu</h2>
+          <p class="small mt-1">Luồng duyệt mẫu dùng chung: người soạn gửi, Giám đốc dự án duyệt hoặc trả về có lý do. Mẫu cá nhân không đi qua luồng này. Chỉ mẫu đã duyệt mới được tick công khai ra trang khách.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">5 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">4.360.000 đ</span></div>
+          </div>
+          <div class="row mt-3"><a class="btn btn-quiet btn-sm" href="de-nghi-sua.html">Xem màn đề nghị sửa</a></div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-12">
+          <div class="sec-head"><span class="n">HẠNG MỤC 12</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Kiểm thử</h2>
+          <p class="small mt-1">Kiểm tra quyền theo từng vai trò, các luồng chính trên trình duyệt và biên nội dung công khai — khách không thấy nhãn Nội bộ, không thấy URL Drive nhúng trong mẫu, không thấy phiếu tính giá. Cộng thời gian sửa lỗi phát hiện được. Với hệ thống mà giá trị nằm ở chỗ “ai được thấy gì”, đây là hạng mục không nên cắt.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">14 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">10.460.000 đ</span></div>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-13">
+          <div class="sec-head"><span class="n">HẠNG MỤC 13</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Dữ liệu mẫu + đào tạo</h2>
+          <p class="small mt-1">Hướng dẫn nhập dữ liệu mẫu và một buổi đào tạo bàn giao. Việc nhập toàn bộ dữ liệu các dự án còn lại do RECO thực hiện, không nằm trong bốn ngày công này.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">4 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">4.400.000 đ</span></div>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="hm-14">
+          <div class="sec-head"><span class="n">HẠNG MỤC 14</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Quản lý dự án</h2>
+          <p class="small mt-1">Họp định kỳ, báo cáo tiến độ và phối hợp trong khoảng sáu tuần dương. Đây là ngày công của người quản lý dự án kiêm phân tích nghiệp vụ — vai trò có đơn giá cao nhất trong sáu vai trò, và cũng là đầu mối RECO làm việc trực tiếp.</p>
+          <div class="cost">
+            <div><span class="k">Ngày công cốt lõi</span><span class="v">6 ngày</span></div>
+            <div><span class="k">Chi phí cốt lõi trước VAT</span><span class="v">6.600.000 đ</span></div>
+          </div>
+        </section>
+
+        <!-- Phần A -->
+        <section class="sec card" id="phan-a" data-gd2>
+          <div class="card-head" style="padding-block:14px">
+            <div>
+              <span class="eyebrow">Phần A · quyết định ngày 17/08/2026</span>
+              <h2 style="font-size:1.05rem;margin-top:2px">Ba hạng mục bổ sung, làm cùng Giai đoạn 1</h2>
+            </div>
+            <span class="chip-gd2">Ngoài gói 124.300.000 VNĐ</span>
+          </div>
+          <div class="card-body">
+            <p class="small">Ba hạng mục dưới đây phát sinh từ quyết định ngày 17/08/2026 và dự kiến làm <em>cùng</em> Giai đoạn 1, nhưng <strong>không nằm trong 124.300.000 VNĐ đã báo giá</strong> — đây là phần cộng thêm. Tạm tính dưới đây giữ chuỗi cũ (ưu đãi 20%); nếu RECO duyệt sẽ tính lại theo chuỗi v0.9.</p>
+
+            <h3 id="bs-01" class="mt-3" style="font-size:.98rem">BS-01 · Khách gửi yêu cầu từ trang công khai <span class="micro muted">(QD-055)</span></h3>
+            <p class="small mt-1">Nút “Nhận báo giá / quan tâm căn” trên trang gửi khách: khách nhập họ tên và số điện thoại, chọn căn nếu trang có bảng hàng; hệ thống báo cho nhân viên chủ đường dẫn và lưu danh sách yêu cầu. Có chặn gửi trùng, giới hạn tần suất, thông báo tại chỗ về việc thu thập dữ liệu và xoá theo thời hạn. Khách vẫn <strong>không</strong> tự nhập thông số để tính giá — QD-010 giữ nguyên.</p>
+            <div class="cost">
+              <div><span class="k">Ngày công</span><span class="v">8 ngày</span></div>
+              <div><span class="k">Tạm tính sau ưu đãi 20%</span><span class="v">7.000.000 đ</span></div>
+            </div>
+            <div class="note note-danger mt-3">
+              <strong>BS-01 kéo theo một nghĩa vụ nằm ngoài kỹ thuật.</strong>
+              Giai đoạn 1 như đã báo giá không thu thập bất kỳ dữ liệu nào của khách hàng — đó là cách tuân thủ
+              Nghị định 13 rẻ nhất, vì dữ liệu không tồn tại thì không phải bảo vệ. Tám ngày công đã gồm thông báo
+              tại chỗ, chống bơm và xoá theo thời hạn; <strong>chưa gồm</strong> rà soát pháp lý và quy trình xử lý
+              khi khách yêu cầu xoá dữ liệu của mình. RECO cần chốt hai điểm trước khi làm: giữ dữ liệu yêu cầu
+              trong bao lâu, và ai chịu trách nhiệm xử lý yêu cầu xoá.
+            </div>
+
+            <h3 id="bs-02" class="mt-4" style="font-size:.98rem">BS-02 · Vai trò Khách hàng có tài khoản <span class="micro muted">(QD-053)</span></h3>
+            <p class="small mt-1">Khách đăng nhập bằng số điện thoại, xem đúng phần nội dung nhân viên bán hàng đã chia sẻ cho mình, không duyệt cây thư mục, không thấy dự án chưa được chia sẻ và không thấy dữ liệu nội bộ. Nhân viên cấp và thu tài khoản khách trong phạm vi của mình.</p>
+            <div class="cost">
+              <div><span class="k">Ngày công</span><span class="v">14 ngày</span></div>
+              <div><span class="k">Tạm tính sau ưu đãi 20%</span><span class="v">12.600.000 đ</span></div>
+            </div>
+
+            <h3 id="bs-03" class="mt-4" style="font-size:.98rem">BS-03 · Tách vai trò Kế toán và phân cấp việc cấp tài khoản <span class="micro muted">(QD-053, QD-054)</span></h3>
+            <p class="small mt-1">Nâng số vai trò từ bảy lên chín: tách Kế toán khỏi Hành chính nhân sự, cho Hành chính nhân sự tạo tài khoản và gán vai trò thường, giữ việc gán vai trò quản lý cho người quản trị chung. Nếu RECO muốn giữ nguyên giá và thời gian đã chốt thì hai hạng mục trên chuyển sang Giai đoạn 2, riêng BS-03 nên giữ lại — rẻ, nhưng chạm vào toàn bộ ma trận quyền, làm sau sẽ phải sửa lại nhiều chỗ đã xong.</p>
+            <div class="cost">
+              <div><span class="k">Ngày công</span><span class="v">3 ngày</span></div>
+              <div><span class="k">Tạm tính sau ưu đãi 20%</span><span class="v">2.500.000 đ</span></div>
+            </div>
+
+            <div class="tbl-wrap mt-4">
+              <table class="tbl">
+                <thead><tr><th>Nếu RECO duyệt phần A</th><th class="r">Ngày công cốt lõi</th><th class="r">Giá gốc</th><th class="r">Sau ưu đãi</th></tr></thead>
+                <tbody>
+                  <tr><td data-l="Nếu RECO duyệt phần A">Gói Web Giai đoạn 1 (v0.9)</td><td data-l="Ngày công cốt lõi" class="r num">170</td><td data-l="Giá gốc" class="r num">177.629.760</td><td data-l="Sau ưu đãi" class="r num">124.300.000</td></tr>
+                  <tr><td data-l="Nếu RECO duyệt phần A">Phần A — BS-01, BS-02, BS-03 (tạm tính)</td><td data-l="Ngày công cốt lõi" class="r num">25</td><td data-l="Giá gốc" class="r num">27.838.080</td><td data-l="Sau ưu đãi" class="r num">22.200.000</td></tr>
+                  <tr class="tot"><td data-l="Nếu RECO duyệt phần A"><strong>Cộng</strong></td><td data-l="Ngày công cốt lõi" class="r num"><strong>195</strong></td><td data-l="Giá gốc" class="r num"><strong>205.467.840</strong></td><td data-l="Sau ưu đãi" class="r num"><strong>146.500.000</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="micro muted mt-2">
+              Phần A vẫn là tạm tính theo chuỗi cũ (ưu đãi 20%), chưa chạy lại dự phòng 10% và ưu đãi 30% của v0.9.
+              Ba con số 7.000.000, 12.600.000 và 2.500.000 cộng lại ra 22.100.000 chứ không phải 22.200.000 vì làm tròn xuống 100.000 chỉ áp một lần cho khối được chốt.
+              Chừng nào RECO chưa duyệt, bảng 14 hạng mục vẫn là bản đang có hiệu lực.
+            </p>
+          </div>
+        </section>
+
+        <!-- Báo giá -->
+        <section class="sec card" id="gia">
+          <div class="card-head" style="padding-block:14px">
+            <div>
+              <span class="eyebrow">Báo giá · QD-077 · chuỗi QD-059</span>
+              <h2 style="font-size:1.05rem;margin-top:2px">Cách tính ra giá thanh toán</h2>
+            </div>
+            <span class="micro muted">Đơn vị: VNĐ</span>
+          </div>
+          <div class="card-body">
+            <p class="small">Chiều tính đi từ nguồn lực lên giá, không phải từ một tổng tròn chia ngược xuống. Ba nhóm số nhập tay duy nhất là đơn giá theo vai trò, ngày công từng vai trò, và ba tỷ lệ dự phòng / VAT / ưu đãi.</p>
+
+            <h3 class="mt-3" style="font-size:.98rem">Đội thực hiện và đơn giá ngày công</h3>
+            <div class="tbl-wrap mt-2">
+              <table class="tbl">
+                <thead><tr><th>Vai trò</th><th class="r">Số người</th><th class="r">Đơn giá ngày</th><th class="r">Ngày công</th><th class="r">Thành tiền</th></tr></thead>
+                <tbody>
+                  <tr><td data-l="Vai trò">Quản lý dự án và phân tích nghiệp vụ</td><td data-l="Số người" class="r num">1</td><td data-l="Đơn giá ngày" class="r num">1.100.000</td><td data-l="Ngày công" class="r num">18</td><td data-l="Thành tiền" class="r num">19.800.000</td></tr>
+                  <tr><td data-l="Vai trò">Thiết kế giao diện</td><td data-l="Số người" class="r num">1</td><td data-l="Đơn giá ngày" class="r num">900.000</td><td data-l="Ngày công" class="r num">16</td><td data-l="Thành tiền" class="r num">14.400.000</td></tr>
+                  <tr><td data-l="Vai trò">Lập trình phía máy chủ</td><td data-l="Số người" class="r num">2</td><td data-l="Đơn giá ngày" class="r num">900.000</td><td data-l="Ngày công" class="r num">63</td><td data-l="Thành tiền" class="r num">56.700.000</td></tr>
+                  <tr><td data-l="Vai trò">Lập trình giao diện</td><td data-l="Số người" class="r num">1</td><td data-l="Đơn giá ngày" class="r num">830.000</td><td data-l="Ngày công" class="r num">44</td><td data-l="Thành tiền" class="r num">36.520.000</td></tr>
+                  <tr><td data-l="Vai trò">Kiểm thử</td><td data-l="Số người" class="r num">1</td><td data-l="Đơn giá ngày" class="r num">700.000</td><td data-l="Ngày công" class="r num">23</td><td data-l="Thành tiền" class="r num">16.100.000</td></tr>
+                  <tr><td data-l="Vai trò">Hạ tầng và vận hành</td><td data-l="Số người" class="r num">1</td><td data-l="Đơn giá ngày" class="r num">1.000.000</td><td data-l="Ngày công" class="r num">6</td><td data-l="Thành tiền" class="r num">6.000.000</td></tr>
+                  <tr class="tot"><td data-l="Vai trò"><strong>Cộng</strong></td><td data-l="Số người" class="r num"><strong>7</strong></td><td data-l="Đơn giá ngày" class="r">—</td><td data-l="Ngày công" class="r num"><strong>170</strong></td><td data-l="Thành tiền" class="r num"><strong>149.520.000</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="micro muted mt-2">Đơn giá theo vai trò là mức đội dự án đang áp dụng; mức chính thức trong hợp đồng vẫn chờ RECO chốt (DX-016).</p>
+
+            <h3 class="mt-4" style="font-size:.98rem">Chuỗi tính ra giá thanh toán</h3>
+            <div class="tbl-wrap mt-2">
+              <table class="tbl ladder">
+                <thead><tr><th>Bước</th><th class="r">Số tiền</th></tr></thead>
+                <tbody>
+                  <tr><td data-l="Bước">Ngày công cốt lõi 170 ngày · chi phí cốt lõi trước VAT</td><td data-l="Số tiền" class="r">149.520.000</td></tr>
+                  <tr><td data-l="Bước">Cộng dự phòng 10% (17 ngày → tổng 187 ngày)</td><td data-l="Số tiền" class="r">14.952.000</td></tr>
+                  <tr><td data-l="Bước">Chi phí trước VAT</td><td data-l="Số tiền" class="r">164.472.000</td></tr>
+                  <tr><td data-l="Bước">Cộng VAT 8%</td><td data-l="Số tiền" class="r">13.157.760</td></tr>
+                  <tr><td data-l="Bước">Giá gốc</td><td data-l="Số tiền" class="r">177.629.760</td></tr>
+                  <tr><td data-l="Bước">Trừ ưu đãi đặc biệt 30%</td><td data-l="Số tiền" class="r">−53.288.928</td></tr>
+                  <tr><td data-l="Bước">Sau ưu đãi, trước làm tròn</td><td data-l="Số tiền" class="r">124.340.832</td></tr>
+                  <tr><td data-l="Bước">Làm tròn xuống bội số 100.000</td><td data-l="Số tiền" class="r">−40.832</td></tr>
+                  <tr class="tot"><td data-l="Bước"><strong>Giá thanh toán, đã gồm VAT 8%</strong></td><td data-l="Số tiền" class="r">124.300.000</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="micro muted mt-2">Luôn làm tròn xuống nên phần lẻ luôn có lợi cho khách. Lịch một tháng phát triển cộng hai tuần kiểm thử trên khoảng sáu tuần dương cần nhân sự làm song song. Bảo hành một tháng sau bàn giao; sau đó xem <a href="bao-tri.html">gói bảo trì</a>.</p>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="chua-gom">
+          <span class="eyebrow">Ranh giới phạm vi</span>
+          <h2 style="font-size:1.15rem;margin-top:2px">Chưa bao gồm</h2>
+          <ul class="small mt-2" style="padding-left:18px;line-height:1.9">
+            <li>Máy chủ, tên miền, chứng thư, dung lượng lưu trữ và sao lưu — ước tính tại <a href="ha-tang.html">hạ tầng và chi phí vận hành</a>.</li>
+            <li>Form phiếu tính giá và lưới bảng hàng Hub.</li>
+            <li>Hỏi đáp 88 câu.</li>
+            <li>Cây tài liệu bảy nhánh.</li>
+            <li>Kịch bản kinh doanh (MH-12).</li>
+            <li>Soạn tin bảy kênh.</li>
+            <li>Báo cáo vận hành.</li>
+            <li>Ingest tệp Google Drive — Giai đoạn 1 chỉ thẻ URL.</li>
+            <li>Ứng dụng iOS/Android.</li>
+            <li>Chi phí vận hành, giám sát, hỗ trợ và bảo trì định kỳ <strong>sau bảo hành 1 tháng</strong> — xem <a href="bao-tri.html">lịch và bảo trì</a>.</li>
+          </ul>
+          <p class="small mt-3">Ước tính máy chủ, tên miền và lưu trữ nằm ở màn <a href="ha-tang.html">Hạ tầng, tên miền và chi phí vận hành</a>. Gói bảo trì năm sau hết bảo hành nằm ở màn <a href="bao-tri.html">Lịch và bảo trì</a>.</p>
+          <div class="row mt-3">
+            <a class="btn btn-outline" href="tinh-nang-gd1.html">Về cây tính năng Giai đoạn 1</a>
+            <a class="btn btn-outline" href="bao-tri.html">Lịch và bảo trì</a>
+            <a class="btn btn-outline" href="ha-tang.html">Hạ tầng và chi phí vận hành</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+</body>
+</html>

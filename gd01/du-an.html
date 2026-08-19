@@ -1,0 +1,216 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dự án · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  /* .grid đặt display:grid nên phải nói rõ khi ẩn, nếu không khối chờ luôn hiện */
+  #dang-tai[hidden] { display: none; }
+</style>
+</head>
+<body data-shell="app" data-page="du-an">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">MH-03 · Tìm kiếm và danh sách dự án</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Dự án</h1>
+        <p class="lead mt-1" style="font-size:.98rem">Dự án nổi bật luôn được đặt trước. Mỗi dự án hiển thị khu vực, loại sản phẩm, khoảng giá, diện tích và tình trạng bán.</p>
+      </div>
+      <div class="seg" role="group" aria-label="Chế độ hiển thị">
+        <button type="button" data-view="card" data-view-target="ket-qua" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          Thẻ
+        </button>
+        <button type="button" data-view="list" data-view-target="ket-qua" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Danh sách
+        </button>
+      </div>
+    </div>
+
+    <!-- Bộ lọc -->
+    <div class="filterbar">
+      <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="f-q" placeholder="Tìm theo tên dự án" aria-label="Tìm theo tên dự án">
+      </div>
+      <!-- Danh sách khu vực dựng từ chính danh mục dự án lúc chạy: viết cứng thì đổi danh mục dự án
+           là bộ lọc còn tỉnh không còn dự án nào và thiếu tỉnh mới. -->
+      <select class="inp" id="f-area" aria-label="Khu vực">
+        <option value="">Mọi khu vực</option>
+      </select>
+      <!-- Sáu loại hình và ba phân khúc lấy đúng danh mục RECO đang dùng trong báo cáo (QD-057, QD-071) -->
+      <select class="inp" id="f-type" aria-label="Loại sản phẩm">
+        <option value="">Mọi loại sản phẩm</option>
+        <option value="canho">Chung cư</option>
+        <option value="datnen">Đất nền</option>
+        <option value="thaptang">Biệt thự, nhà liền kề, shophouse</option>
+        <option value="tamlinh">Bất động sản tâm linh</option>
+        <option value="chothue">Cho thuê</option>
+        <option value="thocu">Nhà đất thổ cư</option>
+      </select>
+      <select class="inp" id="f-seg" aria-label="Phân khúc giá">
+        <option value="">Mọi phân khúc</option>
+        <option value="thap">Giá thấp — dưới 25 triệu/m²</option>
+        <option value="trung">Trung cấp — 25–35 triệu/m²</option>
+        <option value="cao">Cao cấp — từ 35 triệu/m²</option>
+      </select>
+      <select class="inp" id="f-price" aria-label="Khoảng giá">
+        <option value="">Mọi khoảng giá</option>
+        <option value="0-3">Dưới 3 tỷ</option>
+        <option value="3-10">3 – 10 tỷ</option>
+        <option value="10-999">Trên 10 tỷ</option>
+      </select>
+      <select class="inp" id="f-size" aria-label="Diện tích">
+        <option value="">Mọi diện tích</option>
+        <option value="0-80">Dưới 80 m²</option>
+        <option value="80-150">80 – 150 m²</option>
+        <option value="150-9999">Trên 150 m²</option>
+      </select>
+      <button type="button" class="btn btn-quiet btn-sm" id="f-reset">Xóa lọc</button>
+    </div>
+
+    <div class="spread mt-3 mb-2">
+      <p class="small muted" id="count" style="margin:0" role="status">Đang hiển thị 6 dự án</p>
+      <span class="micro muted">Sắp xếp: dự án nổi bật trước, sau đó theo lần cập nhật gần nhất</span>
+    </div>
+
+    <!-- Đang tải — cho thấy hệ thống có phản hồi mỗi lần đổi bộ lọc -->
+    <div id="dang-tai" class="grid g-3" hidden aria-hidden="true">
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+
+    <div id="ket-qua">
+      <div data-mode="card" class="grid g-3" id="cards"></div>
+      <div data-mode="list" hidden class="stack" id="rows"></div>
+    </div>
+
+    <!-- Trạng thái không có kết quả (câu hỏi còn mở của Luồng 1) -->
+    <div id="rong" hidden>
+      <div class="empty">
+        <h3>Chưa có dự án nào khớp bộ lọc</h3>
+        <p class="lead mt-1">Anh/chị thử bỏ bớt một điều kiện, hoặc xem ba dự án được cập nhật gần đây nhất bên dưới.</p>
+        <div class="row mt-3" style="justify-content:center">
+          <button type="button" class="btn btn-primary" id="rong-reset">Bỏ bộ lọc</button>
+          <a class="btn btn-outline" href="trang-dau.html">Về Trang đầu</a>
+        </div>
+        <p class="mt-3"><span class="open-q">Cần RECO xác nhận</span></p>
+        <p class="micro muted mt-1" style="max-width:52ch;margin-inline:auto">
+          Tài liệu ghi cách xử lý khi tìm kiếm không có kết quả là điểm còn mở của Luồng 1. Bản mô phỏng đang chọn phương án gợi ý bỏ bớt bộ lọc kèm ba dự án gần nhất.
+        </p>
+      </div>
+      <h3 class="mt-4 mb-2">Ba dự án cập nhật gần nhất</h3>
+      <div class="grid g-3" id="goi-y"></div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var P = RECO_DATA.projects();
+  var q = document.getElementById('f-q'), fa = document.getElementById('f-area'),
+      ft = document.getElementById('f-type'), fp = document.getElementById('f-price'),
+      fs = document.getElementById('f-size'), fg = document.getElementById('f-seg');
+  var kq = document.getElementById('ket-qua'), rong = document.getElementById('rong'),
+      count = document.getElementById('count'), tai = document.getElementById('dang-tai');
+
+  /* Khung điện thoại thay #page bằng iframe trỏ về chính màn này — bản ngoài không có nội dung để vẽ */
+  if (!kq) return;
+
+  /* Khu vực có thật trong danh mục dự án, xếp theo bảng chữ cái */
+  P.map(function (p) { return p.area; })
+    .filter(function (a, i, all) { return a && all.indexOf(a) === i; })
+    .sort(function (a, b) { return a.localeCompare(b, 'vi'); })
+    .forEach(function (a) {
+      var o = document.createElement('option');
+      o.value = a; o.textContent = a;
+      fa.appendChild(o);
+    });
+
+  /* Bộ lọc do Trang đầu truyền sang — đọc được ở cả bản nhiều trang (?q=) lẫn bản gói (#du-an?q=) */
+  function param(name) {
+    var h = location.hash, i = h.indexOf('?');
+    return new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search).get(name) || '';
+  }
+
+  function inRange(v, spec) {
+    if (!spec) return true;
+    var a = spec.split('-');
+    return v >= parseFloat(a[0]) && v < parseFloat(a[1]);
+  }
+  function norm(s) { return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd'); }
+
+  function match() {
+    var t = norm(q.value.trim());
+    return P.filter(function (p) {
+      return (!t || norm(p.name + ' ' + p.place + ' ' + p.typeName).indexOf(t) >= 0)
+        && (!fa.value || p.area === fa.value)
+        && (!ft.value || p.type === ft.value)
+        && (!fg.value || p.segment === fg.value)
+        && inRange(p.price, fp.value)
+        && inRange(p.size, fs.value);
+    }).sort(function (a, b) { return (b.featured ? 1 : 0) - (a.featured ? 1 : 0); });
+  }
+
+  function draw(list) {
+    var none = list.length === 0;
+    kq.hidden = none; rong.hidden = !none;
+    count.textContent = none ? 'Không có dự án nào khớp bộ lọc' : 'Đang hiển thị ' + list.length + ' dự án';
+    if (none) {
+      RECO_DATA.paint('#goi-y', P.slice(0, 3));
+    } else {
+      RECO_DATA.paint('#cards', list);
+      RECO_DATA.paint('#rows', list, 'list');
+    }
+  }
+
+  /* Mỗi lần lọc đi qua một nhịp chờ ngắn: người dùng thấy hệ thống đang làm việc,
+     và bản thật cũng phải gọi máy chủ ở bước này. */
+  var timer = null;
+  function apply() {
+    var list = match();
+    if (timer) clearTimeout(timer);
+    kq.hidden = true; rong.hidden = true; tai.hidden = false;
+    count.textContent = 'Đang lọc…';
+    timer = setTimeout(function () {
+      timer = null;
+      tai.hidden = true;
+      draw(list);
+    }, 250);
+  }
+
+  [q, fa, ft, fg, fp, fs].forEach(function (el) { el.addEventListener('input', apply); el.addEventListener('change', apply); });
+  function reset() { q.value = ''; fa.value = ''; ft.value = ''; fg.value = ''; fp.value = ''; fs.value = ''; apply(); }
+  document.getElementById('f-reset').addEventListener('click', reset);
+  document.getElementById('rong-reset').addEventListener('click', reset);
+
+  /* Mở một dự án thì ghi vào mục "Gần đây" của ô tìm toàn cục */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('#ket-qua a.pcard, #ket-qua a.prow, #goi-y a.pcard') : null;
+    if (!a) return;
+    var name = (a.querySelector('h3') || {}).textContent || '';
+    var p = P.filter(function (x) { return x.name === name; })[0];
+    if (p) RECO.trackRecent(p.name, p.place + ' · ' + p.typeName, 'du-an-chi-tiet.html', 'layers');
+  });
+
+  q.value = param('q');
+  ft.value = param('type');
+  fa.value = param('area');
+  apply();
+});
+</script>
+</body>
+</html>

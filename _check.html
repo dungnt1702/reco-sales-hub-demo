@@ -10,9 +10,10 @@
 <pre id="out">Đang chạy…</pre>
 <div id="frames"></div>
 <script>
-var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet','thu-vien-tai-lieu','cay-thu-muc',
+var PHASE = 'gd01';
+var PAGES = ['index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet','san-pham','thu-vien-tai-lieu','cay-thu-muc',
              'soan-noi-dung','chia-se','trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua','xem-truoc-gd2',
-             'tinh-nang-gd1','chi-tiet-gd1','tinh-nang-gd2','chi-tiet-gd2','ha-tang'];
+             'bao-tri','tinh-nang-gd1','chi-tiet-gd1','tinh-nang-gd2','chi-tiet-gd2','ha-tang'];
 /* 1024–1280 nằm trong danh sách vì đó là dải hay hỏng nhất và trước đây phải đo tay:
    thanh điều hướng đủ chỗ ở 1440 nhưng chưa gãy xuống hàng ở 1024 là tràn ngang. */
 var WIDTHS = [360, 390, 768, 1024, 1152, 1280, 1440];
@@ -29,7 +30,7 @@ function load(page, w) {
     var f = document.createElement('iframe');
     f.style.width = w + 'px';
     f.style.height = '900px';
-    f.src = page + '.html?bare=1';
+    f.src = PHASE + '/' + page + '.html?bare=1';
     f.onload = function () {
       var r;
       try {
@@ -90,6 +91,7 @@ function load(page, w) {
   Object.keys(allHrefs).forEach(function (p) {
     allHrefs[p].forEach(function (h) {
       if (!h || h.charAt(0) === '#' || /^(https?:|mailto:|tel:)/.test(h)) return;
+      if (h.indexOf('../') === 0) return;
       var base = h.split('?')[0].split('#')[0];
       if (known.indexOf(base) < 0) { lines.push('HONG ' + p + ' → ' + h); bad++; return; }
       /* Trang có thật chưa đủ: mã neo phải tồn tại ở trang đích, không thì bấm vào
@@ -150,7 +152,7 @@ function load(page, w) {
     });
   }
 
-  var m = await mapLoad('du-an-chi-tiet.html?bare=1&pj=leparc', '#kv2-map');
+  var m = await mapLoad(PHASE + '/du-an-chi-tiet.html?bare=1&pj=leparc', '#kv2-map');
   lines.push((m.tiles >= 4 && !m.blank ? 'OK   ' : 'HONG ') + 'du-an-chi-tiet — ' + m.tiles + ' o anh tai duoc, ' + m.blank + ' o trong');
   lines.push((m.self === 1 ? 'OK   ' : 'HONG ') + 'du-an-chi-tiet — ghim du an');
   lines.push((m.poi >= 8 ? 'OK   ' : 'HONG ') + 'du-an-chi-tiet — ' + m.poi + ' ghim diem lien ket vung');
@@ -163,17 +165,17 @@ function load(page, w) {
      Place là lỗi lặng. */
   var PJS = ['celestine', 'la-perle', 'palmy', 'thien-duong', 'central', 'opening'];
   for (var pi = 0; pi < PJS.length; pi++) {
-    var mm = await mapLoad('du-an-chi-tiet.html?bare=1&pj=' + PJS[pi], '#kv2-map');
+    var mm = await mapLoad(PHASE + '/du-an-chi-tiet.html?bare=1&pj=' + PJS[pi], '#kv2-map');
     lines.push((mm.tiles >= 4 && !mm.blank && mm.self === 1 ? 'OK   ' : 'HONG ') +
       'du-an-chi-tiet?pj=' + PJS[pi] + ' — ' + mm.tiles + ' o anh, ' + mm.blank + ' o trong, ' +
       mm.self + ' ghim du an');
   }
 
-  var mp = await mapLoad('trang-gui-khach.html?bare=1', '#pub-map');
+  var mp = await mapLoad(PHASE + '/trang-gui-khach.html?bare=1', '#pub-map');
   lines.push((mp.tiles >= 4 && !mp.blank ? 'OK   ' : 'HONG ') + 'trang-gui-khach — ' + mp.tiles + ' o anh tai duoc');
   lines.push((mp.self === 1 && mp.poi >= 4 ? 'OK   ' : 'HONG ') + 'trang-gui-khach — ghim du an va ' + mp.poi + ' diem cong khai');
 
-  var mo = await mapLoad('xem-truoc-gd2.html?bare=1', '#gd2-map');
+  var mo = await mapLoad(PHASE + '/xem-truoc-gd2.html?bare=1', '#gd2-map');
   lines.push((mo.tiles >= 2 && !mo.blank ? 'OK   ' : 'HONG ') + 'xem-truoc-gd2 — ' + mo.tiles + ' o anh tai duoc');
   lines.push((mo.bub === 4 ? 'OK   ' : 'HONG ') + 'xem-truoc-gd2 — 4 bong bong khu vuc (co ' + mo.bub + ')');
 

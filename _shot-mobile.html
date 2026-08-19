@@ -12,7 +12,7 @@ var page = (q.get('p') || 'index').replace(/[^a-z0-9-]/gi, '');
 var w = parseInt(q.get('w') || '390', 10);
 var h = parseInt(q.get('h') || '1600', 10);
 var f = document.createElement('iframe');
-f.src = page + '.html?bare=1' + (q.get('role') ? '&role=' + q.get('role').replace(/[^a-z]/g, '') : '');
+f.src = 'gd01/' + page + '.html?bare=1' + (q.get('role') ? '&role=' + q.get('role').replace(/[^a-z]/g, '') : '');
 f.width = w; f.height = h;
 document.body.appendChild(f);
 </script>

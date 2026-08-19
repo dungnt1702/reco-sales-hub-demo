@@ -2,72 +2,79 @@
 
 **Xem trực tiếp: https://dungnt1702.github.io/reco-sales-hub-demo/**
 
-Bộ HTML tĩnh dựng 14 màn hình chính trong tài liệu *Yêu cầu các màn hình*
-(`docs/05-user-experience/screen-requirements.md` của repo nội bộ `reco-sales-hub`), cộng một màn xem trước
-Giai đoạn 2, bốn màn danh mục tính năng kèm báo giá của cả hai giai đoạn, một màn hạ tầng và chi phí vận hành,
-và một màn bản đồ hệ thống —
-tổng cộng 21 màn. Dùng để RECO xem và xác nhận thiết kế Giai đoạn 1 trước khi viết dòng mã đầu tiên, và để trình bày
-phạm vi cùng giá ngay trong buổi demo mà không phải mở Excel hay PDF ra riêng.
+`index.html` là **cổng**: chọn Giai đoạn 1 (bản đang làm) hoặc Giai đoạn 2 (snapshot đóng băng).
 
-Không cần cài đặt, không cần build. Mở `index.html` bằng trình duyệt là chạy — kể cả khi không có mạng.
-Đẩy lên nhánh `main` là GitHub Pages tự dựng lại bản công khai ở đường dẫn trên.
+**Giai đoạn 1** (`gd01/`) — ba trụ: thông tin dự án, căn hộ + SP Hot (không giá), thư viện mẫu chia sẻ tin. Báo giá v0.9: 14 hạng mục, 170 ngày công, dự phòng 10%, ưu đãi 30%, thanh toán **124.300.000 VNĐ** đã gồm VAT 8%. Lịch: 1 tháng phát triển + 2 tuần kiểm thử + 1 tháng bảo hành; bảo trì 10/15/20% năm trên giá phát triển (`gd01/bao-tri.html`).
 
-## Bắt đầu từ đâu
+**Giai đoạn 2** (`gd02/`) giữ bản trước 19/08 (kịch bản, soạn bảy kênh, lưới bảng hàng).
 
-`index.html` là bản đồ màn hình, kèm kịch bản trình bày 10 phút và danh sách điểm còn chờ RECO xác nhận.
+Màn hình chỉ nằm trong `gd01/` và `gd02/`. Thư mục gốc chỉ còn cổng `index.html`, `assets/` dùng chung, và công cụ kiểm thử (`_check*.html`, `check-all.ps1`).
 
-`sitemap.html` là **bản đồ hệ thống**: đặt từng mục trong bộ mô tả `SaleHUB.pdf` RECO gửi ngày 17/08/2026
-cạnh chỗ nó nằm trong hệ thống — 8 nhóm quyền, 8 tính năng ưu tiên, 3 khối nội dung — mỗi dòng gắn trạng thái
-*Giai đoạn 1* / *Ngoài gói* / *Giai đoạn 2* và bấm được thẳng vào màn tương ứng. Đây là màn dùng khi cần
-chứng minh không có mục nào của RECO bị bỏ sót hay hiểu lệch.
+Không cần cài đặt. Mở `index.html` hoặc `gd01/trang-dau.html`. Đẩy `main` là GitHub Pages cập nhật.
 
-## Ba nút trên thanh đen ở đầu trang
+## Ba nút trên thanh đen
 
-Thanh này chỉ phục vụ buổi trình bày, sản phẩm thật không có.
+Thanh này chỉ phục vụ buổi trình bày.
 
 | Nút | Tác dụng |
 | --- | --- |
-| **Đang xem với vai trò** | Đổi giữa 9 vai trò của RECO (QD-053 tách Kế toán khỏi Hành chính nhân sự và bổ sung Khách hàng). Nội dung, nút bấm và khu vực nội bộ trên mọi màn đổi theo đúng ma trận quyền đã chốt (`docs/07-security/role-permission-matrix.md`, repo `reco-sales-hub`). |
-| **Xem bản điện thoại** | Nhúng màn đang xem vào khung 390 × 780 để trình bày bản mobile mà không cần mở DevTools. |
-| **Ẩn thanh demo** | Ẩn thanh đen để xem hoặc chụp giao diện sạch. Bấm nút góc dưới phải để hiện lại. |
+| **Đang xem với vai trò** | Đổi giữa 9 vai trò. |
+| **Xem bản điện thoại** | Khung 390 × 780. |
+| **Ẩn thanh demo** | Giao diện sạch để chụp. |
 
-Trạng thái nằm trong URL (`?role=…&dev=m&bare=1`) nên gửi đường dẫn cho người khác vẫn giữ nguyên bối cảnh.
+Trạng thái nằm trong URL (`?role=…&dev=m&bare=1`).
 
-Điểm đáng xem nhất: mở `du-an-chi-tiet.html`, đổi sang **Nhân viên bán hàng** — khu vực 9
-(Nội bộ Marketing và Kinh doanh) biến mất, thay bằng phần Kịch bản cá nhân; đổi lại sang
-**Giám đốc dự án** thì khu vực 9 hiện đầy đủ kèm nút duyệt.
-
-Cũng ở màn đó: mỗi tiêu đề khu vực có dấu **(i)** — trỏ chuột, Tab tới hoặc chạm đều hiện câu
-giải thích khu vực đó dùng để làm gì. Cột trái bên dưới nav là danh sách **dự án cùng loại**,
-bấm vào là sang thẳng dự án khác. Mở `du-an-chi-tiet.html?pj=palmy` (đất nền — dự án duy nhất
-thuộc loại đó trong kho) để thấy cơ chế bù: khối đổi tiêu đề thành *Dự án khác* và mỗi dòng bù
-ghi rõ *cùng khu vực* hay *loại khác*. Ở khổ điện thoại nav mục ẩn đi, danh sách này xuống cuối trang.
+Điểm đáng xem nhất trên GĐ1: trang đầu dải **SP Hot**; chi tiết dự án **ba tầng** (thông tin · Hot · mẫu); **Chia sẻ** là thư viện mẫu (đội / của tôi / đã gửi). Drive chỉ còn thẻ mở nguồn.
 
 ## Bản đồ tệp
 
+| Tệp | Việc |
+| --- | --- |
+| `index.html` | Cổng Giai đoạn 1 / 2 |
+| `gd01/trang-dau.html` | Trang đầu + SP Hot |
+| `gd01/du-an-chi-tiet.html` | Chi tiết dự án 3 tầng |
+| `gd01/san-pham.html` | Chi tiết căn |
+| `gd01/chia-se.html` | Thư viện mẫu chia sẻ tin |
+| `gd01/tinh-nang-gd1.html` | Cây 14 hạng mục v0.9 |
+| `gd01/chi-tiet-gd1.html` | Chi tiết báo giá 124,3 triệu |
+| `gd01/bao-tri.html` | Lịch bàn giao và 3 gói bảo trì |
+| `gd01/ha-tang.html` | Hạ tầng (RECO tự chi) |
+| `gd02/` | Snapshot Giai đoạn 2 |
+| `assets/` | CSS/JS/ảnh/tiles dùng chung — không nhân đôi |
+
+Số liệu báo giá nguồn sự thật: `reco-sales-hub/docs/gd01/08-delivery/feature-effort-pricing.md`.
+
+---
+
+## Ghi chú Giai đoạn 2 và kiểm thử
+
+Bảng tệp bên dưới mô tả snapshot `gd02/` (IA trước 19/08). Kiểm thử: `.\check-all.ps1` (mặc định `gd01/`). Tiles bản đồ: `assets/tiles/` dùng chung, không nhân đôi.
+
+## Bản đồ tệp (snapshot gd02)
+
 | Tệp | Màn hình |
 | --- | --- |
-| `index.html` | Bản đồ prototype, kịch bản demo, câu hỏi còn mở |
-| `sitemap.html` | Bản đồ hệ thống — đối chiếu từng mục `SaleHUB.pdf` với màn hình, kèm trạng thái giai đoạn |
-| `dang-nhap.html` | MH-01 Đăng nhập |
-| `trang-dau.html` | MH-02 Trang đầu |
-| `du-an.html` | MH-03 Tìm kiếm và danh sách dự án |
-| `du-an-chi-tiet.html` | MH-04 Chi tiết dự án (+ MH-06 hỏi đáp, MH-12 kịch bản, MH-13 gửi đề nghị) |
-| `cay-thu-muc.html` | MH-11 Cây thư mục tài liệu — **chế độ xem mặc định của mục Tài liệu** |
-| `thu-vien-tai-lieu.html` | MH-05 Thư viện tài liệu — danh sách phẳng có bộ lọc, đổi qua lại bằng cặp nút ở đầu màn |
-| `soan-noi-dung.html` | MH-07 Chuẩn bị nội dung bán hàng |
-| `trang-gui-khach.html` | MH-08 Trang công khai gửi khách |
-| `link-het-han.html` | MH-14 Đường dẫn hết hiệu lực hoặc bị thu hồi |
-| `chia-se.html` | Nhật ký và quản lý đường dẫn gửi khách |
-| `quan-tri.html` | MH-09 Quản trị dữ liệu, nội dung và báo cáo vận hành |
-| `nguoi-dung.html` | MH-10 Quản lý người dùng và quyền |
-| `de-nghi-sua.html` | MH-13 Đề nghị sửa nội dung |
-| `xem-truoc-gd2.html` | Xem trước Giai đoạn 2 — báo cáo giao dịch và hoa hồng, **số liệu giả**, ngoài gói đã báo giá |
-| `tinh-nang-gd1.html` | Cây tính năng Giai đoạn 1 — 18 hạng mục theo sáu nhánh + nhánh Phần A |
-| `chi-tiet-gd1.html` | Mô tả chi tiết 18 hạng mục, Phần A, chuỗi tính giá và mục Chưa bao gồm |
-| `tinh-nang-gd2.html` | Cây tính năng Giai đoạn 2 — sáu phân hệ và bốn cách RECO chọn |
-| `chi-tiet-gd2.html` | Mô tả chi tiết sáu phân hệ Giai đoạn 2 kèm phụ thuộc, rủi ro và tạm tính |
-| `ha-tang.html` | Hạ tầng, tên miền và chi phí vận hành — khoản nằm ngoài gói 198.800.000, RECO tự chi trả |
+| `gd02/index.html` | Bản đồ prototype, kịch bản demo, câu hỏi còn mở |
+| `gd02/sitemap.html` | Bản đồ hệ thống — đối chiếu từng mục `SaleHUB.pdf` với màn hình, kèm trạng thái giai đoạn |
+| `gd02/dang-nhap.html` | MH-01 Đăng nhập |
+| `gd02/trang-dau.html` | MH-02 Trang đầu |
+| `gd02/du-an.html` | MH-03 Tìm kiếm và danh sách dự án |
+| `gd02/du-an-chi-tiet.html` | MH-04 Chi tiết dự án (+ MH-06 hỏi đáp, MH-12 kịch bản, MH-13 gửi đề nghị) |
+| `gd02/cay-thu-muc.html` | MH-11 Cây thư mục tài liệu — **chế độ xem mặc định của mục Tài liệu** |
+| `gd02/thu-vien-tai-lieu.html` | MH-05 Thư viện tài liệu — danh sách phẳng có bộ lọc, đổi qua lại bằng cặp nút ở đầu màn |
+| `gd02/soan-noi-dung.html` | MH-07 Chuẩn bị nội dung bán hàng |
+| `gd02/trang-gui-khach.html` | MH-08 Trang công khai gửi khách |
+| `gd02/link-het-han.html` | MH-14 Đường dẫn hết hiệu lực hoặc bị thu hồi |
+| `gd02/chia-se.html` | Nhật ký và quản lý đường dẫn gửi khách |
+| `gd02/quan-tri.html` | MH-09 Quản trị dữ liệu, nội dung và báo cáo vận hành |
+| `gd02/nguoi-dung.html` | MH-10 Quản lý người dùng và quyền |
+| `gd02/de-nghi-sua.html` | MH-13 Đề nghị sửa nội dung |
+| `gd02/xem-truoc-gd2.html` | Xem trước Giai đoạn 2 — báo cáo giao dịch và hoa hồng, **số liệu giả**, ngoài gói đã báo giá |
+| `gd02/tinh-nang-gd1.html` | Cây tính năng Giai đoạn 1 — 18 hạng mục theo sáu nhánh + nhánh Phần A |
+| `gd02/chi-tiet-gd1.html` | Mô tả chi tiết 18 hạng mục, Phần A, chuỗi tính giá và mục Chưa bao gồm |
+| `gd02/tinh-nang-gd2.html` | Cây tính năng Giai đoạn 2 — sáu phân hệ và bốn cách RECO chọn |
+| `gd02/chi-tiet-gd2.html` | Mô tả chi tiết sáu phân hệ Giai đoạn 2 kèm phụ thuộc, rủi ro và tạm tính |
+| `gd02/ha-tang.html` | Hạ tầng, tên miền và chi phí vận hành — khoản nằm ngoài gói phát triển, RECO tự chi trả |
 
 Tệp dùng chung nằm trong `assets/`: `reco.js` (nền tảng), `store.js` (kho dữ liệu), `data.js` (thẻ dự án),
 `geo.js` + `reco-map.js` + `vendor/leaflet.js` + `tiles/` (bản đồ vị trí — xem mục dưới).

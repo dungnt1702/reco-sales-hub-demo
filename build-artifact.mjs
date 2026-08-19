@@ -17,14 +17,27 @@ const sharp = require('e:/Projects/RECO/reco-main-web/node_modules/sharp');
 const root = path.dirname(fileURLToPath(import.meta.url));
 const A = (...p) => path.join(root, 'assets', ...p);
 
+const args = process.argv.slice(2);
+const phaseIdx = args.indexOf('--phase');
+const phase = phaseIdx >= 0 ? (args[phaseIdx + 1] || 'gd01') : 'gd01';
+const htmlDir = path.join(root, phase);
+
 /* Thứ tự này là thứ tự trình bày trong buổi demo, không phải thứ tự bảng chữ cái. */
-const PAGES = [
+const PAGES_DEFAULT = [
   'index', 'sitemap', 'dang-nhap', 'trang-dau', 'du-an', 'du-an-chi-tiet',
   'thu-vien-tai-lieu', 'cay-thu-muc', 'soan-noi-dung', 'chia-se',
   'trang-gui-khach', 'link-het-han', 'quan-tri', 'nguoi-dung', 'de-nghi-sua',
   'xem-truoc-gd2',
   'tinh-nang-gd1', 'chi-tiet-gd1', 'tinh-nang-gd2', 'chi-tiet-gd2', 'ha-tang'
 ];
+const PAGES_GD01 = [
+  'index', 'sitemap', 'dang-nhap', 'trang-dau', 'du-an', 'du-an-chi-tiet', 'san-pham',
+  'thu-vien-tai-lieu', 'cay-thu-muc', 'chia-se',
+  'trang-gui-khach', 'link-het-han', 'quan-tri', 'nguoi-dung', 'de-nghi-sua',
+  'xem-truoc-gd2', 'bao-tri',
+  'tinh-nang-gd1', 'chi-tiet-gd1', 'tinh-nang-gd2', 'chi-tiet-gd2', 'ha-tang'
+];
+const PAGES = phase === 'gd01' ? PAGES_GD01 : PAGES_DEFAULT;
 
 const kb = (n) => (n / 1024).toFixed(0) + ' KB';
 
@@ -104,7 +117,8 @@ function slice(html) {
   const js = [...body.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n');
   body = body.replace(/<script>[\s\S]*?<\/script>/g, '').trim();
 
-  return { title, css, html: body, js, nav, shell };
+  const strip = (s) => s.replaceAll('../assets/', 'assets/');
+  return { title, css: strip(css), html: strip(body), js: strip(js), nav, shell };
 }
 
 /* ---------- Dựng ---------- */
@@ -120,16 +134,16 @@ let css = await readFile(A('vendor', 'leaflet.css'), 'utf8') + '\n' + await read
 for (const [name, uri] of fonts) css = css.replaceAll(`fonts/${name}`, uri);
 
 let runtime = await readFile(A('reco.js'), 'utf8');
-const store = await readFile(A('store.js'), 'utf8');
+const store = await readFile(path.join(htmlDir, 'store.js'), 'utf8').catch(() => readFile(A('store.js'), 'utf8'));
 const data = await readFile(A('data.js'), 'utf8');
 const leaflet = await readFile(A('vendor', 'leaflet.js'), 'utf8');
 const geo = await readFile(A('geo.js'), 'utf8');
 const recoMap = await readFile(A('reco-map.js'), 'utf8');
 
-console.log(`· Gộp ${PAGES.length} màn`);
+console.log(`· Gộp ${PAGES.length} màn từ ${phase}/`);
 const pages = {};
 for (const name of PAGES) {
-  const p = slice(await readFile(path.join(root, `${name}.html`), 'utf8'));
+  const p = slice(await readFile(path.join(htmlDir, `${name}.html`), 'utf8'));
   if (p.css) css += `\n/* ${name} */\n${p.css}`;
   // Bản nhiều trang chờ DOMContentLoaded; bản gói chạy ngay sau khi màn được dựng.
   p.js = p.js.replaceAll("document.addEventListener('DOMContentLoaded',", 'RECO.run(');

@@ -1,0 +1,180 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RECO Data-SalesHub — Bản mô phỏng giao diện Giai đoạn 1</title>
+<meta name="theme-color" content="#09263c">
+<meta name="description" content="Bản mô phỏng giao diện 20 màn của RECO Data-SalesHub, dùng để RECO xem và xác nhận thiết kế Giai đoạn 1.">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+</head>
+<body data-shell="plain" data-page="index">
+
+<main id="page">
+  <div class="wrap page">
+
+    <section class="hero with-img" style="background-image:linear-gradient(105deg, rgba(5,31,53,.97), rgba(9,49,82,.86)), url('../assets/img/reco-team.jpg')">
+      <span class="eyebrow light">RECO Data-SalesHub · Giai đoạn 1</span>
+      <h1 style="max-width:19ch">Bản mô phỏng giao diện để RECO xem và xác nhận</h1>
+      <p class="lead mt-2" style="max-width:60ch">
+        Toàn bộ 14 màn hình chính trong tài liệu <em>Yêu cầu các màn hình</em> đã được dựng thành giao diện bấm được, mọi nút đều đổi trạng thái thật.
+        Mục đích là để RECO nhìn thấy sản phẩm trước khi viết dòng mã đầu tiên, và chỉ ra ngay chỗ nào hiểu chưa đúng nghiệp vụ.
+      </p>
+      <div class="row mt-3">
+        <a class="btn btn-primary" href="trang-dau.html">Bắt đầu từ Trang đầu</a>
+        <a class="btn btn-ghost" href="sitemap.html">Bản đồ hệ thống · đối chiếu SaleHUB</a>
+        <a class="btn btn-ghost" href="#ban-do">Xem toàn bộ màn hình</a>
+      </div>
+      <div class="row mt-4" style="gap:26px">
+        <div><div class="num" style="font-size:1.55rem">20</div><div class="micro" style="color:rgba(255,255,255,.7)">màn trong bản mô phỏng</div></div>
+        <div><div class="num" style="font-size:1.55rem">9</div><div class="micro" style="color:rgba(255,255,255,.7)">vai trò đổi trực tiếp</div></div>
+        <div><div class="num" style="font-size:1.55rem">3</div><div class="micro" style="color:rgba(255,255,255,.7)">cấp nhãn quyền</div></div>
+        <div><div class="num" style="font-size:1.55rem">7</div><div class="micro" style="color:rgba(255,255,255,.7)">dự án mẫu</div></div>
+      </div>
+    </section>
+
+    <section class="mt-4">
+      <div class="section-head">
+        <span class="eyebrow">Cách dùng</span>
+        <h2>Ba nút trên thanh đen ở đầu trang</h2>
+        <p class="lead">Thanh này chỉ phục vụ buổi trình bày — sản phẩm thật không có.</p>
+      </div>
+      <div class="grid g-3">
+        <div class="card card-pad">
+          <h3>Đổi vai trò</h3>
+          <p class="small muted mt-1">Chọn một trong 9 vai trò của RECO. Nội dung, nút bấm và khu vực nội bộ trên mọi màn sẽ đổi theo đúng ma trận quyền chốt ngày 13/08/2026, đã đồng bộ theo mô tả SaleHUB ngày 17/08/2026.</p>
+          <p class="small mt-1"><strong>Thử ngay:</strong> mở <a href="du-an-chi-tiet.html">Chi tiết dự án</a>, đổi sang <em>Nhân viên bán hàng</em> — khu vực 9 (Nội bộ Marketing &amp; Kinh doanh) biến mất.</p>
+        </div>
+        <div class="card card-pad">
+          <h3>Xem bản điện thoại</h3>
+          <p class="small muted mt-1">Chuyển ngay sang khung 390 × 780 để xem đúng những gì nhân viên thấy khi đang ở hiện trường. Mọi màn đều được dựng cho cả máy tính lẫn điện thoại.</p>
+        </div>
+        <div class="card card-pad">
+          <h3>Ẩn thanh demo</h3>
+          <p class="small muted mt-1">Ẩn thanh đen để xem giao diện sạch, đúng như sản phẩm thật — dùng khi chụp màn hình đưa vào tài liệu.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-4">
+      <div class="section-head">
+        <span class="eyebrow">Kịch bản đề xuất</span>
+        <h2>Đường đi 10 phút cho buổi trình bày</h2>
+      </div>
+      <div class="card card-pad">
+        <ul class="timeline">
+          <li class="done">
+            <span class="t">Bước 1</span>
+            <span class="d"><a href="dang-nhap.html">Đăng nhập</a></span>
+            <p class="small muted">Một ô nhận cả số điện thoại lẫn email, không có mã xác thực một lần — đúng QD-021 và ADR-0007.</p>
+          </li>
+          <li class="done">
+            <span class="t">Bước 2</span>
+            <span class="d"><a href="trang-dau.html">Trang đầu</a> → <a href="du-an.html">Tìm và chọn dự án</a></span>
+            <p class="small muted">Dự án nổi bật đặt trước, khu ghim riêng của từng nhân viên, lọc theo khu vực / loại sản phẩm / khoảng giá / diện tích.</p>
+          </li>
+          <li class="on">
+            <span class="t">Bước 3</span>
+            <span class="d"><a href="du-an-chi-tiet.html">Chi tiết dự án</a> — điểm nhấn</span>
+            <p class="small muted">Chín khu vực nội dung theo đúng thứ tự tài liệu. Đây là chỗ đổi vai trò để RECO thấy mô hình phân quyền hoạt động thật.</p>
+          </li>
+          <li>
+            <span class="t">Bước 4</span>
+            <span class="d"><a href="soan-noi-dung.html">Chuẩn bị nội dung</a> → <a href="trang-gui-khach.html">Trang gửi khách</a></span>
+            <p class="small muted">Từ nội dung nội bộ ra tới trang khách hàng nhìn thấy — không lộ cấu trúc kho tệp, không có ô nhập tính giá.</p>
+          </li>
+          <li>
+            <span class="t">Bước 5</span>
+            <span class="d"><a href="quan-tri.html">Quản trị và báo cáo vận hành</a></span>
+            <p class="small muted">Đúng bốn số liệu và danh sách tài liệu sắp hết hiệu lực, trên một màn hình duy nhất — theo QD-042.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="mt-4" id="ban-do">
+      <div class="section-head">
+        <span class="eyebrow">Bản đồ màn hình</span>
+        <h2>Hai mươi màn trong bản mô phỏng</h2>
+        <p class="lead">Mười bốn màn mang mã MH khớp với <em>docs/05-user-experience/screen-requirements.md</em>. Để xem từng mục trong bộ mô tả SaleHUB của RECO nằm ở đâu, mở <a href="sitemap.html">Bản đồ hệ thống</a>.</p>
+      </div>
+
+      <h3 class="mt-3 mb-2">Tiếp cận và truy xuất</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="dang-nhap.html"><span class="mh">MH-01</span><h3>Đăng nhập</h3><p>Một ô nhận số điện thoại hoặc email, mật khẩu, không mã xác thực một lần.</p></a>
+        <a class="map-card" href="trang-dau.html"><span class="mh">MH-02</span><h3>Trang đầu</h3><p>Dự án đang bán, dự án nổi bật, ô tìm kiếm, khu ghim và mẹo bán hàng.</p></a>
+        <a class="map-card" href="du-an.html"><span class="mh">MH-03</span><h3>Tìm kiếm và danh sách dự án</h3><p>Lọc theo khu vực, loại sản phẩm, khoảng giá, diện tích; chuyển thẻ ↔ danh sách.</p></a>
+        <a class="map-card" href="du-an-chi-tiet.html"><span class="mh">MH-04</span><h3>Chi tiết dự án</h3><p>Chín khu vực nội dung dùng chung cho mọi dự án, kèm khu vực nội bộ cuối trang.</p></a>
+        <a class="map-card" href="du-an-chi-tiet.html#kv7"><span class="mh">MH-06</span><h3>Hỏi đáp và nội dung tư vấn</h3><p>Nhóm hỏi đáp theo dự án, câu trả lời ngắn kèm tài liệu liên quan.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Tài liệu</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="thu-vien-tai-lieu.html"><span class="mh">MH-05</span><h3>Thư viện tài liệu</h3><p>Lọc theo loại và theo nguồn; phiên bản, ngày hiệu lực, tải bản có dấu nhận diện.</p></a>
+        <a class="map-card" href="cay-thu-muc.html"><span class="mh">MH-11</span><h3>Cây thư mục tài liệu</h3><p>Bảy nhánh cố định, thư mục con, nhãn quyền kế thừa xuống nội dung con.</p></a>
+        <a class="map-card" href="de-nghi-sua.html"><span class="mh">MH-13</span><h3>Đề nghị sửa nội dung</h3><p>Nhân viên gửi đề nghị, người phụ trách dữ liệu cập nhật hoặc từ chối kèm lý do.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Chia sẻ</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="soan-noi-dung.html"><span class="mh">MH-07</span><h3>Chuẩn bị nội dung bán hàng</h3><p>Một mẫu chung cho mọi kênh; chọn ảnh đã duyệt, xem trước, mở kênh đăng thủ công.</p></a>
+        <a class="map-card" href="trang-gui-khach.html"><span class="mh">MH-08</span><h3>Trang công khai gửi khách</h3><p>Chỉ nội dung công khai, gắn nhân viên phụ trách, phiếu tính giá đã duyệt.</p></a>
+        <a class="map-card" href="link-het-han.html"><span class="mh">MH-14</span><h3>Đường dẫn hết hiệu lực</h3><p>Màn khách thấy khi mở đường dẫn đã quá 7 ngày hoặc bị Giám đốc dự án thu hồi.</p></a>
+        <a class="map-card" href="chia-se.html"><span class="mh">—</span><h3>Nhật ký đường dẫn chia sẻ</h3><p>Ai tạo, cho dự án nào, còn hiệu lực bao lâu, và nút vô hiệu hóa tập trung.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Quản trị</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="quan-tri.html"><span class="mh">MH-09</span><h3>Quản trị dữ liệu và nội dung</h3><p>Nhãn quyền, phiên bản/ngày hiệu lực, duyệt công bố và báo cáo vận hành tối thiểu.</p></a>
+        <a class="map-card" href="nguoi-dung.html"><span class="mh">MH-10</span><h3>Quản lý người dùng và quyền</h3><p>Chín vai trò, gán dự án hoặc vùng, đặt lại mật khẩu, ngừng tài khoản. Hành chính nhân sự gán được vai trò thường, vai trò quản lý do người quản trị chung gán.</p></a>
+        <a class="map-card" href="du-an-chi-tiet.html#kv9"><span class="mh">MH-12</span><h3>Kịch bản kinh doanh</h3><p>Kịch bản dùng chung và kịch bản cá nhân, kèm luồng đề xuất nâng lên bản chung.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Tính năng và báo giá</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="tinh-nang-gd1.html"><span class="mh">GĐ1</span><h3>Cây tính năng Giai đoạn 1</h3><p>Mười tám hạng mục của gói 198.800.000 VNĐ xếp theo sáu nhánh, kèm nhánh ba hạng mục bổ sung. Bấm một hạng mục để đọc mô tả đầy đủ và chi phí.</p></a>
+        <a class="map-card" href="chi-tiet-gd1.html"><span class="mh">GĐ1</span><h3>Chi tiết và báo giá Giai đoạn 1</h3><p>Mô tả đầy đủ từng hạng mục trong mười tám hạng mục, và chuỗi tính từ ngày công ra giá thanh toán.</p></a>
+        <a class="map-card" href="tinh-nang-gd2.html"><span class="mh">GĐ2</span><h3>Cây tính năng Giai đoạn 2</h3><p>Sáu phân hệ dựng từ bộ mô tả và ba tệp Excel vận hành RECO gửi ngày 17/08/2026, kèm tạm tính từng phân hệ và bốn cách chọn.</p></a>
+        <a class="map-card" href="chi-tiet-gd2.html"><span class="mh">GĐ2</span><h3>Chi tiết và báo giá Giai đoạn 2</h3><p>Phạm vi, rủi ro và tạm tính của từng phân hệ Giai đoạn 2.</p></a>
+        <a class="map-card" href="ha-tang.html"><span class="mh">HT</span><h3>Hạ tầng, tên miền và chi phí vận hành</h3><p>Tên miền, máy chủ, dung lượng lưu trữ, sao lưu và tài khoản Google — những khoản nằm ngoài gói 198.800.000 VNĐ, ước tính theo bảng giá Nhân Hòa và Google.</p></a>
+        <a class="map-card" href="xem-truoc-gd2.html"><span class="mh">GĐ2</span><h3>Xem trước báo cáo giao dịch và hoa hồng</h3><p>Dựng theo bảy báo cáo tuần và bảng kê hoa hồng RECO đang làm trên Excel. Toàn bộ số liệu là số giả; phân hệ này chưa nằm trong gói 198.800.000 VNĐ.</p></a>
+      </div>
+
+      <h3 class="mt-4 mb-2">Bản đồ</h3>
+      <div class="grid g-3">
+        <a class="map-card" href="sitemap.html"><span class="mh">—</span><h3>Bản đồ hệ thống</h3><p>Đối chiếu từng mục trong bộ mô tả SaleHUB của RECO với chỗ nó nằm trong hệ thống, kèm trạng thái Giai đoạn 1, ngoài gói hay Giai đoạn 2.</p></a>
+      </div>
+    </section>
+
+    <section class="mt-4">
+      <div class="band">
+        <span class="eyebrow light">Cần RECO xác nhận</span>
+        <h2>Sáu điểm bản mô phỏng đang tạm chọn một cách hiểu</h2>
+        <p class="lead mt-1" style="max-width:70ch">Những chỗ này tài liệu ghi là còn mở. Bản mô phỏng vẽ theo phương án hợp lý nhất để có cái nhìn được, và đánh dấu bằng chip <span class="open-q" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.4);color:#ffad70">Cần xác nhận</span> ngay trên màn hình.</p>
+        <div class="grid g-2 mt-3">
+          <div><h4 style="color:#fff">Báo cáo nhanh trên Trang đầu</h4><p class="small" style="color:rgba(255,255,255,.75)">Tài liệu hỏi có hiển thị báo cáo nhanh hay bài của đội bán hàng ngay trang đầu không. Bản mô phỏng đặt một dải bốn số liệu cá nhân, chưa có bài đăng.</p></div>
+          <div><h4 style="color:#fff">Khi tìm kiếm không có kết quả (Luồng 1)</h4><p class="small" style="color:rgba(255,255,255,.75)">Bản mô phỏng gợi ý bỏ bớt bộ lọc và hiện ba dự án gần nhất thay vì để trống.</p></div>
+          <div><h4 style="color:#fff">Bộ thông tin bắt buộc của căn/lô (DX-017)</h4><p class="small" style="color:rgba(255,255,255,.75)">Bảng hàng đang hiển thị mã căn, diện tích, hướng, giá và tình trạng — cần RECO chốt danh sách cuối.</p></div>
+          <div><h4 style="color:#fff">Cách biểu diễn điểm bán hàng (DX-018)</h4><p class="small" style="color:rgba(255,255,255,.75)">Đang thể hiện dạng danh sách gạch đầu dòng có nhãn quyền riêng cho từng điểm.</p></div>
+          <div><h4 style="color:#fff">Thông báo khi giá hoặc chính sách đổi (DX-021)</h4><p class="small" style="color:rgba(255,255,255,.75)">Đang dùng chuông thông báo trong ứng dụng, chưa gửi ra kênh ngoài.</p></div>
+          <div><h4 style="color:#fff">Thời gian lưu lịch sử (DX-020)</h4><p class="small" style="color:rgba(255,255,255,.75)">Màn thư viện có bộ lọc phiên bản nhưng chưa quy định giữ bao lâu.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <p class="small muted mt-4">
+      Bản mô phỏng · dựng theo bộ tài liệu RECO Data-SalesHub cập nhật 18/08/2026.
+      <strong>Cả bảy dự án là dự án thật của Nhà Ở Ngay RECO</strong> — tên, vị trí, quy mô và chủ đầu tư lấy từ
+      trang dự án công khai của RECO, toạ độ ghim theo đúng địa chỉ đã công bố (QD-070).
+      <strong>Khoảng giá, bảng hàng, tên người và toàn bộ số giao dịch, hoa hồng, nhân sự là số minh họa</strong>
+      (QD-072, QD-073): RECO không công bố giá trên web, mà buổi demo vẫn cần các luồng đó chạy đủ.
+      Nền bản đồ © OpenStreetMap contributors.
+    </p>
+  </div>
+</main>
+
+</body>
+</html>

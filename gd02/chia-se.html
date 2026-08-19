@@ -1,0 +1,351 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đường dẫn gửi khách · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  .lk-slug { font-family: var(--font-display); letter-spacing: -.01em; }
+  tr[data-fresh] { background: color-mix(in srgb, var(--verified) 9%, var(--white)); }
+</style>
+</head>
+<body data-shell="app" data-page="chia-se">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">Chia sẻ · nhật ký đường dẫn</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Đường dẫn gửi khách</h1>
+        <p class="lead mt-1" style="font-size:.98rem;max-width:72ch">
+          Hệ thống ghi nhận người tạo, dự án được chia sẻ, thời điểm tạo và tình trạng còn hiệu lực.
+          Giai đoạn 1 chưa đếm lượt mở đường dẫn.
+        </p>
+      </div>
+      <button class="btn btn-primary" id="lk-new" data-roles="gd gddu tkkd qlkd nvbh mkt">Tạo đường dẫn mới</button>
+    </div>
+
+    <div class="note note-navy mb-3" data-roles="hcns ktoan">
+      Vai trò <strong>HCNS &amp; Kế toán</strong> không tạo và không thu hồi đường dẫn gửi khách.
+      Anh/chị đang xem nhật ký ở chế độ tham khảo.
+    </div>
+
+    <div class="grid g-4 mb-4">
+      <div class="tile"><span class="k">Còn hiệu lực</span><span class="num" id="t-live">—</span><span class="micro muted" id="t-live-sub">&nbsp;</span></div>
+      <div class="tile"><span class="k">Hết hạn trong 48 giờ</span><span class="num" id="t-soon" style="color:var(--orange-text)">—</span><span class="micro muted">Trang có bảng hàng</span></div>
+      <div class="tile"><span class="k">Đã vô hiệu hóa</span><span class="num" id="t-off">—</span><span class="micro muted">Do Giám đốc dự án thu hồi</span></div>
+      <div class="tile"><span class="k">Tạo trong tháng 8</span><span class="num" id="t-month">—</span><span class="micro muted">Toàn đội Miền Bắc</span></div>
+    </div>
+
+    <div class="note mb-3">
+      <strong>Hai loại thời hạn.</strong>
+      Trang có giá, bảng hàng hoặc chính sách nhạy cảm <strong>hết hiệu lực sau 7 ngày</strong>.
+      Trang giới thiệu chung không hết hạn khi dự án còn hoạt động.
+      Đường dẫn luôn hiển thị nội dung hiện hành — khách luôn xem bản mới nhất, không đóng băng nội dung lúc gửi.
+    </div>
+
+    <div class="filterbar mb-3">
+      <select class="inp" id="f-pj" aria-label="Lọc theo dự án"><option value="">Mọi dự án</option></select>
+      <select class="inp" id="f-by" aria-label="Lọc theo người tạo"><option value="">Mọi người tạo</option></select>
+      <select class="inp" id="f-st" aria-label="Lọc theo trạng thái">
+        <option value="">Mọi trạng thái</option>
+        <option value="live">Còn hiệu lực</option>
+        <option value="soon">Sắp hết hạn</option>
+        <option value="expired">Đã hết hạn</option>
+        <option value="off">Đã vô hiệu hóa</option>
+      </select>
+      <button class="btn btn-quiet btn-sm" id="f-clear" hidden>Bỏ bộ lọc</button>
+    </div>
+
+    <div class="tbl-wrap" id="lk-wrap">
+      <table class="tbl">
+        <thead>
+          <tr><th>Đường dẫn</th><th>Dự án</th><th>Người tạo</th><th>Tạo lúc</th><th>Hiệu lực</th><th class="r">Thao tác</th></tr>
+        </thead>
+        <tbody id="lk-body"></tbody>
+      </table>
+    </div>
+    <div id="lk-empty" hidden></div>
+
+    <div class="note note-danger mt-3">
+      <strong>Không nhúng liên kết Google Drive của Chủ đầu tư vào trang gửi khách.</strong>
+      RECO không kiểm soát được quyền truy cập của những liên kết đó. Nếu một tài liệu trên trang có liên kết hỏng hoặc bị thu quyền,
+      tài liệu đó <strong>tự động biến mất khỏi trang</strong> (QD-025).
+    </div>
+
+    <div class="gd2-band mt-3" data-gd2>
+      <div class="row-tight mb-1">
+        <span class="chip-gd2">Giai đoạn 2 · ngoài báo giá</span>
+      </div>
+      <strong>Đếm lượt khách mở đường dẫn</strong>
+      <p class="small muted mt-1">
+        Số lượt mở, thời điểm khách xem lần cuối và mục khách đọc lâu nhất nằm ngoài phạm vi Giai đoạn 1 (QD-016).
+        Giai đoạn 1 chỉ ghi nhận việc tạo, thời hạn và việc thu hồi đường dẫn.
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<!-- Tạo đường dẫn -->
+<div class="modal" id="m-taolink" hidden role="dialog" aria-modal="true" aria-labelledby="m-taolink-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Luồng 2 · chuẩn bị nội dung gửi khách</span><h3 id="m-taolink-t">Tạo đường dẫn gửi khách</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <label class="field"><span class="lab">Dự án</span>
+        <select class="inp" id="nl-pj"></select>
+      </label>
+      <label class="field"><span class="lab">Nội dung đưa vào trang</span>
+        <select class="inp" id="nl-kind">
+          <option value="chung">Giới thiệu chung — không có giá</option>
+          <option value="gia">Có bảng hàng và phiếu tính giá đã duyệt</option>
+        </select>
+        <span class="hint" id="nl-hint">Trang giới thiệu chung không hết hạn khi dự án còn hoạt động.</span>
+        <span class="row-tight mt-2"><span class="micro muted">Hạn dùng của đường dẫn:</span><span class="st st-live" id="nl-days">Không hết hạn</span></span>
+      </label>
+      <label class="field"><span class="lab">Lời nhắn gửi khách (tùy chọn)</span>
+        <textarea class="inp" id="nl-note" placeholder="Anh/chị xem giúp em thông tin dự án ạ."></textarea>
+        <span class="hint">Lời nhắn hiện trong nhật ký để anh/chị nhớ đã gửi gì cho khách nào.</span>
+      </label>
+      <div class="note note-navy">
+        Trang chỉ lấy nội dung mang nhãn <span class="lb lb-public">Công khai</span> mà anh/chị được phép truy cập, và luôn gắn đúng tên anh/chị làm người phụ trách.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="nl-ok">Tạo và sao chép</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Khung điện thoại thay nội dung màn bằng iframe — bản ngoài không có gì để dựng.
+  if (!document.getElementById('lk-body')) return;
+
+  var S = RECO.store, E = RECO_DATA.esc;
+  var BASE = 'https://sales.reco.vn';
+
+  /* Sao chép dùng bản chung của RECO: API trình duyệt, chặn hoặc treo thì lùi về textarea tạm,
+     và luôn kết thúc để người dùng nhận được phản hồi. */
+  var copyText = RECO.copy;
+  function copyLink(slug, btn) {
+    copyText(BASE + slug).then(function (ok) {
+      if (ok) RECO.toast('Đã sao chép ' + BASE + slug);
+      else RECO.toast('Trình duyệt chặn sao chép tự động — anh/chị chép tay đường dẫn ' + BASE + slug, { danger: true });
+      if (btn) btn.focus();
+    });
+  }
+
+  /* ---------- Trạng thái hiệu lực ---------- */
+  function statusOf(l) {
+    if (l.state === 'off') return { key: 'off', cls: 'st-stop', text: 'Đã vô hiệu hóa' };
+    if (l.days === null || l.days === undefined) return { key: 'live', cls: 'st-live', text: 'Không hết hạn' };
+    if (l.days <= 0) return { key: 'expired', cls: 'st-off', text: 'Đã hết hạn' };
+    if (l.days <= 2) return { key: 'soon', cls: 'st-wait', text: 'Còn ' + l.days + ' ngày' };
+    return { key: 'live', cls: 'st-live', text: 'Còn ' + l.days + ' ngày' };
+  }
+
+  var fPj = document.getElementById('f-pj'), fBy = document.getElementById('f-by'),
+      fSt = document.getElementById('f-st'), fClear = document.getElementById('f-clear'),
+      body = document.getElementById('lk-body'), wrap = document.getElementById('lk-wrap'),
+      emptyBox = document.getElementById('lk-empty');
+
+  function fillSelect(sel, values, allText, textOf) {
+    var keep = sel.value;
+    sel.innerHTML = '<option value="">' + allText + '</option>' +
+      values.map(function (v) { return '<option value="' + E(v) + '">' + E(textOf ? textOf(v) : v) + '</option>'; }).join('');
+    sel.value = values.indexOf(keep) >= 0 ? keep : '';
+  }
+
+  function uniq(list, key) {
+    var seen = [];
+    list.forEach(function (x) { if (seen.indexOf(x[key]) < 0) seen.push(x[key]); });
+    return seen;
+  }
+
+  function tiles(all) {
+    var live = 0, gia = 0, soon = 0, off = 0, month = 0;
+    all.forEach(function (l) {
+      var s = statusOf(l);
+      if (s.key === 'live' || s.key === 'soon') { live++; if (l.kind === 'gia') gia++; }
+      if (s.key === 'soon') soon++;
+      if (s.key === 'off') off++;
+      if (/\/08\/2026/.test(l.at || '')) month++;
+    });
+    document.getElementById('t-live').textContent = live;
+    document.getElementById('t-live-sub').textContent = 'Trong đó ' + gia + ' trang có giá';
+    document.getElementById('t-soon').textContent = soon;
+    document.getElementById('t-off').textContent = off;
+    document.getElementById('t-month').textContent = month;
+  }
+
+  function actions(l, s) {
+    var out = [];
+    if (s.key === 'off' || s.key === 'expired') {
+      var why = s.key === 'off' ? 'thu-hoi' : 'het-han';
+      out.push('<a class="btn btn-outline btn-sm" href="' + RECO.link('link-het-han.html#' + why) + '">Xem</a>');
+      out.push('<span class="micro muted">' + (s.key === 'off'
+        ? 'Nội dung không còn được phép sử dụng'
+        : 'Đã quá hạn 7 ngày — cần tạo đường dẫn mới') + '</span>');
+      return out.join('');
+    }
+    out.push('<a class="btn btn-outline btn-sm" href="' + RECO.link('trang-gui-khach.html') + '">Xem</a>');
+    out.push('<button class="btn btn-quiet btn-sm" data-copy="' + E(l.id) + '" data-roles="gd gddu tkkd qlkd nvbh mkt">Sao chép</button>');
+    out.push('<button class="btn btn-quiet btn-sm" data-off="' + E(l.id) + '" data-roles="gd gddu">Vô hiệu hóa</button>');
+    return out.join('');
+  }
+
+  function render() {
+    var all = S.get('shareLinks');
+
+    fillSelect(fPj, uniq(all, 'pj'), 'Mọi dự án', function (id) { return S.projectName(id); });
+    fillSelect(fBy, uniq(all, 'by'), 'Mọi người tạo');
+
+    var filtered = all.filter(function (l) {
+      if (fPj.value && l.pj !== fPj.value) return false;
+      if (fBy.value && l.by !== fBy.value) return false;
+      if (fSt.value && statusOf(l).key !== fSt.value) return false;
+      return true;
+    });
+    var filtering = !!(fPj.value || fBy.value || fSt.value);
+    fClear.hidden = !filtering;
+
+    tiles(all);
+
+    body.innerHTML = filtered.map(function (l) {
+      var s = statusOf(l);
+      return '<tr' + (l.fresh ? ' data-fresh' : '') + '>' +
+        '<td data-l="Đường dẫn"><b class="lk-slug">' + E(l.slug) + '</b>' +
+          (l.note ? '<div class="micro muted">' + E(l.note) + '</div>' : '') + '</td>' +
+        '<td data-l="Dự án">' + E(S.projectName(l.pj)) + '</td>' +
+        '<td data-l="Người tạo">' + E(l.by) + '</td>' +
+        '<td data-l="Tạo lúc">' + E(l.at) + '</td>' +
+        '<td data-l="Hiệu lực"><span class="st ' + s.cls + '">' + s.text + '</span></td>' +
+        '<td data-l="" class="r"><div class="row-tight" style="justify-content:flex-end">' + actions(l, s) + '</div></td>' +
+      '</tr>';
+    }).join('');
+
+    var none = filtered.length === 0;
+    wrap.hidden = none;
+    emptyBox.hidden = !none;
+    if (none) {
+      emptyBox.innerHTML = filtering
+        ? RECO_DATA.empty('Không có đường dẫn nào khớp bộ lọc',
+            'Anh/chị thử bỏ bớt điều kiện lọc để xem toàn bộ nhật ký chia sẻ.',
+            '<button class="btn btn-outline" data-act="clear">Bỏ bộ lọc</button>')
+        : RECO_DATA.empty('Chưa có đường dẫn gửi khách nào',
+            'Mỗi lần gửi thông tin cho khách, anh/chị tạo một đường dẫn để hệ thống ghi lại người tạo, dự án và thời hạn.',
+            '<button class="btn btn-primary" data-act="new" data-roles="gd gddu tkkd qlkd nvbh mkt">Tạo đường dẫn mới</button>');
+    }
+    RECO.applyRoles(document.querySelector('.wrap.page'));
+  }
+
+  /* ---------- Thao tác trên từng dòng ---------- */
+  body.addEventListener('click', function (e) {
+    var c = e.target.closest('[data-copy]');
+    if (c) {
+      var hit = S.find('shareLinks', c.getAttribute('data-copy'));
+      if (hit) copyLink(hit.slug, c);
+      return;
+    }
+    var d = e.target.closest('[data-off]');
+    if (!d) return;
+    var l = S.find('shareLinks', d.getAttribute('data-off'));
+    if (!l) return;
+    RECO.confirm({
+      eyebrow: 'Thu hồi đường dẫn',
+      title: 'Vô hiệu hóa ' + E(l.slug) + '?',
+      body: '<p class="small muted">Khách đang mở trang <strong>mất quyền truy cập ngay</strong> — lần tải lại kế tiếp họ chỉ thấy thông báo ' +
+            'đường dẫn không còn hiệu lực. Việc này không hoàn tác được; muốn gửi lại anh/chị phải tạo đường dẫn mới.</p>' +
+            '<p class="small muted mt-2">Đường dẫn: <b>' + E(BASE + l.slug) + '</b><br>Đã gửi bởi ' + E(l.by) + ' lúc ' + E(l.at) + '.</p>',
+      okText: 'Vô hiệu hóa',
+      cancelText: 'Giữ nguyên',
+      danger: true,
+      onOk: function () {
+        S.update('shareLinks', l.id, { state: 'off', days: 0, fresh: false });
+        RECO.toast('Đã vô hiệu hóa ' + l.slug + ' — khách mở sẽ thấy thông báo hết hiệu lực');
+      }
+    });
+  });
+
+  emptyBox.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    if (b.getAttribute('data-act') === 'clear') { fPj.value = ''; fBy.value = ''; fSt.value = ''; render(); }
+    else RECO.openModal('m-taolink');
+  });
+
+  [fPj, fBy, fSt].forEach(function (s) { s.addEventListener('change', render); });
+  fClear.addEventListener('click', function () { fPj.value = ''; fBy.value = ''; fSt.value = ''; render(); });
+
+  /* ---------- Tạo đường dẫn mới ---------- */
+  var newBtn = document.getElementById('lk-new'),
+      nlPj = document.getElementById('nl-pj'), nlKind = document.getElementById('nl-kind'),
+      nlHint = document.getElementById('nl-hint'), nlDays = document.getElementById('nl-days'),
+      nlNote = document.getElementById('nl-note'), nlOk = document.getElementById('nl-ok');
+
+  newBtn.addEventListener('click', function () { RECO.openModal('m-taolink'); });
+
+  nlPj.innerHTML = S.get('projects').filter(function (p) { return !p.hidden; }).map(function (p) {
+    return '<option value="' + E(p.id) + '">' + E(p.name) + '</option>';
+  }).join('');
+
+  function syncKind() {
+    var gia = nlKind.value === 'gia';
+    nlHint.textContent = gia
+      ? 'Trang có giá, bảng hàng hoặc chính sách nhạy cảm hết hiệu lực sau 7 ngày.'
+      : 'Trang giới thiệu chung không hết hạn khi dự án còn hoạt động.';
+    nlDays.textContent = gia ? 'Còn hiệu lực 7 ngày' : 'Không hết hạn';
+    nlDays.className = 'st ' + (gia ? 'st-wait' : 'st-live');
+  }
+  nlKind.addEventListener('change', syncKind);
+  syncKind();
+
+  function slugify(s) {
+    return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+  function stamp() {
+    var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' · ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  nlOk.addEventListener('click', function () {
+    var pj = nlPj.value, gia = nlKind.value === 'gia', note = nlNote.value.trim();
+    RECO.busy(nlOk, 'Đang tạo đường dẫn…', 900, function () {
+      var slug = '/t/' + slugify(pj) + '-' + Math.random().toString(36).slice(2, 6);
+      S.get('shareLinks').forEach(function (x) { if (x.fresh) x.fresh = false; });
+      S.add('shareLinks', {
+        slug: slug, pj: pj, kind: gia ? 'gia' : 'chung',
+        note: note || (gia ? 'Có bảng hàng và phiếu tính giá đã duyệt' : 'Trang giới thiệu chung'),
+        by: RECO.current.who, at: stamp(), days: gia ? 7 : null, state: 'live', fresh: true
+      });
+      RECO.closeModal('m-taolink');
+      nlNote.value = '';
+      copyText(BASE + slug).then(function (ok) {
+        RECO.toast(ok
+          ? 'Đã tạo ' + slug + ' và sao chép vào bộ nhớ tạm'
+          : 'Đã tạo ' + slug + ' — trình duyệt chặn sao chép tự động, anh/chị bấm Sao chép ở dòng đầu bảng',
+          { danger: !ok });
+      });
+    });
+  });
+
+  S.on('shareLinks', render);
+  render();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hạ tầng, tên miền và chi phí vận hành · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  .kpi b { font-family: var(--font-display); font-size: 1.5rem; display: block; margin: 2px 0; }
+  .card-head h2 { margin: 0; }
+  .cost { display: flex; flex-wrap: wrap; gap: 10px 28px; padding-top: 12px; margin-top: 14px; border-top: 1px solid var(--line); }
+  .cost .k { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; display: block; }
+  .cost .v { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-weight: 700; color: var(--navy); font-size: 1rem; }
+  /* Bảng tổng ở đây có ba cột số chứ không phải một như trang chi tiết báo giá,
+     nên tô đậm mọi cột trừ cột tên khoản. */
+  .ladder td:not(:first-child) { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-weight: 700; }
+  .ladder tr.tot td { background: color-mix(in srgb, var(--orange) 10%, transparent); color: var(--navy); font-size: 1.02rem; }
+  /* Ô thuộc mức khuyến nghị — để mắt bám đúng một cột khi đọc bảng ba mức. */
+  .pick { background: color-mix(in srgb, var(--verified) 12%, transparent); }
+  .side-more { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .side-more a { display: block; padding: 6px 10px; font-size: .84rem; font-weight: 600; color: var(--muted); text-decoration: none; border-radius: var(--radius-md); }
+  .side-more a:hover { color: var(--navy); background: var(--soft); }
+  .src { font-size: .78rem; color: var(--muted); line-height: 1.9; }
+  .src a { color: var(--muted); }
+</style>
+</head>
+<body data-shell="app" data-page="tinh-nang">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="spread mb-3">
+      <div>
+        <span class="eyebrow">Ngoài gói 198.800.000 · khoản RECO tự chi trả</span>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Hạ tầng, tên miền và chi phí vận hành</h1>
+        <p class="lead mt-1" style="font-size:.98rem;max-width:74ch">
+          Những thứ phần mềm cần để chạy thật mà tiền phát triển không mua: tên miền, máy chủ,
+          dung lượng lưu trữ, sao lưu và tài khoản Google. Mỗi khoản nêu yêu cầu trước, rồi mới đến
+          ước tính chi phí theo bảng giá đang niêm yết.
+        </p>
+      </div>
+      <div class="row-tight">
+        <div class="seg" role="group" aria-label="Chọn nội dung">
+          <a href="tinh-nang-gd1.html" role="button">Giai đoạn 1</a>
+          <a href="tinh-nang-gd2.html" role="button">Giai đoạn 2</a>
+          <button type="button" aria-pressed="true">Hạ tầng</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g-4 mb-4">
+      <div class="card card-pad kpi"><span class="micro muted">Chi phí năm đầu · mức khuyến nghị</span><b>19.494.000</b><span class="micro muted">VNĐ, bình quân 1.624.500 mỗi tháng</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Máy chủ đề xuất</span><b>4 vCPU · 8 GB</b><span class="micro muted">Kèm một máy kiểm thử nhỏ hơn</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Dung lượng năm đầu</span><b>≈ 35 GB</b><span class="micro muted">Tăng 15–20 GB mỗi năm sau đó</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Tài khoản Google mua thêm</span><b>0</b><span class="micro muted">Nếu RECO đã dùng Google Workspace</span></div>
+    </div>
+
+    <div class="note note-navy mb-4">
+      <strong>Đây là ước tính, không phải cam kết giá.</strong>
+      Số liệu lấy từ bảng giá niêm yết của Nhân Hòa và Google ngày 18/08/2026, còn thay đổi theo
+      khuyến mãi và theo cấu hình cuối cùng. RECO đứng tên tài khoản và thanh toán thẳng cho nhà cung cấp;
+      HASU chỉ nhận quyền kỹ thuật để cấu hình và vận hành. Cách tính chi phí vận hành hằng tháng
+      vẫn là điểm chờ RECO chốt — <a href="#chua-chot">xem cuối trang</a>.
+    </div>
+
+    <div class="detail-grid">
+
+      <div class="detail-side">
+        <nav class="secnav" aria-label="Sáu nhóm hạ tầng">
+          <p class="micro muted mb-1" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">Sáu nhóm hạ tầng</p>
+          <ol>
+            <li><a href="#ht-01" class="on">Tên miền và chứng thư</a></li>
+            <li><a href="#ht-02">Máy chủ</a></li>
+            <li><a href="#ht-03">Lưu trữ tệp và dung lượng</a></li>
+            <li><a href="#ht-04">Sao lưu và khôi phục</a></li>
+            <li><a href="#ht-05">Google Drive và Workspace</a></li>
+            <li><a href="#ht-06">Dịch vụ bên thứ ba khác</a></li>
+          </ol>
+        </nav>
+        <div class="side-more">
+          <a href="#tong">Tổng chi phí năm đầu</a>
+          <a href="#trach-nhiem">Ai mua, ai vận hành</a>
+          <a href="#chua-chot">Chờ RECO xác nhận</a>
+          <a href="chi-tiet-gd1.html#chua-gom">Ranh giới phạm vi Giai đoạn 1</a>
+        </div>
+      </div>
+
+      <div class="detail-main">
+
+        <section class="sec card card-pad" id="ht-01">
+          <div class="sec-head"><span class="n">NHÓM 1</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Tên miền và chứng thư bảo mật</h2>
+          <p class="small mt-1">Cần một tên miền riêng cho Sales Hub, ví dụ <em>saleshub.reco.com.vn</em> — có thể là tên miền con của tên miền RECO đang dùng, khi đó không phát sinh phí đăng ký mới. Nếu RECO muốn một tên miền độc lập thì chọn một trong ba đuôi dưới đây. Đuôi <strong>.com.vn</strong> là đề xuất: chi phí vừa phải, gắn với pháp nhân Việt Nam nên khách hàng dễ tin, và ít bị tranh chấp hơn đuôi quốc tế.</p>
+          <div class="tbl-wrap mt-3">
+            <table class="tbl">
+              <thead><tr><th>Đuôi tên miền</th><th class="r">Đăng ký năm đầu</th><th class="r">Duy trì mỗi năm</th><th>Ghi chú</th></tr></thead>
+              <tbody>
+                <tr><td data-l="Đuôi tên miền">.com.vn</td><td data-l="Đăng ký năm đầu" class="r num pick">570.000</td><td data-l="Duy trì mỗi năm" class="r num pick">350.000</td><td data-l="Ghi chú" class="small">Đề xuất</td></tr>
+                <tr><td data-l="Đuôi tên miền">.vn</td><td data-l="Đăng ký năm đầu" class="r num">670.000</td><td data-l="Duy trì mỗi năm" class="r num">450.000</td><td data-l="Ghi chú" class="small">Ngắn gọn hơn, đắt hơn</td></tr>
+                <tr><td data-l="Đuôi tên miền">.com</td><td data-l="Đăng ký năm đầu" class="r num">229.000</td><td data-l="Duy trì mỗi năm" class="r num">369.000</td><td data-l="Ghi chú" class="small">Giá năm đầu là giá ưu đãi</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="micro muted mt-2">Giá tên miền đã gồm thuế giá trị gia tăng 10%. Đơn vị: VNĐ.</p>
+          <p class="small mt-3"><strong>Chứng thư bảo mật (HTTPS): 0 đồng.</strong> Máy chủ chạy Caddy, tự xin và tự gia hạn chứng thư Let’s Encrypt. RECO chỉ phải mua chứng thư trả phí nếu sau này cần loại có bảo hiểm trách nhiệm hoặc xác thực doanh nghiệp mở rộng — Giai đoạn 1 không cần.</p>
+          <div class="cost">
+            <div><span class="k">Năm đầu</span><span class="v">570.000 đ</span></div>
+            <div><span class="k">Từ năm thứ hai</span><span class="v">350.000 đ / năm</span></div>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="ht-02">
+          <div class="sec-head"><span class="n">NHÓM 2</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Máy chủ</h2>
+          <p class="small mt-1">Sales Hub chạy bằng Docker Compose trên một máy chủ ảo: ứng dụng, cơ sở dữ liệu, kho tệp và Caddy nằm cùng một máy. Trung tâm dữ liệu phải đặt tại Việt Nam — vừa để dữ liệu khách hàng lưu trong nước, vừa để nhân viên bán hàng mở tài liệu nhanh.</p>
+          <p class="small mt-2">Ba mức dưới đây dùng gói có thật của Nhân Hòa. Mức khuyến nghị chọn dòng High CPU vì bộ nhớ 8 GB mới đủ cho cơ sở dữ liệu, tiến trình đóng dấu chìm lên ảnh và việc băm mật khẩu chạy song song — dòng phổ thông giá tương đương nhưng chỉ có 5 GB.</p>
+          <div class="tbl-wrap mt-3">
+            <table class="tbl">
+              <thead><tr><th>Mức</th><th>Gói Nhân Hòa</th><th class="r">vCPU</th><th class="r">RAM</th><th class="r">SSD</th><th class="r">Mỗi tháng</th></tr></thead>
+              <tbody>
+                <tr><td data-l="Mức">Tối thiểu</td><td data-l="Gói Nhân Hòa">SSD Cloud VPS F</td><td data-l="vCPU" class="r num">6</td><td data-l="RAM" class="r num">5 GB</td><td data-l="SSD" class="r num">100 GB</td><td data-l="Mỗi tháng" class="r num">979.000</td></tr>
+                <tr><td data-l="Mức" class="pick"><strong>Khuyến nghị</strong></td><td data-l="Gói Nhân Hòa" class="pick">SSD Cloud High CPU A</td><td data-l="vCPU" class="r num pick">4</td><td data-l="RAM" class="r num pick">8 GB</td><td data-l="SSD" class="r num pick">60 GB</td><td data-l="Mỗi tháng" class="r num pick">939.000</td></tr>
+                <tr><td data-l="Mức">Mở rộng · cho Giai đoạn 2</td><td data-l="Gói Nhân Hòa">SSD Cloud High CPU B</td><td data-l="vCPU" class="r num">8</td><td data-l="RAM" class="r num">16 GB</td><td data-l="SSD" class="r num">100 GB</td><td data-l="Mỗi tháng" class="r num">2.189.000</td></tr>
+                <tr><td data-l="Mức">Máy kiểm thử</td><td data-l="Gói Nhân Hòa">SSD Cloud VPS C</td><td data-l="vCPU" class="r num">3</td><td data-l="RAM" class="r num">2 GB</td><td data-l="SSD" class="r num">50 GB</td><td data-l="Mỗi tháng" class="r num">339.000</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small mt-3"><strong>Ba môi trường tách biệt.</strong> Môi trường phát triển chạy trên máy của đội làm, không tốn tiền thuê. Môi trường kiểm thử cần một máy nhỏ riêng để nội dung mới không bao giờ thử trực tiếp trên dữ liệu thật — đó là gói kiểm thử ở dòng cuối bảng. Mức tối thiểu bỏ máy này đi để tiết kiệm, đổi lại việc nghiệm thu phải làm ngay trên máy chạy thật.</p>
+          <p class="small mt-2"><strong>Một điểm cần RECO quyết.</strong> Sales Hub chạy chung máy chủ với trang chủ RECO hiện có, hay thuê máy riêng? Dùng chung rẻ hơn gần một nửa vì tận dụng máy đang chạy, nhưng một sự cố ổ đĩa sẽ làm sập cả hai. Bảng trên tính theo phương án máy riêng.</p>
+          <p class="micro muted mt-2">Nhân Hòa đang khuyến mãi giảm 30% hoặc tặng thêm 18 tháng khi trả trước theo năm; bảng trên là giá gốc, chưa trừ khuyến mãi.</p>
+        </section>
+
+        <section class="sec card card-pad" id="ht-03">
+          <div class="sec-head"><span class="n">NHÓM 3</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Lưu trữ tệp và ước lượng dung lượng</h2>
+          <p class="small mt-1">Hai quyết định thiết kế đã chốt giữ cho dung lượng không phình: tài liệu để trên Google Drive chỉ được gắn liên kết sống chứ không sao chép về, nên chiếm <strong>0 byte</strong> trên máy chủ RECO; và dấu chìm được đóng ngay lúc người dùng tải chứ không lưu lại, nên một tệp tải trăm lượt vẫn chỉ tốn một bản.</p>
+          <div class="tbl-wrap mt-3">
+            <table class="tbl">
+              <thead><tr><th>Cách ước lượng</th><th class="r">Con số</th><th>Từ đâu ra</th></tr></thead>
+              <tbody>
+                <tr><td data-l="Cách ước lượng">Tài liệu mỗi dự án</td><td data-l="Con số" class="r num">33</td><td data-l="Từ đâu ra" class="small">Trung bình của bảy dự án trong bản mô phỏng</td></tr>
+                <tr><td data-l="Cách ước lượng">Cỡ tệp bình quân</td><td data-l="Con số" class="r num">5 MB</td><td data-l="Từ đâu ra" class="small">Trần cho phép là 50 MB với tài liệu, 20 MB với ảnh</td></tr>
+                <tr><td data-l="Cách ước lượng">Dự án có tài liệu đầy đủ trong năm đầu</td><td data-l="Con số" class="r num">60</td><td data-l="Từ đâu ra" class="small">Giả định, chờ RECO xác nhận</td></tr>
+                <tr><td data-l="Cách ước lượng">Tài liệu bán hàng</td><td data-l="Con số" class="r num">≈ 10 GB</td><td data-l="Từ đâu ra" class="small">60 × 33 × 5 MB</td></tr>
+                <tr><td data-l="Cách ước lượng">Nhân ba cho ảnh phối cảnh, mặt bằng và bản cũ</td><td data-l="Con số" class="r num">≈ 30 GB</td><td data-l="Từ đâu ra" class="small">Ảnh độ phân giải cao nặng hơn tài liệu nhiều lần</td></tr>
+                <tr class="tot"><td data-l="Cách ước lượng"><strong>Cộng cả cơ sở dữ liệu</strong></td><td data-l="Con số" class="r num">≈ 35 GB</td><td data-l="Từ đâu ra" class="small">Cơ sở dữ liệu dưới 2 GB ở Giai đoạn 1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small mt-3"><strong>Kết luận: Giai đoạn 1 chưa cần mua dung lượng rời.</strong> Ổ đĩa của gói máy chủ khuyến nghị là 60 GB, đủ cho năm đầu và một phần năm thứ hai. Dịch vụ lưu trữ đám mây chỉ dùng cho bản sao lưu đặt ngoài máy chủ, và là đường mở rộng khi dữ liệu vượt khoảng 50 GB.</p>
+          <div class="tbl-wrap mt-3">
+            <table class="tbl">
+              <thead><tr><th>Dịch vụ lưu trữ Nhân Hòa</th><th class="r">Mỗi TB mỗi tháng</th><th>Ghi chú</th></tr></thead>
+              <tbody>
+                <tr><td data-l="Dịch vụ">Cloud Storage</td><td data-l="Mỗi TB mỗi tháng" class="r num pick">299.000</td><td data-l="Ghi chú" class="small">Đã gồm băng thông và lệnh gọi, không tính phí tải về</td></tr>
+                <tr><td data-l="Dịch vụ">Cloud NAS</td><td data-l="Mỗi TB mỗi tháng" class="r num">390.000</td><td data-l="Ghi chú" class="small">Gắn như ổ đĩa mạng, chưa cần ở Giai đoạn 1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cost">
+            <div><span class="k">Dung lượng năm đầu</span><span class="v">≈ 35 GB</span></div>
+            <div><span class="k">Tăng thêm mỗi năm</span><span class="v">15–20 GB</span></div>
+            <div><span class="k">Mua thêm dung lượng ở Giai đoạn 1</span><span class="v">Chưa cần</span></div>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="ht-04">
+          <div class="sec-head"><span class="n">NHÓM 4</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Sao lưu và khôi phục</h2>
+          <p class="small mt-1">Sao lưu là khoản duy nhất trong trang này mà bỏ đi thì không thấy đau ngay — chỉ đau đúng một lần, vào ngày mất dữ liệu. Đề xuất mức tối thiểu chấp nhận được:</p>
+          <div class="tbl-wrap mt-3">
+            <table class="tbl">
+              <thead><tr><th>Yêu cầu</th><th>Đề xuất</th></tr></thead>
+              <tbody>
+                <tr><td data-l="Yêu cầu">Cơ sở dữ liệu</td><td data-l="Đề xuất" class="small">Sao lưu tự động mỗi ngày</td></tr>
+                <tr><td data-l="Yêu cầu">Tệp tài liệu</td><td data-l="Đề xuất" class="small">Sao lưu mỗi tuần, thêm bản tăng dần theo ngày</td></tr>
+                <tr><td data-l="Yêu cầu">Thời gian giữ bản sao</td><td data-l="Đề xuất" class="small">30 ngày</td></tr>
+                <tr><td data-l="Yêu cầu">Nơi để bản sao</td><td data-l="Đề xuất" class="small">Một bản đặt ngoài máy chủ chạy thật, trên dịch vụ lưu trữ đám mây</td></tr>
+                <tr><td data-l="Yêu cầu">Mất tối đa bao nhiêu dữ liệu khi sự cố</td><td data-l="Đề xuất" class="small">24 giờ — chờ RECO chốt</td></tr>
+                <tr><td data-l="Yêu cầu">Thời gian khôi phục xong</td><td data-l="Đề xuất" class="small">4 giờ — chờ RECO chốt</td></tr>
+                <tr><td data-l="Yêu cầu">Diễn tập khôi phục</td><td data-l="Đề xuất" class="small">Một lần khi bàn giao, có biên bản</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small mt-3">Dung lượng sao lưu tính 1 TB là mua dư khá nhiều so với 35 GB dữ liệu, nhưng Nhân Hòa bán theo TB nên đó là bậc nhỏ nhất. Một biến số cần biết sớm: RECO giữ lịch sử thay đổi và tài liệu đã hết hiệu lực trong bao lâu — giữ càng lâu thì bản sao càng dày.</p>
+          <div class="cost">
+            <div><span class="k">Lưu trữ sao lưu 1 TB</span><span class="v">299.000 đ / tháng</span></div>
+            <div><span class="k">Cả năm</span><span class="v">3.588.000 đ</span></div>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="ht-05">
+          <div class="sec-head"><span class="n">NHÓM 5</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Google Drive và Google Workspace</h2>
+          <p class="small mt-1">Sales Hub đọc tài liệu trên Drive của RECO chứ không chép về. Cách nối là một tài khoản dịch vụ chỉ có quyền đọc, được RECO chia sẻ vào thư mục dùng chung. Tài khoản dịch vụ do Google cấp miễn phí và <strong>không chiếm một chỗ ngồi nào</strong> trong gói Workspace.</p>
+          <p class="small mt-2">Điều kiện duy nhất: thư mục phải là thư mục dùng chung của tổ chức (Shared Drive), tức RECO cần gói <strong>Business Standard</strong> trở lên. Nếu RECO đang dùng Workspace thì khoản này là <strong>0 đồng phát sinh thêm</strong>.</p>
+          <div class="tbl-wrap mt-3">
+            <table class="tbl">
+              <thead><tr><th>Gói Google Workspace</th><th class="r">Dung lượng mỗi người</th><th class="r">USD / người / tháng</th><th class="r">Quy đổi VNĐ</th></tr></thead>
+              <tbody>
+                <tr><td data-l="Gói">Business Starter</td><td data-l="Dung lượng mỗi người" class="r num">30 GB</td><td data-l="USD / người / tháng" class="r num">7,00</td><td data-l="Quy đổi VNĐ" class="r num">≈ 183.000</td></tr>
+                <tr><td data-l="Gói" class="pick"><strong>Business Standard</strong></td><td data-l="Dung lượng mỗi người" class="r num pick">2 TB</td><td data-l="USD / người / tháng" class="r num pick">14,00</td><td data-l="Quy đổi VNĐ" class="r num pick">≈ 366.000</td></tr>
+                <tr><td data-l="Gói">Business Plus</td><td data-l="Dung lượng mỗi người" class="r num">5 TB</td><td data-l="USD / người / tháng" class="r num">22,00</td><td data-l="Quy đổi VNĐ" class="r num">≈ 575.000</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="micro muted mt-2">Quy đổi theo 26.150 đ mỗi đô la Mỹ. Dung lượng của Business Standard là dùng chung cả tổ chức, không phải mỗi người một khoang riêng. Google ưu đãi 8,40 đô la cho 12 tháng đầu, chỉ áp cho khách mới và tối đa 20 chỗ ngồi; đại lý trong nước đang niêm yết 220.000–400.000 đồng mỗi chỗ mỗi tháng.</p>
+          <p class="small mt-3">Ví dụ để RECO hình dung: 10 chỗ ngồi Business Standard vào khoảng 3.660.000 đồng mỗi tháng, tức gần 44 triệu một năm. Đây là chi phí công cụ làm việc của cả công ty, không phải chi phí riêng của Sales Hub — nên bảng tổng cuối trang không cộng khoản này vào.</p>
+          <div class="cost">
+            <div><span class="k">Nếu RECO đã có Workspace</span><span class="v">0 đ</span></div>
+            <div><span class="k">Tài khoản dịch vụ chỉ đọc</span><span class="v">0 đ</span></div>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="ht-06">
+          <div class="sec-head"><span class="n">NHÓM 6</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Dịch vụ bên thứ ba khác</h2>
+          <p class="small mt-1">Bốn khoản dưới đây Giai đoạn 1 chưa tốn tiền, nhưng nêu ra để RECO biết trước khoản nào sẽ đến khi hệ thống lớn hơn.</p>
+          <div class="tbl-wrap mt-3">
+            <table class="tbl">
+              <thead><tr><th>Dịch vụ</th><th>Giai đoạn 1</th><th class="r">Về sau</th></tr></thead>
+              <tbody>
+                <tr><td data-l="Dịch vụ">Gửi thư giao dịch</td><td data-l="Giai đoạn 1" class="small">Chưa cần — mật khẩu do người quản trị cấp trực tiếp</td><td data-l="Về sau" class="r num">0 – 500.000 / tháng</td></tr>
+                <tr><td data-l="Dịch vụ">Theo dõi máy chủ sống chết</td><td data-l="Giai đoạn 1" class="small">Gói miễn phí đủ dùng</td><td data-l="Về sau" class="r num">0</td></tr>
+                <tr><td data-l="Dịch vụ">Bản đồ trong trang gửi khách</td><td data-l="Giai đoạn 1" class="small">Dùng bản đồ nền tự lưu, không gọi dịch vụ ngoài</td><td data-l="Về sau" class="r small">Tính theo lượt gọi nếu đổi sang Google Maps</td></tr>
+                <tr><td data-l="Dịch vụ">Tài khoản nhà phát triển Apple và Google Play</td><td data-l="Giai đoạn 1" class="small">Chỉ phát sinh nếu RECO chọn làm bản điện thoại</td><td data-l="Về sau" class="r small">≈ 2.589.000 mỗi năm và 654.000 một lần</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="sec card" id="tong">
+          <div class="card-head" style="padding-block:14px">
+            <div>
+              <span class="eyebrow">Ước tính · ngoài gói phát triển</span>
+              <h2 style="font-size:1.05rem;margin-top:2px">Tổng chi phí hạ tầng năm đầu</h2>
+            </div>
+            <span class="micro muted">Đơn vị: VNĐ</span>
+          </div>
+          <div class="card-body">
+            <p class="small">Ba cột là ba mức đã mô tả ở trên. Cột giữa là mức khuyến nghị: đủ để chạy thật, có môi trường kiểm thử riêng và có bản sao lưu đặt ngoài máy chủ.</p>
+            <div class="tbl-wrap mt-3">
+              <table class="tbl ladder">
+                <thead><tr><th>Khoản</th><th class="r">Tối thiểu</th><th class="r">Khuyến nghị</th><th class="r">Mở rộng</th></tr></thead>
+                <tbody>
+                  <tr><td data-l="Khoản">Máy chủ chạy thật</td><td data-l="Tối thiểu" class="r">11.748.000</td><td data-l="Khuyến nghị" class="r pick">11.268.000</td><td data-l="Mở rộng" class="r">26.268.000</td></tr>
+                  <tr><td data-l="Khoản">Máy chủ kiểm thử</td><td data-l="Tối thiểu" class="r">—</td><td data-l="Khuyến nghị" class="r pick">4.068.000</td><td data-l="Mở rộng" class="r">4.068.000</td></tr>
+                  <tr><td data-l="Khoản">Lưu trữ sao lưu ngoài máy chủ</td><td data-l="Tối thiểu" class="r">—</td><td data-l="Khuyến nghị" class="r pick">3.588.000</td><td data-l="Mở rộng" class="r">7.176.000</td></tr>
+                  <tr><td data-l="Khoản">Tên miền .com.vn năm đầu</td><td data-l="Tối thiểu" class="r">570.000</td><td data-l="Khuyến nghị" class="r pick">570.000</td><td data-l="Mở rộng" class="r">570.000</td></tr>
+                  <tr><td data-l="Khoản">Chứng thư bảo mật</td><td data-l="Tối thiểu" class="r">0</td><td data-l="Khuyến nghị" class="r pick">0</td><td data-l="Mở rộng" class="r">0</td></tr>
+                  <tr class="tot"><td data-l="Khoản"><strong>Cộng năm đầu</strong></td><td data-l="Tối thiểu" class="r">12.318.000</td><td data-l="Khuyến nghị" class="r">19.494.000</td><td data-l="Mở rộng" class="r">38.082.000</td></tr>
+                  <tr><td data-l="Khoản">Bình quân mỗi tháng</td><td data-l="Tối thiểu" class="r">1.026.500</td><td data-l="Khuyến nghị" class="r pick">1.624.500</td><td data-l="Mở rộng" class="r">3.173.500</td></tr>
+                  <tr><td data-l="Khoản">Từ năm thứ hai</td><td data-l="Tối thiểu" class="r">12.098.000</td><td data-l="Khuyến nghị" class="r pick">19.274.000</td><td data-l="Mở rộng" class="r">37.862.000</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="small mt-3">Từ năm thứ hai giảm 220.000 đồng vì tên miền chuyển từ phí đăng ký sang phí duy trì. Nếu trả trước theo năm, khuyến mãi đang niêm yết của Nhân Hòa còn kéo con số xuống nữa — nhưng khuyến mãi không nên đưa vào bảng dự toán.</p>
+            <div class="note note-navy mt-3">
+              <strong>Đặt cạnh giá phát triển để thấy tỷ lệ.</strong>
+              Gói Giai đoạn 1 là 198.800.000 đồng trả một lần. Hạ tầng mức khuyến nghị là 19.494.000 đồng cho năm đầu,
+              bằng khoảng một phần mười giá phát triển, và là khoản lặp lại hằng năm chứ không phải trả một lần.
+              Hai con số này nằm ở hai hóa đơn khác nhau: phần mềm trả cho HASU, hạ tầng trả thẳng cho nhà cung cấp.
+            </div>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="trach-nhiem">
+          <span class="eyebrow">Phân định</span>
+          <h2 style="font-size:1.15rem;margin-top:2px">Ai mua, ai vận hành</h2>
+          <div class="kv kv-2 mt-3">
+            <div><div class="k">RECO</div><div class="v" style="font-size:.9rem">Mở tài khoản Nhân Hòa và Google, đứng tên, thanh toán thẳng cho nhà cung cấp</div></div>
+            <div><div class="k">HASU</div><div class="v" style="font-size:.9rem">Nhận quyền kỹ thuật để cấu hình, triển khai và vận hành trong thời gian dự án</div></div>
+            <div><div class="k">Quyền quản trị</div><div class="v" style="font-size:.9rem">RECO thu hồi được bất cứ lúc nào, không phụ thuộc HASU</div></div>
+            <div><div class="k">Sau bảo hành 3 tháng</div><div class="v" style="font-size:.9rem">Vá hệ điều hành và trực sự cố thuộc gói vận hành riêng, chưa nằm trong 198.800.000</div></div>
+          </div>
+          <p class="small mt-3">Cách này giữ cho RECO không bị khóa vào một nhà cung cấp phần mềm: tên miền, máy chủ và dữ liệu đều đứng tên RECO, đổi đơn vị triển khai chỉ là đổi người được cấp quyền.</p>
+        </section>
+
+        <section class="sec card card-pad" id="chua-chot">
+          <span class="eyebrow">Điểm mở</span>
+          <h2 style="font-size:1.15rem;margin-top:2px">Chờ RECO xác nhận</h2>
+          <ul class="small mt-2" style="padding-left:18px;line-height:1.9">
+            <li>Cách tính chi phí vận hành hằng tháng sau khi bàn giao — khoản này quyết định con số cuối cùng của cả trang.</li>
+            <li>Thời gian giữ lịch sử thay đổi và tài liệu đã hết hiệu lực — càng giữ lâu, dung lượng và bản sao lưu càng dày.</li>
+            <li>Chọn đuôi tên miền, hoặc dùng tên miền con của tên miền RECO đang có.</li>
+            <li>Sales Hub chạy chung máy chủ với trang chủ RECO hay thuê máy riêng.</li>
+            <li>Mất tối đa bao nhiêu dữ liệu và bao lâu phải khôi phục xong khi có sự cố.</li>
+            <li>RECO đang dùng gói Google Workspace nào và còn bao nhiêu chỗ ngồi.</li>
+          </ul>
+          <div class="row mt-3">
+            <a class="btn btn-outline" href="tinh-nang-gd1.html">Về cây tính năng Giai đoạn 1</a>
+            <a class="btn btn-outline" href="chi-tiet-gd1.html#chua-gom">Ranh giới phạm vi Giai đoạn 1</a>
+            <a class="btn btn-quiet" href="index.html">Về bản đồ prototype</a>
+          </div>
+          <p class="src mt-4">
+            Nguồn giá, tra ngày 18/08/2026 —
+            máy chủ: <a href="https://nhanhoa.com/may-chu/may-chu-ao-vps.html" target="_blank" rel="noopener">nhanhoa.com máy chủ ảo</a> và
+            <a href="https://nhanhoa.com/may-chu/may-chu-cloud-high-cpu.html" target="_blank" rel="noopener">High CPU</a>;
+            lưu trữ: <a href="https://nhanhoa.com/may-chu/cloud-storage.html" target="_blank" rel="noopener">nhanhoa.com Cloud Storage</a>;
+            tên miền: <a href="https://nhanhoa.com/trang/ten-mien/bang-gia-ten-mien.html" target="_blank" rel="noopener">bảng giá tên miền Nhân Hòa</a>;
+            Google: <a href="https://workspace.google.com/pricing" target="_blank" rel="noopener">workspace.google.com</a>.
+            Giá tên miền đã gồm thuế giá trị gia tăng; giá máy chủ và lưu trữ theo niêm yết, chưa xác nhận thuế với nhà cung cấp.
+          </p>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+</body>
+</html>
