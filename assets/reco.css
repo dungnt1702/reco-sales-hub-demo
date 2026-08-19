@@ -224,6 +224,25 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
 a.proto-btn { text-decoration: none; display: inline-flex; align-items: center; }
 .proto-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
 .proto-btn[aria-pressed="true"] { background: var(--orange-button); border-color: var(--orange-button); color: #fff; }
+.proto-devs {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.proto-devs .proto-btn {
+  border: 0;
+  border-radius: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 5px 10px;
+  min-width: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.proto-devs .proto-btn:last-child { border-right: 0; }
+.proto-devs .proto-btn svg { width: 16px; height: 16px; }
 .proto-spacer { margin-left: auto; }
 body.proto-off .proto { display: none; }
 @media (max-width: 767px) {

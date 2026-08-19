@@ -48,8 +48,9 @@
     }
     role = qs.get('role');
     if (!ROLES.some(function (r) { return r.id === role; })) role = DEFAULT_ROLE;
-    device = qs.get('dev') === 'm' ? 'm' : 'd';
-    bare = qs.get('bare') === '1';   // ẩn thanh demo (dùng khi chụp ảnh / nhúng khung điện thoại)
+    var d = qs.get('dev');
+    device = (d === 'm' || d === 't') ? d : 'd';
+    bare = qs.get('bare') === '1';   // ẩn thanh demo (dùng khi chụp ảnh / nhúng khung thiết bị)
     R = roleOf(role);
   }
   readState();
@@ -92,7 +93,7 @@
     var rl = opts.role || role;
     if (rl !== DEFAULT_ROLE) p.push('role=' + rl);
     var dv = opts.dev || device;
-    if (dv === 'm' && !opts.dropDev) p.push('dev=m');
+    if ((dv === 'm' || dv === 't') && !opts.dropDev) p.push('dev=' + dv);
     if (opts.bare === undefined ? bare : opts.bare) p.push('bare=1');
 
     if (BUNDLE) {
@@ -141,6 +142,7 @@
     copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
+    tablet: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/>',
     desktop: '<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
     back: '<path d="m15 18-6-6 6-6"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6h.01"/>',
@@ -222,8 +224,11 @@
           '<span class="micro muted no-lg proto-desk" style="flex-basis:100%">Phạm vi: ' + R.scope + '</span>' +
           '<span class="micro only-lg muted">Phạm vi: ' + R.scope + '</span>' +
           '<span class="proto-spacer"></span>' +
-          '<button type="button" class="proto-btn proto-desk" id="proto-dev" aria-pressed="' + (device === 'm') + '">' +
-            (device === 'm' ? 'Xem bản desktop' : 'Xem bản điện thoại') + '</button>' +
+          '<span class="proto-devs proto-desk" role="group" aria-label="Khung xem">' +
+            '<button type="button" class="proto-btn proto-icon" data-dev="m" aria-pressed="' + (device === 'm') + '" aria-label="Xem bản điện thoại" title="Điện thoại">' + svg('phone') + '</button>' +
+            '<button type="button" class="proto-btn proto-icon" data-dev="t" aria-pressed="' + (device === 't') + '" aria-label="Xem bản máy tính bảng" title="Máy tính bảng">' + svg('tablet') + '</button>' +
+            '<button type="button" class="proto-btn proto-icon" data-dev="d" aria-pressed="' + (device === 'd') + '" aria-label="Xem bản máy tính" title="Máy tính">' + svg('desktop') + '</button>' +
+          '</span>' +
           '<button type="button" class="proto-btn proto-desk" id="proto-reset">Đặt lại dữ liệu demo</button>' +
           '<button type="button" class="proto-btn proto-desk" id="proto-bare">Ẩn thanh demo</button>' +
         '</div>' +
@@ -297,19 +302,27 @@
       '<a href="#" id="dock-more">' + svg('dots') + '<span>Thêm</span></a></nav>';
   }
 
-  /* ---------- Khung điện thoại ---------- */
-  function mobileFrame() {
+  /* Khung nhúng: điện thoại 390×780, máy tính bảng 834×1112 (iPad 11 dọc). */
+  function framed() {
+    return (device === 'm' || device === 't') && !bare;
+  }
+  function deviceFrame() {
+    var spec = device === 't'
+      ? { w: 834, h: 1112, r: 22, pad: 12, cap: 'Bản máy tính bảng · khung 834 × 1112', title: 'Xem trên máy tính bảng' }
+      : { w: 390, h: 780, r: 38, pad: 10, cap: 'Bản điện thoại · khung 390 × 780', title: 'Xem trên điện thoại' };
     var to = link(currentFile(), { dev: 'd', dropDev: true, bare: true });
     var src = BUNDLE ? location.href.split('#')[0] + to : to;
+    var shell = spec.w + spec.pad * 2;
+    var innerR = Math.max(spec.r - 10, 12);
     return '' +
       '<div style="background:#0c1d2b;min-height:calc(100vh - 56px);padding:24px 16px 40px;display:flex;flex-direction:column;align-items:center;gap:14px">' +
-        '<p style="color:#9fb3c4;font-size:.82rem;margin:0">Bản điện thoại · khung 390 × 780</p>' +
-        '<div style="width:410px;max-width:100%;background:#0a1620;border-radius:38px;padding:10px;box-shadow:0 30px 80px rgba(0,0,0,.5)">' +
-          '<iframe id="dev-frame" src="' + src + '" title="Xem trên điện thoại" style="width:100%;height:780px;border:0;border-radius:28px;background:#f8f7f3;display:block"></iframe>' +
+        '<p style="color:#9fb3c4;font-size:.82rem;margin:0">' + spec.cap + '</p>' +
+        '<div style="width:' + shell + 'px;max-width:100%;background:#0a1620;border-radius:' + spec.r + 'px;padding:' + spec.pad + 'px;box-shadow:0 30px 80px rgba(0,0,0,.5)">' +
+          '<iframe id="dev-frame" src="' + src + '" title="' + spec.title + '" style="width:100%;height:' + spec.h + 'px;border:0;border-radius:' + innerR + 'px;background:#f8f7f3;display:block"></iframe>' +
         '</div>' +
         '<p id="dev-fallback" hidden style="color:#9fb3c4;font-size:.86rem;max-width:44ch;text-align:center;margin:0">' +
-          'Không nhúng được khung điện thoại ở môi trường này. Anh/chị thu hẹp cửa sổ trình duyệt dưới 500px, ' +
-          'hoặc mở trang trên điện thoại — giao diện tự co theo.</p>' +
+          'Không nhúng được khung thiết bị ở môi trường này. Anh/chị thu hẹp cửa sổ trình duyệt, ' +
+          'hoặc mở trang trên điện thoại / máy tính bảng — giao diện tự co theo.</p>' +
       '</div>';
   }
 
@@ -1155,10 +1168,10 @@
     body.classList.remove('proto-off');
     body.style.overflow = '';
 
-    if (device === 'm' && !bare) {
+    if (framed()) {
       body.insertAdjacentHTML('afterbegin', buildProto());
       var main = document.getElementById('page');
-      if (main) main.outerHTML = mobileFrame();
+      if (main) main.outerHTML = deviceFrame();
       bindProto();
       watchFrame();
       return;
@@ -1184,7 +1197,7 @@
     }
     if (bare) {
       body.classList.add('proto-off');
-      // Lối quay lại thanh demo — chỉ hiện khi đang xem trực tiếp, không hiện trong khung điện thoại
+      // Lối quay lại thanh demo — chỉ hiện khi đang xem trực tiếp, không hiện trong khung thiết bị
       if (window.top === window.self) {
         var back = document.createElement('button');
         back.type = 'button';
@@ -1261,9 +1274,13 @@
   function bindProto() {
     var sel = document.getElementById('proto-role');
     if (sel) sel.addEventListener('change', function () { go({ role: sel.value }); });
-    var dev = document.getElementById('proto-dev');
-    if (dev) dev.addEventListener('click', function () {
-      go({ dev: device === 'm' ? 'd' : 'm', dropDev: device === 'm' });
+    document.querySelectorAll('.proto-devs [data-dev]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var next = btn.getAttribute('data-dev');
+        if (next === device) return;
+        if (next === 'd') go({ dev: 'd', dropDev: true });
+        else go({ dev: next });
+      });
     });
     var bareBtn = document.getElementById('proto-bare');
     if (bareBtn) bareBtn.addEventListener('click', function () { go({ bare: true }); });
@@ -1284,7 +1301,7 @@
     });
   }
 
-  /* Khung điện thoại dùng iframe trỏ về chính trang này. Một số nơi nhúng chặn iframe,
+  /* Khung thiết bị dùng iframe trỏ về chính trang này. Một số nơi nhúng chặn iframe,
      nên nếu sau 2 giây khung vẫn rỗng thì hiện lời nhắc thay vì để trắng. */
   function watchFrame() {
     var f = document.getElementById('dev-frame');
@@ -1317,9 +1334,9 @@
     mount();
 
     // Mã riêng của từng màn — build ghi sẵn dưới dạng chuỗi, chạy sau khi DOM đã vào chỗ.
-    // Ở chế độ khung điện thoại, mount() đã thay #page bằng iframe nên không còn phần tử
+    // Ở chế độ khung thiết bị, mount() đã thay #page bằng iframe nên không còn phần tử
     // nào cho mã trang bám vào — chạy sẽ ném lỗi ở cả 20 màn.
-    if (P.js && !(device === 'm' && !bare)) {
+    if (P.js && !framed()) {
       try { (new Function(expand(P.js)))(); }
       catch (e) { console.error('Lỗi mã của màn ' + page, e); }
     }
@@ -1350,8 +1367,8 @@
       var fromHash = i >= 0 ? new URLSearchParams(h.slice(i + 1)).get(name) : null;
       return fromHash || new URLSearchParams(location.search).get(name) || '';
     },
-    /* Màn đang được nhúng trong khung điện thoại — mã màn nên thoát sớm */
-    get embedded() { return device === 'm' && !bare; },
+    /* Màn đang được nhúng trong khung điện thoại / máy tính bảng — mã màn nên thoát sớm */
+    get embedded() { return framed(); },
     search: search, norm: norm, trackRecent: trackRecent,
     bindSlide: bindSlide,
     renderBell: renderBell, roleOf: roleOf,
