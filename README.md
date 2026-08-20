@@ -4,7 +4,7 @@
 
 `index.html` là **cổng**: chọn Giai đoạn 1 (bản đang làm) hoặc Giai đoạn 2 (snapshot đóng băng).
 
-**Giai đoạn 1** (`gd01/`) — ba trụ: thông tin dự án, căn hộ + SP Hot (không giá), thư viện mẫu chia sẻ tin. Báo giá v0.9: 14 hạng mục, 170 ngày công, dự phòng 10%, ưu đãi 30%, thanh toán **124.300.000 VNĐ** đã gồm VAT 8%. Lịch: 1 tháng phát triển + 2 tuần kiểm thử + 1 tháng bảo hành; bảo trì 10/15/20% năm trên giá phát triển (`gd01/bao-tri.html`).
+**Giai đoạn 1** (`gd01/`) — ba trụ: thông tin dự án, căn hộ + SP Hot (không giá), thư viện mẫu chia sẻ tin. Báo giá v0.10: 14 hạng mục, ba vai trò, 123 ngày công, dự phòng 10%, ưu đãi 30%, thanh toán **89.900.000 VNĐ** đã gồm VAT 8%. Ứng dụng iOS/Android là tùy chọn: nếu làm cùng Giai đoạn 1 thì **20.000.000 VNĐ** (Web + ứng dụng = 109.900.000). Lịch: 1 tháng phát triển + 2 tuần kiểm thử + 1 tháng bảo hành; bảo trì 10/15/20% năm trên giá phát triển (`gd01/bao-tri.html`).
 
 **Giai đoạn 2** (`gd02/`) giữ bản trước 19/08 (kịch bản, soạn bảy kênh, lưới bảng hàng).
 
@@ -35,8 +35,8 @@ Trạng thái nằm trong URL (`?role=…&dev=m&bare=1`).
 | `gd01/du-an-chi-tiet.html` | Chi tiết dự án 3 tầng |
 | `gd01/san-pham.html` | Chi tiết căn |
 | `gd01/chia-se.html` | Thư viện mẫu chia sẻ tin |
-| `gd01/tinh-nang-gd1.html` | Cây 14 hạng mục v0.9 |
-| `gd01/chi-tiet-gd1.html` | Chi tiết báo giá 124,3 triệu |
+| `gd01/tinh-nang-gd1.html` | Cây 14 hạng mục v0.10 |
+| `gd01/chi-tiet-gd1.html` | Chi tiết báo giá 89,9 triệu |
 | `gd01/bao-tri.html` | Lịch bàn giao và 3 gói bảo trì |
 | `gd01/ha-tang.html` | Hạ tầng (RECO tự chi) |
 | `gd02/` | Snapshot Giai đoạn 2 |
