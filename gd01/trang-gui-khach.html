@@ -33,6 +33,11 @@
   .pub-gal img { aspect-ratio: 4/3; object-fit: cover; width: 100%; border-radius: var(--radius-md); display: block; }
   .pub-gal button { border: 0; padding: 0; background: none; cursor: zoom-in; border-radius: var(--radius-md); display: block; width: 100%; }
   .pub-gal button:focus-visible { outline: 2px solid var(--orange-button); outline-offset: 3px; }
+  #gal.mau-media-row > .mau-span-item > button {
+    border: 0; padding: 0; background: none; cursor: zoom-in;
+    border-radius: var(--radius-md); display: block; width: 100%;
+  }
+  #gal.mau-media-row > .mau-span-item > button:focus-visible { outline: 2px solid var(--orange-button); outline-offset: 3px; }
   .agent-wrap { display: grid; gap: 18px; }
   @media (min-width: 900px) { .agent-wrap { grid-template-columns: minmax(0,1fr) 340px; align-items: start; } }
 
@@ -535,19 +540,24 @@ document.addEventListener('DOMContentLoaded', function () {
     : (tpl && tpl.galleryMedia && tpl.galleryMedia.length ? tpl.galleryMedia : null);
   var shots = [];
   if (pickedGal) {
+    gal.className = 'mau-media-row mt-3';
     var html = '', shotI = 0;
     shots = [];
     pickedGal.forEach(function (m) {
+      var span = m.span || 'full';
+      var inner;
       if (m.type === 'video') {
-        html += mediaThumb(m, 0, false);
+        inner = mediaThumb(m, 0, false);
       } else {
         shots.push({ name: m.name || 'Ảnh', img: m.src, thumb: RECO.asset(S.mediaCover(m)) });
-        html += mediaThumb(m, shotI, true);
+        inner = mediaThumb(m, shotI, true);
         shotI++;
       }
+      html += '<div class="mau-span-item" data-span="' + E(span) + '">' + inner + '</div>';
     });
     gal.innerHTML = html;
   } else {
+    gal.className = 'pub-gal mt-3';
     shots = S.get('media').filter(function (m) {
       return m.pj === PJ && m.state === 'approved' && m.label === 'public';
     }).slice(0, 4);
@@ -565,7 +575,10 @@ document.addEventListener('DOMContentLoaded', function () {
       ? link.unitMedia
       : (tpl && tpl.unitMedia && tpl.unitMedia.length ? tpl.unitMedia : S.unitMedia(u.id).slice(0, 4));
     var showUnitGal = !ticks || ticks.indexOf('unitGallery') >= 0;
-    unitGal.innerHTML = showUnitGal ? pickedUnit.map(function (m, i) { return mediaThumb(m, i, false); }).join('') : '';
+    unitGal.innerHTML = showUnitGal ? pickedUnit.map(function (m, i) {
+      var span = m.span || 'full';
+      return '<div class="mau-span-item" data-span="' + E(span) + '">' + mediaThumb(m, i, false) + '</div>';
+    }).join('') : '';
     unitGal.hidden = !showUnitGal || !pickedUnit.length;
   }
 

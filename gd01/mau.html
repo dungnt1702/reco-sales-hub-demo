@@ -105,25 +105,73 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function areaTxt(n) { return String(n).replace('.', ',') + ' m²'; }
 
+  function withSpan(m, i) {
+    return {
+      type: m.type || 'image',
+      src: m.src || m.img,
+      poster: m.poster || '',
+      name: m.name || '',
+      span: m.span || 'full'
+    };
+  }
   function galleryItems(src) {
-    if (src.galleryMedia && src.galleryMedia.length) return src.galleryMedia;
-    return S.projectMedia(src.projectId).filter(function (m) { return m.type === 'image'; }).slice(0, 1);
+    if (src._galTouched) return (src.galleryMedia || []).map(withSpan);
+    var raw = (src.galleryMedia && src.galleryMedia.length)
+      ? src.galleryMedia
+      : S.projectMedia(src.projectId).filter(function (m) { return m.type === 'image'; }).slice(0, 1);
+    return raw.map(withSpan);
   }
   function unitItems(src, openU) {
-    if (src.unitMedia && src.unitMedia.length) return src.unitMedia;
-    var u = unitOfTpl(src, openU);
-    return u ? S.unitMedia(u.id).filter(function (m) { return m.type === 'image'; }).slice(0, 4) : [];
+    if (src._unitTouched) return (src.unitMedia || []).map(withSpan);
+    var raw;
+    if (src.unitMedia && src.unitMedia.length) raw = src.unitMedia;
+    else {
+      var u = unitOfTpl(src, openU);
+      raw = u ? S.unitMedia(u.id).filter(function (m) { return m.type === 'image'; }).slice(0, 4) : [];
+    }
+    return raw.map(withSpan);
   }
-  function mediaHtml(items) {
-    if (!items || !items.length) return '';
-    return '<div class="mau-media-row">' + items.map(function (m) {
-      var cover = RECO.asset(S.mediaCover(m));
-      if (m.type === 'video') {
-        return '<a class="mau-vid" href="' + E(m.src) + '" target="_blank" rel="noopener">' +
-          '<img src="' + cover + '" alt="' + E(m.name || 'Video') + '"><span class="mau-play" aria-hidden="true"></span></a>';
+  function mediaThumbInner(m) {
+    var cover = RECO.asset(S.mediaCover(m));
+    if (m.type === 'video') {
+      var vidInner = '<img src="' + cover + '" alt="' + E(m.name || 'Video') + '"><span class="mau-play" aria-hidden="true"></span>';
+      if (canvasEdit) return '<div class="mau-vid">' + vidInner + '</div>';
+      return '<a class="mau-vid" href="' + E(m.src) + '" target="_blank" rel="noopener">' + vidInner + '</a>';
+    }
+    return '<img src="' + RECO.asset(m.src || m.img) + '" alt="' + E(m.name || '') + '">';
+  }
+  function spanBar(m) {
+    var spans = [
+      { id: 'full', icon: 'spanfull', lab: 'Cả hàng' },
+      { id: 'half', icon: 'spanhalf', lab: 'Một nửa' },
+      { id: 'third', icon: 'spanthird', lab: 'Một phần ba' },
+      { id: 'quarter', icon: 'grid', lab: 'Một phần tư' }
+    ];
+    return '<div class="mau-img-bar">' +
+      spans.map(function (s) {
+        return '<button type="button" class="span-btn" data-span="' + s.id + '" aria-pressed="' + (m.span === s.id ? 'true' : 'false') + '" aria-label="' + s.lab + '">' + RECO.svg(s.icon) + '</button>';
+      }).join('') +
+      '<button type="button" class="span-pick" aria-label="Đổi ảnh">' + RECO.svg('image') + '</button>' +
+      '<button type="button" class="span-del" aria-label="Gỡ ảnh">' + RECO.svg('x') + '</button></div>';
+  }
+  var canvasEdit = false;
+  function mediaHtml(items, kind) {
+    if (!items || !items.length) {
+      if (canvasEdit && kind) {
+        return '<div class="mau-media-row"><button type="button" class="mau-media-add" data-pick="' + E(kind) + '" aria-label="Thêm ảnh">' + RECO.svg('plus') + ' Thêm ảnh</button></div>';
       }
-      return '<img src="' + RECO.asset(m.src) + '" alt="' + E(m.name || '') + '">';
-    }).join('') + '</div>';
+      return '';
+    }
+    return '<div class="mau-media-row">' + items.map(function (m) {
+      var inner = mediaThumbInner(m);
+      if (!canvasEdit) {
+        return '<div class="mau-span-item" data-span="' + E(m.span || 'full') + '">' + inner + '</div>';
+      }
+      return '<div class="mau-span-item" data-span="' + E(m.span || 'full') + '" data-kind="' + E(kind || '') + '" data-src="' + E(m.src) + '">' +
+        spanBar(m) + inner + '</div>';
+    }).join('') +
+      (canvasEdit ? '<button type="button" class="mau-media-add" data-pick="' + E(kind || '') + '" aria-label="Thêm ảnh">' + RECO.svg('plus') + '</button>' : '') +
+    '</div>';
   }
 
   function zaloBit(k, src, openU) {
@@ -223,14 +271,14 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function blockUnitGal(src, openU) {
     var g = unitItems(src, openU);
-    if (!g.length) return '';
-    return '<div class="mau-block" data-block="unitGallery"><h3>' + E(S.tickLab('unitGallery', (src.projectId))) + '</h3>' + mediaHtml(g) +
+    if (!g.length && !canvasEdit) return '';
+    return '<div class="mau-block" data-block="unitGallery"><h3>' + E(S.tickLab('unitGallery', (src.projectId))) + '</h3>' + mediaHtml(g, 'unitGallery') +
       '<p class="micro muted mt-1">Ảnh minh họa nội thất.</p></div>';
   }
   function blockGallery(src) {
     var g = galleryItems(src);
-    if (!g.length) return '';
-    return '<div class="mau-block" data-block="gallery"><h3>Ảnh dự án</h3>' + mediaHtml(g) + '</div>';
+    if (!g.length && !canvasEdit) return '';
+    return '<div class="mau-block" data-block="gallery"><h3>Ảnh dự án</h3>' + mediaHtml(g, 'gallery') + '</div>';
   }
   function blockPitch(u, hot) {
     var text = (u && u.pitch) || (hot && hot.pitch) || '';
@@ -275,12 +323,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var u = unitOfTpl(src, openU);
     var ticks = src.ticks || [];
     var hero = '';
-    var unitMediaList = hasTick(src, 'unitGallery') ? unitItems(src, openU) : [];
-    var galMediaList = hasTick(src, 'gallery') ? galleryItems(src) : [];
-    var heroItem = unitMediaList[0] || galMediaList[0] || null;
-    if (heroItem) {
-      hero = '<img class="mau-hero" src="' + RECO.asset(S.mediaCover(heroItem)) + '" alt="">';
-    } else if (p && p.img) {
+    var hasMediaTick = hasTick(src, 'gallery') || hasTick(src, 'unitGallery');
+    if (!hasMediaTick && p && p.img) {
       hero = '<img class="mau-hero" src="' + RECO.asset(p.img) + '" alt="">';
     }
     var blocks = '';
@@ -289,27 +333,29 @@ document.addEventListener('DOMContentLoaded', function () {
       var needN = S.productNoun(src.projectId);
       blocks += '<div class="mau-block mau-need"><p class="small muted" style="margin:0">Chọn ' + E(needN) + ' catalog hoặc sản phẩm Hot để hiện khối sản phẩm trên mẫu.</p></div>';
     }
-    var firstMediaTick = null;
     ticks.forEach(function (k) {
-      if (!firstMediaTick && (k === 'gallery' || k === 'unitGallery')) firstMediaTick = k;
-    });
-    ticks.forEach(function (k) {
-      if (k === firstMediaTick && heroItem) {
-        var list = k === 'unitGallery' ? unitMediaList : galMediaList;
-        var rest = list.slice(1);
-        if (rest.length) {
-          blocks += '<div class="mau-block" data-block="' + k + '"><h3>' + E(S.tickLab(k, src.projectId) || TICK_LAB[k]) + '</h3>' + mediaHtml(rest) + '</div>';
-        }
-        return;
+      var html = renderBlock(k, src, openU);
+      if (canvasEdit && html) {
+        var lab = S.tickLab(k, src.projectId) || TICK_LAB[k] || k;
+        html = '<div class="mau-edit-block" data-tick="' + k + '">' +
+          '<div class="mau-block-bar">' +
+            '<span class="tick-move">' +
+              '<button type="button" class="tick-up" aria-label="Đưa lên">' + RECO.svg('chevup') + '</button>' +
+              '<button type="button" class="tick-dn" aria-label="Đưa xuống">' + RECO.svg('chevdn') + '</button>' +
+            '</span>' +
+            '<span class="tick-grip" role="button" tabindex="0" aria-label="Kéo đổi thứ tự">' + RECO.svg('grip') + '</span>' +
+            '<span class="lab">' + E(lab) + '</span>' +
+            '<button type="button" class="tick-rm" aria-label="Gỡ khối">' + RECO.svg('x') + '</button>' +
+          '</div>' + html + '</div>';
       }
-      blocks += renderBlock(k, src, openU);
+      blocks += html;
     });
     var body = (src.body || '').trim();
-    var lead = body
+    var lead = canvasEdit ? '' : (body
       ? '<p class="lead mt-3" id="mau-lead">' + E(body) + '</p>'
-      : '<p class="lead mt-3 muted" id="mau-lead">Nội dung tin sẽ hiện ở đây…</p>';
+      : '<p class="lead mt-3 muted" id="mau-lead">Nội dung tin sẽ hiện ở đây…</p>');
     return hero + lead + blocks +
-      '<p class="micro muted mt-3">' + E(PRICE_CLOSE) + '</p>';
+      (canvasEdit ? '' : '<p class="micro muted mt-3">' + E(PRICE_CLOSE) + '</p>');
   }
 
   var CHANNELS = [
@@ -476,6 +522,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var intent = draft.intent || startIntent;
     var galleryMedia = (draft.galleryMedia || []).slice();
     var unitMediaSel = (draft.unitMedia || []).slice();
+    var galleryTouched = !!(t && Array.isArray(t.galleryMedia));
+    var unitTouched = !!(t && Array.isArray(t.unitMedia));
+    var spanToastOnce = false;
     var bodyTouched = !!(t && t.body);
     var titleTouched = !!(t && t.title);
     var ticksTouched = false;
@@ -484,6 +533,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var cancelHref = t ? goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) : goPage('chia-se.html');
     document.getElementById('mau-layout').classList.add('is-edit');
     document.getElementById('mau-cta').hidden = false;
+    var crumb = document.querySelector('.wrap.page > .small.muted.mb-2');
+    if (crumb) crumb.hidden = true;
 
     function unitOpts(pj, selected) {
       var n = S.productNoun(pj);
@@ -513,34 +564,69 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function readDraft() {
       var scopeEl = document.querySelector('#mau-cta input[name="nm-scope"]:checked');
+      var titleEl = document.getElementById('nm-title');
+      var bodyEl = document.getElementById('nm-body');
+      var pjEl = document.getElementById('nm-pj');
+      var unitEl = document.getElementById('nm-unit');
+      var hotEl = document.getElementById('nm-hot');
       return {
-        projectId: document.getElementById('nm-pj').value,
-        title: document.getElementById('nm-title').value.trim(),
-        body: document.getElementById('nm-body').value,
+        projectId: pjEl ? pjEl.value : draft.projectId,
+        title: titleEl ? titleEl.value.trim() : (draft.title || '').trim(),
+        body: bodyEl ? bodyEl.value : (draft.body || ''),
         ticks: tickOrder.slice(),
-        unitId: document.getElementById('nm-unit').value || '',
-        hotId: document.getElementById('nm-hot').value || '',
-        scope: scopeEl ? scopeEl.value : 'personal',
+        unitId: unitEl ? (unitEl.value || '') : (draft.unitId || ''),
+        hotId: hotEl ? (hotEl.value || '') : (draft.hotId || ''),
+        scope: scopeEl ? scopeEl.value : (draft.scope || 'personal'),
         intent: intent,
         galleryMedia: galleryMedia.slice(),
-        unitMedia: unitMediaSel.slice()
+        unitMedia: unitMediaSel.slice(),
+        _galTouched: galleryTouched,
+        _unitTouched: unitTouched
       };
     }
-    function paintPreview() {
+    function paintCanvas() {
       var d = readDraft();
       var p = S.find('projects', d.projectId);
-      document.getElementById('mau-h').textContent = d.title || (isNew ? 'Tạo bài đăng' : 'Sửa bài');
-      document.getElementById('mau-sub').innerHTML = E(p ? p.name : '') +
-        (d.ticks.length ? ' · ' + ticksHtml(d) : ' · Tick thành phần để hiện khối trên mẫu');
-      document.getElementById('mau-root').innerHTML =
-        '<article class="card card-pad mau-post">' + postBlocks(d, d.unitId || null) + '</article>';
-      var nGal = document.getElementById('pick-gal-n');
-      var nUnit = document.getElementById('pick-unit-n');
-      if (nGal) nGal.textContent = galleryMedia.length ? ('Đã chọn ' + galleryMedia.length) : 'Mặc định 1 ảnh bìa';
-      if (nUnit) nUnit.textContent = unitMediaSel.length
-        ? ('Đã chọn ' + unitMediaSel.length)
-        : ('Mặc định ảnh ' + S.productNoun(d.projectId));
+      var h = document.getElementById('mau-h');
+      if (h) {
+        h.innerHTML = '<a href="' + cancelHref + '">← Bài đăng</a>';
+        h.style.fontSize = '1rem';
+      }
+      var sub = document.getElementById('mau-sub');
+      if (sub) { sub.hidden = true; sub.textContent = ''; }
+      var root = document.getElementById('mau-root');
+      var article = document.getElementById('mau-article');
+      var active = document.activeElement;
+      var keepFocus = active && (active.id === 'nm-title' || active.id === 'nm-body');
+      if (!article) {
+        root.innerHTML =
+          '<article class="card card-pad mau-post" id="mau-article">' +
+            '<div class="field"><input class="mau-title-inp" type="text" id="nm-title" data-required data-msg="Đặt tiêu đề để tìm lại bài." aria-label="Tiêu đề" placeholder="Tiêu đề để tìm lại bài" value="' + E(draft.title) + '"></div>' +
+            '<div class="field"><textarea class="mau-body-inp" id="nm-body" rows="4" data-required data-msg="Nhập nội dung tin gửi khách." aria-label="Nội dung tin" placeholder="Nội dung tin gửi khách…">' + E(draft.body) + '</textarea></div>' +
+            '<div id="mau-blocks"></div>' +
+            '<p class="micro muted mt-3">' + E(PRICE_CLOSE) + '</p>' +
+            '<button type="button" class="btn btn-outline mau-add-block" id="mau-add-block">+ Thêm khối</button>' +
+          '</article>';
+        document.getElementById('nm-title').addEventListener('input', function () { titleTouched = true; });
+        document.getElementById('nm-body').addEventListener('input', function () {
+          bodyTouched = true;
+          this.style.height = 'auto';
+          this.style.height = Math.max(this.scrollHeight, 72) + 'px';
+        });
+        var body0 = document.getElementById('nm-body');
+        body0.style.height = 'auto';
+        body0.style.height = Math.max(body0.scrollHeight, 72) + 'px';
+      }
+      canvasEdit = true;
+      document.getElementById('mau-blocks').innerHTML = postBlocks(d, d.unitId || null);
+      canvasEdit = false;
+      bindCanvas();
+      paintTicks();
+      var openLab = document.getElementById('intent-open-lab');
+      if (openLab) openLab.textContent = S.intentOf(intent).short;
+      if (keepFocus && document.getElementById(active.id)) document.getElementById(active.id).focus();
     }
+    function paintPreview() { paintCanvas(); }
 
     function tickRow(k, on) {
       var pj = document.getElementById('nm-pj').value;
@@ -597,6 +683,8 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
     function bindTickDrag(box) {
+      if (!box || box.getAttribute('data-drag-bound')) return;
+      box.setAttribute('data-drag-bound', '1');
       var drag = null;
       function rowList() {
         return Array.prototype.filter.call(box.children, function (el) {
@@ -635,6 +723,7 @@ document.addEventListener('DOMContentLoaded', function () {
         paintPreview();
       }
       box.addEventListener('pointerdown', function (e) {
+        if (window.matchMedia('(max-width: 767px)').matches) return;
         var grip = e.target.closest('.tick-grip');
         if (!grip || !box.contains(grip)) return;
         if (e.button != null && e.button !== 0) return;
@@ -655,6 +744,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (titleTouched) return;
       var el = document.getElementById('nm-title');
       if (!el) return;
+      if (document.activeElement === el) return;
       var uid = document.getElementById('nm-unit').value;
       var hid = document.getElementById('nm-hot').value;
       if (intent === 'hot' && hid) {
@@ -692,18 +782,24 @@ document.addEventListener('DOMContentLoaded', function () {
         var radios = document.querySelectorAll('#mau-cta input[name="nm-scope"]');
         radios.forEach(function (r) { r.checked = r.value === want; });
       }
-      document.querySelectorAll('#intent-chips [data-intent]').forEach(function (b) {
+      paintScopePills();
+      document.querySelectorAll('#intent-chips [data-intent], #m-intent [data-intent]').forEach(function (b) {
         b.setAttribute('aria-pressed', b.getAttribute('data-intent') === intent ? 'true' : 'false');
       });
+      var openLab = document.getElementById('intent-open-lab');
+      if (openLab) openLab.textContent = spec.short;
     }
     function applyIntent(id, forceBody, silent) {
       var spec = S.intentOf(id);
       intent = spec.id;
       if (!ticksTouched) tickOrder = spec.ticks.slice();
       if (forceBody || !bodyTouched) {
-        var dPj = document.getElementById('nm-pj').value;
-        var dUnit = document.getElementById('nm-unit').value;
-        document.getElementById('nm-body').value = intentBody(id, dPj, dUnit);
+        var bodyEl = document.getElementById('nm-body');
+        if (bodyEl && document.activeElement !== bodyEl) {
+          var dPj = document.getElementById('nm-pj').value;
+          var dUnit = document.getElementById('nm-unit').value;
+          bodyEl.value = intentBody(id, dPj, dUnit);
+        }
       }
       fillTitleIfFresh();
       fillSelects();
@@ -722,9 +818,168 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!shared || !shared.checked) return false;
       var radios = document.querySelectorAll('#mau-cta input[name="nm-scope"]');
       radios.forEach(function (r) { r.checked = r.value === 'personal'; });
+      paintScopePills();
       scopeTouched = true;
       if (toastIt) RECO.toast('STK chỉ lưu mẫu của tôi.');
       return true;
+    }
+
+    function paintScopePills() {
+      var cur = document.querySelector('#mau-cta input[name="nm-scope"]:checked');
+      var val = cur ? cur.value : 'personal';
+      document.querySelectorAll('#mau-chrome [data-scope]').forEach(function (b) {
+        b.setAttribute('aria-pressed', b.getAttribute('data-scope') === val ? 'true' : 'false');
+      });
+    }
+    function ensureKindList(kind) {
+      var d = readDraft();
+      if (kind === 'gallery') {
+        if (!galleryTouched) {
+          galleryMedia = galleryItems(d);
+          galleryTouched = true;
+        }
+        return galleryMedia;
+      }
+      if (!unitTouched) {
+        unitMediaSel = unitItems(d, d.unitId || null);
+        unitTouched = true;
+      }
+      return unitMediaSel;
+    }
+    function findMediaIdx(list, src, type) {
+      for (var i = 0; i < list.length; i++) {
+        if ((list[i].src || list[i].img) === src && (list[i].type || 'image') === (type || 'image')) return i;
+      }
+      return -1;
+    }
+    function maybeSpanToast(span) {
+      if (spanToastOnce) return;
+      if (span !== 'third' && span !== 'quarter') return;
+      if (window.innerWidth >= 768) return;
+      spanToastOnce = true;
+      RECO.toast('Trên điện thoại ảnh này hiện nửa hàng; máy tính mới hiện 1/3 hoặc 1/4.');
+    }
+    function setItemSpan(kind, src, span) {
+      var list = ensureKindList(kind);
+      var i = findMediaIdx(list, src, 'image');
+      if (i < 0) i = findMediaIdx(list, src, 'video');
+      if (i < 0) return;
+      list[i] = withSpan(Object.assign({}, list[i], { span: span }), i);
+      maybeSpanToast(span);
+      paintPreview();
+    }
+    function removeItem(kind, src) {
+      var list = ensureKindList(kind);
+      var next = list.filter(function (m) { return (m.src || m.img) !== src; });
+      if (kind === 'gallery') { galleryMedia = next; galleryTouched = true; }
+      else { unitMediaSel = next; unitTouched = true; }
+      paintPreview();
+    }
+    function openAddBlock() {
+      var old = document.getElementById('m-add-block');
+      if (old) old.remove();
+      var unused = ALL_TICKS.filter(function (k) { return tickOrder.indexOf(k) < 0; });
+      var m = document.createElement('div');
+      m.className = 'modal';
+      m.id = 'm-add-block';
+      m.setAttribute('role', 'dialog');
+      m.setAttribute('aria-modal', 'true');
+      var pj = document.getElementById('nm-pj').value;
+      var body = unused.length
+        ? '<div class="intent-chips">' + unused.map(function (k) {
+            return '<button type="button" data-add="' + k + '">' + E(S.tickLab(k, pj) || TICK_LAB[k]) + '</button>';
+          }).join('') + '</div>'
+        : '<p class="small muted">Đã dùng hết khối catalog.</p>';
+      m.innerHTML =
+        '<div class="modal-box">' +
+          '<div class="modal-head"><div><span class="eyebrow">Khối</span><h3>Thêm khối</h3></div>' +
+            '<button class="icon-btn" data-x aria-label="Đóng">' + RECO.svg('x') + '</button></div>' +
+          '<div class="modal-body">' + body + '</div>' +
+          '<div class="modal-foot"><button class="btn btn-outline" data-x>Đóng</button></div></div>';
+      document.body.appendChild(m);
+      document.body.classList.add('modal-on');
+      document.body.style.overflow = 'hidden';
+      function close() { m.remove(); document.body.style.overflow = ''; document.body.classList.remove('modal-on'); }
+      m.querySelectorAll('[data-x]').forEach(function (b) { b.addEventListener('click', close); });
+      m.addEventListener('click', function (e) { if (e.target === m) close(); });
+      m.querySelectorAll('[data-add]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var k = b.getAttribute('data-add');
+          if (tickOrder.indexOf(k) < 0) tickOrder.push(k);
+          ticksTouched = true;
+          if (k === 'bank') forcePersonalForBank(true);
+          close();
+          paintTicks();
+          paintPreview();
+        });
+      });
+    }
+    function openPreview() {
+      var d = readDraft();
+      canvasEdit = false;
+      var html = postBlocks(d, d.unitId || null);
+      var box = document.getElementById('m-preview-body');
+      if (box) {
+        box.innerHTML =
+          '<span class="chip">Bản khách thấy trên bài</span>' +
+          '<article class="mau-post mt-2">' +
+            '<h2 class="mau-title-inp" style="font-size:1.45rem;margin:0 0 10px">' + E(d.title || 'Chưa có tiêu đề') + '</h2>' +
+            html +
+          '</article>';
+      }
+      RECO.openModal('m-preview');
+    }
+    function bindCanvas() {
+      var art = document.getElementById('mau-article');
+      if (!art || art.getAttribute('data-canvas-bound')) return;
+      art.setAttribute('data-canvas-bound', '1');
+      art.addEventListener('click', function (e) {
+        if (e.target.closest('#mau-add-block')) { openAddBlock(); return; }
+        var spanBtn = e.target.closest('.span-btn');
+        var pick = e.target.closest('.span-pick, .mau-media-add');
+        var del = e.target.closest('.span-del');
+        var up = e.target.closest('.tick-up');
+        var dn = e.target.closest('.tick-dn');
+        var rm = e.target.closest('.tick-rm');
+        var item = e.target.closest('.mau-span-item');
+        var block = e.target.closest('.mau-edit-block');
+        if (spanBtn && item) {
+          e.preventDefault();
+          setItemSpan(item.getAttribute('data-kind'), item.getAttribute('data-src'), spanBtn.getAttribute('data-span'));
+          return;
+        }
+        if (pick) {
+          e.preventDefault();
+          var kind = (item && item.getAttribute('data-kind')) || pick.getAttribute('data-pick');
+          if (kind) openPicker(kind);
+          return;
+        }
+        if (del && item) {
+          e.preventDefault();
+          removeItem(item.getAttribute('data-kind'), item.getAttribute('data-src'));
+          return;
+        }
+        if (up || dn) {
+          var row = e.target.closest('[data-tick]');
+          if (!row) return;
+          e.preventDefault();
+          moveTick(row.getAttribute('data-tick'), up ? -1 : 1);
+          return;
+        }
+        if (rm) {
+          var rowRm = e.target.closest('[data-tick]');
+          if (!rowRm) return;
+          e.preventDefault();
+          var k = rowRm.getAttribute('data-tick');
+          ticksTouched = true;
+          tickOrder = tickOrder.filter(function (x) { return x !== k; });
+          paintTicks();
+          paintPreview();
+          return;
+        }
+        document.querySelectorAll('.mau-edit-block.is-on').forEach(function (el) { el.classList.remove('is-on'); });
+        if (block) block.classList.add('is-on');
+      });
     }
 
     function openPicker(kind) {
@@ -735,7 +990,12 @@ document.addEventListener('DOMContentLoaded', function () {
         RECO.toast('Chọn ' + S.productNoun(pj) + ' catalog trước khi chọn ảnh', { danger: true });
         return;
       }
-      var selected = (kind === 'gallery' ? galleryMedia : unitMediaSel).slice();
+      var selected;
+      if (kind === 'gallery') {
+        selected = (galleryTouched ? galleryMedia : galleryItems(readDraft())).slice();
+      } else {
+        selected = (unitTouched ? unitMediaSel : unitItems(readDraft(), uid)).slice();
+      }
       var old = document.getElementById('m-media');
       if (old) old.remove();
       var m = document.createElement('div');
@@ -790,8 +1050,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       });
       m.querySelector('[data-ok]').addEventListener('click', function () {
-        if (kind === 'gallery') galleryMedia = selected.slice();
-        else unitMediaSel = selected.slice();
+        var prev = kind === 'gallery' ? galleryMedia : unitMediaSel;
+        var mapped = selected.map(function (it, i) {
+          var old = null;
+          prev.forEach(function (s) {
+            if ((s.src || s.img) === (it.src || it.img) && (s.type || 'image') === (it.type || 'image')) old = s;
+          });
+          return withSpan(old ? Object.assign({}, it, { span: old.span }) : it, i);
+        });
+        if (kind === 'gallery') { galleryMedia = mapped; galleryTouched = true; }
+        else { unitMediaSel = mapped; unitTouched = true; }
         close();
         paintPreview();
       });
@@ -799,49 +1067,93 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var aside = document.getElementById('mau-cta');
     aside.innerHTML =
-      '<div class="card card-pad mau-composer">' +
-        '<div class="field"><span class="lab">Loại bài</span>' +
-          '<div class="intent-chips mt-1" id="intent-chips" role="group" aria-label="Loại bài">' +
+      '<div id="mau-chrome">' +
+        '<div class="mau-chrome-row">' +
+          '<button type="button" class="btn btn-outline" id="intent-open" aria-haspopup="dialog" aria-controls="m-intent" aria-label="Loại bài"><span id="intent-open-lab">' + E(S.intentOf(intent).short) + '</span> ▾</button>' +
+          '<div class="intent-chips" id="intent-chips" role="group" aria-label="Loại bài">' +
             S.INTENTS.map(function (it) {
-              return '<button type="button" data-intent="' + it.id + '" aria-pressed="' + (it.id === intent ? 'true' : 'false') + '">' + E(it.lab) + '</button>';
+              return '<button type="button" data-intent="' + it.id + '" aria-pressed="' + (it.id === intent ? 'true' : 'false') + '">' + E(it.short) + '</button>';
             }).join('') +
           '</div>' +
-          '<p class="micro muted mt-1" id="intent-hint"></p></div>' +
-        '<label class="field"><span class="lab">Dự án</span>' +
-          '<select class="inp" id="nm-pj">' + projects.map(function (p) {
+          '<select class="inp" id="nm-pj" aria-label="Dự án">' + projects.map(function (p) {
             return '<option value="' + E(p.id) + '"' + (p.id === draft.projectId ? ' selected' : '') + '>' + E(p.name) + '</option>';
-          }).join('') + '</select></label>' +
-        '<div class="field" id="wrap-unit"><span class="lab">Sản phẩm này</span>' +
-          '<select class="inp" id="nm-unit"></select>' +
-          '<p class="micro muted mt-1" id="unit-hint"></p></div>' +
-        '<label class="field"><span class="lab">Tiêu đề</span>' +
-          '<input class="inp" type="text" id="nm-title" data-required data-msg="Đặt tiêu đề để tìm lại bài." value="' + E(draft.title) + '"></label>' +
-        '<label class="field"><span class="lab">Nội dung tin</span>' +
-          '<textarea class="inp" id="nm-body" rows="5" data-required data-msg="Nhập nội dung tin gửi khách.">' + E(draft.body) + '</textarea></label>' +
-        '<div class="field mt-2" id="pick-gal">' +
-          '<button type="button" class="btn btn-outline" id="btn-gal">Chọn ảnh/video dự án</button>' +
-          '<span class="micro muted" id="pick-gal-n" style="margin-left:8px"></span></div>' +
-        '<div class="field mt-1" id="pick-unit">' +
-          '<button type="button" class="btn btn-outline" id="btn-unit">Chọn ảnh/video sản phẩm</button>' +
-          '<span class="micro muted" id="pick-unit-n" style="margin-left:8px"></span></div>' +
-        '<label class="field mt-2" id="wrap-hot"><span class="lab">Sản phẩm Hot</span><select class="inp" id="nm-hot"></select></label>' +
-        '<details class="tick-adv field mt-2" id="tick-adv">' +
-          '<summary>Tuỳ chỉnh khối</summary>' +
-          '<div class="field mt-2"><span class="lab">Khối đang dùng (kéo góc phải hoặc ▲▼)</span>' +
-            '<div class="tick-rows mt-1" id="tick-on"></div></div>' +
-          '<div class="field mt-2"><span class="lab">Thêm khối</span>' +
-            '<div class="tick-pool mt-1" id="tick-off"></div></div>' +
-        '</details>' +
-        '<fieldset class="field mt-2" style="border:0;padding:0"><span class="lab">Lưu thành</span>' +
-          '<div class="tick-list mt-1">' +
-            '<label class="pick-row"><input type="radio" name="nm-scope" value="personal"' + (draft.scope !== 'shared' ? ' checked' : '') + '> Mẫu của tôi</label>' +
-            '<label class="pick-row"><input type="radio" name="nm-scope" value="shared"' + (draft.scope === 'shared' ? ' checked' : '') + '> Mẫu chung' + (IS_SALE ? ' (chờ duyệt)' : '') + '</label>' +
-          '</div></fieldset>' +
-        '<div class="stack-actions mt-3">' +
-          '<button type="button" class="btn btn-primary" id="mau-save">Lưu bài</button>' +
-          '<a class="btn btn-outline" href="' + cancelHref + '">Hủy</a>' +
+          }).join('') + '</select>' +
+          '<div id="wrap-unit"><select class="inp" id="nm-unit" aria-label="Sản phẩm này"></select></div>' +
+        '</div>' +
+        '<div class="mau-chrome-row">' +
+          '<div id="wrap-hot"><select class="inp" id="nm-hot" aria-label="Sản phẩm Hot"></select></div>' +
+          '<div class="view-toggle" role="group" aria-label="Lưu thành">' +
+            '<button type="button" data-scope="personal" aria-pressed="' + (draft.scope !== 'shared' ? 'true' : 'false') + '">Của tôi</button>' +
+            '<button type="button" data-scope="shared" aria-pressed="' + (draft.scope === 'shared' ? 'true' : 'false') + '">Chung</button>' +
+          '</div>' +
+          '<button type="button" class="btn btn-outline" id="mau-preview" aria-label="Xem trước">' + RECO.svg('eye') + '<span class="mau-preview-lab">Xem trước</span></button>' +
+          '<button type="button" class="btn btn-primary" id="mau-save">Lưu</button>' +
+        '</div>' +
+        '<p class="micro muted mau-chrome-hint" id="intent-hint"></p>' +
+        '<div class="mau-sr">' +
+          '<p id="unit-hint"></p>' +
+          '<div id="tick-on"></div><div id="tick-off"></div>' +
+          '<label><input type="radio" name="nm-scope" value="personal"' + (draft.scope !== 'shared' ? ' checked' : '') + '> Của tôi</label>' +
+          '<label><input type="radio" name="nm-scope" value="shared"' + (draft.scope === 'shared' ? ' checked' : '') + '> Chung</label>' +
         '</div>' +
       '</div>';
+
+    if (!document.getElementById('m-intent')) {
+      var intentModal = document.createElement('div');
+      intentModal.className = 'modal';
+      intentModal.id = 'm-intent';
+      intentModal.hidden = true;
+      intentModal.setAttribute('role', 'dialog');
+      intentModal.setAttribute('aria-modal', 'true');
+      intentModal.innerHTML =
+        '<div class="modal-box">' +
+          '<div class="modal-handle" aria-hidden="true"></div>' +
+          '<div class="modal-head"><div><span class="eyebrow">Loại bài</span><h3>Chọn loại</h3></div>' +
+            '<button class="icon-btn" data-x aria-label="Đóng">' + RECO.svg('x') + '</button></div>' +
+          '<div class="modal-body">' +
+            '<p class="small muted">Đổi loại kéo khối và tin mẫu — tiêu đề/tin đã sửa thì giữ.</p>' +
+            '<div class="intent-chips mt-2" role="group" aria-label="Loại bài">' +
+              S.INTENTS.map(function (it) {
+                return '<button type="button" data-intent="' + it.id + '" aria-pressed="' + (it.id === intent ? 'true' : 'false') + '">' + E(it.short) + '</button>';
+              }).join('') +
+            '</div></div>' +
+          '<div class="modal-foot"><button class="btn btn-outline" data-x>Đóng</button></div></div>';
+      document.body.appendChild(intentModal);
+      intentModal.querySelectorAll('[data-x]').forEach(function (b) {
+        b.addEventListener('click', function () { RECO.closeModal(intentModal); });
+      });
+      intentModal.addEventListener('click', function (e) { if (e.target === intentModal) RECO.closeModal(intentModal); });
+      intentModal.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-intent]');
+        if (!b) return;
+        var id = b.getAttribute('data-intent');
+        if (id !== intent) applyIntent(id, false);
+        RECO.closeModal(intentModal);
+      });
+    }
+    if (!document.getElementById('m-preview')) {
+      var prevModal = document.createElement('div');
+      prevModal.className = 'modal';
+      prevModal.id = 'm-preview';
+      prevModal.hidden = true;
+      prevModal.setAttribute('role', 'dialog');
+      prevModal.setAttribute('aria-modal', 'true');
+      prevModal.innerHTML =
+        '<div class="modal-box">' +
+          '<div class="modal-handle" aria-hidden="true"></div>' +
+          '<div class="modal-head"><div><span class="eyebrow">Xem trước</span><h3>Bài đăng</h3></div>' +
+            '<button class="icon-btn" data-x aria-label="Đóng">' + RECO.svg('x') + '</button></div>' +
+          '<div class="modal-body" id="m-preview-body"></div>' +
+          '<div class="modal-foot" style="flex-direction:column;align-items:stretch">' +
+            '<p class="micro muted" style="margin:0">Đây là bài đăng. Trang khách là landing — mở sau khi tạo đường dẫn. Zalo chỉ gửi chữ.</p>' +
+            '<button class="btn btn-outline" data-x>Đóng</button>' +
+          '</div></div>';
+      document.body.appendChild(prevModal);
+      prevModal.querySelectorAll('[data-x]').forEach(function (b) {
+        b.addEventListener('click', function () { RECO.closeModal(prevModal); });
+      });
+      prevModal.addEventListener('click', function (e) { if (e.target === prevModal) RECO.closeModal(prevModal); });
+    }
 
     function fillSelects() {
       var pj = document.getElementById('nm-pj').value;
@@ -853,23 +1165,31 @@ document.addEventListener('DOMContentLoaded', function () {
     fillSelects();
     syncFields();
     paintTicks();
-    bindTickDrag(document.getElementById('tick-on'));
     paintPreview();
+    bindTickDrag(document.getElementById('mau-blocks'));
 
-    document.getElementById('intent-chips').addEventListener('click', function (e) {
+    function onIntentClick(e) {
       var b = e.target.closest('[data-intent]');
       if (!b) return;
       var id = b.getAttribute('data-intent');
       if (id === intent) return;
       applyIntent(id, false);
+    }
+    document.getElementById('intent-chips').addEventListener('click', onIntentClick);
+    document.getElementById('intent-open').addEventListener('click', function () { RECO.openModal('m-intent'); });
+    document.getElementById('mau-preview').addEventListener('click', openPreview);
+
+    aside.addEventListener('click', function (e) {
+      var sc = e.target.closest('[data-scope]');
+      if (!sc) return;
+      var val = sc.getAttribute('data-scope');
+      document.querySelectorAll('#mau-cta input[name="nm-scope"]').forEach(function (r) { r.checked = r.value === val; });
+      scopeTouched = true;
+      if (val === 'shared') forcePersonalForBank(true);
+      paintScopePills();
     });
-    document.getElementById('nm-body').addEventListener('input', function () { bodyTouched = true; });
-    document.getElementById('nm-title').addEventListener('input', function () { titleTouched = true; });
-    document.getElementById('btn-gal').addEventListener('click', function () { openPicker('gallery'); });
-    document.getElementById('btn-unit').addEventListener('click', function () { openPicker('unitGallery'); });
 
     aside.addEventListener('input', function (e) {
-      if (e.target && e.target.id === 'nm-body') return;
       if (e.target && e.target.closest && e.target.closest('#tick-on, #tick-off')) return;
       paintPreview();
     });
@@ -878,21 +1198,27 @@ document.addEventListener('DOMContentLoaded', function () {
       if (el && el.name === 'nm-scope') {
         scopeTouched = true;
         if (el.value === 'shared') forcePersonalForBank(true);
+        paintScopePills();
       }
       if (el && el.id === 'nm-pj') {
         fillSelects();
         galleryMedia = [];
         unitMediaSel = [];
-        if (!bodyTouched) {
-          document.getElementById('nm-body').value = intentBody(intent, el.value, document.getElementById('nm-unit').value);
+        galleryTouched = false;
+        unitTouched = false;
+        var bodyEl = document.getElementById('nm-body');
+        if (!bodyTouched && bodyEl && document.activeElement !== bodyEl) {
+          bodyEl.value = intentBody(intent, el.value, document.getElementById('nm-unit').value);
         }
         fillTitleIfFresh();
         syncFields();
       }
       if (el && el.id === 'nm-unit') {
         unitMediaSel = [];
-        if (!bodyTouched && (intent === 'unit' || intent === 'media' || intent === 'hot' || intent === 'invite')) {
-          document.getElementById('nm-body').value = intentBody(intent, document.getElementById('nm-pj').value, el.value);
+        unitTouched = false;
+        var bodyU = document.getElementById('nm-body');
+        if (!bodyTouched && bodyU && document.activeElement !== bodyU && (intent === 'unit' || intent === 'media' || intent === 'hot' || intent === 'invite')) {
+          bodyU.value = intentBody(intent, document.getElementById('nm-pj').value, el.value);
         }
         fillTitleIfFresh();
       }
@@ -901,8 +1227,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (hh) {
           var unitEl = document.getElementById('nm-unit');
           if (unitEl.querySelector('option[value="' + hh.unitId + '"]')) unitEl.value = hh.unitId;
-          if (!bodyTouched) {
-            document.getElementById('nm-body').value = intentBody(intent, document.getElementById('nm-pj').value, hh.unitId);
+          var bodyH = document.getElementById('nm-body');
+          if (!bodyTouched && bodyH && document.activeElement !== bodyH) {
+            bodyH.value = intentBody(intent, document.getElementById('nm-pj').value, hh.unitId);
           }
           fillTitleIfFresh();
         }
@@ -928,7 +1255,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var hotRow = S.find('hotProducts', d.hotId);
         if (hotRow) d.unitId = hotRow.unitId;
       }
-      if (!RECO.validate(aside)) return;
+      if (!RECO.validate(document.getElementById('mau-layout'))) return;
       if (spec.needUnit === 'required' && !d.unitId) {
         RECO.toast('Chọn ' + S.productNoun(d.projectId) + ' trước khi lưu.', { danger: true });
         document.getElementById('nm-unit').focus();
@@ -966,8 +1293,8 @@ document.addEventListener('DOMContentLoaded', function () {
         hotId: d.hotId || null,
         scope: d.scope,
         intent: d.intent,
-        galleryMedia: d.galleryMedia,
-        unitMedia: d.unitMedia
+        galleryMedia: galleryTouched ? d.galleryMedia : [],
+        unitMedia: unitTouched ? d.unitMedia : []
       };
       if (isNew) {
         payload.ownerUserId = d.scope === 'personal' ? currentUserId() : null;
