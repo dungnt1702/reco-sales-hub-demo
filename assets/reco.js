@@ -713,7 +713,7 @@
       css.textContent = '#fsheet-layer{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;isolation:isolate}' +
         '#fsheet-layer[hidden]{display:none!important}' +
         '#fsheet-layer .fsheet-scrim{position:absolute;inset:0;z-index:0;background:rgb(8 22 32 / .45)}' +
-        '#fsheet-layer .filter-extras{display:flex!important;position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;z-index:1!important;width:100%;flex-direction:column;gap:10px;background:#f8f7f3;border-radius:20px 20px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));max-height:min(78vh,calc(100dvh - 88px));overflow-y:auto;box-shadow:0 -18px 50px rgb(8 39 67 / .18)}';
+        '#fsheet-layer .filter-extras{display:flex!important;position:relative!important;z-index:1!important;width:100%}';
       document.head.appendChild(css);
     }
     var mq = window.matchMedia('(max-width: 767px)');
@@ -825,6 +825,10 @@
       closeBtn.innerHTML = svg('x');
       head.appendChild(closeBtn);
       wrap.insertBefore(head, wrap.firstChild);
+      var grab = document.createElement('div');
+      grab.className = 'fsheet-grab';
+      grab.setAttribute('aria-hidden', 'true');
+      wrap.insertBefore(grab, wrap.firstChild);
       var open = document.createElement('button');
       open.type = 'button';
       open.className = 'icon-btn fsheet-open';
