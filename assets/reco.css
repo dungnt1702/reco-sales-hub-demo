@@ -1917,12 +1917,13 @@ body.proto-off .zone-chips { top: var(--header-h); }
   .fsheet-head { display: flex; align-items: center; justify-content: space-between; }
   .filter-extras {
     display: none;
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 72;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 81;
     flex-direction: column; gap: 10px;
     background: var(--paper);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
-    max-height: 78vh; overflow-y: auto;
+    max-height: min(78vh, calc(100dvh - var(--header-h) - 24px));
+    overflow-y: auto;
     box-shadow: 0 -18px 50px rgb(8 39 67 / 0.18);
   }
   .filter-extras.open { display: flex; }
@@ -1933,14 +1934,11 @@ body.proto-off .zone-chips { top: var(--header-h); }
     padding-top: 8px;
     margin-top: 4px;
     border-top: 1px solid var(--line);
+    flex: none;
   }
   @media (max-width: 430px) {
     .seg-channel .seg-label-full { display: none; }
     .seg-channel .seg-label-short { display: inline; }
-  }
-  .fsheet-scrim {
-    position: fixed; inset: 0; z-index: 71;
-    background: rgb(8 22 32 / 0.45);
   }
 }
 @media (min-width: 768px) {
@@ -1950,6 +1948,44 @@ body.proto-off .zone-chips { top: var(--header-h); }
 }
 @media (min-width: 1024px) {
   .filterbar[data-filter-sheet] .filter-extras.open { display: contents; }
+}
+
+/* Overlay trên body: luôn trên sticky chrome (34) và dock (39), không kẹt stacking context */
+.fsheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgb(8 22 32 / 0.45);
+}
+.fsheet-scrim[hidden] { display: none !important; }
+body > .filter-extras {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 81;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--paper);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
+  max-height: min(78vh, calc(100dvh - var(--header-h) - 24px));
+  overflow-y: auto;
+  box-shadow: 0 -18px 50px rgb(8 39 67 / 0.18);
+}
+body > .filter-extras.open { display: flex; }
+body > .filter-extras .inp,
+body > .filter-extras .btn { width: 100%; min-width: 0; }
+body.fsheet-on .dock,
+body.drawer-on .dock,
+body.modal-on .dock { pointer-events: none; }
+
+@media (max-width: 767px) {
+  .modal-box {
+    padding-bottom: env(safe-area-inset-bottom);
+    max-height: min(92vh, calc(100dvh - var(--header-h)));
+  }
 }
 
 .confirm-bar {
