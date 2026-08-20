@@ -1507,8 +1507,8 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
   background: var(--navy); color: #fff;
   padding: 12px var(--gutter);
 }
-.pub-top .in { max-width: 1080px; margin-inline: auto; display: flex; align-items: center; gap: 14px; justify-content: space-between; }
-.pub-wrap { max-width: 1080px; margin-inline: auto; padding-inline: var(--gutter); }
+.pub-top .in { max-width: var(--container-max); margin-inline: auto; display: flex; align-items: center; gap: 14px; justify-content: space-between; }
+.pub-wrap { max-width: var(--container-max); margin-inline: auto; padding-inline: var(--gutter); }
 .pub-foot { background: var(--navy); color: rgb(255 255 255 / 0.72); padding: 30px var(--gutter); margin-top: 48px; font-size: 0.86rem; }
 .agent-card {
   background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg);
@@ -1777,7 +1777,7 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
 .alert-hero { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-md); display: block; margin-bottom: 12px; }
 .mau-post { max-width: 72ch; width: 100%; margin-inline: auto; }
 @media (min-width: 1024px) {
-  .mau-layout.is-edit .mau-post { max-width: none; }
+  .mau-post { max-width: none; }
 }
 .mau-post .lead { white-space: pre-wrap; }
 .mau-need {
@@ -1872,6 +1872,11 @@ body.proto-off .mau-layout.is-edit .mau-aside { top: var(--header-h); }
 #m-preview .modal-box {
   max-width: min(40rem, 100%);
   max-height: min(92vh, calc(100dvh - var(--header-h, 0px)));
+}
+@media (min-width: 1024px) {
+  #m-preview .modal-box {
+    max-width: min(var(--container-max), calc(100vw - 48px));
+  }
 }
 #m-intent .intent-chips button { min-height: 44px; }
 @media (max-width: 767px) {
