@@ -56,7 +56,10 @@
         <option value="hcns">Hành chính nhân sự</option><option value="ktoan">Kế toán</option><option value="mkt">Marketing</option>
       </select>
       <select class="inp" id="u-state" aria-label="Trạng thái">
-        <option value="">Mọi trạng thái</option><option value="on">Đang hoạt động</option><option value="off">Đã ngừng</option>
+        <option value="">Mọi trạng thái</option>
+        <option value="on">Đang hoạt động</option>
+        <option value="pending">Chờ kích hoạt</option>
+        <option value="off">Đã ngừng</option>
       </select>
       <button type="button" class="icon-btn" id="u-reset" aria-label="Xóa lọc" title="Xóa lọc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
@@ -150,6 +153,13 @@ document.addEventListener('DOMContentLoaded', function () {
   var editing = null;
 
   var TEAMS = ['Đội Miền Bắc', 'Đội Miền Trung', 'Đội Miền Nam'];
+  var qs = (function () {
+    var h = location.hash, i = h.indexOf('?');
+    return new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search);
+  })();
+  var wantUnscoped = qs.get('unscoped') === '1';
+  if (qs.get('q')) q.value = qs.get('q');
+  if (qs.get('state')) fs.value = qs.get('state');
 
   function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd'); }
   function digits(s) { return String(s).replace(/\D/g, ''); }
@@ -162,18 +172,20 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function row(u) {
     var on = u.state === 'on';
+    var pending = u.state === 'pending';
+    var stCls = on ? 'st-live">Đang hoạt động' : pending ? 'st-wait">Chờ kích hoạt' : 'st-stop">Đã ngừng';
     var acts = on
       ? '<button class="btn btn-outline btn-sm" data-act="edit" data-id="' + u.id + '">Sửa</button>' +
         '<button class="btn btn-quiet btn-sm" data-act="pw" data-id="' + u.id + '">Đặt lại mật khẩu</button>' +
         '<button class="btn btn-quiet btn-sm" data-act="off" data-id="' + u.id + '">Ngừng</button>'
       : '<button class="btn btn-outline btn-sm" data-act="edit" data-id="' + u.id + '">Sửa</button>' +
-        '<button class="btn btn-outline btn-sm" data-act="on" data-id="' + u.id + '">Mở lại</button>';
+        '<button class="btn btn-outline btn-sm" data-act="on" data-id="' + u.id + '">' + (pending ? 'Kích hoạt' : 'Mở lại') + '</button>';
     return '<tr>' +
       '<td data-l="Người dùng"><div class="people">' + avatar(u) +
         '<span class="who"><b>' + esc(u.name) + '</b><span>' + esc(u.phone) + '</span></span></div></td>' +
       '<td data-l="Vai trò">' + esc(u.roleName) + '</td>' +
       '<td data-l="Phạm vi">' + esc(u.scope) + '</td>' +
-      '<td data-l="Trạng thái"><span class="st ' + (on ? 'st-live">Đang hoạt động' : 'st-stop">Đã ngừng') + '</span></td>' +
+      '<td data-l="Trạng thái"><span class="st ' + stCls + '</span></td>' +
       '<td data-l="" class="r"><div class="row-tight" style="justify-content:flex-end">' +
         '<span class="row-tight" data-roles="hcns">' + acts + '</span>' +
         '<span class="chip" data-roles="gd">Chỉ xem</span>' +
@@ -185,6 +197,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var t = norm(q.value.trim()), d = digits(q.value);
     var list = S.get('users').filter(function (u) {
       var hit = !t || norm(u.name).indexOf(t) >= 0 || (d && digits(u.phone).indexOf(d) >= 0);
+      var unscoped = !u.scope || u.scope === '—' || (u.pj && !u.pj.length);
+      if (wantUnscoped && !unscoped) return false;
       return hit && (!fr.value || u.role === fr.value) && (!fs.value || u.state === fs.value);
     });
     var none = list.length === 0;

@@ -33,7 +33,7 @@
 
 <main id="page" class="pad-b">
   <div class="wrap page">
-  <div class="home-fold">
+  <div class="home-fold" id="home-fold">
 
     <!-- Chào/tìm gọn. Honor: desktop 1/3 phải span KPI; tablet 1/2 phải, KPI dưới; mobile ô 2. -->
     <section class="hero home-hero">
@@ -45,12 +45,7 @@
           <input type="search" id="hero-q" placeholder="Tìm dự án, mã căn, tài liệu…" aria-label="Tìm kiếm">
           <button type="button" class="btn btn-primary btn-sm" id="hero-go">Tìm</button>
         </div>
-        <div class="row-tight mt-1 home-hero-chips" id="hero-chips">
-          <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=canho" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Căn hộ chung cư</a>
-          <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=datnen" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Đất nền</a>
-          <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=thaptang" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Nhà thấp tầng, biệt thự</a>
-          <a class="chip" href="du-an.html" data-to="du-an.html" data-args="type=tamlinh" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff">Bất động sản tâm linh</a>
-        </div>
+        <div class="row-tight mt-1 home-hero-chips" id="hero-chips"></div>
       </div>
     </section>
 
@@ -66,42 +61,62 @@
       <div class="honor-dots reco-slide-dots" id="honor-dots"></div>
     </aside>
 
-    <button type="button" class="alert-ticker" id="alert-ticker" aria-label="Cảnh báo bán hàng — bấm để xem chi tiết">
+    <button type="button" class="alert-ticker" id="alert-ticker" data-roles="gd gddu tkkd qlkd nvbh mkt" aria-label="Cảnh báo bán hàng — bấm để xem chi tiết">
       <div class="alert-track" id="alert-track"></div>
     </button>
 
-    <!-- Bốn số liệu nhanh -->
     <section class="home-kpi">
       <div class="spread mb-2">
         <h2>Số liệu nhanh của tôi</h2>
       </div>
-      <div class="grid g-4">
-        <a class="tile" id="tl-duan" href="du-an.html"><span class="k">Dự án được giao</span><span class="num">—</span><span class="micro muted" data-sub></span></a>
-        <a class="tile" id="tl-link" href="chia-se.html"><span class="k">Đường dẫn gửi khách còn hiệu lực</span><span class="num">—</span><span class="micro muted" data-sub></span></a>
-        <a class="tile" id="tl-hethan" href="thu-vien-tai-lieu.html"><span class="k">Tài liệu sắp hết hiệu lực</span><span class="num" style="color:var(--orange-text)">—</span><span class="micro muted" data-sub>Nhắc trước 7 ngày</span></a>
-        <a class="tile" id="tl-duyet" data-roles="gd gddu tkkd mkt" href="quan-tri.html"><span class="k">Chờ tôi duyệt</span><span class="num">—</span><span class="micro muted" data-sub></span></a>
-        <a class="tile" id="tl-denghi" data-roles="nvbh qlkd hcns" href="de-nghi-sua.html"><span class="k">Đề nghị sửa tôi đã gửi</span><span class="num">—</span><span class="micro muted" data-sub></span></a>
-      </div>
+      <div class="grid g-4" id="kpi-grid"></div>
     </section>
   </div>
 
-    <!-- Việc cần làm -->
-    <section class="mt-4" data-roles="gd gddu tkkd mkt">
+    <div class="home-stack" id="home-stack">
+
+    <section class="mt-4" id="sec-queue" data-roles="gd gddu tkkd mkt qlkd">
       <div class="card">
         <div class="card-head">
           <div>
             <h3>Việc đang chờ anh/chị</h3>
             <p class="small muted mt-1" data-roles="gd gddu">Nội dung công khai của dự án phụ trách cần Giám đốc dự án duyệt cuối.</p>
             <p class="small muted mt-1" data-roles="tkkd mkt">Nội dung anh/chị đã gửi, đang chờ Giám đốc dự án duyệt cuối.</p>
+            <p class="small muted mt-1" data-roles="qlkd">Đề nghị sửa nhân viên trong đội đã gửi — anh/chị theo dõi, người phụ trách dữ liệu xử lý.</p>
           </div>
-          <a class="btn btn-outline btn-sm" href="quan-tri.html">Mở màn quản trị</a>
+          <a class="btn btn-outline btn-sm" id="queue-go" href="quan-tri.html">Mở màn quản trị</a>
         </div>
         <div id="viec"></div>
       </div>
     </section>
 
-    <!-- Sản phẩm Hot -->
-    <section class="mt-4">
+    <section class="mt-4" id="sec-accounts" data-roles="hcns">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Tài khoản cần xử lý</h3>
+            <p class="small muted mt-1">Người mới chờ kích hoạt, tài khoản đã khóa, hoặc chưa gán dự án.</p>
+          </div>
+          <a class="btn btn-outline btn-sm" href="nguoi-dung.html">Người dùng và quyền</a>
+        </div>
+        <div id="acc-list"></div>
+      </div>
+    </section>
+
+    <section class="mt-4" id="sec-commission" data-roles="ktoan">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Hồ sơ hoa hồng</h3>
+            <p class="small muted mt-1">Tài liệu hoa hồng đang hiệu lực — Giai đoạn 1 chỉ tra cứu, chưa có sổ giao dịch.</p>
+          </div>
+          <a class="btn btn-outline btn-sm" href="thu-vien-tai-lieu.html">Thư viện tài liệu</a>
+        </div>
+        <div id="hh-list"></div>
+      </div>
+    </section>
+
+    <section class="mt-4" id="sec-hot" data-roles="gd gddu tkkd qlkd nvbh mkt">
       <div class="spread mb-2">
         <h2 style="font-size:1.25rem">Sản phẩm Hot</h2>
         <div class="row-tight">
@@ -119,16 +134,16 @@
     </section>
 
     <!-- Dự án đã ghim -->
-    <section class="mt-4">
+    <section class="mt-4" id="sec-pinned" data-roles="gd gddu tkkd qlkd nvbh mkt ktoan">
       <div class="spread mb-2">
-        <h2 style="font-size:1.25rem">Dự án tôi đang bán</h2>
+        <h2 style="font-size:1.25rem" id="pinned-title">Dự án tôi đang bán</h2>
         <a class="btn btn-quiet btn-sm" href="du-an.html">Tất cả</a>
       </div>
       <div class="grid g-3" id="pinned"></div>
     </section>
 
     <!-- Dự án nổi bật -->
-    <section class="mt-4">
+    <section class="mt-4" id="sec-featured" data-roles="nvbh qlkd mkt gd gddu tkkd">
       <div class="spread mb-2">
         <h2 style="font-size:1.25rem">Dự án nổi bật của RECO</h2>
       </div>
@@ -136,13 +151,15 @@
     </section>
 
     <!-- Bài đăng mẫu chung đã duyệt -->
-    <section class="mt-4">
+    <section class="mt-4" id="sec-posts" data-roles="nvbh qlkd mkt">
       <div class="spread mb-2">
         <h2 style="font-size:1.25rem">Bài đăng</h2>
         <a class="btn btn-quiet btn-sm" href="chia-se.html">Thư viện</a>
       </div>
       <div class="grid g-3" id="home-tpl"></div>
     </section>
+
+    </div>
 
   </div>
 </main>
@@ -181,19 +198,59 @@ document.addEventListener('DOMContentLoaded', function () {
     }));
   }
 
-  /* Dự án được giao theo vai trò — khớp cột "Phạm vi" của kho users.
-     null nghĩa là thấy toàn bộ dự án đang hiển thị. */
-  var SCOPE = {
-    gddu: ['celestine', 'la-perle', 'palmy'],
-    tkkd: ['celestine', 'la-perle', 'palmy'],
-    nvbh: ['celestine', 'palmy'],
-    mkt: ['celestine', 'thien-duong']
-  };
-  function mine() {
-    var ids = SCOPE[RECO.role];
-    return RECO_DATA.projects().filter(function (p) { return !ids || ids.indexOf(p.id) >= 0; });
-  }
+  function mine() { return S.myProjects(RECO.role); }
   function mineIds() { return mine().map(function (p) { return p.id; }); }
+  function inPj(x) { return mineIds().indexOf(x.pj) >= 0; }
+  function teamOf() {
+    var me = S.get('users').filter(function (u) {
+      return u.role === RECO.role && u.state === 'on';
+    })[0];
+    return (me && me.team) || (RECO.role === 'qlkd' ? 'trungkinh' : '');
+  }
+  function teamNames() {
+    var t = teamOf();
+    if (!t) return [RECO.current.who];
+    return S.get('users').filter(function (u) { return u.team === t; }).map(function (u) { return u.name; });
+  }
+  function linkMine(l) {
+    return l.by === RECO.current.who || (l.agent && l.agent.name === RECO.current.who);
+  }
+  function linkTeam(l) {
+    var names = teamNames();
+    return names.indexOf(l.by) >= 0 || (l.agent && names.indexOf(l.agent.name) >= 0);
+  }
+  function liveLinks(pred) {
+    return S.get('shareLinks').filter(function (l) { return l.state === 'live' && pred(l); });
+  }
+  function soonCount(links) {
+    return links.filter(function (l) { return l.days !== null && l.days <= 2; }).length;
+  }
+  function hotRows() {
+    var ids = mineIds();
+    return S.get('hotProducts').filter(function (h) {
+      var u = S.find('units', h.unitId);
+      return h.active && u && ids.indexOf(u.pj) >= 0;
+    }).sort(function (a, b) { return (a.sort || 0) - (b.sort || 0); });
+  }
+  function daysFromToday(from) {
+    var a = S.parseVN(from), b = S.parseVN(S.TODAY);
+    if (!a || !b) return 999;
+    return Math.round((b - a) / 86400000);
+  }
+  function recentDocs(list) {
+    return list.filter(function (d) {
+      var n = daysFromToday(d.from);
+      return n >= 0 && n <= 7;
+    });
+  }
+  function hhDocs() {
+    return S.get('documents').filter(function (d) {
+      return d.kind === 'hoahong' || /hoa h[oô]ng/i.test(d.name || '');
+    });
+  }
+  function unscopedUser(u) {
+    return !u.scope || u.scope === '—' || (u.pj && !u.pj.length && ['nvbh', 'mkt', 'qlkd'].indexOf(u.role) >= 0);
+  }
 
   /* Đường dẫn nội bộ kèm bộ lọc — ghép sau RECO.link để chạy cả bản nhiều trang lẫn bản gói */
   function goTo(page, args) {
@@ -287,75 +344,216 @@ document.addEventListener('DOMContentLoaded', function () {
   paintHonors();
   paintTicker();
   var q = document.getElementById('hero-q');
-  function search() {
-    var v = q.value.trim();
-    location.href = goTo('du-an.html', v ? 'q=' + encodeURIComponent(v) : '');
-  }
-  document.getElementById('hero-go').addEventListener('click', search);
-  q.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); search(); } });
-
-  /* ---------- Bốn chip lối tắt ---------- */
-  document.querySelectorAll('#hero-chips a[data-to]').forEach(function (a) {
-    a.setAttribute('href', goTo(a.getAttribute('data-to'), a.getAttribute('data-args')));
-  });
-
-  /* ---------- Bốn ô số liệu — tính từ kho, không ghi cứng ---------- */
-  var TILES = {
-    'tl-duan': 'du-an.html',
-    'tl-link': 'chia-se.html',
-    'tl-hethan': 'thu-vien-tai-lieu.html',
-    'tl-duyet': 'quan-tri.html',
-    'tl-denghi': 'de-nghi-sua.html'
+  var SEARCH = {
+    nvbh: ['du-an.html', 'Tìm dự án, mã căn, tài liệu…'],
+    qlkd: ['du-an.html', 'Tìm dự án, mã căn, tài liệu…'],
+    gd: ['du-an.html', 'Tìm dự án, tài liệu, nội dung chờ duyệt…'],
+    gddu: ['du-an.html', 'Tìm dự án, tài liệu, nội dung chờ duyệt…'],
+    tkkd: ['du-an.html', 'Tìm dự án, tài liệu…'],
+    mkt: ['du-an.html', 'Tìm dự án, mẫu, ảnh…'],
+    hcns: ['nguoi-dung.html', 'Tìm nhân viên, số điện thoại, email…'],
+    ktoan: ['thu-vien-tai-lieu.html', 'Tìm dự án, chính sách hoa hồng…']
   };
-  function tile(id, num, sub, args) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.querySelector('.num').textContent = num;
-    var s = el.querySelector('[data-sub]');
-    if (s && sub !== null) s.textContent = sub;
-    el.setAttribute('href', goTo(TILES[id], args));
+  function searchDest() {
+    var spec = SEARCH[RECO.role] || SEARCH.nvbh;
+    var extra = RECO.role === 'ktoan' ? 'kind=hoahong' : '';
+    var v = q.value.trim();
+    var args = [];
+    if (v) args.push('q=' + encodeURIComponent(v));
+    if (extra) args.push(extra);
+    location.href = goTo(spec[0], args.join('&'));
+  }
+  document.getElementById('hero-go').addEventListener('click', searchDest);
+  q.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); searchDest(); } });
+
+  var CHIP_STYLE = 'background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff';
+  function paintChips() {
+    var box = document.getElementById('hero-chips');
+    if (!box) return;
+    var spec = SEARCH[RECO.role] || SEARCH.nvbh;
+    q.placeholder = spec[1];
+    q.setAttribute('aria-label', spec[1]);
+    var rows;
+    if (RECO.role === 'hcns') {
+      rows = [
+        ['nguoi-dung.html', 'state=on', 'Đang hoạt động'],
+        ['nguoi-dung.html', 'state=pending', 'Chờ kích hoạt'],
+        ['nguoi-dung.html', 'state=off', 'Đã khóa']
+      ];
+    } else if (RECO.role === 'ktoan') {
+      rows = [
+        ['thu-vien-tai-lieu.html', 'kind=hoahong', 'Hoa hồng'],
+        ['thu-vien-tai-lieu.html', 'label=restricted', 'Nội bộ hạn chế']
+      ];
+    } else if (['nvbh', 'qlkd'].indexOf(RECO.role) >= 0) {
+      rows = [
+        ['du-an.html', 'type=canho', 'Căn hộ chung cư'],
+        ['du-an.html', 'type=datnen', 'Đất nền'],
+        ['du-an.html', 'type=thaptang', 'Nhà thấp tầng, biệt thự'],
+        ['du-an.html', 'type=tamlinh', 'Bất động sản tâm linh']
+      ];
+    } else {
+      rows = [];
+    }
+    box.innerHTML = rows.map(function (r) {
+      return '<a class="chip" href="' + goTo(r[0], r[1]) + '" style="' + CHIP_STYLE + '">' + r[2] + '</a>';
+    }).join('');
+    box.hidden = !rows.length;
+  }
+
+  function layoutHome() {
+    document.body.setAttribute('data-home-role', RECO.role);
+    var fold = document.getElementById('home-fold');
+    var stack = document.getElementById('home-stack');
+    var queue = document.getElementById('sec-queue');
+    var kpi = fold.querySelector('.home-kpi');
+    fold.classList.remove('home-fold-ops', 'home-fold-quiet');
+    if (['gd', 'gddu'].indexOf(RECO.role) >= 0 && queue) {
+      fold.insertBefore(queue, kpi);
+      fold.classList.add('home-fold-ops');
+    } else if (queue && stack && queue.parentNode !== stack) {
+      stack.insertBefore(queue, stack.firstChild);
+    }
+    if (['hcns', 'ktoan'].indexOf(RECO.role) >= 0) fold.classList.add('home-fold-quiet');
+    var go = document.getElementById('queue-go');
+    if (go) go.setAttribute('href', goTo(RECO.role === 'qlkd' ? 'de-nghi-sua.html' : 'quan-tri.html', RECO.role === 'qlkd' ? 'team=1&state=new' : 'tab=duyet'));
+    var pinTitle = document.getElementById('pinned-title');
+    if (pinTitle && RECO.role === 'ktoan') pinTitle.textContent = 'Dự án có hồ sơ hoa hồng';
+    paintChips();
+  }
+
+  /* ---------- Bốn ô số liệu — tính từ kho, khác nhau theo vai trò ---------- */
+  function soonSub(links) {
+    var n = soonCount(links);
+    return n ? n + ' đường dẫn hết hạn trong 48 giờ' : 'Chưa có đường dẫn nào sắp hết hạn';
+  }
+  function kpiOf(role) {
+    var docs = S.get('documents').filter(inPj);
+    var ap = S.get('approvals').filter(function (a) { return a.state === 'pending' && inPj(a); });
+    var rqNew = S.get('requests').filter(function (r) { return r.state === 'new' && inPj(r); });
+    var hot = hotRows();
+    var hotSub = hot.slice(0, 2).map(function (h) { return h.unitId; }).join(' · ') || 'Chưa gắn sản phẩm Hot';
+    var rec = recentDocs(docs);
+    var sent = S.get('requests').filter(function (r) { return r.by === RECO.current.who; });
+    var teamRq = S.get('requests').filter(function (r) {
+      return r.state === 'new' && teamNames().indexOf(r.by) >= 0;
+    });
+    var users = S.get('users');
+    var on = users.filter(function (u) { return u.state === 'on'; });
+    var pending = users.filter(function (u) { return u.state === 'pending'; });
+    var off = users.filter(function (u) { return u.state === 'off'; });
+    var bare = users.filter(unscopedUser);
+    var drafts = docs.filter(function (d) { return d.state === 'draft'; });
+    var broken = docs.filter(function (d) { return d.state === 'broken' || d.src === 'broken'; });
+    var mediaPend = S.get('media').filter(function (m) { return m.state === 'pending' && inPj(m); });
+    var tplPend = S.get('shareTemplates').filter(function (t) {
+      return !t.approved && mineIds().indexOf(t.projectId) >= 0;
+    });
+    var tplOk = S.get('shareTemplates').filter(function (t) {
+      return t.scope === 'shared' && t.approved && mineIds().indexOf(t.projectId) >= 0;
+    });
+    var hh = hhDocs();
+    var hhPj = {};
+    hh.forEach(function (d) { hhPj[d.pj] = true; });
+    var hhRecent = recentDocs(hh);
+    var selling = RECO_DATA.projects().filter(function (p) { return p.status === 'live'; });
+    var restricted = S.get('documents').filter(function (d) {
+      return d.label === 'restricted' && S.canSee(d.label, RECO.role);
+    });
+
+    var mineLive = liveLinks(linkMine);
+    var teamLive = liveLinks(linkTeam);
+    var scopeLive = liveLinks(inPj);
+    var allLive = liveLinks(function () { return true; });
+    var allAp = S.get('approvals').filter(function (a) { return a.state === 'pending'; });
+    var allRq = S.get('requests').filter(function (r) { return r.state === 'new'; });
+
+    var map = {
+      nvbh: [
+        { k: 'Đường dẫn của tôi còn hiệu lực', n: mineLive.length, s: soonSub(mineLive), href: goTo('chia-se.html', 'state=live&by=toi') },
+        { k: 'Sản phẩm Hot dự án tôi bán', n: hot.length, s: hotSub, href: goTo('danh-muc-san-pham.html', 'hot=1') },
+        { k: 'Nội dung vừa cập nhật', n: rec.length, s: rec.length ? 'Trong 7 ngày — tránh tư vấn bản cũ' : 'Không có cập nhật trong 7 ngày', href: goTo('thu-vien-tai-lieu.html', 'updated=7d') },
+        { k: 'Đề nghị sửa tôi đã gửi', n: sent.length, s: sent.filter(function (r) { return r.state === 'done'; }).length + ' đã cập nhật · ' + sent.filter(function (r) { return r.state === 'doing'; }).length + ' đang xử lý', href: goTo('de-nghi-sua.html', 'by=toi') }
+      ],
+      qlkd: [
+        { k: 'Đường dẫn đội còn hiệu lực', n: teamLive.length, s: soonSub(teamLive), href: goTo('chia-se.html', 'state=live') },
+        { k: 'Sản phẩm Hot phạm vi đội', n: hot.length, s: hotSub, href: goTo('danh-muc-san-pham.html', 'hot=1') },
+        { k: 'Đề nghị sửa đội đang chờ', n: teamRq.length, s: teamRq.length ? 'Nhân viên đội đã gửi, chưa có người nhận' : 'Đội không còn đề nghị chờ', href: goTo('de-nghi-sua.html', 'team=1&state=new'), warn: teamRq.length },
+        { k: 'Nội dung vừa cập nhật', n: rec.length, s: rec.length ? 'Trong 7 ngày — brief đội trước khi bán' : 'Không có cập nhật trong 7 ngày', href: goTo('thu-vien-tai-lieu.html', 'updated=7d') }
+      ],
+      gddu: [
+        { k: 'Chờ tôi duyệt', n: ap.length, s: ap.length ? ap.length + ' nội dung công khai' : 'Không còn nội dung chờ', href: goTo('quan-tri.html', 'tab=duyet'), warn: ap.length },
+        { k: 'Đề nghị sửa mới', n: rqNew.length, s: rqNew.length ? 'Nhân viên gửi, chưa nhận xử lý' : 'Không còn đề nghị mới', href: goTo('de-nghi-sua.html', 'state=new'), warn: rqNew.length },
+        { k: 'Đường dẫn đang sống', n: scopeLive.length, s: soonSub(scopeLive), href: goTo('chia-se.html', 'state=live') },
+        { k: 'Sản phẩm Hot đang gắn', n: hot.length, s: hotSub, href: goTo('danh-muc-san-pham.html', 'hot=1') }
+      ],
+      gd: [
+        { k: 'Chờ tôi duyệt', n: allAp.length, s: allAp.length ? 'Toàn công ty' : 'Không còn nội dung chờ', href: goTo('quan-tri.html', 'tab=duyet'), warn: allAp.length },
+        { k: 'Việc tồn đọng', n: allAp.length + allRq.length, s: allAp.length + ' duyệt · ' + allRq.length + ' đề nghị sửa', href: goTo('quan-tri.html', 'tab=duyet'), warn: allAp.length + allRq.length },
+        { k: 'Đường dẫn còn hiệu lực', n: allLive.length, s: soonSub(allLive), href: goTo('chia-se.html', 'state=live') },
+        { k: 'Tài khoản đang hoạt động', n: on.length, s: pending.length + ' chờ kích hoạt · ' + off.length + ' đã khóa', href: goTo('nguoi-dung.html', 'state=on') }
+      ],
+      tkkd: [
+        { k: 'Nội dung tôi gửi đang chờ duyệt', n: ap.length, s: ap.length ? 'Chờ Giám đốc dự án duyệt cuối' : 'Không còn nội dung chờ', href: goTo('quan-tri.html', 'tab=duyet') },
+        { k: 'Đề nghị sửa cần cập nhật', n: rqNew.length, s: rqNew.length ? 'Việc nhập liệu từ đội bán hàng' : 'Không còn đề nghị mới', href: goTo('de-nghi-sua.html', 'state=new'), warn: rqNew.length },
+        { k: 'Tài liệu bản nháp', n: drafts.length, s: drafts.length ? 'Chưa gửi duyệt' : 'Không còn bản nháp', href: goTo('thu-vien-tai-lieu.html', 'state=draft') },
+        { k: 'Liên kết nguồn hỏng', n: broken.length, s: broken.length ? 'Cần đối chiếu với Chủ đầu tư' : 'Không có liên kết hỏng', href: goTo('thu-vien-tai-lieu.html', 'state=broken'), warn: broken.length }
+      ],
+      mkt: [
+        { k: 'Nội dung tôi gửi đang chờ duyệt', n: ap.length, s: ap.length ? 'Chờ Giám đốc dự án duyệt cuối' : 'Không còn nội dung chờ', href: goTo('quan-tri.html', 'tab=duyet') },
+        { k: 'Ảnh / mẫu đang chờ duyệt', n: mediaPend.length + tplPend.length, s: mediaPend.length + ' ảnh · ' + tplPend.length + ' mẫu', href: goTo('chia-se.html'), warn: mediaPend.length + tplPend.length },
+        { k: 'Mẫu đã duyệt sẵn dùng', n: tplOk.length, s: 'Kho đội lấy để gửi khách', href: goTo('chia-se.html') },
+        { k: 'Sản phẩm Hot dự án được giao', n: hot.length, s: hotSub, href: goTo('danh-muc-san-pham.html', 'hot=1') }
+      ],
+      hcns: [
+        { k: 'Tài khoản đang hoạt động', n: on.length, s: 'Toàn bộ nhân sự đang mở', href: goTo('nguoi-dung.html', 'state=on') },
+        { k: 'Chờ kích hoạt', n: pending.length, s: pending.length ? 'Người mới chưa được mở' : 'Không còn tài khoản chờ', href: goTo('nguoi-dung.html', 'state=pending'), warn: pending.length },
+        { k: 'Đã khóa', n: off.length, s: off.length ? 'Người nghỉ — rà quyền còn lại' : 'Không có tài khoản khóa', href: goTo('nguoi-dung.html', 'state=off') },
+        { k: 'Chưa gán dự án', n: bare.length, s: bare.length ? 'Thiếu phạm vi xem' : 'Mọi tài khoản đã có phạm vi', href: goTo('nguoi-dung.html', 'unscoped=1'), warn: bare.length }
+      ],
+      ktoan: [
+        { k: 'Dự án có hồ sơ hoa hồng', n: Object.keys(hhPj).length, s: Object.keys(hhPj).map(function (id) { return S.projectName(id); }).slice(0, 2).join(' · ') || 'Chưa có hồ sơ', href: goTo('thu-vien-tai-lieu.html', 'kind=hoahong') },
+        { k: 'Tài liệu hoa hồng vừa cập nhật', n: hhRecent.length, s: hhRecent.length ? 'Trong 7 ngày' : 'Không có bản mới trong 7 ngày', href: goTo('thu-vien-tai-lieu.html', 'kind=hoahong&updated=7d') },
+        { k: 'Dự án đang bán', n: selling.length, s: 'Ngữ cảnh tra cứu chính sách', href: goTo('du-an.html') },
+        { k: 'Tài liệu nội bộ hạn chế', n: restricted.length, s: 'Hồ sơ được phép xem và tải', href: goTo('thu-vien-tai-lieu.html', 'label=restricted') }
+      ]
+    };
+    return map[role] || map.nvbh;
   }
   function metrics() {
-    var ids = mineIds();
-    var pj = function (x) { return ids.indexOf(x.pj) >= 0; };
-
-    var names = mine().map(function (p) { return p.name; });
-    tile('tl-duan', names.length,
-      names.slice(0, 3).join(' · ') + (names.length > 3 ? ' · +' + (names.length - 3) + ' dự án' : ''));
-
-    var links = S.get('shareLinks').filter(function (l) { return l.state === 'live' && pj(l); });
-    var soon = links.filter(function (l) { return l.days !== null && l.days <= 2; }).length;
-    tile('tl-link', links.length, soon ? soon + ' đường dẫn hết hạn trong 48 giờ' : 'Chưa có đường dẫn nào sắp hết hạn', 'state=live');
-
-    var exp = S.get('documents').filter(function (d) { return d.state === 'expiring' && pj(d); });
-    tile('tl-hethan', exp.length, 'Nhắc trước 7 ngày', 'state=expiring');
-
-    var ap = S.get('approvals').filter(function (a) { return a.state === 'pending' && pj(a); });
-    var rq = S.get('requests').filter(function (r) { return r.state === 'new' && pj(r); });
-    tile('tl-duyet', ap.length + rq.length, ap.length + ' nội dung · ' + rq.length + ' đề nghị sửa', 'tab=duyet');
-    /* Thư ký kinh doanh và Marketing thấy hàng chờ nhưng không phải là người duyệt. */
-    document.querySelector('#tl-duyet .k').textContent =
-      ['gd', 'gddu'].indexOf(RECO.role) >= 0 ? 'Chờ tôi duyệt' : 'Nội dung tôi gửi đang chờ duyệt';
-
-    var sent = S.get('requests').filter(function (r) { return r.by === RECO.current.who; });
-    var done = sent.filter(function (r) { return r.state === 'done'; }).length;
-    var doing = sent.filter(function (r) { return r.state === 'doing'; }).length;
-    tile('tl-denghi', sent.length, done + ' đã cập nhật · ' + doing + ' đang xử lý', 'by=toi');
+    var box = document.getElementById('kpi-grid');
+    if (!box) return;
+    box.innerHTML = kpiOf(RECO.role).map(function (t) {
+      var numStyle = t.warn ? ' style="color:var(--orange-text)"' : '';
+      return '<a class="tile" href="' + t.href + '"><span class="k">' + esc(t.k) + '</span>' +
+        '<span class="num"' + numStyle + '>' + t.n + '</span>' +
+        '<span class="micro muted" data-sub>' + esc(t.s) + '</span></a>';
+    }).join('');
   }
 
   /* ---------- Việc đang chờ ---------- */
   var ICO = { xls: 'sheet', pdf: 'file', img: 'image', file: 'file' };
   function queue() {
     var box = document.getElementById('viec');
+    if (!box) return;
     var ids = mineIds();
-    var ap = S.get('approvals').filter(function (a) { return a.state === 'pending' && ids.indexOf(a.pj) >= 0; });
-    var rq = S.get('requests').filter(function (r) { return r.state === 'new' && ids.indexOf(r.pj) >= 0; });
+    var isQlkd = RECO.role === 'qlkd';
+    var ap = isQlkd ? [] : S.get('approvals').filter(function (a) { return a.state === 'pending' && ids.indexOf(a.pj) >= 0; });
+    var rq = S.get('requests').filter(function (r) {
+      if (r.state !== 'new') return false;
+      if (isQlkd) return teamNames().indexOf(r.by) >= 0;
+      return ids.indexOf(r.pj) >= 0;
+    });
 
     if (!ap.length && !rq.length) {
       box.innerHTML = RECO_DATA.empty(
         'Không còn việc chờ anh/chị',
-        'Mọi nội dung và đề nghị sửa của dự án phụ trách đã được xử lý xong.',
-        '<a class="btn btn-outline" href="' + RECO.link('quan-tri.html') + '">Mở màn quản trị</a>');
+        isQlkd
+          ? 'Đội không còn đề nghị sửa đang chờ người phụ trách nhận.'
+          : 'Mọi nội dung và đề nghị sửa của dự án phụ trách đã được xử lý xong.',
+        isQlkd
+          ? '<a class="btn btn-outline" href="' + goTo('de-nghi-sua.html', 'team=1') + '">Xem đề nghị của đội</a>'
+          : '<a class="btn btn-outline" href="' + RECO.link('quan-tri.html') + '">Mở màn quản trị</a>');
       return;
     }
 
@@ -376,7 +574,8 @@ document.addEventListener('DOMContentLoaded', function () {
           '<span class="fico img">' + RECO.svg('edit') + '</span>' +
           '<div class="fmeta"><div class="fname">Đề nghị sửa: ' + esc(r.title) + '</div>' +
             '<div class="fsub"><span>' + esc(r.by) + ' gửi · ' + esc(r.at) + '</span><span class="st st-wait">Mới</span></div></div>' +
-          '<div class="fend"><a class="btn btn-outline btn-sm" href="' + RECO.link('de-nghi-sua.html') + '">Xử lý</a></div>' +
+          '<div class="fend"><a class="btn btn-outline btn-sm" href="' + goTo('de-nghi-sua.html') + '">' +
+            (isQlkd ? 'Xem' : 'Xử lý') + '</a></div>' +
         '</div>';
       }).join('');
 
@@ -417,12 +616,21 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ---------- Khu ghim ---------- */
   function pinned() {
     var box = document.getElementById('pinned');
-    var list = mine().filter(function (p) { return p.pinned; });
+    var list;
+    if (RECO.role === 'ktoan') {
+      var ids = {};
+      hhDocs().forEach(function (d) { ids[d.pj] = true; });
+      list = RECO_DATA.projects().filter(function (p) { return ids[p.id]; });
+    } else {
+      list = mine().filter(function (p) { return p.pinned; });
+    }
     if (!list.length) {
       box.classList.remove('grid', 'g-3');
       box.innerHTML = RECO_DATA.empty(
-        'Chưa ghim dự án nào',
-        'Bấm biểu tượng ghim trên thẻ dự án để đưa dự án đang bán lên đầu Trang đầu.',
+        RECO.role === 'ktoan' ? 'Chưa có hồ sơ hoa hồng' : 'Chưa ghim dự án nào',
+        RECO.role === 'ktoan'
+          ? 'Khi Thư ký kinh doanh tải chính sách hoa hồng, dự án sẽ hiện ở đây.'
+          : 'Bấm biểu tượng ghim trên thẻ dự án để đưa dự án đang bán lên đầu Trang đầu.',
         '<a class="btn btn-primary" href="' + RECO.link('du-an.html') + '">Xem tất cả dự án</a>');
       return;
     }
@@ -480,6 +688,48 @@ document.addEventListener('DOMContentLoaded', function () {
     RECO.applyRoles(box);
     var wrap = document.getElementById('hot-home-slide');
     if (wrap) RECO.bindSlide(wrap, { prev: '#hot-home-prev', next: '#hot-home-next', dots: '#hot-home-dots', per: 'home' });
+  }
+
+  function paintAccounts() {
+    var box = document.getElementById('acc-list');
+    if (!box) return;
+    var list = S.get('users').filter(function (u) {
+      return u.state === 'pending' || u.state === 'off' || unscopedUser(u);
+    }).slice(0, 5);
+    if (!list.length) {
+      box.innerHTML = RECO_DATA.empty('Không còn tài khoản cần xử lý', 'Mọi tài khoản đã kích hoạt và có phạm vi xem.');
+      return;
+    }
+    box.innerHTML = list.map(function (u) {
+      var st = u.state === 'pending' ? ['st-wait', 'Chờ kích hoạt']
+        : u.state === 'off' ? ['st-stop', 'Đã khóa']
+        : ['st-off', 'Thiếu phạm vi'];
+      return '<div class="frow">' +
+        '<span class="avatar sm">' + esc(u.ini || '?') + '</span>' +
+        '<div class="fmeta"><div class="fname">' + esc(u.name) + '</div>' +
+          '<div class="fsub"><span>' + esc(u.roleName) + ' · ' + esc(u.scope) + '</span>' +
+            '<span class="st ' + st[0] + '">' + st[1] + '</span></div></div>' +
+        '<div class="fend"><a class="btn btn-outline btn-sm" href="' + goTo('nguoi-dung.html', 'q=' + encodeURIComponent(u.name)) + '">Mở</a></div>' +
+      '</div>';
+    }).join('');
+  }
+  function paintCommission() {
+    var box = document.getElementById('hh-list');
+    if (!box) return;
+    var list = hhDocs().slice(0, 5);
+    if (!list.length) {
+      box.innerHTML = RECO_DATA.empty('Chưa có hồ sơ hoa hồng', 'Khi có chính sách hoa hồng, tài liệu sẽ hiện ở đây.');
+      return;
+    }
+    box.innerHTML = list.map(function (d) {
+      return '<div class="frow">' +
+        '<span class="fico pdf">' + RECO.svg('file') + '</span>' +
+        '<div class="fmeta"><div class="fname">' + esc(d.name) + '</div>' +
+          '<div class="fsub"><span>' + esc(S.projectName(d.pj)) + (d.from ? ' · cập nhật ' + d.from : '') + '</span>' +
+            S.label(d.label) + '</div></div>' +
+        '<div class="fend"><a class="btn btn-outline btn-sm" href="' + goTo('thu-vien-tai-lieu.html', 'kind=hoahong') + '">Mở</a></div>' +
+      '</div>';
+    }).join('');
   }
 
   /* ---------- Lời chào theo vai trò ---------- */
@@ -541,17 +791,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('');
   }
 
+  layoutHome();
   metrics(); queue(); pinned(); featured(); hotHome(); homeTpl();
+  paintAccounts(); paintCommission();
+  RECO.applyRoles(document.getElementById('home-stack'));
+  RECO.applyRoles(document.getElementById('home-fold'));
 
   /* Duyệt ở đây hay ở màn quản trị đều làm số liệu và hàng chờ đổi theo */
   watch('approvals', function () { metrics(); queue(); });
   watch('requests', function () { metrics(); queue(); });
-  watch('documents', metrics);
+  watch('documents', function () { metrics(); paintCommission(); pinned(); });
   watch('shareLinks', metrics);
   watch('projects', function () { metrics(); pinned(); featured(); });
-  watch('hotProducts', hotHome);
+  watch('hotProducts', function () { metrics(); hotHome(); });
   watch('units', hotHome);
-  watch('shareTemplates', homeTpl);
+  watch('shareTemplates', function () { metrics(); homeTpl(); });
+  watch('media', metrics);
+  watch('users', function () { metrics(); paintAccounts(); });
 });
 </script>
 </body>

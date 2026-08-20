@@ -135,7 +135,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var sel = null;
 
-  function all() { return S.get('requests'); }
+  function all() {
+    var list = S.get('requests');
+    var h = location.hash, i = h.indexOf('?');
+    var qs = new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search);
+    if (qs.get('by') === 'toi') list = list.filter(function (r) { return r.by === RECO.current.who; });
+    if (qs.get('team') === '1') {
+      var team = (S.get('users').filter(function (u) {
+        return u.role === RECO.role && u.state === 'on' && u.team;
+      })[0] || {}).team;
+      var names = team
+        ? S.get('users').filter(function (u) { return u.team === team; }).map(function (u) { return u.name; })
+        : [RECO.current.who];
+      list = list.filter(function (r) { return names.indexOf(r.by) >= 0; });
+    }
+    return list;
+  }
   function ini(name) {
     var w = String(name).trim().split(/\s+/);
     return (w[0][0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase();
@@ -362,6 +377,16 @@ document.addEventListener('DOMContentLoaded', function () {
   S.on('requests', render);
 
   render();
+  (function () {
+    var h = location.hash, i = h.indexOf('?');
+    var qs = new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search);
+    var st = qs.get('state');
+    var tab = st === 'new' ? 't-moi' : st === 'doing' ? 't-xuly' : '';
+    if (tab) {
+      var btn = document.getElementById(tab);
+      if (btn) btn.click();
+    }
+  })();
 });
 </script>
 </body>

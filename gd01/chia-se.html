@@ -509,6 +509,14 @@ document.addEventListener('DOMContentLoaded', function () {
   [fPj, fBy, fSt].forEach(function (s) { s.addEventListener('change', render); });
   fClear.addEventListener('click', function () { fPj.value = ''; fBy.value = ''; fSt.value = ''; render(); });
 
+  var qs = (function () {
+    var h = location.hash, i = h.indexOf('?');
+    return new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search);
+  })();
+  if (qs.get('state') || qs.get('by')) selectTab('t-gui');
+  if (qs.get('state') === 'live') fSt.value = 'live';
+  if (qs.get('by') === 'toi') fBy.value = RECO.current.who;
+
   S.on('shareLinks', render);
   render();
 });

@@ -1842,6 +1842,16 @@ body.proto-off .zone-chips { top: var(--header-h); }
 }
 .home-hero-chips .chip { font-size: 0.68rem; padding: 2px 8px; }
 .home-kpi h2 { font-size: 1rem; margin: 0; }
+.home-stack { display: flex; flex-direction: column; }
+.home-stack > section { order: 50; }
+.home-stack > #sec-queue { order: 10; }
+.home-stack > #sec-accounts,
+.home-stack > #sec-commission { order: 12; }
+.home-stack > #sec-hot { order: 20; }
+.home-stack > #sec-pinned { order: 30; }
+.home-stack > #sec-featured { order: 40; }
+.home-stack > #sec-posts { order: 45; }
+body[data-home-role="mkt"] .home-stack > #sec-posts { order: 15; }
 
 @media (min-width: 768px) and (max-width: 1023px) {
   .home-fold {
@@ -1854,9 +1864,22 @@ body.proto-off .zone-chips { top: var(--header-h); }
     gap: 12px;
     align-items: stretch;
   }
+  .home-fold.home-fold-ops {
+    grid-template-areas:
+      "hero honor"
+      "tick honor"
+      "queue queue"
+      "kpi kpi";
+  }
+  .home-fold.home-fold-quiet {
+    grid-template-areas:
+      "hero honor"
+      "kpi kpi";
+  }
   .home-fold > .home-hero { grid-area: hero; align-self: start; padding: 16px 18px; }
   .home-fold > #alert-ticker { grid-area: tick; }
   .home-fold > .home-kpi { grid-area: kpi; }
+  .home-fold > #sec-queue { grid-area: queue; margin-top: 0; }
   .home-fold > .honor-rail {
     grid-area: honor;
     grid-column: 2;
@@ -1879,9 +1902,22 @@ body.proto-off .zone-chips { top: var(--header-h); }
     gap: 16px;
     align-items: stretch;
   }
+  .home-fold.home-fold-ops {
+    grid-template-areas:
+      "hero honor"
+      "tick honor"
+      "queue honor"
+      "kpi honor";
+  }
+  .home-fold.home-fold-quiet {
+    grid-template-areas:
+      "hero honor"
+      "kpi honor";
+  }
   .home-fold > .home-hero { grid-area: hero; align-self: start; padding: 16px 20px; }
   .home-fold > #alert-ticker { grid-area: tick; }
   .home-fold > .home-kpi { grid-area: kpi; }
+  .home-fold > #sec-queue { grid-area: queue; margin-top: 0; }
   .home-fold > .honor-rail {
     grid-area: honor;
     grid-column: 2;
@@ -1890,6 +1926,8 @@ body.proto-off .zone-chips { top: var(--header-h); }
     min-height: 280px;
     height: 100%;
   }
+  .home-fold.home-fold-ops > .honor-rail { grid-row: 1 / 5; }
+  .home-fold.home-fold-quiet > .honor-rail { grid-row: 1 / 3; }
   .honor-slides { min-height: 100%; }
   .home-fold .home-kpi .spread { margin-bottom: 8px; }
   .home-fold .home-kpi .grid { gap: 16px; }

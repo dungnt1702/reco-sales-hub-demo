@@ -64,6 +64,7 @@
         <option value="chinhsach">Chính sách</option>
         <option value="matbang">Mặt bằng</option>
         <option value="anhvideo">Ảnh và video</option>
+        <option value="hoahong">Hoa hồng</option>
       </select>
       <select class="inp" id="f-src" aria-label="Nguồn">
         <option value="">Mọi nguồn</option>
@@ -247,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   var KIND = {
     gioithieu: 'Tài liệu giới thiệu', banghang: 'Bảng hàng &amp; phiếu tính giá',
-    chinhsach: 'Chính sách', matbang: 'Mặt bằng', anhvideo: 'Ảnh và video'
+    chinhsach: 'Chính sách', matbang: 'Mặt bằng', anhvideo: 'Ảnh và video', hoahong: 'Hoa hồng'
   };
   /* QD-031: bảng tính và văn bản không bao giờ phát bản gốc */
   function isOffice(d) { return d.icon === 'xls' || d.kind === 'banghang'; }
@@ -317,12 +318,19 @@ document.addEventListener('DOMContentLoaded', function () {
   function matched() {
     var t = RECO.norm(q.value.trim());
     return S.get('documents').filter(function (d) {
+      var recentOk = true;
+      if (recentOnly) {
+        var a = S.parseVN(d.from), b = S.parseVN(S.TODAY);
+        var n = a && b ? Math.round((b - a) / 86400000) : 999;
+        recentOk = n >= 0 && n <= 7;
+      }
       return (!t || RECO.norm(d.name).indexOf(t) >= 0)
         && (!fpj.value || d.pj === fpj.value)
         && (!fkind.value || d.kind === fkind.value)
         && (!fsrc.value || d.src === fsrc.value)
         && (!fstate.value || d.state === fstate.value)
-        && (!flab.value || d.label === flab.value);
+        && (!flab.value || d.label === flab.value)
+        && recentOk;
     });
   }
 
@@ -338,6 +346,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (fsrc.value) s.push('nguồn ' + SRC_TEXT[fsrc.value]);
     if (fstate.value) s.push('trạng thái ' + STATE_TEXT[fstate.value]);
     if (flab.value) s.push('nhãn ' + S.LABELS[flab.value].text);
+    if (recentOnly) s.push('cập nhật trong 7 ngày');
     fsum.hidden = s.length === 0;
     fsum.textContent = 'Đang lọc theo: ' + s.join(' · ');
   }
@@ -646,6 +655,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* Kho đổi ở màn khác (duyệt ở Quản trị chẳng hạn) thì danh sách này đổi theo */
   S.on('documents', function () { if (!timer) render(); });
+
+  var qs = (function () {
+    var h = location.hash, i = h.indexOf('?');
+    return new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search);
+  })();
+  var recentOnly = qs.get('updated') === '7d';
+  if (qs.get('q')) q.value = qs.get('q');
+  if (qs.get('kind')) fkind.value = qs.get('kind');
+  if (qs.get('state')) fstate.value = qs.get('state');
+  if (qs.get('label')) flab.value = qs.get('label');
+  if (qs.get('src')) fsrc.value = qs.get('src');
 
   render();
 });

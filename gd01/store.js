@@ -10,7 +10,7 @@
 (function () {
   'use strict';
 
-  var KEY = 'reco-salehub-demo-gd01-v4';
+  var KEY = 'reco-salehub-demo-gd01-v5';
 
   /* ---------- Dữ liệu gốc ---------- */
   function seed() {
@@ -227,11 +227,14 @@
         { id: 'd3', pj: 'palmy', branch: 2, folder: null, name: 'Bảng hàng dãy TM2 — Palmy Biztown',
           kind: 'banghang', src: 'broken', label: 'internal', ver: '—', from: '02/08/2026', to: null,
           state: 'broken', icon: 'warn' },
+        { id: 'd19', pj: 'celestine', branch: 4, folder: null, name: 'Mặt bằng căn 3PN tháp T2 — liên kết Chủ đầu tư',
+          kind: 'matbang', src: 'broken', label: 'internal', ver: '—', from: '08/08/2026', to: null,
+          state: 'broken', icon: 'warn', note: 'Drive bị thu quyền 13/08/2026' },
         { id: 'd4', pj: 'celestine', branch: 3, folder: null, name: 'Chính sách bán hàng tháng 8/2026',
           kind: 'chinhsach', src: 'reco', label: 'internal', ver: 'v3', from: '01/08/2026', to: '20/08/2026',
           state: 'expiring', icon: 'pdf', daysLeft: 6 },
-        { id: 'd5', pj: 'celestine', branch: 3, folder: null, name: 'Chính sách hoa hồng đợt 3',
-          kind: 'chinhsach', src: 'reco', label: 'restricted', ver: 'v2', from: '01/08/2026', to: '17/08/2026',
+        { id: 'd5', pj: 'celestine', branch: 7, folder: null, name: 'Chính sách hoa hồng đợt 3',
+          kind: 'hoahong', src: 'reco', label: 'restricted', ver: 'v2', from: '10/08/2026', to: '17/08/2026',
           state: 'expiring', icon: 'pdf', daysLeft: 3 },
         { id: 'd6', pj: 'la-perle', branch: 4, folder: null, name: 'Mặt bằng khu nhà liền kề — La Perle Héritage',
           kind: 'matbang', src: 'reco', label: 'public', ver: 'v2', from: '22/07/2026', to: null,
@@ -245,6 +248,15 @@
         { id: 'd9', pj: 'palmy', branch: 1, folder: null, name: 'Tài liệu giới thiệu — Palmy Biztown (bản nháp v1)',
           kind: 'gioithieu', src: 'reco', label: 'internal', ver: 'v1', from: null, to: null,
           state: 'draft', icon: 'pdf' },
+        { id: 'd18', pj: 'celestine', branch: 4, folder: null, name: 'Brochure căn mẫu T1 — bản nháp Marketing',
+          kind: 'gioithieu', src: 'reco', label: 'internal', ver: 'v0', from: null, to: null,
+          state: 'draft', icon: 'pdf' },
+        { id: 'd20', pj: 'palmy', branch: 7, folder: null, name: 'Chính sách hoa hồng Palmy Biztown — đợt 3',
+          kind: 'hoahong', src: 'reco', label: 'restricted', ver: 'v1', from: '12/08/2026', to: '30/09/2026',
+          state: 'live', icon: 'pdf' },
+        { id: 'd21', pj: 'la-perle', branch: 7, folder: null, name: 'Bảng hoa hồng La Perle Héritage',
+          kind: 'hoahong', src: 'reco', label: 'restricted', ver: 'v3', from: '01/07/2026', to: '31/12/2026',
+          state: 'live', icon: 'pdf' },
         { id: 'd10', pj: 'celestine', branch: 1, folder: 'f2', name: 'Thông tin quy hoạch khu vực',
           kind: 'gioithieu', src: 'reco', label: 'public', ver: 'v1', from: '12/05/2026', to: null,
           state: 'live', icon: 'pdf' },
@@ -1097,13 +1109,20 @@
           by: 'Lê Thu Hà', at: '14/08/2026 · 08:20', days: 6, state: 'live',
           agent: { name: 'Lê Thu Hà', roleName: 'Nhân viên bán hàng', phone: '0966 808 404', ini: 'TH' } },
         { id: 'l2', slug: '/t/celestine-westlake-gioi-thieu', pj: 'celestine', kind: 'chung', note: 'Trang giới thiệu chung',
-          by: 'Lê Thu Hà', at: '09/08/2026 · 14:05', days: null, state: 'live' },
+          by: 'Lê Thu Hà', at: '09/08/2026 · 14:05', days: null, state: 'live',
+          agent: { name: 'Lê Thu Hà', roleName: 'Nhân viên bán hàng', phone: '0966 808 404', ini: 'TH' } },
         { id: 'l3', slug: '/t/la-perle-heritage-nlk18', pj: 'la-perle', kind: 'gia', note: 'Có chính sách nhạy cảm',
-          by: 'Phạm Hải Đăng', at: '12/08/2026 · 17:41', days: 2, state: 'live' },
+          by: 'Phạm Hải Đăng', at: '12/08/2026 · 17:41', days: 2, state: 'live',
+          agent: { name: 'Phạm Hải Đăng', roleName: 'Quản lý kinh doanh', phone: '0977 555 121', ini: 'HĐ' } },
         { id: 'l4', slug: '/t/palmy-biztown-tm212', pj: 'palmy', kind: 'gia', note: 'Đã thu hồi ngày 11/08',
-          by: 'Lê Thu Hà', at: '05/08/2026 · 10:12', days: 0, state: 'off' },
+          by: 'Lê Thu Hà', at: '05/08/2026 · 10:12', days: 0, state: 'off',
+          agent: { name: 'Lê Thu Hà', roleName: 'Nhân viên bán hàng', phone: '0966 808 404', ini: 'TH' } },
         { id: 'l5', slug: '/t/celestine-westlake-t20905', pj: 'celestine', kind: 'chung', note: 'Đã quá 7 ngày',
-          by: 'Ngô Thanh Tùng', at: '06/08/2026 · 11:35', days: 0, state: 'live' }
+          by: 'Ngô Thanh Tùng', at: '06/08/2026 · 11:35', days: 0, state: 'live',
+          agent: { name: 'Ngô Thanh Tùng', roleName: 'Nhân viên bán hàng', phone: '0913 700 700', ini: 'TT' } },
+        { id: 'l6', slug: '/t/palmy-biztown-tm301', pj: 'palmy', kind: 'gia', note: 'Lô góc TM3 — sắp hết hạn',
+          by: 'Lê Thu Hà', at: '13/08/2026 · 16:40', days: 1, state: 'live',
+          agent: { name: 'Lê Thu Hà', roleName: 'Nhân viên bán hàng', phone: '0966 808 404', ini: 'TH' } }
       ],
 
       /* SP Hot — entity riêng, không cờ trên unit, không trường giá (QD-075) */
@@ -1271,23 +1290,32 @@
         { id: 'u1', name: 'Trần Minh Quang', phone: '0901 234 567', role: 'gd', roleName: 'Tổng giám đốc',
           scope: 'Toàn bộ dự án', state: 'on', ini: 'TQ' },
         { id: 'u2', name: 'Hoàng Anh Tuấn', phone: '0912 345 678', role: 'gddu', roleName: 'Giám đốc dự án',
-          scope: 'Celestine · La Perle · Palmy', state: 'on', ini: 'HT' },
+          scope: 'Celestine · La Perle · Palmy', state: 'on', ini: 'HT',
+          pj: ['celestine', 'la-perle', 'palmy'] },
         { id: 'u3', name: 'Trịnh Mai Lan', phone: '0938 111 222', role: 'tkkd', roleName: 'Thư ký kinh doanh',
-          scope: 'Celestine · La Perle · Palmy', state: 'on', ini: 'ML' },
+          scope: 'Celestine · La Perle · Palmy', state: 'on', ini: 'ML',
+          pj: ['celestine', 'la-perle', 'palmy'] },
         /* Phạm vi theo sàn kinh doanh — ba tên sàn dưới đây là đơn vị thật trong báo cáo doanh thu
            của RECO; tên người và số điện thoại vẫn là dữ liệu giả (QD-072). */
         { id: 'u4', name: 'Phạm Hải Đăng', phone: '0977 555 121', role: 'qlkd', roleName: 'Quản lý kinh doanh',
-          scope: 'Sàn Trung Kính', state: 'on', ini: 'HĐ' },
+          scope: 'Sàn Trung Kính', state: 'on', ini: 'HĐ', team: 'trungkinh',
+          pj: ['celestine', 'palmy', 'la-perle'] },
         { id: 'u5', name: 'Lê Thu Hà', phone: '0966 808 404', role: 'nvbh', roleName: 'Nhân viên bán hàng',
-          scope: 'Celestine · Palmy', state: 'on', ini: 'TH' },
+          scope: 'Celestine · Palmy', state: 'on', ini: 'TH', team: 'trungkinh',
+          pj: ['celestine', 'palmy'] },
         { id: 'u6', name: 'Đỗ Bảo Ngọc', phone: '0944 232 909', role: 'mkt', roleName: 'Marketing',
-          scope: 'Celestine · Thiên Đường', state: 'on', ini: 'BN' },
+          scope: 'Celestine · Thiên Đường', state: 'on', ini: 'BN',
+          pj: ['celestine', 'thien-duong'] },
         { id: 'u7', name: 'Vũ Kim Chi', phone: '0908 686 333', role: 'hcns', roleName: 'Hành chính nhân sự',
           scope: 'Tài khoản & hồ sơ nhân sự', state: 'on', ini: 'KC' },
         { id: 'u9', name: 'Ngô Thanh Bình', phone: '0987 404 118', role: 'ktoan', roleName: 'Kế toán',
           scope: 'Số liệu giao dịch & hoa hồng', state: 'on', ini: 'TB' },
         { id: 'u8', name: 'Ngô Thanh Tùng', phone: '0913 700 700', role: 'nvbh', roleName: 'Nhân viên bán hàng',
-          scope: '—', state: 'off', ini: 'TT' }
+          scope: '—', state: 'off', ini: 'TT', team: 'trungkinh', pj: [] },
+        { id: 'u10', name: 'Bùi Minh Khang', phone: '0982 441 090', role: 'nvbh', roleName: 'Nhân viên bán hàng',
+          scope: '—', state: 'pending', ini: 'BK', team: 'trungkinh', pj: [] },
+        { id: 'u11', name: 'Hoàng Mỹ Linh', phone: '0906 228 117', role: 'mkt', roleName: 'Marketing',
+          scope: '—', state: 'pending', ini: 'HL', pj: [] }
       ],
 
       /* Ảnh đã duyệt — dùng cho màn chuẩn bị nội dung và khu Marketing */
@@ -1641,9 +1669,13 @@
      thay vì mỗi màn tự chép lại bản đồ vai trò → dự án. */
   function myProjects(role) {
     var all = get('projects').filter(function (p) { return !p.hidden; });
-    if (role === 'gd' || role === 'hcns') return all;
+    if (role === 'gd' || role === 'hcns' || role === 'ktoan') return all;
     var u = get('users').filter(function (x) { return x.role === role && x.state === 'on'; })[0];
-    if (!u || !u.scope || /toàn bộ/i.test(u.scope)) return all;
+    if (!u) return all;
+    if (u.pj && u.pj.length) {
+      return all.filter(function (p) { return u.pj.indexOf(p.id) >= 0; });
+    }
+    if (!u.scope || /toàn bộ/i.test(u.scope)) return all;
     var names = u.scope.split('·').map(function (s) { return s.trim().toLowerCase(); });
     var hit = all.filter(function (p) {
       return names.some(function (n) { return n && p.name.toLowerCase().indexOf(n) >= 0; });

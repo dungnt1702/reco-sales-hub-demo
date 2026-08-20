@@ -109,9 +109,11 @@ document.addEventListener('DOMContentLoaded', function () {
     gddu: ['celestine', 'la-perle', 'palmy'],
     tkkd: ['celestine', 'la-perle', 'palmy'],
     nvbh: ['celestine', 'palmy'],
+    qlkd: ['celestine', 'palmy', 'la-perle'],
     mkt: ['celestine', 'thien-duong']
   };
   var didInitPj = false;
+  var wantHot = qs().get('hot') === '1';
   function mineIds() { return SCOPE[RECO.role] || []; }
 
   function qs() {
@@ -186,6 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var others = S.get('unitProfiles').filter(function (p) {
       return p.catalog && !hotIds[p.unitId] && S.find('units', p.unitId);
     }).map(function (p) { return S.unitView(p.unitId); }).filter(Boolean).filter(match);
+    if (wantHot) others = [];
 
     var total = hotViews.length + others.length;
     var filtered = !!(fQ.value || fPj.value || fType.value || fBeds.value || fSt.value);
@@ -237,6 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     otherSec.hidden = !others.length;
+    if (otherSecL) otherSecL.hidden = !others.length;
     if (otherSecL) otherSecL.hidden = !others.length;
     otherGrid.innerHTML = others.length
       ? others.map(function (u) { return RECO_DATA.unitCard(u); }).join('')

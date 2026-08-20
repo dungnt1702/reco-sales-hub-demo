@@ -579,6 +579,14 @@ document.addEventListener('DOMContentLoaded', function () {
     qtTabs.addEventListener('keydown', function () { setTimeout(syncPjCta, 0); });
   }
   syncPjCta();
+  (function () {
+    var h = location.hash, i = h.indexOf('?');
+    var qs = new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search);
+    if (qs.get('tab') === 'duyet') {
+      var btn = document.getElementById('t-duyet');
+      if (btn) btn.click();
+    }
+  })();
 
   pjSave.addEventListener('click', function () {
     if (!RECO.validate(pjForm)) return;
