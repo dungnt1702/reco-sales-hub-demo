@@ -1776,6 +1776,9 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
 .ugallery-thumbs img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
 .alert-hero { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-md); display: block; margin-bottom: 12px; }
 .mau-post { max-width: 72ch; width: 100%; margin-inline: auto; }
+@media (min-width: 1024px) {
+  .mau-layout.is-edit .mau-post { max-width: none; }
+}
 .mau-post .lead { white-space: pre-wrap; }
 .mau-need {
   border: 1px dashed var(--line);
@@ -1842,6 +1845,7 @@ body.proto-off .mau-layout.is-edit .mau-aside { top: var(--header-h); }
 .mau-post > .field { margin: 0 0 10px; }
 .mau-post > .field .err { display: block; margin-top: 6px; }
 .mau-edit-block { margin-top: 14px; }
+.mau-edit-block.is-drag { opacity: 0.88; box-shadow: var(--shadow-card); position: relative; z-index: 2; }
 .mau-block-bar {
   display: flex; align-items: center; gap: 2px; margin-bottom: 6px;
 }
@@ -1882,7 +1886,7 @@ body.proto-off .mau-layout.is-edit .mau-aside { top: var(--header-h); }
     grid-template-columns: none;
   }
   .mau-layout.is-edit #intent-chips button { border-radius: 99px; }
-  .mau-block-bar .tick-move { display: none; }
+  .mau-block-bar .tick-move { display: inline-flex; }
   .mau-block-bar .tick-grip { display: inline-flex; }
 }
 .channels { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }

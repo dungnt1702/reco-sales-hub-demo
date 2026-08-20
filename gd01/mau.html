@@ -682,11 +682,15 @@ document.addEventListener('DOMContentLoaded', function () {
         moveTick(row.getAttribute('data-tick'), up ? -1 : 1);
       });
     }
-    function bindTickDrag(box) {
-      if (!box || box.getAttribute('data-drag-bound')) return;
-      box.setAttribute('data-drag-bound', '1');
+    function bindTickDrag(root) {
+      if (!root || root.getAttribute('data-drag-bound')) return;
+      root.setAttribute('data-drag-bound', '1');
       var drag = null;
+      var justMoved = false;
+      function host() { return document.getElementById('mau-blocks'); }
       function rowList() {
+        var box = host();
+        if (!box) return [];
         return Array.prototype.filter.call(box.children, function (el) {
           return el.getAttribute && el.getAttribute('data-tick');
         });
@@ -694,13 +698,16 @@ document.addEventListener('DOMContentLoaded', function () {
       function onMove(e) {
         if (!drag) return;
         e.preventDefault();
-        var list = rowList();
+        var box = host();
+        if (!box) return;
         var y = e.clientY;
+        if (Math.abs(y - drag.startY) > 3) drag.moved = true;
+        var list = rowList();
         var over = null;
         for (var i = 0; i < list.length; i++) {
           if (list[i] === drag.row) continue;
           var b = list[i].getBoundingClientRect();
-          if (y < b.top + b.height / 2) { over = list[i]; break; }
+          if (y < b.top + 24) { over = list[i]; break; }
         }
         if (over) {
           if (drag.row.nextElementSibling !== over) box.insertBefore(drag.row, over);
@@ -714,30 +721,43 @@ document.addEventListener('DOMContentLoaded', function () {
           try { drag.grip.releasePointerCapture(drag.pointerId); } catch (err) {}
         }
         drag.row.classList.remove('is-drag');
-        tickOrder = rowList().map(function (r) { return r.getAttribute('data-tick'); });
-        ticksTouched = true;
+        var moved = drag.moved;
         drag = null;
         document.removeEventListener('pointermove', onMove, true);
         document.removeEventListener('pointerup', endDrag, true);
         document.removeEventListener('pointercancel', endDrag, true);
-        paintPreview();
+        if (moved) {
+          var seen = rowList().map(function (r) { return r.getAttribute('data-tick'); });
+          var hidden = tickOrder.filter(function (k) { return seen.indexOf(k) < 0; });
+          tickOrder = seen.concat(hidden);
+          ticksTouched = true;
+          justMoved = true;
+          paintPreview();
+          setTimeout(function () { justMoved = false; }, 0);
+        }
       }
-      box.addEventListener('pointerdown', function (e) {
+      root.addEventListener('pointerdown', function (e) {
         if (window.matchMedia('(max-width: 767px)').matches) return;
-        var grip = e.target.closest('.tick-grip');
-        if (!grip || !box.contains(grip)) return;
+        var grip = e.target.closest ? e.target.closest('.tick-grip') : null;
+        if (!grip || !root.contains(grip)) return;
         if (e.button != null && e.button !== 0) return;
         var row = grip.closest('[data-tick]');
         if (!row) return;
         e.preventDefault();
         e.stopPropagation();
-        drag = { row: row, grip: grip, pointerId: e.pointerId };
+        drag = { row: row, grip: grip, pointerId: e.pointerId, startY: e.clientY, moved: false };
         row.classList.add('is-drag');
         try { grip.setPointerCapture(e.pointerId); } catch (err) {}
         document.addEventListener('pointermove', onMove, true);
         document.addEventListener('pointerup', endDrag, true);
         document.addEventListener('pointercancel', endDrag, true);
       });
+      root.addEventListener('click', function (e) {
+        if (!justMoved) return;
+        justMoved = false;
+        e.preventDefault();
+        e.stopPropagation();
+      }, true);
     }
 
     function fillTitleIfFresh() {
@@ -933,6 +953,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var art = document.getElementById('mau-article');
       if (!art || art.getAttribute('data-canvas-bound')) return;
       art.setAttribute('data-canvas-bound', '1');
+      bindTickDrag(art);
       art.addEventListener('click', function (e) {
         if (e.target.closest('#mau-add-block')) { openAddBlock(); return; }
         var spanBtn = e.target.closest('.span-btn');
@@ -1166,7 +1187,6 @@ document.addEventListener('DOMContentLoaded', function () {
     syncFields();
     paintTicks();
     paintPreview();
-    bindTickDrag(document.getElementById('mau-blocks'));
 
     function onIntentClick(e) {
       var b = e.target.closest('[data-intent]');
