@@ -248,6 +248,11 @@ var CASES = [
   fq.remove();
   var fs2 = await load(PHASE + '/chia-se.html?bare=1', 390);
   if (!ok(fs2.contentDocument.querySelectorAll('#nav-drawer .drawer-local button').length === 0, 'Bài đăng mobile: không nhét tab vào hamburger')) bad++;
+  var intentOpts = fs2.contentDocument.querySelectorAll('#tf-intent option');
+  var intentIds = [];
+  intentOpts.forEach(function (o) { if (o.value) intentIds.push(o.value); });
+  if (!ok(intentIds.length === 7, 'chia-se: một lọc Loại bài với 7 loại')) bad++;
+  if (!ok(!fs2.contentDocument.getElementById('tf-kind'), 'chia-se không còn lọc Bài dự án / Bài sản phẩm')) bad++;
   fs2.remove();
 
   say('');
@@ -270,12 +275,31 @@ var CASES = [
   var fe = await load(PHASE + '/mau.html?bare=1&new=1', 1440);
   var de = fe.contentDocument;
   if (!ok(!!de.querySelector('.mau-post') && !!de.getElementById('mau-save'), 'mau.html tạo mẫu có preview sống')) bad++;
+  if (!ok(de.querySelectorAll('#intent-chips [data-intent]').length === 7, 'mau.html tạo mẫu có 7 loại bài')) bad++;
+  var wrapU = de.getElementById('wrap-unit');
+  if (!ok(wrapU && wrapU.hidden, 'mau.html intro ẩn ô sản phẩm')) bad++;
+  var wrapH = de.getElementById('wrap-hot');
+  if (!ok(wrapH && wrapH.hidden, 'mau.html intro ẩn ô SP Hot')) bad++;
+  if (!ok(de.querySelectorAll('#tick-on input[type="checkbox"]:checked').length === 4, 'mau.html intro mặc định 4 khối')) bad++;
   if (!ok(de.querySelectorAll('#mau-cta input[type="checkbox"]').length >= 8, 'mau.html tạo mẫu có tick thành phần')) bad++;
+  var unitBtn = de.querySelector('#intent-chips [data-intent="unit"]');
+  if (unitBtn) unitBtn.click();
+  await new Promise(function (r) { setTimeout(r, 50); });
+  wrapU = de.getElementById('wrap-unit');
+  if (!ok(wrapU && !wrapU.hidden, 'mau.html loại Sản phẩm này hiện ô gắn hàng')) bad++;
   fe.remove();
+  var fh = await load(PHASE + '/mau.html?bare=1&new=1&hot=hp1', 1440);
+  var dh = fh.contentDocument;
+  var hotChip = dh.querySelector('#intent-chips [data-intent="hot"]');
+  if (!ok(hotChip && hotChip.getAttribute('aria-pressed') === 'true', 'mau.html ?hot= mở loại Đẩy hàng Hot')) bad++;
+  var wrapHotNew = dh.getElementById('wrap-hot');
+  if (!ok(wrapHotNew && !wrapHotNew.hidden, 'mau.html loại hot hiện ô SP Hot')) bad++;
+  fh.remove();
   var fs = await load(PHASE + '/san-pham.html?bare=1&unit=T1-08.02', 1440);
   var ds = fs.contentDocument;
   if (!ok(ds.getElementById('sp-id').textContent.indexOf('T1-08.02') >= 0, 'chi tiết căn T1-08.02')) bad++;
   if (!ok(ds.querySelectorAll('#sp-thumbs button').length >= 4, 'chi tiết căn có gallery')) bad++;
+  if (!ok(/hot=hp1/.test((ds.getElementById('sp-gui') || {}).getAttribute('href') || ''), 'chi tiết căn Hot: Gửi mở loại hot')) bad++;
   fs.remove();
 
   say('');

@@ -704,14 +704,44 @@ body.device-mobile .dock { position: sticky; }
 #tpl-filter-wrap .filterbar { padding-block: 0; }
 @media (min-width: 768px) { #tpl-filter-wrap { margin-bottom: 16px; } }
 
-.intent-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.intent-chips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
 .intent-chips button {
   border: 1px solid var(--line); background: var(--white); color: var(--navy);
-  border-radius: 99px; padding: 6px 10px; font: inherit; font-size: 0.78rem; font-weight: 700;
-  cursor: pointer;
+  border-radius: var(--radius-md); padding: 8px 10px; font: inherit; font-size: 0.78rem; font-weight: 700;
+  cursor: pointer; min-height: 44px; text-align: center;
 }
 .intent-chips button[aria-pressed="true"] {
   background: var(--navy); border-color: var(--navy); color: #fff;
+}
+@media (min-width: 768px) {
+  .intent-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .intent-chips button { min-height: 44px; border-radius: 99px; padding: 8px 12px; }
+}
+.tick-adv { border: 1px solid var(--line); border-radius: var(--radius-md); padding: 4px 10px 8px; background: var(--soft); }
+.tick-adv > summary {
+  cursor: pointer; font-weight: 700; font-size: 0.86rem; min-height: 44px;
+  display: flex; align-items: center; list-style: none;
+}
+.tick-adv > summary::-webkit-details-marker { display: none; }
+.tick-adv > summary::before { content: "▸ "; color: var(--muted); }
+.tick-adv[open] > summary::before { content: "▾ "; }
+.tick-move { display: inline-flex; gap: 2px; flex: none; }
+.tick-move button {
+  width: 44px; height: 44px; border: 0; background: transparent; color: var(--muted);
+  display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.tick-move svg { width: 18px; height: 18px; pointer-events: none; }
+@media (min-width: 768px) {
+  .tick-move { display: none; }
+}
+@media (max-width: 767px) {
+  .tick-grip { display: none; }
+  .tick-row:has(.tick-grip) { touch-action: manipulation; }
 }
 .tick-rows { display: flex; flex-direction: column; gap: 6px; }
 .tick-row {

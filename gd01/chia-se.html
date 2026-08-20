@@ -51,18 +51,8 @@
         <input class="inp" type="search" id="tf-q" placeholder="Tìm tiêu đề hoặc nội dung…" aria-label="Tìm bài đăng">
         <select class="inp" id="tf-pj" aria-label="Lọc theo dự án"><option value="">Mọi dự án</option></select>
         <select class="inp" id="tf-unit" aria-label="Lọc theo sản phẩm" disabled><option value="">Chọn dự án trước</option></select>
-        <select class="inp" id="tf-kind" aria-label="Loại bài">
+        <select class="inp" id="tf-intent" aria-label="Loại bài">
           <option value="">Mọi loại</option>
-          <option value="pj">Bài dự án</option>
-          <option value="unit">Bài sản phẩm</option>
-        </select>
-        <select class="inp" id="tf-intent" aria-label="Khi khách hỏi">
-          <option value="">Mọi câu hỏi</option>
-          <option value="intro">Giới thiệu lần đầu</option>
-          <option value="place">Vị trí</option>
-          <option value="unit">Căn này</option>
-          <option value="media">Ảnh/video</option>
-          <option value="bank">Cọc/STK</option>
         </select>
       </div>
     </div>
@@ -142,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
   }
   function clipSafe(s) {
-    return String(s || '').replace(/https?:\/\/(?:drive|docs)\.google\.com\S*/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+    return RECO.stripDrive(s);
   }
   function qs() {
     var h = location.hash, i = h.indexOf('?');
@@ -175,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function () {
   var tfQ = document.getElementById('tf-q');
   var tfPj = document.getElementById('tf-pj');
   var tfUnit = document.getElementById('tf-unit');
-  var tfKind = document.getElementById('tf-kind');
   var tfIntent = document.getElementById('tf-intent');
   var tfWrap = document.getElementById('tpl-filter-wrap');
 
@@ -201,9 +190,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (q && RECO.norm((t.title || '') + ' ' + (t.body || '')).indexOf(q) < 0) return false;
     if (tfPj.value && t.projectId !== tfPj.value) return false;
     if (tfUnit.value && tplUnitId(t) !== tfUnit.value) return false;
-    var isUnit = !!(t.unitId || t.hotId);
-    if (tfKind.value === 'pj' && isUnit) return false;
-    if (tfKind.value === 'unit' && !isUnit) return false;
     if (tfIntent.value && S.tplIntent(t) !== tfIntent.value) return false;
     return true;
   }
@@ -228,6 +214,12 @@ document.addEventListener('DOMContentLoaded', function () {
       pjs.map(function (p) { return '<option value="' + E(p.id) + '">' + E(p.name) + '</option>'; }).join('');
     tfPj.value = pjs.some(function (p) { return p.id === keep; }) ? keep : '';
     fillUnitSelect(tfPj.value);
+    if (tfIntent && !tfIntent.getAttribute('data-filled')) {
+      S.INTENTS.forEach(function (it) {
+        tfIntent.appendChild(new Option(it.lab, it.id));
+      });
+      tfIntent.setAttribute('data-filled', '1');
+    }
   }
 
   function viewMode() {
@@ -241,9 +233,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function replyChip(t) {
     var intent = S.intentOf(S.tplIntent(t));
-    var k = (t.ticks || [])[0];
-    var lab = (intent && intent.short) || TICK_LAB[k] || 'Tổng quan';
-    return '<span class="chip-reply">Trả lời · ' + E(lab) + '</span>';
+    var lab = (intent && intent.short) || 'Bài';
+    return '<span class="chip-reply">' + E(lab) + '</span>';
   }
   function postCard(t, actions, extra) {
     var img = RECO.asset(S.tplCover(t));
@@ -346,7 +337,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   fillTplFilters();
   tfQ.addEventListener('input', function () { paintTeam(); paintMine(); });
-  tfKind.addEventListener('change', function () { paintTeam(); paintMine(); });
   tfIntent.addEventListener('change', function () { paintTeam(); paintMine(); });
   tfUnit.addEventListener('change', function () { paintTeam(); paintMine(); });
   tfPj.addEventListener('change', function () {

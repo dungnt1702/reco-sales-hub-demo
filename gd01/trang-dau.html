@@ -672,10 +672,8 @@ document.addEventListener('DOMContentLoaded', function () {
       var u = S.find('units', h.unitId);
       var p = S.find('projects', u.pj);
       var line = (h.pitch || '').split(/[.\n]/)[0].trim();
-      var tpl = S.tplForUnit(u.id);
-      var gui = tpl
-        ? '<a class="btn btn-primary btn-sm" data-roles="gd gddu tkkd qlkd nvbh mkt" href="' + go('mau.html', 'tpl=' + encodeURIComponent(tpl) + '&unit=' + encodeURIComponent(u.id)) + '">Gửi</a>'
-        : '';
+      var gui = '<a class="btn btn-primary btn-sm" data-roles="gd gddu tkkd qlkd nvbh mkt" href="' +
+        go('mau.html', 'new=1&hot=' + encodeURIComponent(h.id) + '&pj=' + encodeURIComponent(u.pj)) + '">Gửi</a>';
       return '<div class="card card-pad reco-slide-item' + (n === 0 ? ' on' : '') + '">' +
         '<div class="row-tight mb-1"><b>' + esc(u.id) + '</b><span class="chip">' + esc(u.kind) + '</span></div>' +
         '<p class="small" style="margin:0">' + esc(line) + '</p>' +
@@ -781,7 +779,7 @@ document.addEventListener('DOMContentLoaded', function () {
         '<div class="pcard-media">' +
           '<img src="' + img + '" alt="' + esc(t.title) + '" loading="lazy">' +
           '<span class="top-left">' + (isHot ? '<span class="hot">HOT</span> ' : '') +
-            '<span class="chip-reply">Trả lời · ' + esc(intent.short) + '</span></span>' +
+            '<span class="chip-reply">' + esc(intent.short) + '</span></span>' +
           '<span class="on-media"><h3>' + esc(t.title) + '</h3>' +
             '<span class="place">' + esc(p ? p.name : '') + '</span></span>' +
         '</div>' +

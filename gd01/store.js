@@ -10,7 +10,7 @@
 (function () {
   'use strict';
 
-  var KEY = 'reco-salehub-demo-gd01-v7';
+  var KEY = 'reco-salehub-demo-gd01-v8';
 
   /* ---------- Dữ liệu gốc ---------- */
   function seed() {
@@ -1400,7 +1400,15 @@
         { id: 'st10', projectId: 'celestine', title: 'Khi khách hỏi: ảnh/video căn T1-08.02', scope: 'shared', ownerUserId: null, approved: true,
           intent: 'media', unitId: 'T1-08.02', hotId: 'hp1',
           body: 'Anh/chị ơi, em gửi ảnh căn T1-08.02 đã duyệt trên Hub — nội thất minh họa, video flycam nếu có.\n\nGiá không ghi trên tin, em đối chiếu bảng hàng CĐT.',
-          ticks: ['unitGallery', 'gallery'] }
+          ticks: ['unitGallery', 'gallery'] },
+        { id: 'st11', projectId: 'celestine', title: 'Đẩy hàng Hot — T1-08.02 Celestine', scope: 'personal', ownerUserId: 'u5', approved: true,
+          intent: 'hot', unitId: 'T1-08.02', hotId: 'hp1',
+          body: 'Anh/chị ơi, hàng em đang đẩy tuần này: T1-08.02 — Celestine Westlake.\n\n2PN view Hồ Tây, tầng 8 dễ dẫn khách xem nhà — đợt 1 sắp đóng.\n\nGiá xem bảng hàng CĐT, em không ghi trên tin.',
+          ticks: ['hot', 'spec', 'pitch', 'unitGallery', 'gallery'] },
+        { id: 'st12', projectId: 'palmy', title: 'Mời xem nhà — Palmy Biztown', scope: 'personal', ownerUserId: 'u5', approved: true,
+          intent: 'invite',
+          body: 'Anh/chị ơi, em mời anh/chị ra nhà mẫu Palmy Biztown tại Thanh Liệt, Thanh Trì.\n\nKhung giờ em ghi giúp anh/chị trên tin này. Giá đất và CSBH trên bảng hàng CĐT, em không ghi trên tin.',
+          ticks: ['overview', 'gallery', 'place'] }
       ],
 
       /* Người dùng — MH-10 */
@@ -1845,13 +1853,67 @@
     bank: 'STK đặt cọc', hot: 'SP Hot', spec: 'Thông số căn', view: 'Hướng và view',
     unitGallery: 'Ảnh căn', pitch: 'Mô tả căn'
   };
+  /* Chip loại bài giữ “Sản phẩm này”; noun chỉ đổi ở câu phụ / body / nhãn khối. */
+  function productNoun(pj) {
+    var p = typeof pj === 'string' ? find('projects', pj) : pj;
+    var t = p && p.type;
+    if (t === 'thaptang') return 'shophouse';
+    if (t === 'datnen') return 'lô';
+    if (t === 'tamlinh') return 'khuôn viên';
+    if (t === 'canho') return 'căn';
+    return 'sản phẩm';
+  }
+  function tickLab(k, pjId) {
+    var n = productNoun(pjId);
+    if (k === 'spec') return 'Thông số ' + n;
+    if (k === 'unitGallery') return 'Ảnh ' + n;
+    if (k === 'pitch') return 'Mô tả ' + n;
+    return TICK_LAB[k] || k;
+  }
   var INTENTS = [
-    { id: 'intro', lab: 'Giới thiệu lần đầu', short: 'Giới thiệu', ticks: ['overview', 'place', 'gallery', 'amenity'] },
-    { id: 'place', lab: 'Khách hỏi vị trí', short: 'Vị trí', ticks: ['place', 'gallery', 'overview'] },
-    { id: 'unit', lab: 'Khách hỏi căn này', short: 'Căn', ticks: ['spec', 'view', 'unitGallery', 'pitch', 'gallery'] },
-    { id: 'media', lab: 'Khách hỏi ảnh/video', short: 'Ảnh/video', ticks: ['unitGallery', 'gallery'] },
-    { id: 'bank', lab: 'Khách hỏi cọc/STK', short: 'STK', ticks: ['bank', 'overview'] }
+    { id: 'intro', lab: 'Giới thiệu dự án', short: 'Giới thiệu',
+      hint: 'Lead mới hoặc đẩy tin, chưa chốt sản phẩm.',
+      ticks: ['overview', 'place', 'gallery', 'amenity'],
+      needUnit: 'no', needHot: 'no', defaultScope: 'shared' },
+    { id: 'place', lab: 'Vị trí', short: 'Vị trí',
+      hint: 'Ở đâu, gần gì — hỏi hoặc pitch kết nối.',
+      ticks: ['place', 'gallery', 'overview'],
+      needUnit: 'no', needHot: 'no', defaultScope: 'shared' },
+    { id: 'unit', lab: 'Sản phẩm này', short: 'Sản phẩm',
+      hint: 'Đang tư vấn một căn, lô hoặc shophouse.',
+      ticks: ['spec', 'view', 'unitGallery', 'pitch', 'gallery'],
+      needUnit: 'required', needHot: 'optional', defaultScope: 'personal' },
+    { id: 'hot', lab: 'Đẩy hàng Hot', short: 'Hot',
+      hint: 'Outbound — hàng quản lý đã gắn Hot.',
+      ticks: ['hot', 'spec', 'pitch', 'unitGallery', 'gallery'],
+      needUnit: 'no', needHot: 'required', defaultScope: 'personal' },
+    { id: 'media', lab: 'Album ảnh/video', short: 'Ảnh/video',
+      hint: 'Khách xin hình hoặc dán kênh ngoài.',
+      ticks: ['gallery', 'unitGallery'],
+      needUnit: 'optional', needHot: 'no', defaultScope: 'personal' },
+    { id: 'invite', lab: 'Mời xem nhà', short: 'Hẹn xem',
+      hint: 'Hẹn nhà mẫu hoặc hiện trường. Khung giờ sale điền tay.',
+      ticks: ['overview', 'gallery', 'place'],
+      needUnit: 'optional', needHot: 'no', defaultScope: 'personal' },
+    { id: 'bank', lab: 'Cọc và STK', short: 'STK',
+      hint: 'Khách đã đồng ý chuyển khoản. Không ghi số tiền.',
+      ticks: ['bank', 'overview'],
+      needUnit: 'optional', needHot: 'no', defaultScope: 'personal' }
   ];
+  function autoTitle(intentId, pjId, unitId) {
+    var spec = intentOf(intentId);
+    var p = find('projects', pjId);
+    var pname = p ? p.name : '';
+    if ((intentId === 'unit' || intentId === 'hot' || intentId === 'media') && unitId) {
+      var u = unitView(unitId);
+      if (u) {
+        if (intentId === 'hot') return 'Hot — ' + u.id;
+        if (intentId === 'media') return 'Ảnh — ' + u.id;
+        return u.id + ' — ' + (u.kind || productNoun(pjId));
+      }
+    }
+    return (spec.short || spec.lab) + (pname ? ' — ' + pname : '');
+  }
   var DEMO_VIDEO = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
   var PROJECT_VIDEOS = {
     leparc: [{ type: 'video', src: DEMO_VIDEO, poster: 'reco-banner.jpg', name: 'Flycam Le Parc Place (minh họa)' }],
@@ -1910,13 +1972,21 @@
     return hot ? hot.unitId : '';
   }
   function tplIntent(t) {
-    if (t && t.intent) return t.intent;
+    if (t && t.intent) {
+      var known = intentOf(t.intent);
+      if (known && known.id === t.intent) return t.intent;
+    }
     var ticks = (t && t.ticks) || [];
+    if (t && t.hotId) {
+      var hot = find('hotProducts', t.hotId);
+      if (hot && hot.active) return 'hot';
+    }
+    if (ticks.indexOf('hot') >= 0) return 'hot';
     var k = ticks[0];
     if (k === 'place') return 'place';
     if (k === 'bank') return 'bank';
     if (k === 'unitGallery') return 'media';
-    if (k === 'spec' || k === 'view' || k === 'pitch' || (t && (t.unitId || t.hotId))) return 'unit';
+    if (k === 'spec' || k === 'view' || k === 'pitch' || (t && t.unitId)) return 'unit';
     return 'intro';
   }
   function tplCover(t) {
@@ -1968,6 +2038,7 @@
     label: label, money: money, billion: billion, projectName: projectName, canSee: canSee, channelOf: channelOf,
     unitView: unitView, unitCover: unitCover, tplForUnit: tplForUnit,
     TICK_LAB: TICK_LAB, INTENTS: INTENTS, tplIntent: tplIntent, tplCover: tplCover, tplUnitId: tplUnitId,
+    productNoun: productNoun, tickLab: tickLab, autoTitle: autoTitle,
     projectMedia: projectMedia, unitMedia: unitMedia, mediaCover: mediaCover, intentOf: intentOf,
     myProjects: myProjects,
     atLeastAsStrict: atLeastAsStrict, stricter: stricter, canGrant: canGrant,

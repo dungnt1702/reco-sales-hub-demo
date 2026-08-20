@@ -2080,7 +2080,7 @@ document.addEventListener('DOMContentLoaded', function () {
     box.innerHTML = rows.map(function (h, n) {
       var u = S.find('units', h.unitId);
       var gui = '<a class="btn btn-primary btn-sm" data-roles="gd gddu tkkd qlkd nvbh mkt" href="' +
-        goQs('mau.html', 'new=1&unit=' + encodeURIComponent(u.id) + '&pj=' + encodeURIComponent(PJ)) + '">Gửi</a>';
+        goQs('mau.html', 'new=1&hot=' + encodeURIComponent(h.id) + '&pj=' + encodeURIComponent(PJ)) + '">Gửi</a>';
       return '<div class="card card-pad reco-slide-item' + (n === 0 ? ' on' : '') + '">' +
         '<div class="row-tight mb-1"><b>' + esc(u.id) + '</b><span class="chip">' + esc(u.kind) + '</span></div>' +
         '<p class="small" style="margin:0">' + esc(h.pitch) + '</p>' +
@@ -2123,7 +2123,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return '<article class="pcard pcard-post">' +
         '<div class="pcard-media">' +
           '<img src="' + RECO.asset(S.tplCover(t)) + '" alt="' + esc(t.title) + '" loading="lazy">' +
-          '<span class="top-left"><span class="chip-reply">Trả lời · ' + esc(intent.short) + '</span></span>' +
+          '<span class="top-left"><span class="chip-reply">' + esc(intent.short) + '</span></span>' +
           (chip ? '<span class="top-right">' + chip + '</span>' : '') +
         '</div>' +
         '<div class="pcard-body pcard-body-post">' +

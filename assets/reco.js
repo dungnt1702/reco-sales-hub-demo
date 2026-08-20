@@ -164,6 +164,8 @@
     eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
     pin: '<path d="M12 17v5"/><path d="M9 3h6l-1 6 3.5 3.5H6.5L10 9Z"/>',
     caret: '<path d="m9 6 6 6-6 6"/>',
+    chevup: '<path d="m6 15 6-6 6 6"/>',
+    chevdn: '<path d="m6 9 6 6 6-6"/>',
     grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
     list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
@@ -373,6 +375,22 @@
      Chỉ tìm trên thông tin đã sắp xếp, không tìm sâu bên trong tệp — đúng BR-TX-06. */
   function norm(s) {
     return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd');
+  }
+  /* QD-076: cấm nhúng URL Drive/Docs trong mẫu tin (kể cả // và redirect google.com/url). */
+  function hasDriveUrl(s) {
+    var t = String(s || '');
+    try { t = t + '\n' + decodeURIComponent(t); } catch (e) {}
+    return /(?:https?:)?\/\/(?:www\.)?(?:drive|docs)\.google\.com/i.test(t)
+      || /(?:drive|docs)\.google\.com/i.test(t);
+  }
+  function stripDrive(s) {
+    return String(s || '')
+      .replace(/(?:https?:)?\/\/(?:www\.)?(?:drive|docs)\.google\.com\S*/gi, '')
+      .replace(/https?:\/\/(?:www\.)?google\.com\/url\?\S*/gi, function (m) {
+        return /(?:drive|docs)\.google\.com/i.test(m) ? '' : m;
+      })
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
   }
   function search(q) {
     var S = window.RECO.store;
@@ -1742,6 +1760,7 @@
     /* Màn đang được nhúng trong khung điện thoại / máy tính bảng — mã màn nên thoát sớm */
     get embedded() { return framed(); },
     search: search, norm: norm, trackRecent: trackRecent,
+    hasDriveUrl: hasDriveUrl, stripDrive: stripDrive,
     bindSlide: bindSlide,
     renderBell: renderBell, roleOf: roleOf,
     /* Đăng ký vẽ lại theo kho, tự hủy khi bản gói chuyển sang màn khác.

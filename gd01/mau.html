@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
   }
   function clipSafe(s) {
-    return String(s || '').replace(/https?:\/\/(?:drive|docs)\.google\.com\S*/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+    return RECO.stripDrive(s);
   }
   function guestUrl(slug) {
     var href = goPage('trang-gui-khach.html', 'slug=' + encodeURIComponent(slug));
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function ticksHtml(t) {
     return (t.ticks || []).map(function (k) {
-      return '<span class="chip">' + E(TICK_LAB[k] || k) + '</span>';
+      return '<span class="chip">' + E(S.tickLab(k, t.projectId) || TICK_LAB[k] || k) + '</span>';
     }).join(' ');
   }
 
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
       E(b.holder) + '<br>' + E(b.no) + ' · ' + E(b.at) + '<br>Nội dung: ' + E(b.memo) + '</p></div>';
   }
   function blockSpec(u) {
-    return '<div class="mau-block" data-block="spec"><h3>Thông số căn</h3><div class="kv kv-3">' +
+    return '<div class="mau-block" data-block="spec"><h3>' + E(S.tickLab('spec', u.pj)) + '</h3><div class="kv kv-3">' +
       '<div><div class="k">Mã</div><div class="v">' + E(u.id) + '</div></div>' +
       '<div><div class="k">Loại</div><div class="v">' + E(u.kind) + '</div></div>' +
       '<div><div class="k">Diện tích</div><div class="v">' + areaTxt(u.area) + '</div></div>' +
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function blockUnitGal(src, openU) {
     var g = unitItems(src, openU);
     if (!g.length) return '';
-    return '<div class="mau-block" data-block="unitGallery"><h3>Ảnh căn</h3>' + mediaHtml(g) +
+    return '<div class="mau-block" data-block="unitGallery"><h3>' + E(S.tickLab('unitGallery', (src.projectId))) + '</h3>' + mediaHtml(g) +
       '<p class="micro muted mt-1">Ảnh minh họa nội thất.</p></div>';
   }
   function blockGallery(src) {
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function blockPitch(u, hot) {
     var text = (u && u.pitch) || (hot && hot.pitch) || '';
     if (!text) return '';
-    return '<div class="mau-block" data-block="pitch"><h3>Mô tả căn</h3><p class="small" style="white-space:pre-wrap;margin:0">' + E(text) + '</p></div>';
+    return '<div class="mau-block" data-block="pitch"><h3>' + E(S.tickLab('pitch', (u && u.pj) || (hot && (S.find('units', hot.unitId) || {}).pj))) + '</h3><p class="small" style="white-space:pre-wrap;margin:0">' + E(text) + '</p></div>';
   }
 
   function renderBlock(k, src, openU) {
@@ -286,7 +286,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var blocks = '';
     var wantUnit = UNIT_TICKS.some(function (k) { return hasTick(src, k); });
     if (wantUnit && !u) {
-      blocks += '<div class="mau-block mau-need"><p class="small muted" style="margin:0">Chọn căn catalog hoặc sản phẩm Hot để hiện khối sản phẩm trên mẫu.</p></div>';
+      var needN = S.productNoun(src.projectId);
+      blocks += '<div class="mau-block mau-need"><p class="small muted" style="margin:0">Chọn ' + E(needN) + ' catalog hoặc sản phẩm Hot để hiện khối sản phẩm trên mẫu.</p></div>';
     }
     var firstMediaTick = null;
     ticks.forEach(function (k) {
@@ -297,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var list = k === 'unitGallery' ? unitMediaList : galMediaList;
         var rest = list.slice(1);
         if (rest.length) {
-          blocks += '<div class="mau-block" data-block="' + k + '"><h3>' + E(TICK_LAB[k]) + '</h3>' + mediaHtml(rest) + '</div>';
+          blocks += '<div class="mau-block" data-block="' + k + '"><h3>' + E(S.tickLab(k, src.projectId) || TICK_LAB[k]) + '</h3>' + mediaHtml(rest) + '</div>';
         }
         return;
       }
@@ -397,6 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function intentBody(intent, pjId, unitId) {
     var p = S.find('projects', pjId) || {};
     var u = unitId ? S.unitView(unitId) : null;
+    var n = S.productNoun(pjId);
     if (intent === 'intro') {
       return 'Anh/chị ơi, em gửi thông tin ' + (p.name || 'dự án') + '.\n\n· ' + (p.struct || '') +
         '\n· ' + (p.place || '') + '\n\nGiá và bảng hàng em đối chiếu CĐT rồi gửi riêng — không ghi trên tin này.';
@@ -406,35 +408,59 @@ document.addEventListener('DOMContentLoaded', function () {
         (p.area ? ', ' + p.area : '') + '.\n\nEm gửi ảnh và tổng quan ngắn. ' + PRICE_CLOSE;
     }
     if (intent === 'unit') {
-      if (!u) return 'Anh/chị ơi, căn em đang tư vấn:\n\nChọn căn catalog bên dưới. ' + PRICE_CLOSE;
-      return 'Anh/chị ơi, căn em đang tư vấn:\n\n' + u.id + ' — ' + (p.name || '') +
+      if (!u) return 'Anh/chị ơi, ' + n + ' em đang tư vấn:\n\nChọn ' + n + ' catalog bên dưới. ' + PRICE_CLOSE;
+      return 'Anh/chị ơi, ' + n + ' em đang tư vấn:\n\n' + u.id + ' — ' + (p.name || '') +
         '\n· ' + u.kind + ', ' + areaTxt(u.area) + (u.dir ? ', ' + u.dir : '') +
-        (u.view ? ', view ' + u.view : '') + '\n\nẢnh căn trong đường dẫn. ' + PRICE_CLOSE;
+        (u.view ? ', view ' + u.view : '') + '\n\nẢnh ' + n + ' trong đường dẫn. ' + PRICE_CLOSE;
     }
-    if (intent === 'media') return 'Anh/chị ơi, em gửi ảnh/căn đã duyệt trên Hub, video nếu dự án có.\n\n' + PRICE_CLOSE;
+    if (intent === 'hot') {
+      var hotHit = unitId ? S.get('hotProducts').filter(function (h) {
+        return h.unitId === unitId && h.active;
+      })[0] : null;
+      var pitch = (hotHit && hotHit.pitch) || '';
+      return 'Anh/chị ơi, hàng em đang đẩy tuần này' + (u ? ': ' + u.id + ' — ' + (p.name || '') : '') +
+        '.\n\n' + (pitch ? pitch + '\n\n' : '') + PRICE_CLOSE;
+    }
+    if (intent === 'media') {
+      return 'Anh/chị ơi, em gửi ảnh ' + n + ' đã duyệt trên Hub, video nếu dự án có.\n\n' + PRICE_CLOSE;
+    }
+    if (intent === 'invite') {
+      return 'Anh/chị ơi, em mời anh/chị ra xem ' + (p.name || 'dự án') +
+        (p.place ? ' tại ' + p.place : '') + '.\n\nKhung giờ em ghi giúp anh/chị trên tin này. ' + PRICE_CLOSE;
+    }
     if (intent === 'bank' && p.bank) {
       return 'Anh/chị chuyển khoản đúng cú pháp trên trang giúp em đối chiếu sao kê trong 24 giờ.\n\nChủ tài khoản: ' +
         p.bank.holder + '\nSố TK: ' + p.bank.no + ' · ' + p.bank.at + '\nNội dung: ' + p.bank.memo;
+    }
+    if (intent === 'bank') {
+      return 'Dự án chưa có STK công khai trên Hub. Nhờ Thư ký kinh doanh cập nhật trước khi gửi khách.';
     }
     return '';
   }
 
   function renderEdit() {
     var fromUnit = !!(isNew && openUnit);
-    var startIntent = (t && S.tplIntent(t)) || (fromUnit ? 'unit' : 'intro');
+    var qHot = q.get('hot');
+    var startIntent = (t && S.tplIntent(t)) || (qHot ? 'hot' : (fromUnit ? 'unit' : 'intro'));
+    var startSpec = S.intentOf(startIntent);
     var startTicks = (t && t.ticks && t.ticks.length)
       ? t.ticks.slice()
-      : S.intentOf(startIntent).ticks.slice();
+      : startSpec.ticks.slice();
     var startPj = (t && t.projectId) || qPj || (openUnit && (S.find('units', openUnit) || {}).pj) || 'celestine';
     var startUnit = (t && t.unitId) || openUnit || '';
-    var startHot = (t && t.hotId) || '';
+    var startHot = (t && t.hotId) || qHot || '';
     if (fromUnit && !startHot) {
       var uh = S.get('hotProducts').filter(function (h) { return h.unitId === openUnit && h.active; })[0];
       if (uh) startHot = uh.id;
     }
+    if (startIntent === 'hot' && startHot) {
+      var hs = S.find('hotProducts', startHot);
+      if (hs) startUnit = hs.unitId;
+    }
     var draft = t || {
       title: '', body: '', projectId: startPj, ticks: startTicks,
-      hotId: startHot, unitId: startUnit, scope: 'personal', approved: true, intent: startIntent
+      hotId: startHot, unitId: startUnit, scope: startSpec.defaultScope || 'personal',
+      approved: true, intent: startIntent
     };
     if (isNew && !t) {
       draft.projectId = startPj;
@@ -442,34 +468,44 @@ document.addEventListener('DOMContentLoaded', function () {
       draft.unitId = startUnit;
       draft.hotId = startHot;
       draft.intent = startIntent;
+      draft.scope = startSpec.defaultScope || 'personal';
       draft.body = intentBody(startIntent, startPj, startUnit);
+      draft.title = S.autoTitle(startIntent, startPj, startUnit);
     }
     var tickOrder = (draft.ticks || []).slice();
     var intent = draft.intent || startIntent;
     var galleryMedia = (draft.galleryMedia || []).slice();
     var unitMediaSel = (draft.unitMedia || []).slice();
     var bodyTouched = !!(t && t.body);
+    var titleTouched = !!(t && t.title);
+    var ticksTouched = false;
+    var scopeTouched = !isNew;
     var projects = S.get('projects').filter(function (p) { return !p.hidden; });
     var cancelHref = t ? goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) : goPage('chia-se.html');
     document.getElementById('mau-layout').classList.add('is-edit');
     document.getElementById('mau-cta').hidden = false;
 
     function unitOpts(pj, selected) {
+      var n = S.productNoun(pj);
+      var spec = S.intentOf(intent);
+      var empty = spec.needUnit === 'required' ? ('— Chọn ' + n + ' —') : ('— Không gắn ' + n + ' —');
       var rows = S.get('unitProfiles').filter(function (x) {
         var u = S.find('units', x.unitId);
         return x.catalog && u && u.pj === pj;
       });
-      return '<option value="">— Không gắn căn —</option>' + rows.map(function (x) {
+      return '<option value="">' + E(empty) + '</option>' + rows.map(function (x) {
         var u = S.find('units', x.unitId);
         return '<option value="' + E(x.unitId) + '"' + (selected === x.unitId ? ' selected' : '') + '>' + E(u.id) + ' · ' + E(u.kind) + '</option>';
       }).join('');
     }
     function hotOpts(pj, selected) {
+      var spec = S.intentOf(intent);
+      var empty = spec.needHot === 'required' ? '— Chọn SP Hot —' : '— Không gắn Hot —';
       var hots = S.get('hotProducts').filter(function (h) {
         var u = S.find('units', h.unitId);
         return h.active && u && u.pj === pj;
       });
-      return '<option value="">— Không gắn Hot —</option>' + hots.map(function (h) {
+      return '<option value="">' + E(empty) + '</option>' + hots.map(function (h) {
         var u = S.find('units', h.unitId);
         return '<option value="' + E(h.id) + '"' + (selected === h.id ? ' selected' : '') + '>' + E(u.id) + ' — ' + E(h.pitch).slice(0, 42) + '</option>';
       }).join('');
@@ -501,14 +537,24 @@ document.addEventListener('DOMContentLoaded', function () {
       var nGal = document.getElementById('pick-gal-n');
       var nUnit = document.getElementById('pick-unit-n');
       if (nGal) nGal.textContent = galleryMedia.length ? ('Đã chọn ' + galleryMedia.length) : 'Mặc định 1 ảnh bìa';
-      if (nUnit) nUnit.textContent = unitMediaSel.length ? ('Đã chọn ' + unitMediaSel.length) : 'Mặc định ảnh căn';
+      if (nUnit) nUnit.textContent = unitMediaSel.length
+        ? ('Đã chọn ' + unitMediaSel.length)
+        : ('Mặc định ảnh ' + S.productNoun(d.projectId));
     }
 
     function tickRow(k, on) {
+      var pj = document.getElementById('nm-pj').value;
+      var moves = '';
+      if (on) {
+        moves = '<span class="tick-move">' +
+          '<button type="button" class="tick-up" aria-label="Đưa lên">' + RECO.svg('chevup') + '</button>' +
+          '<button type="button" class="tick-dn" aria-label="Đưa xuống">' + RECO.svg('chevdn') + '</button>' +
+        '</span>' +
+        '<span class="tick-grip" role="button" tabindex="0" aria-label="Kéo đổi thứ tự">' + RECO.svg('grip') + '</span>';
+      }
       return '<div class="tick-row" data-tick="' + k + '">' +
-        '<label class="pick-row"><input type="checkbox" value="' + k + '"' + (on ? ' checked' : '') + '> ' + E(TICK_LAB[k]) + '</label>' +
-        (on ? '<span class="tick-grip" role="button" tabindex="0" aria-label="Kéo đổi thứ tự">' + RECO.svg('grip') + '</span>' : '') +
-      '</div>';
+        '<label class="pick-row"><input type="checkbox" value="' + k + '"' + (on ? ' checked' : '') + '> ' +
+          E(S.tickLab(k, pj)) + '</label>' + moves + '</div>';
     }
     function paintTicks() {
       var onBox = document.getElementById('tick-on');
@@ -523,6 +569,32 @@ document.addEventListener('DOMContentLoaded', function () {
       var unitBtn = document.getElementById('pick-unit');
       if (galBtn) galBtn.hidden = !showGal;
       if (unitBtn) unitBtn.hidden = !showUnit;
+      bindTickMove(onBox);
+    }
+    function moveTick(k, dir) {
+      var i = tickOrder.indexOf(k);
+      if (i < 0) return;
+      var j = i + dir;
+      if (j < 0 || j >= tickOrder.length) return;
+      var tmp = tickOrder[i];
+      tickOrder[i] = tickOrder[j];
+      tickOrder[j] = tmp;
+      ticksTouched = true;
+      paintTicks();
+      paintPreview();
+    }
+    function bindTickMove(box) {
+      if (!box || box.getAttribute('data-move-bound')) return;
+      box.setAttribute('data-move-bound', '1');
+      box.addEventListener('click', function (e) {
+        var up = e.target.closest('.tick-up');
+        var dn = e.target.closest('.tick-dn');
+        if (!up && !dn) return;
+        var row = e.target.closest('[data-tick]');
+        if (!row) return;
+        e.preventDefault();
+        moveTick(row.getAttribute('data-tick'), up ? -1 : 1);
+      });
     }
     function bindTickDrag(box) {
       var drag = null;
@@ -555,6 +627,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         drag.row.classList.remove('is-drag');
         tickOrder = rowList().map(function (r) { return r.getAttribute('data-tick'); });
+        ticksTouched = true;
         drag = null;
         document.removeEventListener('pointermove', onMove, true);
         document.removeEventListener('pointerup', endDrag, true);
@@ -578,20 +651,80 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    function applyIntent(id, forceBody) {
+    function fillTitleIfFresh() {
+      if (titleTouched) return;
+      var el = document.getElementById('nm-title');
+      if (!el) return;
+      var uid = document.getElementById('nm-unit').value;
+      var hid = document.getElementById('nm-hot').value;
+      if (intent === 'hot' && hid) {
+        var hh = S.find('hotProducts', hid);
+        if (hh) uid = hh.unitId;
+      }
+      el.value = S.autoTitle(intent, document.getElementById('nm-pj').value, uid);
+    }
+    function syncFields() {
+      var spec = S.intentOf(intent);
+      var wrapU = document.getElementById('wrap-unit');
+      var wrapH = document.getElementById('wrap-hot');
+      var hint = document.getElementById('intent-hint');
+      var uHint = document.getElementById('unit-hint');
+      var pj = document.getElementById('nm-pj').value;
+      var n = S.productNoun(pj);
+      if (hint) hint.textContent = spec.hint || '';
+      if (wrapU) wrapU.hidden = spec.needUnit === 'no';
+      if (wrapH) wrapH.hidden = spec.needHot === 'no';
+      if (uHint) uHint.textContent = 'Theo loại hình dự án, Hub gọi là ' + n + '.';
+      var unitReq = document.getElementById('nm-unit');
+      if (unitReq) {
+        if (spec.needUnit === 'required') unitReq.setAttribute('data-required', '1');
+        else unitReq.removeAttribute('data-required');
+        unitReq.setAttribute('data-msg', 'Chọn ' + n + ' trước khi lưu.');
+      }
+      var hotReq = document.getElementById('nm-hot');
+      if (hotReq) {
+        if (spec.needHot === 'required') hotReq.setAttribute('data-required', '1');
+        else hotReq.removeAttribute('data-required');
+        hotReq.setAttribute('data-msg', 'Chọn SP Hot đang active, hoặc nhờ quản lý gắn Hot.');
+      }
+      if (!scopeTouched) {
+        var want = spec.defaultScope === 'shared' ? 'shared' : 'personal';
+        var radios = document.querySelectorAll('#mau-cta input[name="nm-scope"]');
+        radios.forEach(function (r) { r.checked = r.value === want; });
+      }
+      document.querySelectorAll('#intent-chips [data-intent]').forEach(function (b) {
+        b.setAttribute('aria-pressed', b.getAttribute('data-intent') === intent ? 'true' : 'false');
+      });
+    }
+    function applyIntent(id, forceBody, silent) {
       var spec = S.intentOf(id);
       intent = spec.id;
-      tickOrder = spec.ticks.slice();
-      document.querySelectorAll('#intent-chips [data-intent]').forEach(function (b) {
-        b.setAttribute('aria-pressed', b.getAttribute('data-intent') === id ? 'true' : 'false');
-      });
+      if (!ticksTouched) tickOrder = spec.ticks.slice();
       if (forceBody || !bodyTouched) {
         var dPj = document.getElementById('nm-pj').value;
         var dUnit = document.getElementById('nm-unit').value;
         document.getElementById('nm-body').value = intentBody(id, dPj, dUnit);
       }
+      fillTitleIfFresh();
+      fillSelects();
+      syncFields();
       paintTicks();
       paintPreview();
+      if (hasBankTick()) forcePersonalForBank(!silent);
+      if (!silent) RECO.toast('Đã đổi khối theo loại ' + spec.short);
+    }
+    function hasBankTick() {
+      return tickOrder.indexOf('bank') >= 0 || intent === 'bank';
+    }
+    function forcePersonalForBank(toastIt) {
+      if (!hasBankTick()) return false;
+      var shared = document.querySelector('#mau-cta input[name="nm-scope"][value="shared"]');
+      if (!shared || !shared.checked) return false;
+      var radios = document.querySelectorAll('#mau-cta input[name="nm-scope"]');
+      radios.forEach(function (r) { r.checked = r.value === 'personal'; });
+      scopeTouched = true;
+      if (toastIt) RECO.toast('STK chỉ lưu mẫu của tôi.');
+      return true;
     }
 
     function openPicker(kind) {
@@ -599,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var uid = document.getElementById('nm-unit').value;
       var items = kind === 'gallery' ? S.projectMedia(pj) : S.unitMedia(uid);
       if (kind === 'unitGallery' && !uid) {
-        RECO.toast('Chọn căn catalog trước khi chọn ảnh căn', { danger: true });
+        RECO.toast('Chọn ' + S.productNoun(pj) + ' catalog trước khi chọn ảnh', { danger: true });
         return;
       }
       var selected = (kind === 'gallery' ? galleryMedia : unitMediaSel).slice();
@@ -633,7 +766,7 @@ document.addEventListener('DOMContentLoaded', function () {
       m.innerHTML =
         '<div class="modal-box" style="max-width:640px">' +
           '<div class="modal-head"><div><span class="eyebrow">Chọn media</span><h3>' +
-            (kind === 'gallery' ? 'Ảnh / video dự án' : 'Ảnh / video căn') + '</h3></div>' +
+            (kind === 'gallery' ? 'Ảnh / video dự án' : ('Ảnh / video ' + S.productNoun(pj))) + '</h3></div>' +
             '<button class="icon-btn" data-x aria-label="Đóng">' + RECO.svg('x') + '</button></div>' +
           '<div class="modal-body">' + body +
             '<p class="micro muted mt-2">Chọn một hoặc nhiều. Video mở đường dẫn xem, không tải tệp lên Hub.</p></div>' +
@@ -667,32 +800,38 @@ document.addEventListener('DOMContentLoaded', function () {
     var aside = document.getElementById('mau-cta');
     aside.innerHTML =
       '<div class="card card-pad mau-composer">' +
-        '<div class="field"><span class="lab">Khách hỏi</span>' +
-          '<div class="intent-chips mt-1" id="intent-chips" role="group" aria-label="Câu khách hỏi">' +
+        '<div class="field"><span class="lab">Loại bài</span>' +
+          '<div class="intent-chips mt-1" id="intent-chips" role="group" aria-label="Loại bài">' +
             S.INTENTS.map(function (it) {
               return '<button type="button" data-intent="' + it.id + '" aria-pressed="' + (it.id === intent ? 'true' : 'false') + '">' + E(it.lab) + '</button>';
             }).join('') +
-          '</div></div>' +
+          '</div>' +
+          '<p class="micro muted mt-1" id="intent-hint"></p></div>' +
         '<label class="field"><span class="lab">Dự án</span>' +
           '<select class="inp" id="nm-pj">' + projects.map(function (p) {
             return '<option value="' + E(p.id) + '"' + (p.id === draft.projectId ? ' selected' : '') + '>' + E(p.name) + '</option>';
           }).join('') + '</select></label>' +
+        '<div class="field" id="wrap-unit"><span class="lab">Sản phẩm này</span>' +
+          '<select class="inp" id="nm-unit"></select>' +
+          '<p class="micro muted mt-1" id="unit-hint"></p></div>' +
         '<label class="field"><span class="lab">Tiêu đề</span>' +
           '<input class="inp" type="text" id="nm-title" data-required data-msg="Đặt tiêu đề để tìm lại bài." value="' + E(draft.title) + '"></label>' +
         '<label class="field"><span class="lab">Nội dung tin</span>' +
           '<textarea class="inp" id="nm-body" rows="5" data-required data-msg="Nhập nội dung tin gửi khách.">' + E(draft.body) + '</textarea></label>' +
-        '<div class="field"><span class="lab">Khối đang dùng (kéo góc phải để đổi thứ tự)</span>' +
-          '<div class="tick-rows mt-1" id="tick-on"></div></div>' +
-        '<div class="field mt-2"><span class="lab">Thêm khối</span>' +
-          '<div class="tick-pool mt-1" id="tick-off"></div></div>' +
         '<div class="field mt-2" id="pick-gal">' +
-          '<button type="button" class="btn btn-outline btn-sm" id="btn-gal">Chọn ảnh/video dự án</button>' +
+          '<button type="button" class="btn btn-outline" id="btn-gal">Chọn ảnh/video dự án</button>' +
           '<span class="micro muted" id="pick-gal-n" style="margin-left:8px"></span></div>' +
         '<div class="field mt-1" id="pick-unit">' +
-          '<button type="button" class="btn btn-outline btn-sm" id="btn-unit">Chọn ảnh/video căn</button>' +
+          '<button type="button" class="btn btn-outline" id="btn-unit">Chọn ảnh/video sản phẩm</button>' +
           '<span class="micro muted" id="pick-unit-n" style="margin-left:8px"></span></div>' +
-        '<label class="field mt-2"><span class="lab">Gắn căn (catalog)</span><select class="inp" id="nm-unit"></select></label>' +
-        '<label class="field mt-2"><span class="lab">Sản phẩm Hot</span><select class="inp" id="nm-hot"></select></label>' +
+        '<label class="field mt-2" id="wrap-hot"><span class="lab">Sản phẩm Hot</span><select class="inp" id="nm-hot"></select></label>' +
+        '<details class="tick-adv field mt-2" id="tick-adv">' +
+          '<summary>Tuỳ chỉnh khối</summary>' +
+          '<div class="field mt-2"><span class="lab">Khối đang dùng (kéo góc phải hoặc ▲▼)</span>' +
+            '<div class="tick-rows mt-1" id="tick-on"></div></div>' +
+          '<div class="field mt-2"><span class="lab">Thêm khối</span>' +
+            '<div class="tick-pool mt-1" id="tick-off"></div></div>' +
+        '</details>' +
         '<fieldset class="field mt-2" style="border:0;padding:0"><span class="lab">Lưu thành</span>' +
           '<div class="tick-list mt-1">' +
             '<label class="pick-row"><input type="radio" name="nm-scope" value="personal"' + (draft.scope !== 'shared' ? ' checked' : '') + '> Mẫu của tôi</label>' +
@@ -712,6 +851,7 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('nm-hot').innerHTML = hotOpts(pj, keepH);
     }
     fillSelects();
+    syncFields();
     paintTicks();
     bindTickDrag(document.getElementById('tick-on'));
     paintPreview();
@@ -719,9 +859,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('intent-chips').addEventListener('click', function (e) {
       var b = e.target.closest('[data-intent]');
       if (!b) return;
-      applyIntent(b.getAttribute('data-intent'), false);
+      var id = b.getAttribute('data-intent');
+      if (id === intent) return;
+      applyIntent(id, false);
     });
     document.getElementById('nm-body').addEventListener('input', function () { bodyTouched = true; });
+    document.getElementById('nm-title').addEventListener('input', function () { titleTouched = true; });
     document.getElementById('btn-gal').addEventListener('click', function () { openPicker('gallery'); });
     document.getElementById('btn-unit').addEventListener('click', function () { openPicker('unitGallery'); });
 
@@ -732,6 +875,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     aside.addEventListener('change', function (e) {
       var el = e.target;
+      if (el && el.name === 'nm-scope') {
+        scopeTouched = true;
+        if (el.value === 'shared') forcePersonalForBank(true);
+      }
       if (el && el.id === 'nm-pj') {
         fillSelects();
         galleryMedia = [];
@@ -739,28 +886,77 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!bodyTouched) {
           document.getElementById('nm-body').value = intentBody(intent, el.value, document.getElementById('nm-unit').value);
         }
+        fillTitleIfFresh();
+        syncFields();
       }
       if (el && el.id === 'nm-unit') {
         unitMediaSel = [];
-        if (!bodyTouched && (intent === 'unit' || intent === 'media')) {
+        if (!bodyTouched && (intent === 'unit' || intent === 'media' || intent === 'hot' || intent === 'invite')) {
           document.getElementById('nm-body').value = intentBody(intent, document.getElementById('nm-pj').value, el.value);
+        }
+        fillTitleIfFresh();
+      }
+      if (el && el.id === 'nm-hot') {
+        var hh = S.find('hotProducts', el.value);
+        if (hh) {
+          var unitEl = document.getElementById('nm-unit');
+          if (unitEl.querySelector('option[value="' + hh.unitId + '"]')) unitEl.value = hh.unitId;
+          if (!bodyTouched) {
+            document.getElementById('nm-body').value = intentBody(intent, document.getElementById('nm-pj').value, hh.unitId);
+          }
+          fillTitleIfFresh();
         }
       }
       if (el && el.type === 'checkbox' && el.closest('[data-tick]')) {
         var k = el.value;
+        ticksTouched = true;
         if (el.checked) {
           if (tickOrder.indexOf(k) < 0) tickOrder.push(k);
         } else {
           tickOrder = tickOrder.filter(function (x) { return x !== k; });
         }
+        if (k === 'bank' && el.checked) forcePersonalForBank(true);
         paintTicks();
       }
       paintPreview();
     });
 
     document.getElementById('mau-save').addEventListener('click', function () {
-      if (!RECO.validate(aside)) return;
+      var spec = S.intentOf(intent);
       var d = readDraft();
+      if (spec.needHot === 'required' && d.hotId) {
+        var hotRow = S.find('hotProducts', d.hotId);
+        if (hotRow) d.unitId = hotRow.unitId;
+      }
+      if (!RECO.validate(aside)) return;
+      if (spec.needUnit === 'required' && !d.unitId) {
+        RECO.toast('Chọn ' + S.productNoun(d.projectId) + ' trước khi lưu.', { danger: true });
+        document.getElementById('nm-unit').focus();
+        return;
+      }
+      if (spec.needHot === 'required') {
+        var hotOk = S.find('hotProducts', d.hotId);
+        if (!hotOk || !hotOk.active) {
+          RECO.toast('Chọn SP Hot đang active, hoặc nhờ quản lý gắn Hot.', { danger: true });
+          document.getElementById('nm-hot').focus();
+          return;
+        }
+      }
+      if (intent === 'bank' || d.ticks.indexOf('bank') >= 0) {
+        var pjBank = S.find('projects', d.projectId);
+        if (!pjBank || !pjBank.bank) {
+          RECO.toast('Dự án chưa có STK công khai. Nhờ Thư ký kinh doanh cập nhật.', { danger: true });
+          return;
+        }
+        if (d.scope === 'shared') {
+          forcePersonalForBank(true);
+          d.scope = 'personal';
+        }
+      }
+      if (RECO.hasDriveUrl(d.body || '')) {
+        RECO.toast('Không nhúng URL Drive trong mẫu.', { danger: true });
+        return;
+      }
       var payload = {
         projectId: d.projectId,
         title: d.title,

@@ -135,7 +135,9 @@ document.addEventListener('DOMContentLoaded', function () {
     cell('Giá', 'Liên hệ / xem bảng hàng CĐT');
 
   document.getElementById('sp-gui').setAttribute('href',
-    go('mau.html', 'new=1&unit=' + encodeURIComponent(u.id) + '&pj=' + encodeURIComponent(pj)));
+    go('mau.html', hot
+      ? ('new=1&hot=' + encodeURIComponent(hot.id) + '&pj=' + encodeURIComponent(pj))
+      : ('new=1&unit=' + encodeURIComponent(u.id) + '&pj=' + encodeURIComponent(pj))));
   document.getElementById('sp-pj').setAttribute('href', go('du-an-chi-tiet.html', 'pj=' + encodeURIComponent(pj)));
   document.getElementById('sp-copy').addEventListener('click', function () {
     RECO.copy(pitch).then(function (ok) {
