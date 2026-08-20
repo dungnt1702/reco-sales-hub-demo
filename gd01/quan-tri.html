@@ -68,7 +68,7 @@
             <option value="closed">Ngừng bán</option>
             <option value="hidden">Đã ẩn</option>
           </select>
-          <button type="button" class="icon-btn" id="pj-reset" aria-label="Xóa lọc" title="Xóa lọc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          <button type="button" class="btn-text" id="pj-reset" hidden>Xóa lọc</button>
         </div>
 
         <p class="small muted mb-2" id="pj-count" style="margin:0"></p>
@@ -299,6 +299,11 @@
       <label class="field"><span class="lab">Quy mô</span>
         <input class="inp" type="text" id="pj-f-struct" placeholder="2 tháp · 23 tầng · 216 căn"
                data-required data-msg="Ghi quy mô dự án, ví dụ 2 tháp · 23 tầng · 216 căn."></label>
+      <label class="field"><span class="lab">Kênh bán</span>
+        <select class="inp" id="pj-f-channel">
+          <option value="moi">Bán mới</option>
+          <option value="cn">Chuyển nhượng</option>
+        </select></label>
       <label class="field"><span class="lab">Trạng thái</span>
         <select class="inp" id="pj-f-status">
           <option value="live">Đang bán</option>
@@ -469,6 +474,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   var STATUS = { live: 'Đang bán', soon: 'Sắp mở bán', closed: 'Ngừng bán' };
   var STATUS_CLS = { live: 'st-live', soon: 'st-wait', closed: 'st-off' };
+  var CHANNEL = S.CHANNELS || { moi: 'Bán mới', cn: 'Chuyển nhượng' };
 
   function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd'); }
   function toISO(vn) { var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(vn || ''); return m ? m[3] + '-' + m[2] + '-' + m[1] : ''; }
@@ -516,7 +522,8 @@ document.addEventListener('DOMContentLoaded', function () {
       '<td data-l="Cấu trúc">' + esc(p.struct) + '</td>' +
       '<td data-l="Trạng thái">' + (p.hidden
         ? '<span class="st st-stop">Đã ẩn</span>'
-        : '<span class="st ' + (STATUS_CLS[p.status] || 'st-off') + '">' + esc(p.statusText) + '</span>') + '</td>' +
+        : '<span class="st ' + (STATUS_CLS[p.status] || 'st-off') + '">' + esc(p.statusText) + '</span>' +
+          (S.channelOf(p) === 'cn' ? ' <span class="chip chip-cn">' + esc(p.channelText || CHANNEL.cn) + '</span>' : '')) + '</td>' +
       '<td data-l="Nổi bật">' + (p.featured ? '<span class="hot">Có</span>' : '<span class="chip">Không</span>') + '</td>' +
       '<td data-l="" class="r"><div class="row-tight" style="justify-content:flex-end">' +
         '<button class="btn btn-quiet btn-sm" data-act="units" data-id="' + p.id + '" data-roles="gddu tkkd">Bảng hàng</button>' +
@@ -560,6 +567,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('pj-f-type').value = p ? p.type : 'canho';
     document.getElementById('pj-f-struct').value = p ? p.struct : '';
     document.getElementById('pj-f-status').value = p ? p.status : 'live';
+    document.getElementById('pj-f-channel').value = p ? (S.channelOf(p)) : 'moi';
     document.getElementById('pj-f-featured').checked = p ? !!p.featured : false;
     pjForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
     pjForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
@@ -593,6 +601,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var place = document.getElementById('pj-f-place').value.trim();
     var type = document.getElementById('pj-f-type').value;
     var status = document.getElementById('pj-f-status').value;
+    var channel = document.getElementById('pj-f-channel').value === 'cn' ? 'cn' : 'moi';
     var patch = {
       name: document.getElementById('pj-f-name').value.trim(),
       place: place,
@@ -600,6 +609,7 @@ document.addEventListener('DOMContentLoaded', function () {
       type: type, typeName: TYPE[type],
       struct: document.getElementById('pj-f-struct').value.trim(),
       status: status, statusText: STATUS[status],
+      channel: channel, channelText: CHANNEL[channel],
       featured: document.getElementById('pj-f-featured').checked
     };
     RECO.busy(pjSave, editingPj ? 'Đang lưu…' : 'Đang tạo…', 900, function () {

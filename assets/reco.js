@@ -732,14 +732,18 @@
     document.querySelectorAll('[data-filter-sheet]').forEach(function (bar) {
       if (bar.querySelector('.filter-extras')) return;
       var extras = [];
+      var resetBtn = null;
       Array.prototype.forEach.call(bar.children, function (el) {
         if (el.classList && el.classList.contains('searchbox')) return;
         if (el.tagName === 'INPUT' && (el.type === 'search' || el.id && el.id.indexOf('-q') >= 0)) return;
+        if (el.classList && el.classList.contains('btn-text')) { resetBtn = el; return; }
         var lab = ((el.getAttribute && el.getAttribute('aria-label')) || el.textContent || '').replace(/\s+/g, ' ').trim();
-        if (/xóa lọc|xoá lọc|bỏ lọc|bỏ bộ lọc/i.test(lab)) return;
+        if (/xóa lọc|xoá lọc|bỏ lọc|bỏ bộ lọc/i.test(lab)) { resetBtn = el; return; }
         extras.push(el);
       });
       if (!extras.length) return;
+      var nSel = extras.filter(function (el) { return el.tagName === 'SELECT'; }).length;
+      if (nSel) bar.style.setProperty('--filter-n', String(nSel));
       var wrap = document.createElement('div');
       wrap.className = 'filter-extras';
       extras.forEach(function (el) { wrap.appendChild(el); });
@@ -761,21 +765,63 @@
       open.innerHTML = svg('filter');
       bar.appendChild(open);
       bar.appendChild(wrap);
+      if (resetBtn) bar.appendChild(resetBtn);
+      var foot = document.createElement('div');
+      foot.className = 'fsheet-foot';
+      var sheetReset = document.createElement('button');
+      sheetReset.type = 'button';
+      sheetReset.className = 'btn-text';
+      sheetReset.textContent = 'Xóa lọc';
+      foot.appendChild(sheetReset);
+      wrap.appendChild(foot);
+      function searchEl() { return bar.querySelector('input[type="search"]'); }
+      function selectActive(s) { return !!(s.value && s.value !== '__mine__'); }
+      function isDirty() {
+        var qel = searchEl();
+        if (qel && qel.value.trim()) return true;
+        var dirty = false;
+        wrap.querySelectorAll('select').forEach(function (s) { if (selectActive(s)) dirty = true; });
+        wrap.querySelectorAll('input[type="search"], input[type="text"]').forEach(function (s) {
+          if (s.value && s.value.trim()) dirty = true;
+        });
+        return dirty;
+      }
+      function syncReset() {
+        var on = isDirty();
+        if (resetBtn) resetBtn.hidden = !on;
+        sheetReset.hidden = !on;
+      }
       function count() {
         var n = 0;
-        wrap.querySelectorAll('select').forEach(function (s) { if (s.value) n++; });
+        wrap.querySelectorAll('select').forEach(function (s) { if (selectActive(s)) n++; });
         wrap.querySelectorAll('input[type="search"], input[type="text"]').forEach(function (s) {
           if (s.value && s.value.trim()) n++;
         });
         open.innerHTML = svg('filter') + (n ? '<span class="fsheet-n">' + n + '</span>' : '');
+        syncReset();
+      }
+      function clearFilters() {
+        if (resetBtn) { resetBtn.click(); return; }
+        var qel = searchEl();
+        if (qel) qel.value = '';
+        wrap.querySelectorAll('select').forEach(function (s) { s.value = ''; });
+        wrap.dispatchEvent(new Event('change', { bubbles: true }));
+        if (qel) qel.dispatchEvent(new Event('input', { bubbles: true }));
       }
       open.addEventListener('click', function () {
         if (wrap.classList.contains('open')) closeSheet();
         else showSheet(wrap);
       });
       closeBtn.addEventListener('click', closeSheet);
+      sheetReset.addEventListener('click', function () {
+        clearFilters();
+        closeSheet();
+      });
       wrap.addEventListener('change', count);
       wrap.addEventListener('input', count);
+      bar.addEventListener('input', count);
+      bar.addEventListener('change', count);
+      if (resetBtn) resetBtn.addEventListener('click', function () { setTimeout(count, 0); });
       count();
     });
   }

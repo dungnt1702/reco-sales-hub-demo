@@ -20,6 +20,7 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
+    <div class="list-chrome">
     <div class="page-head">
       <h1>Dự án</h1>
       <div class="page-head-end">
@@ -34,9 +35,20 @@
       </div>
     </div>
 
+    <div class="seg-channel" role="tablist" aria-label="Kênh bán">
+      <button type="button" role="tab" id="ch-moi" data-channel="moi" aria-selected="true">
+        <span class="seg-label-full">Bán mới</span><span class="seg-label-short">Bán mới</span>
+        <span class="n" id="n-moi">0</span>
+      </button>
+      <button type="button" role="tab" id="ch-cn" data-channel="cn" aria-selected="false" tabindex="-1">
+        <span class="seg-label-full">Chuyển nhượng</span><span class="seg-label-short">CN</span>
+        <span class="n" id="n-cn">0</span>
+      </button>
+    </div>
+
     <!-- Bộ lọc -->
     <div class="filterbar" data-filter-sheet>
-      <div class="searchbox" style="display:flex;flex:1 1 220px;min-width:0">
+      <div class="searchbox">
         <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="search" id="f-q" placeholder="Tìm theo tên dự án" aria-label="Tìm theo tên dự án">
       </div>
@@ -73,7 +85,8 @@
         <option value="80-150">80 – 150 m²</option>
         <option value="150-9999">Trên 150 m²</option>
       </select>
-      <button type="button" class="icon-btn" id="f-reset" aria-label="Xóa lọc" title="Xóa lọc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <button type="button" class="btn-text" id="f-reset" hidden>Xóa lọc</button>
+    </div>
     </div>
 
     <p class="small muted mt-2 mb-2" id="count" style="margin:0" role="status">Đang hiển thị 6 dự án</p>
@@ -93,13 +106,15 @@
     <!-- Trạng thái không có kết quả (câu hỏi còn mở của Luồng 1) -->
     <div id="rong" hidden>
       <div class="empty">
-        <h3>Chưa có dự án nào khớp bộ lọc</h3>
+        <h3 id="rong-t">Chưa có dự án nào khớp bộ lọc</h3>
         <div class="row mt-3" style="justify-content:center">
           <button type="button" class="btn btn-primary" id="rong-reset">Bỏ bộ lọc</button>
         </div>
       </div>
-      <h3 class="mt-4 mb-2">Ba dự án cập nhật gần nhất</h3>
-      <div class="grid g-3" id="goi-y"></div>
+      <div id="goi-y-block">
+        <h3 class="mt-4 mb-2">Ba dự án cập nhật gần nhất</h3>
+        <div class="grid g-3" id="goi-y"></div>
+      </div>
     </div>
 
   </div>
@@ -132,6 +147,43 @@ document.addEventListener('DOMContentLoaded', function () {
     var h = location.hash, i = h.indexOf('?');
     return new URLSearchParams(i >= 0 ? h.slice(i + 1) : location.search).get(name) || '';
   }
+  function setChannelUrl(ch) {
+    var h = location.hash, i = h.indexOf('?');
+    if (h && (h.indexOf('#') === 0) && (i >= 0 || h.length > 1 && h.indexOf('?') < 0 && /^#/.test(h))) {
+      var path = i >= 0 ? h.slice(0, i) : h;
+      var sp = new URLSearchParams(i >= 0 ? h.slice(i + 1) : '');
+      if (ch === 'cn') sp.set('channel', 'cn');
+      else sp.delete('channel');
+      var qstr = sp.toString();
+      history.replaceState(null, '', location.pathname + location.search + path + (qstr ? '?' + qstr : ''));
+      return;
+    }
+    var u = new URL(location.href);
+    if (ch === 'cn') u.searchParams.set('channel', 'cn');
+    else u.searchParams.delete('channel');
+    history.replaceState(null, '', u);
+  }
+  function channel() {
+    var on = document.querySelector('.seg-channel [aria-selected="true"]');
+    return (on && on.getAttribute('data-channel') === 'cn') ? 'cn' : 'moi';
+  }
+  function selectChannel(ch) {
+    var want = ch === 'cn' ? 'cn' : 'moi';
+    document.querySelectorAll('.seg-channel [role="tab"]').forEach(function (t) {
+      var on = t.getAttribute('data-channel') === want;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+    });
+    setChannelUrl(want);
+  }
+  function tabCounts() {
+    var moi = 0, cn = 0;
+    P.forEach(function (p) {
+      if (RECO.store.channelOf(p) === 'cn') cn++; else moi++;
+    });
+    document.getElementById('n-moi').textContent = moi;
+    document.getElementById('n-cn').textContent = cn;
+  }
 
   function inRange(v, spec) {
     if (!spec) return true;
@@ -142,8 +194,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function match() {
     var t = norm(q.value.trim());
+    var ch = channel();
     return P.filter(function (p) {
-      return (!t || norm(p.name + ' ' + p.place + ' ' + p.typeName).indexOf(t) >= 0)
+      return RECO.store.channelOf(p) === ch
+        && (!t || norm(p.name + ' ' + p.place + ' ' + p.typeName).indexOf(t) >= 0)
         && (!fa.value || p.area === fa.value)
         && (!ft.value || p.type === ft.value)
         && (!fg.value || p.segment === fg.value)
@@ -154,10 +208,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function draw(list) {
     var none = list.length === 0;
+    var ch = channel();
+    var word = ch === 'cn' ? 'chuyển nhượng' : 'bán mới';
     kq.hidden = none; rong.hidden = !none;
     count.textContent = none ? 'Không có dự án nào khớp bộ lọc' : 'Đang hiển thị ' + list.length + ' dự án';
+    document.getElementById('rong-t').textContent = 'Chưa có dự án ' + word + ' khớp bộ lọc';
     if (none) {
-      RECO_DATA.paint('#goi-y', P.slice(0, 3));
+      var sugg = P.filter(function (p) { return RECO.store.channelOf(p) === ch; }).slice(0, 3);
+      var block = document.getElementById('goi-y-block');
+      if (sugg.length) {
+        block.hidden = false;
+        RECO_DATA.paint('#goi-y', sugg);
+      } else {
+        block.hidden = true;
+      }
     } else {
       RECO_DATA.paint('#cards', list);
       RECO_DATA.paint('#rows', list, 'list');
@@ -196,6 +260,25 @@ document.addEventListener('DOMContentLoaded', function () {
   q.value = param('q');
   ft.value = param('type');
   fa.value = param('area');
+  selectChannel(param('channel') === 'cn' ? 'cn' : 'moi');
+  tabCounts();
+
+  var seg = document.querySelector('.seg-channel');
+  seg.addEventListener('click', function (e) {
+    var t = e.target.closest('[role="tab"]');
+    if (!t) return;
+    selectChannel(t.getAttribute('data-channel'));
+    apply();
+  });
+  seg.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    setTimeout(function () {
+      var t = document.activeElement && document.activeElement.closest('[role="tab"]');
+      if (t && seg.contains(t)) selectChannel(t.getAttribute('data-channel'));
+      apply();
+    }, 0);
+  });
+
   apply();
 });
 </script>

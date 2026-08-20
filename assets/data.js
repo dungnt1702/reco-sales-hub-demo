@@ -13,7 +13,15 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
   function st(p) {
     var cls = p.status === 'live' ? 'st-live' : p.status === 'soon' ? 'st-wait' : 'st-off';
-    return '<span class="st ' + cls + '">' + p.statusText + '</span>';
+    return '<span class="st ' + cls + '">' + esc(p.statusText || 'Đang bán') + '</span>';
+  }
+  function channelChip(p) {
+    var ch = (S.channelOf ? S.channelOf(p) : (p && p.channel)) || 'moi';
+    if (ch !== 'cn') return '';
+    return '<span class="chip chip-cn">' + esc((p && p.channelText) || 'Chuyển nhượng') + '</span>';
+  }
+  function verifyChip(p) {
+    return p.verify ? '<span class="chip">Cần xác nhận lại</span>' : '';
   }
   function pinBtn(p) {
     return '<button type="button" class="pin-btn" data-pj="' + p.id + '" aria-pressed="' + (p.pinned ? 'true' : 'false') +
@@ -32,7 +40,7 @@
           '<span class="on-media"><h3>' + esc(p.name) + '</h3><span class="place">' + esc(p.place) + '</span></span>' +
         '</div>' +
         '<div class="pcard-body">' +
-          '<div class="row-tight">' + st(p) + '<span class="chip">' + esc(p.typeName) + '</span></div>' +
+          '<div class="row-tight">' + st(p) + channelChip(p) + verifyChip(p) + '<span class="chip">' + esc(p.typeName) + '</span></div>' +
           '<div class="pcard-facts">' +
             '<div><div class="k">Khoảng giá</div><div class="v">' + p.priceText + '</div></div>' +
             '<div><div class="k">Diện tích</div><div class="v">' + p.sizeText + '</div></div>' +
@@ -49,7 +57,7 @@
       '<a class="prow" href="' + href(p) + '">' +
         '<img src="' + RECO.asset(p.img) + '" alt="' + esc(p.name) + '" loading="lazy">' +
         '<div>' +
-          '<div class="row-tight mb-1">' + st(p) + (p.featured ? '<span class="hot">Nổi bật</span>' : '') + '</div>' +
+          '<div class="row-tight mb-1">' + st(p) + channelChip(p) + verifyChip(p) + (p.featured ? '<span class="hot">Nổi bật</span>' : '') + '</div>' +
           '<h3 style="font-size:1.02rem">' + esc(p.name) + '</h3>' +
           '<div class="small muted">' + esc(p.place) + ' · ' + esc(p.typeName) + '</div>' +
           '<div class="row-tight mt-1"><span class="chip">' + p.priceText + '</span><span class="chip">' + p.sizeText + '</span>' +

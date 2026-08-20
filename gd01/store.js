@@ -10,7 +10,7 @@
 (function () {
   'use strict';
 
-  var KEY = 'reco-salehub-demo-gd01-v5';
+  var KEY = 'reco-salehub-demo-gd01-v7';
 
   /* ---------- Dữ liệu gốc ---------- */
   function seed() {
@@ -25,7 +25,7 @@
            Mọi số liệu giao dịch, hoa hồng và nhân sự trong bản mô phỏng vẫn là số giả. */
         { id: 'leparc', name: 'Le Parc Place — ParkCity Hanoi', code: 'LPP', area: 'Hà Nội', place: 'Dương Nội, Hà Đông, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 4.6, priceText: '4,6 – 18 tỷ',
-          size: 62, sizeText: '62 – 210 m²', status: 'live', statusText: 'Đang bán',
+          size: 62, sizeText: '62 – 210 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
           featured: true, pinned: true, hidden: false, img: 'reco-banner.jpg', docs: 24, ready: 88,
           /* Ảnh tóm tắt dự án — mục "Tóm tắt dự án, dạng 1 ảnh" của SaleHUB (BR-DL-17, QD-065).
              Ảnh do RECO tải lên; dự án chưa có thì khu vực 1 hiện trạng thái trống. */
@@ -51,7 +51,7 @@
            trên web, mà buổi demo vẫn cần phiếu tính giá và giữ chỗ chạy đủ (QD-073). */
         { id: 'celestine', name: 'Celestine Westlake', code: 'CWL', area: 'Hà Nội', place: '300 Võ Chí Công, Tây Hồ, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 8.4, priceText: '8,4 – 26 tỷ',
-          size: 78, sizeText: '78 – 220 m²', status: 'live', statusText: 'Đang bán',
+          size: 78, sizeText: '78 – 220 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
           /* Ảnh phối cảnh thật tải từ trang dự án của RECO — đúng hai tháp bên Hồ Tây */
           featured: true, pinned: true, hidden: false, img: 'celestine-westlake.jpg', docs: 48, ready: 100,
           summary: 'celestine-westlake.jpg',
@@ -62,7 +62,7 @@
           src: 'recogroup.vn/du-an/celestine-westlake · trích 17/08/2026', illus: true },
         { id: 'la-perle', name: 'La Perle Héritage', code: 'LPH', area: 'Khánh Hòa', place: '16 Phước Long, Nha Trang, Khánh Hòa',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 3.9, priceText: 'Từ 65 triệu/m² · 3,9 – 20 tỷ',
-          size: 60, sizeText: '60 – 160 m²', status: 'live', statusText: 'Đang bán',
+          size: 60, sizeText: '60 – 160 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
           featured: true, pinned: true, hidden: false, img: 'la-perle.webp', docs: 36, ready: 92,
           updated: 'Hôm nay, 09:15', struct: '39 tầng nổi · 41 nhà liền kề',
           tenure: 'Sở hữu lâu dài',
@@ -73,7 +73,7 @@
           illus: true },
         { id: 'palmy', name: 'Palmy Biztown', code: 'PBT', area: 'Hà Nội', place: 'Thanh Liệt, Thanh Trì, Hà Nội',
           type: 'thaptang', typeName: 'Biệt thự, nhà liền kề, shophouse', segment: 'cao', price: 8.5, priceText: '8,5 – 19 tỷ',
-          size: 90, sizeText: '90 – 160 m² đất', status: 'live', statusText: 'Đang bán',
+          size: 90, sizeText: '90 – 160 m² đất', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
           /* Ảnh phối cảnh thật — dãy liên kế mang biển hiệu Palmy Biztown */
           featured: false, pinned: true, hidden: false, img: 'palmy-biztown.jpg', docs: 29, ready: 84,
           updated: 'Hôm qua, 16:40', struct: '142 căn thương mại liên kế · 4–5 tầng',
@@ -83,7 +83,7 @@
           src: 'recogroup.vn/du-an/palmy-biztown · trích 17/08/2026', illus: true },
         { id: 'thien-duong', name: 'Công Viên Thiên Đường', code: 'CVTD', area: 'Tuyên Quang', place: 'Lang Quán, Yên Sơn, Tuyên Quang',
           type: 'tamlinh', typeName: 'Bất động sản tâm linh', segment: 'thap', price: 0.048, priceText: '48 triệu – 1,4 tỷ',
-          size: 4, sizeText: '4 – 64 m²', status: 'live', statusText: 'Đang bán',
+          size: 4, sizeText: '4 – 64 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
           featured: true, pinned: false, hidden: false, img: 'thien-duong.jpg', docs: 17, ready: 46,
           updated: '3 ngày trước', struct: '5 dòng khuôn viên · 1.240 khuôn viên đã quy hoạch',
           tenure: 'Sử dụng lâu dài',
@@ -93,7 +93,7 @@
         { id: 'central', name: 'Khu đô thị Việt Hàn', code: 'VH', area: 'Thái Nguyên', place: 'Hồng Tiến, Phổ Yên, Thái Nguyên',
           /* Phân khúc theo đơn giá mỗi mét vuông: lô 90 m² giá 1,8 tỷ là 20 triệu/m² → Giá thấp */
           type: 'datnen', typeName: 'Đất nền', segment: 'thap', price: 1.8, priceText: '1,8 – 7,2 tỷ',
-          size: 90, sizeText: '90 – 369 m²', status: 'live', statusText: 'Đang bán',
+          size: 90, sizeText: '90 – 369 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
           /* Chưa lấy được ảnh phối cảnh xác thực của Việt Hàn (khudothiviethan.com không trả về ảnh
              qua HTTP thường, ảnh trong bản trích 10/08/2026 thì gán lẫn giữa các dự án) — dùng banner
              RECO trung tính, thà không có ảnh còn hơn dán ảnh của dự án khác lên tên dự án này. */
@@ -105,7 +105,8 @@
           src: 'khudothiviethan.com · trích 10/08/2026', illus: true },
         { id: 'opening', name: 'Gold Season — 47 Nguyễn Tuân', code: 'GS', area: 'Hà Nội', place: '47 Nguyễn Tuân, Thanh Xuân, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 4.2, priceText: '4,2 – 12 tỷ',
-          size: 64, sizeText: '64 – 170 m²', status: 'closed', statusText: 'Chuyển nhượng',
+          size: 64, sizeText: '64 – 170 m²', status: 'live', statusText: 'Đang bán',
+          channel: 'cn', channelText: 'Chuyển nhượng',
           /* Ảnh phối cảnh thật — đúng ảnh og:image của trang Gold Season trên reco.nhaongay.vn */
           featured: false, pinned: false, hidden: false, img: 'gold-season.jpg', docs: 33, ready: 100,
           updated: '12/07/2026', struct: '4 tòa Autumn, Five Seasons, Summer, Spring · 1.500 căn',
@@ -113,6 +114,67 @@
           owner: 'BĐS Mùa Đông – VID · vận hành TNR Holdings', handover: 'Đã bàn giao — hoàn thành Q2/2018',
           web: 'https://reco.nhaongay.vn/du-an/gold-season',
           src: 'reco.nhaongay.vn/du-an/gold-season · trích 17/08/2026 · giá gốc mở bán từ 22 triệu/m²',
+          illus: true },
+        { id: 'diamond', name: 'Diamond Residence — 25 Lê Văn Lương', code: 'DR', area: 'Hà Nội',
+          place: '25 Lê Văn Lương, Nhân Chính, Thanh Xuân, Hà Nội',
+          type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 5.8, priceText: '5,8 – 18 tỷ',
+          size: 62, sizeText: '62 – 204 m²', status: 'live', statusText: 'Đang bán',
+          channel: 'cn', channelText: 'Chuyển nhượng',
+          featured: false, pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 18, ready: 100,
+          updated: 'Hôm qua, 11:20', struct: '2 tháp · 35 tầng · 2–4 PN',
+          land: 'Ngã tư Lê Văn Lương – Hoàng Đạo Thúy', tenure: 'Sở hữu lâu dài',
+          owner: 'Công ty CP Phát triển đầu tư BRG', handover: 'Đã bàn giao',
+          web: 'https://reco.nhaongay.vn/du-an/diamond-residence',
+          src: 'reco.nhaongay.vn/du-an/diamond-residence · trích 20/08/2026',
+          verify: 'Trang dự án ghi 662 căn ở một chỗ và 405 căn ở chỗ khác — cần xác nhận lại trước khi gửi khách.',
+          illus: true },
+        { id: 'viha', name: 'Viha Complex — 107 Nguyễn Tuân', code: 'VHC', area: 'Hà Nội',
+          place: '107 Nguyễn Tuân, Thanh Xuân Trung, Hà Nội',
+          type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 4.5, priceText: '4,5 – 11 tỷ',
+          size: 72, sizeText: '72 – 118 m²', status: 'live', statusText: 'Đang bán',
+          channel: 'cn', channelText: 'Chuyển nhượng',
+          featured: false, pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 14, ready: 100,
+          updated: '3 ngày trước', struct: '1 tháp · 33 tầng nổi · 468 căn',
+          land: '7.432 m² · mật độ 42%', tenure: 'Sổ hồng lâu dài',
+          owner: 'Công ty TNHH Xuân Lộc Thọ', handover: 'Đã bàn giao',
+          web: 'https://reco.nhaongay.vn/du-an/viha-complex-107-nguyen-tuan',
+          src: 'reco.nhaongay.vn/du-an/viha-complex-107-nguyen-tuan · trích 20/08/2026',
+          illus: true },
+        { id: 'sapphire', name: 'Sapphire Palace — 4 Chính Kinh', code: 'SP', area: 'Hà Nội',
+          place: '4 Chính Kinh / 212 Nguyễn Trãi, Thanh Xuân, Hà Nội',
+          type: 'canho', typeName: 'Chung cư', segment: 'trung', price: 3.6, priceText: '20 – 30 triệu/m² · minh họa',
+          size: 70, sizeText: '70 – 110 m²', status: 'live', statusText: 'Đang bán',
+          channel: 'cn', channelText: 'Chuyển nhượng',
+          featured: false, pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 11, ready: 100,
+          updated: 'Hôm nay, 07:50', struct: '1 tháp · 21 tầng',
+          land: '3.171 m²', tenure: 'Sở hữu lâu dài',
+          owner: 'Công ty CP Bất động sản Hà Nội Sông Hồng', handover: 'Đã bàn giao — 04/2017',
+          web: 'https://reco.nhaongay.vn/du-an/sapphire-palace',
+          src: 'reco.nhaongay.vn/du-an/sapphire-palace · trích 20/08/2026 · web ghi 20–30 triệu/m²',
+          illus: true },
+        { id: 'king', name: 'King Palace — 108 Nguyễn Trãi', code: 'KP', area: 'Hà Nội',
+          place: '108 Nguyễn Trãi, Thượng Đình, Thanh Xuân, Hà Nội',
+          type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 5.5, priceText: '5,5 – 14 tỷ',
+          size: 81, sizeText: '81 – 126 m²', status: 'live', statusText: 'Đang bán',
+          channel: 'cn', channelText: 'Chuyển nhượng',
+          featured: false, pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 16, ready: 100,
+          updated: '2 ngày trước', struct: 'Tháp A 36 tầng · 410 căn',
+          land: '6.973 m² · mật độ 45,5%', tenure: 'Sổ hồng vĩnh viễn',
+          owner: 'Công ty CP BĐS Hoa Anh Đào', handover: 'Đã bàn giao — tháp A đang sử dụng',
+          web: 'https://reco.nhaongay.vn/du-an/king-palace',
+          src: 'reco.nhaongay.vn/du-an/king-palace · trích 20/08/2026',
+          illus: true },
+        { id: 'palm', name: 'Golden Palm — Lê Văn Lương', code: 'GP', area: 'Hà Nội',
+          place: 'Lê Văn Lương / ngã ba Hoàng Ngân, Nhân Chính, Thanh Xuân, Hà Nội',
+          type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 4.8, priceText: '4,8 – 12 tỷ',
+          size: 70, sizeText: '70 – 120 m²', status: 'live', statusText: 'Đang bán',
+          channel: 'cn', channelText: 'Chuyển nhượng',
+          featured: false, pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 12, ready: 100,
+          updated: '4 ngày trước', struct: '2 tòa · 27 tầng · 405 căn',
+          land: '5.859 m²', tenure: 'Sở hữu lâu dài',
+          owner: 'Công ty CP Phát triển đầu tư Hà Nội Sunrise (HDIS)', handover: 'Đã bàn giao — Q1/2018',
+          web: 'https://reco.nhaongay.vn/du-an/golden-palm',
+          src: 'reco.nhaongay.vn/du-an/golden-palm · trích 20/08/2026',
           illus: true }
       ],
 
@@ -174,7 +236,18 @@
         { id: 'GS-AU.1205', pj: 'opening', block: 'Autumn', floor: 12, kind: '2PN — chuyển nhượng', area: 64.0, dir: 'Đông Nam', price: 4200, state: 'con' },
         { id: 'GS-SU.1803', pj: 'opening', block: 'Summer', floor: 18, kind: '2PN+1 — chuyển nhượng', area: 86.5, dir: 'Đông', price: 5600, state: 'giu' },
         { id: 'GS-SP.2202', pj: 'opening', block: 'Spring', floor: 22, kind: '3PN — chuyển nhượng', area: 118.0, dir: 'Tây Nam', price: 7600, state: 'con' },
-        { id: 'GS-FS.2501', pj: 'opening', block: 'Five Seasons', floor: 25, kind: '3PN+1 — chuyển nhượng', area: 170.0, dir: 'Đông Nam', price: 12000, state: 'con' }
+        { id: 'GS-FS.2501', pj: 'opening', block: 'Five Seasons', floor: 25, kind: '3PN+1 — chuyển nhượng', area: 170.0, dir: 'Đông Nam', price: 12000, state: 'con' },
+        { id: 'DR-A.12.05', pj: 'diamond', block: 'Tháp A', floor: 12, kind: '2PN', area: 61.8, dir: 'Đông', price: 5800, state: 'con' },
+        { id: 'DR-B.18.03', pj: 'diamond', block: 'Tháp B', floor: 18, kind: '3PN', area: 103.8, dir: 'Đông Nam', price: 8900, state: 'giu' },
+        { id: 'DR-A.28.01', pj: 'diamond', block: 'Tháp A', floor: 28, kind: '4PN', area: 151.2, dir: 'Đông Nam', price: 14200, state: 'con' },
+        { id: 'VH-18.07', pj: 'viha', block: 'Tháp căn hộ', floor: 18, kind: '2PN', area: 71.8, dir: 'Đông Nam', price: 5200, state: 'con' },
+        { id: 'VH-23.04', pj: 'viha', block: 'Tháp căn hộ', floor: 23, kind: '3PN', area: 110.2, dir: 'Đông', price: 7800, state: 'con' },
+        { id: 'SP-09.03', pj: 'sapphire', block: 'Tháp Chính Kinh', floor: 9, kind: '2PN — có slot ô tô', area: 78.0, dir: 'Đông Nam', price: 4200, state: 'con' },
+        { id: 'SP-14.08', pj: 'sapphire', block: 'Tháp Chính Kinh', floor: 14, kind: '2PN', area: 86.0, dir: 'Tây Bắc', price: 4680, state: 'giu' },
+        { id: 'KP-A.11.08', pj: 'king', block: 'Tháp A', floor: 11, kind: '3PN', area: 105.0, dir: 'Nam', price: 6400, state: 'con' },
+        { id: 'KP-A.22.05', pj: 'king', block: 'Tháp A', floor: 22, kind: '2PN', area: 88.0, dir: 'Đông Nam', price: 5600, state: 'con' },
+        { id: 'GP-B.15.02', pj: 'palm', block: 'Tòa B', floor: 15, kind: '2PN', area: 74.0, dir: 'Đông', price: 4900, state: 'con' },
+        { id: 'GP-A.20.06', pj: 'palm', block: 'Tòa A', floor: 20, kind: '3PN', area: 96.0, dir: 'Đông Nam', price: 6800, state: 'ban' }
       ],
 
       /* Tài liệu — MH-05, MH-11, quản trị */
@@ -402,6 +475,16 @@
           body: 'Khu đô thị tại Hồng Tiến, Phổ Yên, Thái Nguyên — vùng phụ cận tổ hợp công nghiệp Yên Bình. Năm dòng sản phẩm đất nền: lô liền kề 90 m², lô tiêu chuẩn 100 m², lô góc thương mại 90–238 m², đất biệt thự 203–369 m² và đất nhà phố thương mại. Sổ đỏ lâu dài, mã lô và pháp lý xác nhận theo từng lô.' },
         { id: 'gs1', pj: 'opening', kind: 'overview', label: 'public',
           body: 'Tổ hợp căn hộ tại 47 Nguyễn Tuân, Thanh Xuân: bốn tòa Autumn, Five Seasons, Summer, Spring với khoảng 1.500 căn trên khu đất 22.000 m², mật độ xây dựng 36,4%; căn 64–170 m². Chủ đầu tư Mùa Đông – VID, vận hành TNR Holdings, kiến trúc Moore Ruble Yudell (Hoa Kỳ), hoàn thành quý II/2018. Dự án đã bàn giao nên RECO khai thác ở dạng chuyển nhượng và ký gửi, không còn hàng sơ cấp.' },
+        { id: 'dr1', pj: 'diamond', kind: 'overview', label: 'public',
+          body: 'BRG Diamond Residence tại 25 Lê Văn Lương, ngã tư Hoàng Đạo Thúy, Nhân Chính, Thanh Xuân. Hai tháp 35 tầng, căn 2–4 phòng ngủ khoảng 62–204 m², thiết kế P&T Group (Singapore). Chủ đầu tư BRG. Số căn trên trang NOV RECO ghi lệch nhau (662 và 405) — cần xác nhận lại trước khi gửi khách. Hàng chuyển nhượng, nhận nhà ở ngay.' },
+        { id: 'vhc1', pj: 'viha', kind: 'overview', label: 'public',
+          body: 'Viha Complex tại 107 Nguyễn Tuân, Thanh Xuân Trung — cùng phố với Gold Season. Một tháp 33 tầng nổi, 468 căn, khu đất 7.432 m², mật độ 42%. Căn 71,8–118,1 m², chủ đầu tư Xuân Lộc Thọ, sổ hồng lâu dài. RECO bán hàng chuyển nhượng, khách ở ngay.' },
+        { id: 'sp1', pj: 'sapphire', kind: 'overview', label: 'public',
+          body: 'Sapphire Palace tại 4 Chính Kinh / 212 Nguyễn Trãi, Thanh Xuân. Một tháp 21 tầng trên khu đất 3.171 m², bàn giao tháng 4/2017. Chủ đầu tư Hà Nội Sông Hồng. Trang NOV RECO ghi khoảng 20–30 triệu/m² — số minh họa, không dùng làm giá gửi khách. Hàng chuyển nhượng, gần Royal City và đường sắt trên cao.' },
+        { id: 'kp1', pj: 'king', kind: 'overview', label: 'public',
+          body: 'King Palace tại 108 Nguyễn Trãi, Thượng Đình, sát Royal City. Tháp A 36 tầng, 410 căn, 81–126 m², sổ hồng vĩnh viễn. Chủ đầu tư Hoa Anh Đào. Tháp A đã đi vào sử dụng; RECO khai thác chuyển nhượng căn hộ đã có sổ.' },
+        { id: 'gp1', pj: 'palm', kind: 'overview', label: 'public',
+          body: 'The Golden Palm tại Lê Văn Lương, ngã ba Hoàng Ngân, Nhân Chính. Hai tòa 27 tầng, 405 căn trên 5.859 m², bàn giao quý I/2018. Chủ đầu tư HDIS, hợp tác Ceninvest. Hàng chuyển nhượng khu Lê Văn Lương, khách nhận nhà ở ngay.' },
         { id: 'sc17', pj: 'celestine', kind: 'content', label: 'public', title: 'Giới thiệu dự án — bản ngắn',
           body: 'Khoảng 90 từ, kèm 4 ảnh đã duyệt. Dùng cho mọi kênh, nhân viên tự cắt gọt khi đăng.', at: '09/08/2026' },
         { id: 'sc18', pj: 'celestine', kind: 'content', label: 'public', title: 'Chính sách đợt 3 — bản gửi khách',
@@ -1134,7 +1217,9 @@
         { id: 'hp5', unitId: 'T1-23.01', pitch: 'Penthouse tháp T1 — khách đầu tư, view Tây Bắc ra Hồ Tây.', sort: 5, active: true },
         { id: 'hp6', unitId: 'GS-FS.2501', pitch: '3PN+1 Five Seasons chuyển nhượng — khách cần ở ngay Thanh Xuân.', sort: 6, active: true },
         { id: 'hp7', unitId: 'LPH-A.18.02', pitch: '2PN+1 Nha Trang tầng 18 — khách miền Nam hỏi căn biển.', sort: 7, active: true },
-        { id: 'hp8', unitId: 'PBT-TM3.01', pitch: 'Lô góc 5 tầng Palmy — khách vừa ở vừa kinh doanh mặt tiền.', sort: 8, active: true }
+        { id: 'hp8', unitId: 'PBT-TM3.01', pitch: 'Lô góc 5 tầng Palmy — khách vừa ở vừa kinh doanh mặt tiền.', sort: 8, active: true },
+        { id: 'hp9', unitId: 'SP-09.03', pitch: '2PN Sapphire Palace có slot ô tô — view Nguyễn Trãi, ở ngay Thanh Xuân.', sort: 9, active: true },
+        { id: 'hp10', unitId: 'KP-A.11.08', pitch: '3PN King Palace tầng 11 — sát Royal City, hàng chuyển nhượng có sổ.', sort: 10, active: true }
       ],
 
       /* Hồ sơ bán hàng của căn trong catalog — không giá. Ảnh minh họa nội thất, không phải ảnh CĐT. */
@@ -1206,7 +1291,40 @@
           bul: ['2PN · 60,2 m² · Đông', 'Tầng 12 Nha Trang', 'Còn hàng'] },
         { unitId: 'PBT-TM2.03', catalog: true, beds: 0, baths: 0, view: 'Tây Nam dãy TM2', fit: 'Nhà thô 5 tầng', gallery: GSH,
           pitch: 'PBT-TM2.03 — liên kế 5 tầng dãy TM2, 112 m² đất, Tây Nam. Không phải lô góc — khách so với TM3.01 khi không cần hai mặt tiền.',
-          bul: ['Liên kế 5 tầng · 112 m² đất', 'Dãy TM2 Palmy', 'Còn hàng'] }
+          bul: ['Liên kế 5 tầng · 112 m² đất', 'Dãy TM2 Palmy', 'Còn hàng'] },
+        { unitId: 'DR-A.12.05', catalog: true, beds: 2, baths: 2, view: 'Đông Lê Văn Lương', fit: 'Đầy đủ nội thất, ở ngay', gallery: G2,
+          pitch: 'DR-A.12.05 — 2PN Diamond Residence tháp A, 61,8 m², Đông, tầng 12. Hàng chuyển nhượng BRG 25 Lê Văn Lương, khách nhận nhà ở ngay ngã tư Hoàng Đạo Thúy.',
+          bul: ['2PN · 61,8 m² · Đông', 'Tháp A tầng 12', 'Chuyển nhượng — ở ngay'] },
+        { unitId: 'DR-B.18.03', catalog: true, beds: 3, baths: 2, view: 'Đông Nam nội khu', fit: 'Đầy đủ nội thất, ở ngay', gallery: G3,
+          pitch: 'DR-B.18.03 — 3PN Diamond Residence tháp B, 103,8 m², Đông Nam, tầng 18. Đang giữ chỗ. Khách gia đình so với căn 2PN tháp A.',
+          bul: ['3PN · 103,8 m² · Đông Nam', 'Tháp B tầng 18', 'Đang giữ chỗ'] },
+        { unitId: 'DR-A.28.01', catalog: true, beds: 4, baths: 3, view: 'Đông Nam Lê Văn Lương', fit: 'Đầy đủ nội thất, ở ngay', gallery: G3,
+          pitch: 'DR-A.28.01 — 4PN Diamond Residence tháp A, 151,2 m², Đông Nam, tầng 28. Căn lớn cho đại gia đình, hàng chuyển nhượng.',
+          bul: ['4PN · 151,2 m² · Đông Nam', 'Tháp A tầng 28', 'Chuyển nhượng — ở ngay'] },
+        { unitId: 'VH-18.07', catalog: true, beds: 2, baths: 2, view: 'Đông Nam Nguyễn Tuân', fit: 'Đầy đủ nội thất, ở ngay', gallery: G2,
+          pitch: 'VH-18.07 — 2PN Viha Complex, 71,8 m², Đông Nam, tầng 18. Cùng phố Gold Season, sổ hồng lâu dài, khách ở ngay Thanh Xuân.',
+          bul: ['2PN · 71,8 m² · Đông Nam', 'Viha 107 Nguyễn Tuân tầng 18', 'Sổ hồng — ở ngay'] },
+        { unitId: 'VH-23.04', catalog: true, beds: 3, baths: 3, view: 'Đông nội khu', fit: 'Đầy đủ nội thất, ở ngay', gallery: G3,
+          pitch: 'VH-23.04 — 3PN Viha Complex, 110,2 m², Đông, tầng 23. Căn 3PN có ba WC theo thiết kế tòa. Chuyển nhượng, ở ngay.',
+          bul: ['3PN · 110,2 m² · Đông', 'Tầng 23 · ba WC', 'Chuyển nhượng — ở ngay'] },
+        { unitId: 'SP-09.03', catalog: true, beds: 2, baths: 2, view: 'Nguyễn Trãi', fit: 'Đầy đủ nội thất, có slot ô tô', gallery: G2,
+          pitch: 'SP-09.03 — 2PN Sapphire Palace, 78 m², Đông Nam, tầng 9. Có slot ô tô — hàng hiếm khu Chính Kinh. View Nguyễn Trãi, nhận nhà ở ngay.',
+          bul: ['2PN · 78 m² · Đông Nam', 'Tầng 9 · có slot ô tô', 'View Nguyễn Trãi — ở ngay'] },
+        { unitId: 'SP-14.08', catalog: true, beds: 2, baths: 2, view: 'Tây Bắc Nguyễn Trãi', fit: 'Đầy đủ nội thất, ở ngay', gallery: G2,
+          pitch: 'SP-14.08 — 2PN Sapphire Palace, 86 m², Tây Bắc, tầng 14. Đang giữ chỗ. Khách so với căn tầng 9 khi cần thêm diện tích.',
+          bul: ['2PN · 86 m² · Tây Bắc', 'Tầng 14 Chính Kinh', 'Đang giữ chỗ'] },
+        { unitId: 'KP-A.11.08', catalog: true, beds: 3, baths: 2, view: 'Nam Royal City', fit: 'Đầy đủ nội thất, ở ngay', gallery: G3,
+          pitch: 'KP-A.11.08 — 3PN King Palace tháp A, 105 m², Nam, tầng trung 11. Sát Royal City, hàng chuyển nhượng có sổ, khách ở ngay Nguyễn Trãi.',
+          bul: ['3PN · 105 m² · Nam', 'Tháp A tầng 11', 'Sát Royal City — ở ngay'] },
+        { unitId: 'KP-A.22.05', catalog: true, beds: 2, baths: 2, view: 'Đông Nam Nguyễn Trãi', fit: 'Đầy đủ nội thất, ở ngay', gallery: G2,
+          pitch: 'KP-A.22.05 — 2PN King Palace tháp A, 88 m², Đông Nam, tầng 22. Căn nhỏ hơn 3PN tầng 11, khách hai người hay hỏi căn này.',
+          bul: ['2PN · 88 m² · Đông Nam', 'Tháp A tầng 22', 'Chuyển nhượng — ở ngay'] },
+        { unitId: 'GP-B.15.02', catalog: true, beds: 2, baths: 2, view: 'Đông Lê Văn Lương', fit: 'Đầy đủ nội thất, ở ngay', gallery: G2,
+          pitch: 'GP-B.15.02 — 2PN Golden Palm tòa B, 74 m², Đông, tầng 15. Ngã ba Hoàng Ngân, hàng chuyển nhượng bàn giao 2018.',
+          bul: ['2PN · 74 m² · Đông', 'Tòa B tầng 15', 'Chuyển nhượng — ở ngay'] },
+        { unitId: 'GP-A.20.06', catalog: true, beds: 3, baths: 2, view: 'Đông Nam Hoàng Ngân', fit: 'Đầy đủ nội thất', gallery: G3,
+          pitch: 'GP-A.20.06 — 3PN Golden Palm tòa A, 96 m², Đông Nam, tầng 20. Đã bán. Để trong catalog để sale biết giỏ hàng.',
+          bul: ['3PN · 96 m² · Đông Nam', 'Tòa A tầng 20', 'Đã bán'] }
       ],
 
       /* Vinh danh — số minh họa, không phải giao dịch thật */
@@ -1449,6 +1567,10 @@
   function add(name, obj, atBottom) {
     var list = get(name);
     if (!obj.id) obj.id = name.slice(0, 2) + '-new-' + (++seq);
+    if (name === 'projects' && !obj.channel) {
+      obj.channel = 'moi';
+      obj.channelText = obj.channelText || 'Bán mới';
+    }
     if (atBottom) list.push(obj); else list.unshift(obj);
     save(); emit(name);
     return obj;
@@ -1500,6 +1622,12 @@
      `tamlinh` là loại hình thứ sáu, nới QD-057 (QD-071): recogroup.vn và reco.nhaongay.vn đều
      có danh mục bất động sản tâm linh riêng, và Công Viên Thiên Đường là dự án RECO tự làm
      chủ đầu tư — xếp nó vào Đất nền là nhìn thấy lệch ngay. */
+  var CHANNELS = { moi: 'Bán mới', cn: 'Chuyển nhượng' };
+  function channelOf(p) {
+    if (!p) return 'moi';
+    return p.channel === 'cn' ? 'cn' : 'moi';
+  }
+
   var TYPES = {
     canho: 'Chung cư',
     datnen: 'Đất nền',
@@ -1835,9 +1963,9 @@
   window.RECO.store = {
     get: get, find: find, update: update, add: add, remove: remove,
     on: on, reset: reset, save: save,
-    LABELS: LABELS, UNIT_STATE: UNIT_STATE, BRANCHES: BRANCHES, TOPICS: TOPICS, QA_GROUP_DEFAULT: QA_GROUP_DEFAULT, TYPES: TYPES, SEGMENTS: SEGMENTS,
+    LABELS: LABELS, UNIT_STATE: UNIT_STATE, BRANCHES: BRANCHES, TOPICS: TOPICS, QA_GROUP_DEFAULT: QA_GROUP_DEFAULT, TYPES: TYPES, SEGMENTS: SEGMENTS, CHANNELS: CHANNELS,
     BRANCH_LABEL: BRANCH_LABEL, RANK: RANK,
-    label: label, money: money, billion: billion, projectName: projectName, canSee: canSee,
+    label: label, money: money, billion: billion, projectName: projectName, canSee: canSee, channelOf: channelOf,
     unitView: unitView, unitCover: unitCover, tplForUnit: tplForUnit,
     TICK_LAB: TICK_LAB, INTENTS: INTENTS, tplIntent: tplIntent, tplCover: tplCover, tplUnitId: tplUnitId,
     projectMedia: projectMedia, unitMedia: unitMedia, mediaCover: mediaCover, intentOf: intentOf,
