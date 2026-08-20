@@ -585,6 +585,8 @@
   function openModal(id) {
     var m = document.getElementById(id);
     if (!m) return;
+    if (!m._home) m._home = m.parentNode;
+    document.body.appendChild(m);
     modalReturn = document.activeElement;
     m.hidden = false;
     document.body.classList.add('modal-on');
@@ -705,58 +707,85 @@
   }
 
   function initFilterSheets() {
-    var scrim = document.getElementById('fsheet-scrim');
-    if (!scrim) {
-      scrim = document.createElement('div');
-      scrim.id = 'fsheet-scrim';
-      scrim.className = 'fsheet-scrim';
-      scrim.hidden = true;
-      document.body.appendChild(scrim);
+    if (!document.getElementById('fsheet-layer-css')) {
+      var css = document.createElement('style');
+      css.id = 'fsheet-layer-css';
+      css.textContent = '#fsheet-layer{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;isolation:isolate}' +
+        '#fsheet-layer[hidden]{display:none!important}' +
+        '#fsheet-layer .fsheet-scrim{position:absolute;inset:0;z-index:0;background:rgb(8 22 32 / .45)}' +
+        '#fsheet-layer .filter-extras{display:flex!important;position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;z-index:1!important;width:100%;flex-direction:column;gap:10px;background:#f8f7f3;border-radius:20px 20px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));max-height:min(78vh,calc(100dvh - 88px));overflow-y:auto;box-shadow:0 -18px 50px rgb(8 39 67 / .18)}';
+      document.head.appendChild(css);
     }
     var mq = window.matchMedia('(max-width: 767px)');
+    var layer = document.getElementById('fsheet-layer');
+    if (!layer) {
+      var orphan = document.getElementById('fsheet-scrim');
+      if (orphan) orphan.remove();
+      layer = document.createElement('div');
+      layer.id = 'fsheet-layer';
+      layer.className = 'fsheet-layer';
+      layer.hidden = true;
+      var scrimEl = document.createElement('div');
+      scrimEl.id = 'fsheet-scrim';
+      scrimEl.className = 'fsheet-scrim';
+      layer.appendChild(scrimEl);
+      document.body.appendChild(layer);
+    }
+    var scrim = document.getElementById('fsheet-scrim') || layer;
     function parkSheet(wrap) {
       if (wrap && wrap._home && wrap.parentNode !== wrap._home) wrap._home.appendChild(wrap);
     }
     function raiseSheet(wrap) {
-      if (!mq.matches) return;
       if (!wrap._home) wrap._home = wrap.parentNode;
-      document.body.appendChild(wrap);
+      layer.appendChild(wrap);
     }
     function closeSheet() {
-      var cur = scrim._openWrap;
+      var cur = layer._openWrap;
       if (cur) {
         cur.classList.remove('open');
         parkSheet(cur);
       }
-      scrim._openWrap = null;
-      scrim.hidden = true;
+      layer._openWrap = null;
+      layer.hidden = true;
       document.body.classList.remove('fsheet-on');
       releaseScroll();
     }
     function showSheet(wrap) {
-      var cur = scrim._openWrap;
+      var cur = layer._openWrap;
       if (cur && cur !== wrap) {
         cur.classList.remove('open');
         parkSheet(cur);
       }
       wrap.classList.add('open');
+      layer._openWrap = wrap;
+      if (!mq.matches) return;
       raiseSheet(wrap);
-      scrim._openWrap = wrap;
-      scrim.hidden = false;
+      layer.hidden = false;
       document.body.classList.add('fsheet-on');
       document.body.style.overflow = 'hidden';
     }
     function syncPortal() {
-      var cur = scrim._openWrap;
+      var cur = layer._openWrap;
       if (!cur) return;
-      if (mq.matches) raiseSheet(cur);
-      else parkSheet(cur);
+      if (mq.matches) {
+        raiseSheet(cur);
+        layer.hidden = false;
+        document.body.classList.add('fsheet-on');
+        document.body.style.overflow = 'hidden';
+      } else {
+        parkSheet(cur);
+        layer.hidden = true;
+        document.body.classList.remove('fsheet-on');
+        releaseScroll();
+      }
     }
-    if (!scrim._bound) {
-      scrim._bound = true;
-      scrim.addEventListener('click', closeSheet);
+    if (!layer._bound) {
+      layer._bound = true;
+      layer.addEventListener('click', function (e) {
+        if (e.target === layer || e.target === scrim) closeSheet();
+      });
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && scrim._openWrap) {
+        if (e.key === 'Escape' && layer._openWrap) {
           e.preventDefault();
           closeSheet();
         }

@@ -1211,7 +1211,7 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
 /* ---------- Modal ---------- */
 .modal[hidden] { display: none; }
 .modal {
-  position: fixed; inset: 0; z-index: 80;
+  position: fixed; inset: 0; z-index: 82;
   display: flex; align-items: flex-end; justify-content: center;
   background: rgb(8 22 32 / 0.55); padding: 0;
 }
@@ -1950,21 +1950,33 @@ body.proto-off .zone-chips { top: var(--header-h); }
   .filterbar[data-filter-sheet] .filter-extras.open { display: contents; }
 }
 
-/* Overlay trên body: luôn trên sticky chrome (34) và dock (39), không kẹt stacking context */
-.fsheet-scrim {
+/* Lớp overlay: mờ là nền, sheet là con — mờ không thể đè lên panel */
+.fsheet-layer {
   position: fixed;
   inset: 0;
   z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  isolation: isolate;
+}
+.fsheet-layer[hidden] { display: none !important; }
+.fsheet-layer .fsheet-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   background: rgb(8 22 32 / 0.45);
 }
-.fsheet-scrim[hidden] { display: none !important; }
-body > .filter-extras {
-  display: none;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 81;
+.fsheet-layer .filter-extras,
+.fsheet-layer .filter-extras.open {
+  display: flex !important;
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  top: auto !important;
+  z-index: 1 !important;
+  width: 100%;
   flex-direction: column;
   gap: 10px;
   background: var(--paper);
@@ -1974,9 +1986,17 @@ body > .filter-extras {
   overflow-y: auto;
   box-shadow: 0 -18px 50px rgb(8 39 67 / 0.18);
 }
-body > .filter-extras.open { display: flex; }
-body > .filter-extras .inp,
-body > .filter-extras .btn { width: 100%; min-width: 0; }
+.fsheet-layer .filter-extras .inp,
+.fsheet-layer .filter-extras .btn { width: 100%; min-width: 0; }
+.fsheet-layer .fsheet-head { display: flex; align-items: center; justify-content: space-between; }
+.fsheet-layer .fsheet-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px solid var(--line);
+  flex: none;
+}
 body.fsheet-on .dock,
 body.drawer-on .dock,
 body.modal-on .dock { pointer-events: none; }
