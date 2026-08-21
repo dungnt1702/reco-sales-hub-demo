@@ -202,7 +202,9 @@
     { href: 'danh-muc-san-pham.html', label: 'Sản phẩm', key: 'san-pham', icon: 'grid' },
     { href: 'cay-thu-muc.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
     { href: 'chia-se.html', label: 'Bài đăng', key: 'chia-se', icon: 'share' },
-    { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' }
+    { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' },
+    /* Ba hub Báo giá / Vận hành / Bản đồ. Dock không lấy mục này (chỉ 4 key đầu). */
+    { href: 'tinh-nang-gd1.html', label: 'Phạm vi & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
   ] : [
     { href: 'trang-dau.html', label: 'Trang đầu', key: 'trang-dau', icon: 'home' },
     { href: 'du-an.html', label: 'Dự án', key: 'du-an', icon: 'layers' },
@@ -218,11 +220,6 @@
   var MORE = inGd01() ? [
     { href: 'de-nghi-sua.html', label: 'Đề nghị sửa nội dung' },
     { href: 'nguoi-dung.html', label: 'Người dùng và quyền', roles: 'gd hcns' },
-    /* Giá và phạm vi — không lên NAV, chỉ menu Thêm / drawer của GĐ và TKKD. */
-    { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', roles: 'gd gddu tkkd' },
-    { href: 'sitemap.html', label: 'Bản đồ hệ thống · đối chiếu SaleHUB', key: 'sitemap', roles: 'gd gddu tkkd' },
-    { href: 'bao-tri.html', label: 'Lịch bàn giao và bảo trì', roles: 'gd gddu tkkd' },
-    { href: 'ha-tang.html', label: 'Hạ tầng và chi phí vận hành', roles: 'gd gddu tkkd' },
     { href: '../index.html', label: 'Cổng Giai đoạn 1 / 2' }
   ] : [
     { href: 'thu-vien-tai-lieu.html', label: 'Danh sách tài liệu · tìm theo bộ lọc' },
@@ -1523,7 +1520,7 @@
             'nhân viên bán hàng đã chia sẻ cho chính mình — không duyệt cây thư mục, không tìm trong kho tài liệu, ' +
             'không thấy dự án chưa được chia sẻ.</p>' +
           '<p class="small muted mt-2">Vai trò này và nút gửi yêu cầu trên trang công khai là hai hạng mục ' +
-            '<strong>ngoài gói 198.800.000 VNĐ</strong> — xem QD-053 và QD-055.</p>' +
+            '<strong>ngoài gói 89.900.000 VNĐ</strong> — xem QD-053 và QD-055.</p>' +
           '<div class="row mt-3">' +
             '<a class="btn btn-primary" href="' + link('trang-gui-khach.html') + '">Mở trang khách nhận được</a>' +
             '<a class="btn btn-outline" href="' + link('trang-dau.html', { role: 'nvbh' }) + '">Quay lại vai trò nhân viên</a>' +

@@ -8,7 +8,7 @@ $pages = @(
   'index','sitemap','dang-nhap','trang-dau','du-an','du-an-chi-tiet',
   'thu-vien-tai-lieu','cay-thu-muc','soan-noi-dung','chia-se',
   'trang-gui-khach','link-het-han','quan-tri','nguoi-dung','de-nghi-sua',
-  'xem-truoc-gd2','tinh-nang-gd1','chi-tiet-gd1','tinh-nang-gd2','chi-tiet-gd2','ha-tang'
+  'xem-truoc-gd2','tinh-nang-gd1','ha-tang'
 )
 
 New-Item -ItemType Directory -Force -Path 'gd01','gd02' | Out-Null

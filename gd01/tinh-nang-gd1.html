@@ -3,18 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cây tính năng Giai đoạn 1 · RECO Sales Hub</title>
+<title>Báo giá · RECO Sales Hub</title>
 <meta name="theme-color" content="#09263c">
 <link rel="icon" href="../assets/img/reco-logo.png">
 <link rel="stylesheet" href="../assets/reco.css">
 <script defer src="../assets/reco.js"></script>
 <script defer src="store.js"></script>
 <script defer src="../assets/data.js"></script>
+<script defer src="hub-data.js"></script>
+<script defer src="../assets/hub.js"></script>
 <style>
-  /* Bộ class cây node-là-liên kết (a.tnode, .tname b/.d/.m, .grp) nằm ở assets/reco.css
-     vì cả ba trang cây tính năng và bản đồ hệ thống cùng dùng. */
   .kpi b { font-family: var(--font-display); font-size: 1.5rem; display: block; margin: 2px 0; }
   .card-head h2 { margin: 0; }
+  .ladder td:last-child { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-weight: 700; }
+  .ladder tr.tot td { background: color-mix(in srgb, var(--orange) 10%, transparent); color: var(--navy); font-size: 1.02rem; }
+  .hub-h1 { font-size: clamp(1.6rem, 3vw, 2.1rem); }
 </style>
 </head>
 <body data-shell="app" data-page="tinh-nang">
@@ -22,41 +25,44 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
+    <nav class="hub-bar" aria-label="Phạm vi và báo giá">
+      <div class="seg" role="group">
+        <a href="tinh-nang-gd1.html" role="button" aria-pressed="true">Báo giá</a>
+        <a href="ha-tang.html" role="button" aria-pressed="false">Vận hành</a>
+        <a href="sitemap.html" role="button" aria-pressed="false">Bản đồ</a>
+      </div>
+    </nav>
+
     <div class="spread mb-3">
       <div>
-        <span class="eyebrow">Giai đoạn 1 · gói đang có hiệu lực · v0.10</span>
-        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Cây tính năng Giai đoạn 1</h1>
+        <span class="eyebrow">Gói đang có hiệu lực · v0.10</span>
+        <h1 class="hub-h1">Báo giá</h1>
         <p class="lead mt-1" style="font-size:.98rem;max-width:74ch">
-          Mười bốn hạng mục, một giá. Phạm vi màn hình khớp bản mô phỏng 19/08/2026:
-          thông tin dự án tám khu vực đang hiện, catalog và SP Hot, thư viện mẫu, cây tài liệu, copy tin và mở kênh.
-          Bấm vào một hạng mục để đọc mô tả đầy đủ và phần chi phí của hạng mục đó.
+          Mười bốn hạng mục, một giá. Bấm một dòng để đọc mô tả. Giai đoạn 2 là tạm tính, chưa nằm trong 89,9 triệu.
         </p>
       </div>
-      <div class="row-tight">
-        <div class="seg" role="group" aria-label="Chọn nội dung">
-          <button type="button" aria-pressed="true">Giai đoạn 1</button>
-          <a href="tinh-nang-gd2.html" role="button">Giai đoạn 2</a>
-          <a href="ha-tang.html" role="button">Hạ tầng</a>
-          <a href="bao-tri.html" role="button">Bảo trì</a>
-        </div>
+      <div class="seg" role="group" aria-label="Chọn giai đoạn">
+        <button type="button" data-pane="gd1" aria-pressed="true">Giai đoạn 1</button>
+        <button type="button" data-pane="gd2">Giai đoạn 2</button>
       </div>
     </div>
 
+    <div data-hub-pane="gd1" id="gd1">
+
     <div class="grid g-4 mb-4">
-      <div class="card card-pad kpi"><span class="micro muted">Ngày công cốt lõi</span><b>123</b><span class="micro muted">Cộng dự phòng 10% là 135 ngày</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Ngày công</span><b>123</b><span class="micro muted">Ba vai trò · bốn người</span></div>
       <div class="card card-pad kpi"><span class="micro muted">Thời gian triển khai</span><b>1 tháng + 2 tuần KT</b><span class="micro muted">Bảo hành 1 tháng sau bàn giao</span></div>
       <div class="card card-pad kpi"><span class="micro muted">Giá thanh toán</span><b>89.900.000</b><span class="micro muted">VNĐ, đã gồm VAT 8%</span></div>
-      <div class="card card-pad kpi"><span class="micro muted">Dự phòng / ưu đãi</span><b>10% · 30%</b><span class="micro muted">Dự phòng trên cốt lõi · ưu đãi trên giá gốc</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Ưu đãi</span><b>30%</b><span class="micro muted">Đã gộp vào giá thanh toán</span></div>
     </div>
 
     <div class="note note-navy mb-4">
       <strong>Gói bán trọn mười bốn hạng mục với một giá.</strong>
       Ngày công và chi phí ghi ở từng dòng là để RECO thấy khối lượng phân bổ thế nào, không phải bảng giá lẻ để
       cắt bớt từng dòng — bỏ một hạng mục không làm giá giảm đúng bằng con số của dòng đó.
-      Lịch sáu tuần dương (một tháng phát triển cộng hai tuần kiểm thử) cần nhân sự làm song song, không phải một người lần lượt 123 ngày.
-      Chi phí trong cây là <em>chi phí cốt lõi trước VAT</em>; chuỗi tính từ đó ra giá thanh toán nằm ở
-      <a href="chi-tiet-gd1.html#gia">trang chi tiết</a>.
-      Con số 198,8 triệu của gói mười tám hạng mục không còn hiệu lực.
+      Lịch sáu tuần dương cần nhân sự làm song song, không phải một người lần lượt 123 ngày.
+      Chi phí trong cây là <em>chi phí trước VAT</em>; chuỗi ra giá thanh toán nằm ở
+      <a href="#gia">cách tính giá</a> ngay dưới.
       Phạm vi màn hình đã chốt theo bản mô phỏng: vinh danh đầy khối, slider SP Hot, tám neo trên trang dự án,
       cây tài liệu trên dock, copy tin rồi mở kênh — không tự điền form ngoài, không mẫu riêng từng kênh.
     </div>
@@ -77,21 +83,21 @@
                 <span class="tname"><b>Nền tảng</b><span class="m">42 ngày · 37.080.000 đ</span></span>
               </div>
               <ul>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-01">
+                <li><button type="button" class="tnode" data-item="hm-01">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                  <span class="tname"><b>1 · Hạ tầng</b><span class="d">Kho mã, kiểm tra tự động, ba môi trường và sao lưu</span><span class="m">8 ngày · 7.260.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-02">
+                  <span class="tname"><b>1 · Hạ tầng</b><span class="d">Kho mã, kiểm tra tự động, ba môi trường và sao lưu</span><span class="m">8 ngày · 7.260.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="hm-02">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-                  <span class="tname"><b>2 · Thiết kế giao diện</b><span class="d">Trang đầu, dự án tám khu đang hiện, catalog, mẫu 2 cột, cây tài liệu và thành phần dùng chung</span><span class="m">7 ngày · 6.380.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-03">
+                  <span class="tname"><b>2 · Thiết kế giao diện</b><span class="d">Trang đầu, dự án tám khu đang hiện, catalog, mẫu 2 cột, cây tài liệu và thành phần dùng chung</span><span class="m">7 ngày · 6.380.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="hm-03">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
-                  <span class="tname"><b>3 · Mô hình dữ liệu</b><span class="d">Dự án, cây khối/tòa/tầng/căn, mẫu và thẻ liên kết</span><span class="m">6 ngày · 5.500.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-04">
+                  <span class="tname"><b>3 · Mô hình dữ liệu</b><span class="d">Dự án, cây khối/tòa/tầng/căn, mẫu và thẻ liên kết</span><span class="m">6 ngày · 5.500.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="hm-04">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-                  <span class="tname"><b>4 · Xác thực và phiên sử dụng</b><span class="d">Đăng nhập bằng số điện thoại hoặc email kèm mật khẩu, quản lý phiên</span><span class="m">10 ngày · 8.620.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-05">
+                  <span class="tname"><b>4 · Xác thực và phiên sử dụng</b><span class="d">Đăng nhập bằng số điện thoại hoặc email kèm mật khẩu, quản lý phiên</span><span class="m">10 ngày · 8.620.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="hm-05">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 20v-2a4 4 0 0 0-3-3.87"/></svg>
-                  <span class="tname"><b>5 · Phân quyền</b><span class="d">Vai trò, nhãn nội dung và phạm vi dự án được giao</span><span class="m">11 ngày · 9.320.000 đ</span></span></a></li>
+                  <span class="tname"><b>5 · Phân quyền</b><span class="d">Vai trò, nhãn nội dung và phạm vi dự án được giao</span><span class="m">11 ngày · 9.320.000 đ</span></span></button></li>
               </ul>
             </li>
           </ul>
@@ -105,15 +111,15 @@
                 <span class="tname"><b>Sản phẩm</b><span class="m">32 ngày · 28.060.000 đ</span></span>
               </div>
               <ul>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-06">
+                <li><button type="button" class="tnode" data-item="hm-06">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
-                  <span class="tname"><b>6 · Quản trị dự án + thẻ link + cây tài liệu</b><span class="d">Hồ sơ tám khu đang hiện; Drive ngoài chỉ thẻ URL; cây bảy nhánh để duyệt nguồn</span><span class="m">13 ngày · 11.260.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-07">
+                  <span class="tname"><b>6 · Quản trị dự án + thẻ link + cây tài liệu</b><span class="d">Hồ sơ tám khu đang hiện; Drive ngoài chỉ thẻ URL; cây bảy nhánh để duyệt nguồn</span><span class="m">13 ngày · 11.260.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="hm-07">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22V12h6v10"/></svg>
-                  <span class="tname"><b>7 · Cây khối/tòa/tầng/căn + catalog</b><span class="d">Sản phẩm là căn; catalog có tìm/lọc, chi tiết căn không hiện giá</span><span class="m">10 ngày · 8.840.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-08">
+                  <span class="tname"><b>7 · Cây khối/tòa/tầng/căn + catalog</b><span class="d">Sản phẩm là căn; catalog có tìm/lọc, chi tiết căn không hiện giá</span><span class="m">10 ngày · 8.840.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="hm-08">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.1L12 16.5 5.7 20.7 8 13.6 2 9.2h7.6Z"/></svg>
-                  <span class="tname"><b>8 · SP Hot + pitch</b><span class="d">Slider từng thẻ trên Trang đầu và trang dự án; không trường giá</span><span class="m">9 ngày · 7.960.000 đ</span></span></a></li>
+                  <span class="tname"><b>8 · SP Hot + pitch</b><span class="d">Slider từng thẻ trên Trang đầu và trang dự án; không trường giá</span><span class="m">9 ngày · 7.960.000 đ</span></span></button></li>
               </ul>
             </li>
           </ul>
@@ -127,15 +133,15 @@
                 <span class="tname"><b>Chia sẻ tin</b><span class="m">33 ngày · 28.940.000 đ</span></span>
               </div>
               <ul>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-09">
+                <li><button type="button" class="tnode" data-item="hm-09">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
-                  <span class="tname"><b>9 · Thư viện mẫu</b><span class="d">Kho đội phải duyệt, kho cá nhân; lọc dự án rồi căn, tìm theo tiêu đề</span><span class="m">12 ngày · 10.600.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-10">
+                  <span class="tname"><b>9 · Thư viện mẫu</b><span class="d">Kho đội phải duyệt, kho cá nhân; lọc dự án rồi căn, tìm theo tiêu đề</span><span class="m">12 ngày · 10.600.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="hm-10">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
-                  <span class="tname"><b>10 · Soạn tin + trang khách + mở kênh</b><span class="d">Màn 2 cột; copy Zalo và link; mở kênh để dán thủ công — không tự điền form</span><span class="m">17 ngày · 14.820.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-11">
+                  <span class="tname"><b>10 · Soạn tin + trang khách + mở kênh</b><span class="d">Màn 2 cột; copy Zalo và link; mở kênh để dán thủ công — không tự điền form</span><span class="m">17 ngày · 14.820.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="hm-11">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                  <span class="tname"><b>11 · Duyệt mẫu</b><span class="d">Luồng duyệt mẫu dùng chung của Giám đốc dự án</span><span class="m">4 ngày · 3.520.000 đ</span></span></a></li>
+                  <span class="tname"><b>11 · Duyệt mẫu</b><span class="d">Luồng duyệt mẫu dùng chung của Giám đốc dự án</span><span class="m">4 ngày · 3.520.000 đ</span></span></button></li>
               </ul>
             </li>
           </ul>
@@ -149,15 +155,15 @@
                 <span class="tname"><b>Bàn giao</b><span class="m">16 ngày · 14.140.000 đ</span></span>
               </div>
               <ul>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-12">
+                <li><button type="button" class="tnode" data-item="hm-12">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                  <span class="tname"><b>12 · Kiểm thử</b><span class="d">Quyền theo vai trò, luồng chính và biên nội dung công khai</span><span class="m">10 ngày · 7.540.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-13">
+                  <span class="tname"><b>12 · Kiểm thử</b><span class="d">Quyền theo vai trò, luồng chính và biên nội dung công khai</span><span class="m">10 ngày · 7.540.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="hm-13">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 20v-2a4 4 0 0 0-3-3.87"/></svg>
-                  <span class="tname"><b>13 · Dữ liệu mẫu + đào tạo</b><span class="d">Hướng dẫn nhập dữ liệu mẫu và một buổi bàn giao</span><span class="m">2 ngày · 2.200.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#hm-14">
+                  <span class="tname"><b>13 · Dữ liệu mẫu + đào tạo</b><span class="d">Hướng dẫn nhập dữ liệu mẫu và một buổi bàn giao</span><span class="m">2 ngày · 2.200.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="hm-14">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                  <span class="tname"><b>14 · Quản lý dự án</b><span class="d">Họp, báo cáo tiến độ và phối hợp trong khoảng sáu tuần</span><span class="m">4 ngày · 4.400.000 đ</span></span></a></li>
+                  <span class="tname"><b>14 · Quản lý dự án</b><span class="d">Họp, báo cáo tiến độ và phối hợp trong khoảng sáu tuần</span><span class="m">4 ngày · 4.400.000 đ</span></span></button></li>
               </ul>
             </li>
           </ul>
@@ -171,7 +177,6 @@
       </div>
     </section>
 
-    <!-- Phần A: làm cùng Giai đoạn 1 nhưng không nằm trong 89.900.000 -->
     <section class="card mb-4" id="phan-a" data-gd2>
       <div class="card-head" style="padding-block:14px">
         <div>
@@ -189,15 +194,15 @@
                 <span class="tname"><b>Ba hạng mục cộng thêm</b><span class="m">25 ngày · 17.800.000 đ sau ưu đãi</span></span>
               </div>
               <ul>
-                <li><a class="tnode" href="chi-tiet-gd1.html#bs-01">
+                <li><button type="button" class="tnode" data-item="bs-01">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6A2 2 0 0 0 22 18L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 17h.01"/></svg>
-                  <span class="tname"><b>BS-01 · Khách gửi yêu cầu từ trang công khai</b><span class="d">Nút “Nhận báo giá / quan tâm căn”, khách để lại họ tên và số điện thoại — kéo theo nghĩa vụ theo Nghị định 13</span><span class="m">8 ngày · 5.700.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#bs-02">
+                  <span class="tname"><b>BS-01 · Khách gửi yêu cầu từ trang công khai</b><span class="d">Nút “Nhận báo giá / quan tâm căn” — kéo theo nghĩa vụ theo Nghị định 13</span><span class="m">8 ngày · 5.700.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="bs-02">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
-                  <span class="tname"><b>BS-02 · Vai trò Khách hàng có tài khoản</b><span class="d">Khách đăng nhập bằng số điện thoại, chỉ thấy đúng phần nhân viên đã chia sẻ cho mình</span><span class="m">14 ngày · 10.100.000 đ</span></span></a></li>
-                <li><a class="tnode" href="chi-tiet-gd1.html#bs-03">
+                  <span class="tname"><b>BS-02 · Vai trò Khách hàng có tài khoản</b><span class="d">Khách đăng nhập bằng số điện thoại, chỉ thấy đúng phần nhân viên đã chia sẻ</span><span class="m">14 ngày · 10.100.000 đ</span></span></button></li>
+                <li><button type="button" class="tnode" data-item="bs-03">
                   <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
-                  <span class="tname"><b>BS-03 · Tách vai trò Kế toán và phân cấp cấp tài khoản</b><span class="d">Nâng từ bảy lên chín vai trò; Hành chính nhân sự tạo được tài khoản và gán vai trò thường</span><span class="m">3 ngày · 2.000.000 đ</span></span></a></li>
+                  <span class="tname"><b>BS-03 · Tách vai trò Kế toán và phân cấp cấp tài khoản</b><span class="d">Nâng từ bảy lên chín vai trò; HCNS tạo được tài khoản và gán vai trò thường</span><span class="m">3 ngày · 2.000.000 đ</span></span></button></li>
               </ul>
             </li>
           </ul>
@@ -209,7 +214,6 @@
       </div>
     </section>
 
-    <!-- Ứng dụng iOS/Android — tùy chọn GĐ1 -->
     <section class="card mb-4" id="app">
       <div class="card-head" style="padding-block:14px">
         <div>
@@ -222,10 +226,10 @@
         <div class="tree">
           <ul>
             <li>
-              <a class="tnode root" href="chi-tiet-gd1.html#app">
+              <button type="button" class="tnode root" data-item="app">
                 <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
                 <span class="tname"><b>Cùng màn Giai đoạn 1 trên điện thoại</b><span class="d">Đăng nhập, tra cứu dự án và căn, SP Hot, mẫu chia sẻ — dùng chung dữ liệu và quyền với Web. Không nhân ngày công: đây là giá chào trần.</span><span class="m">20.000.000 đ đã gồm VAT</span></span>
-              </a>
+              </button>
             </li>
           </ul>
         </div>
@@ -236,22 +240,220 @@
       </div>
     </section>
 
-    <section class="card card-pad">
-      <h2 style="font-size:1.15rem;margin-top:0">Đọc tiếp</h2>
-      <p class="small muted mt-1">
-        Mô tả đầy đủ từng hạng mục, chuỗi tính giá, tùy chọn ứng dụng 20 triệu và danh sách những gì chưa bao gồm nằm ở trang chi tiết.
-        Lịch và gói bảo trì sau một tháng bảo hành là trang riêng. Sáu phân hệ Giai đoạn 2 là một danh mục riêng, chưa nằm trong gói này.
-      </p>
-      <div class="row mt-3">
-        <a class="btn btn-primary" href="chi-tiet-gd1.html">Chi tiết và báo giá Giai đoạn 1</a>
-        <a class="btn btn-outline" href="bao-tri.html">Lịch và bảo trì</a>
-        <a class="btn btn-outline" href="tinh-nang-gd2.html">Cây tính năng Giai đoạn 2</a>
-        <a class="btn btn-outline" href="../index.html">Về cổng mô phỏng</a>
+    <section class="card mb-4" id="gia">
+      <div class="card-head" style="padding-block:14px">
+        <div>
+          <span class="eyebrow">Báo giá · QD-079</span>
+          <h2 style="font-size:1.05rem;margin-top:2px">Cách tính ra giá thanh toán</h2>
+        </div>
+        <span class="micro muted">Đơn vị: VNĐ</span>
+      </div>
+      <div class="card-body">
+        <p class="small">Chiều tính đi từ nguồn lực lên giá. Giá gốc là giá niêm yết đã gồm VAT; ưu đãi 30% đã gộp vào giá thanh toán.</p>
+
+        <h3 class="mt-3" style="font-size:.98rem">Đội thực hiện và đơn giá ngày công</h3>
+        <div class="tbl-wrap mt-2">
+          <table class="tbl">
+            <thead><tr><th>Vai trò</th><th class="r">Số người</th><th class="r">Đơn giá ngày</th><th class="r">Ngày công</th><th class="r">Thành tiền</th></tr></thead>
+            <tbody>
+              <tr><td data-l="Vai trò">Quản lý dự án và phân tích nghiệp vụ</td><td data-l="Số người" class="r num">1</td><td data-l="Đơn giá ngày" class="r num">1.100.000</td><td data-l="Ngày công" class="r num">13</td><td data-l="Thành tiền" class="r num">14.300.000</td></tr>
+              <tr><td data-l="Vai trò">Xây dựng sản phẩm</td><td data-l="Số người" class="r num">2</td><td data-l="Đơn giá ngày" class="r num">880.000</td><td data-l="Ngày công" class="r num">94</td><td data-l="Thành tiền" class="r num">82.720.000</td></tr>
+              <tr><td data-l="Vai trò">Kiểm thử</td><td data-l="Số người" class="r num">1</td><td data-l="Đơn giá ngày" class="r num">700.000</td><td data-l="Ngày công" class="r num">16</td><td data-l="Thành tiền" class="r num">11.200.000</td></tr>
+              <tr class="tot"><td data-l="Vai trò"><strong>Cộng</strong></td><td data-l="Số người" class="r num"><strong>4</strong></td><td data-l="Đơn giá ngày" class="r">—</td><td data-l="Ngày công" class="r num"><strong>123</strong></td><td data-l="Thành tiền" class="r num"><strong>108.220.000</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="micro muted mt-2">Xây dựng sản phẩm gộp thiết kế giao diện, lập trình phía máy chủ, lập trình giao diện, hạ tầng và vận hành. Đơn giá 880.000 là bình quân gia quyền. Mức chính thức trong hợp đồng vẫn chờ RECO chốt (DX-016).</p>
+
+        <h3 class="mt-4" style="font-size:.98rem">Chuỗi tính ra giá thanh toán</h3>
+        <div class="tbl-wrap mt-2">
+          <table class="tbl ladder">
+            <thead><tr><th>Bước</th><th class="r">Số tiền</th></tr></thead>
+            <tbody>
+              <tr><td data-l="Bước">Ngày công 123 ngày · chi phí đội</td><td data-l="Số tiền" class="r">108.220.000</td></tr>
+              <tr><td data-l="Bước">Giá gốc niêm yết, đã gồm VAT</td><td data-l="Số tiền" class="r">128.565.360</td></tr>
+              <tr><td data-l="Bước">Trừ ưu đãi đặc biệt 30%</td><td data-l="Số tiền" class="r">−38.569.608</td></tr>
+              <tr><td data-l="Bước">Sau ưu đãi, trước làm tròn</td><td data-l="Số tiền" class="r">89.995.752</td></tr>
+              <tr><td data-l="Bước">Làm tròn xuống bội số 100.000</td><td data-l="Số tiền" class="r">−95.752</td></tr>
+              <tr class="tot"><td data-l="Bước"><strong>Giá thanh toán, đã gồm VAT</strong></td><td data-l="Số tiền" class="r">89.900.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="micro muted mt-2">Luôn làm tròn xuống nên phần lẻ luôn có lợi cho khách. Lịch một tháng phát triển cộng hai tuần kiểm thử cần nhân sự làm song song. Bảo hành một tháng sau bàn giao; sau đó xem <a href="ha-tang.html#bao-tri">gói bảo trì</a>.</p>
       </div>
     </section>
 
+    <section class="card card-pad mb-4" id="chua-gom">
+      <span class="eyebrow">Ranh giới phạm vi</span>
+      <h2 style="font-size:1.15rem;margin-top:2px">Chưa bao gồm</h2>
+      <ul class="small mt-2" style="padding-left:18px;line-height:1.9">
+        <li>Máy chủ, tên miền, chứng thư, dung lượng lưu trữ và sao lưu — ước tính tại <a href="ha-tang.html">hạ tầng và chi phí vận hành</a>.</li>
+        <li>Form phiếu tính giá trong Hub và lưới bảng hàng làm mô hình sản phẩm.</li>
+        <li>Hỏi đáp 88 câu (khu vực 07) và kịch bản bán hàng MH-12.</li>
+        <li>Mẫu tin riêng từng kênh, lịch đăng bài, tự điền form trang ngoài hoặc tự đăng thay nhân viên.</li>
+        <li>Báo cáo vận hành đầy đủ (Giai đoạn 1 chỉ số liệu nhanh trên Trang đầu / Quản trị).</li>
+        <li>Ingest tệp Google Drive — Giai đoạn 1 chỉ thẻ URL; cây thư mục dùng để duyệt nguồn.</li>
+        <li>Ứng dụng iOS/Android là <strong>tùy chọn</strong>: nếu làm cùng Giai đoạn 1 thì 20.000.000 VNĐ (QD-080). Phí tài khoản Apple/Google chưa gồm.</li>
+        <li>Chi phí vận hành, giám sát, hỗ trợ và bảo trì định kỳ <strong>sau bảo hành 1 tháng</strong> — xem <a href="ha-tang.html#bao-tri">lịch và bảo trì</a>.</li>
+      </ul>
+    </section>
+
+    </div>
+
+    <div data-hub-pane="gd2" id="gd2" hidden>
+
+    <div class="grid g-4 mb-4">
+      <div class="card card-pad kpi"><span class="micro muted">Số phân hệ</span><b>6</b><span class="micro muted">Chọn được từng phân hệ một</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Ngày công</span><b>235</b><span class="micro muted">Gấp hơn một lần gói Giai đoạn 1</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Tạm tính cả sáu phân hệ</span><b>172.900.000</b><span class="micro muted">VNĐ, sau ưu đãi 30%, gồm VAT</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Nên làm trước</span><b>GD2-01</b><span class="micro muted">Doanh thu là gốc dữ liệu của hai phân hệ sau</span></div>
+    </div>
+
+    <div class="note note-navy mb-4">
+      <strong>Mọi con số ở đây là tạm tính sơ bộ, chưa phải cam kết giá.</strong>
+      Ngày công từng vai trò × đơn giá vai trò đó → cộng VAT 8% → trừ ưu đãi 30% → làm tròn xuống 100.000.
+      Trước khi ký, từng phân hệ vẫn cần một vòng khảo sát riêng.
+    </div>
+
+    <section class="card mb-4" data-gd2>
+      <div class="card-head" style="padding-block:14px">
+        <div>
+          <span class="eyebrow">Phần B</span>
+          <h2 style="font-size:1.05rem;margin-top:2px">Sáu phân hệ Giai đoạn 2</h2>
+        </div>
+        <span class="chip-gd2">Ngoài gói 89.900.000 VNĐ</span>
+      </div>
+      <div class="card-body" style="padding:10px 8px">
+        <div class="tree">
+          <div class="grp"><ul><li>
+            <button type="button" class="tnode root" data-item="gd2-01">
+              <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+              <span class="tname"><b>GD2-01 · Giao dịch, doanh thu và báo cáo kinh doanh</b><span class="m">70 ngày · 51.400.000 đ</span></span>
+            </button>
+            <ul>
+              <li><button type="button" class="tnode" data-item="gd2-01"><span class="tname"><b>Ghi nhận giao dịch</b><span class="d">Từ lúc đặt cọc tới giao dịch thành công</span></span></button></li>
+              <li><button type="button" class="tnode" data-item="gd2-01"><span class="tname"><b>Chia doanh thu môi giới</b><span class="d">Cho nhiều nhân viên theo tỷ lệ ghi công</span></span></button></li>
+              <li><button type="button" class="tnode" data-item="gd2-01"><span class="tname"><b>Bảy báo cáo tuần</b><span class="d">Khu vực, loại hình, phân khúc giá, đơn vị, dự án, nhân sự bán, số phòng ngủ</span></span></button></li>
+              <li><a class="tnode" href="xem-truoc-gd2.html"><span class="tname"><b>Xem bản mô phỏng màn hình →</b><span class="d">Bảy báo cáo tuần dựng bằng số liệu minh họa</span></span></a></li>
+            </ul>
+          </li></ul></div>
+          <div class="grp"><ul><li>
+            <button type="button" class="tnode root" data-item="gd2-02">
+              <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              <span class="tname"><b>GD2-02 · Hoa hồng và thuế thu nhập cá nhân</b><span class="m">40 ngày · 29.100.000 đ</span></span>
+            </button>
+            <ul>
+              <li><button type="button" class="tnode" data-item="gd2-02"><span class="tname"><b>Bảng kê hoa hồng theo kỳ</b><span class="d">Xuất được bảng kê để chi trả</span></span></button></li>
+              <li><button type="button" class="tnode" data-item="gd2-02"><span class="tname"><b>Thuế thu nhập cá nhân</b><span class="d">Gộp lương và hoa hồng nhiều tháng</span></span></button></li>
+              <li><a class="tnode" href="xem-truoc-gd2.html"><span class="tname"><b>Xem bản mô phỏng màn hình →</b><span class="d">Bảng kê hoa hồng kỳ chi trả, số liệu minh họa</span></span></a></li>
+            </ul>
+          </li></ul></div>
+          <div class="grp"><ul><li>
+            <button type="button" class="tnode root" data-item="gd2-03">
+              <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 20v-2a4 4 0 0 0-3-3.87"/></svg>
+              <span class="tname"><b>GD2-03 · Công lương, KPI và đồng bộ chấm công</b><span class="m">35 ngày · 25.900.000 đ</span></span>
+            </button>
+            <ul>
+              <li><button type="button" class="tnode" data-item="gd2-03"><span class="tname"><b>Phiếu biểu công và lương</b></span></button></li>
+              <li><button type="button" class="tnode" data-item="gd2-03"><span class="tname"><b>Đồng bộ chấm công</b><span class="d">Chưa ước tính — chưa biết ứng dụng chấm công là gì</span></span></button></li>
+            </ul>
+          </li></ul></div>
+          <div class="grp"><ul><li>
+            <button type="button" class="tnode root" data-item="gd2-04">
+              <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span class="tname"><b>GD2-04 · Đào tạo và kiểm tra kỹ năng</b><span class="m">30 ngày · 22.000.000 đ</span></span>
+            </button>
+            <ul>
+              <li><button type="button" class="tnode" data-item="gd2-04"><span class="tname"><b>Video đào tạo và hỏi đáp quy trình</b></span></button></li>
+              <li><button type="button" class="tnode" data-item="gd2-04"><span class="tname"><b>Bài kiểm tra có chấm điểm</b><span class="d">Phần tốn công nhất của phân hệ này</span></span></button></li>
+            </ul>
+          </li></ul></div>
+          <div class="grp"><ul><li>
+            <button type="button" class="tnode root" data-item="gd2-05">
+              <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
+              <span class="tname"><b>GD2-05 · Phân bổ khách hàng và kết nối nền tảng quảng cáo</b><span class="m">40 ngày · 29.500.000 đ</span></span>
+            </button>
+            <ul>
+              <li><button type="button" class="tnode" data-item="gd2-05"><span class="tname"><b>Hồ sơ khách hàng</b><span class="d">Nhân viên bán hàng tạo và cập nhật</span></span></button></li>
+              <li><button type="button" class="tnode" data-item="gd2-05"><span class="tname"><b>Nhận khách tiềm năng tự động</b><span class="d">40 ngày tính cho một nền tảng đầu tiên</span></span></button></li>
+            </ul>
+          </li></ul></div>
+          <div class="grp"><ul><li>
+            <button type="button" class="tnode root" data-item="gd2-06">
+              <svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+              <span class="tname"><b>GD2-06 · Mẫu biểu nghiệp vụ</b><span class="m">20 ngày · 14.700.000 đ</span></span>
+            </button>
+            <ul>
+              <li><button type="button" class="tnode" data-item="gd2-06"><span class="tname"><b>Form hoàn thiện giao dịch, marketing, công tác</b></span></button></li>
+              <li><button type="button" class="tnode" data-item="gd2-06"><span class="tname"><b>Bộ dựng biểu mẫu</b><span class="d">RECO tự thêm mẫu mới không cần lập trình</span></span></button></li>
+            </ul>
+          </li></ul></div>
+        </div>
+      </div>
+      <div class="card-foot">
+        <div class="spread">
+          <span class="small muted">Cộng phần B</span>
+          <span class="num" style="font-weight:700">235 ngày · 172.900.000 đ sau ưu đãi</span>
+        </div>
+        <p class="micro muted mt-1" style="max-width:78ch">
+          Sáu con số trên cộng lại ra 172.600.000 chứ không phải 172.900.000. Làm tròn xuống 100.000 chỉ áp một lần cho khối được chốt.
+        </p>
+      </div>
+    </section>
+
+    <section class="card mb-4" id="chon">
+      <div class="card-head" style="padding-block:14px">
+        <h2 style="font-size:1.05rem">Bốn cách RECO chọn</h2>
+        <span class="micro muted">Giá sau ưu đãi, đã gồm VAT 8%</span>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Phương án</th><th>Nội dung</th><th class="r">Giá sau ưu đãi</th></tr></thead>
+          <tbody>
+            <tr><td data-l="Phương án">Giữ nguyên</td><td data-l="Nội dung">Đúng 14 hạng mục v0.10 đã báo giá</td><td data-l="Giá sau ưu đãi" class="r num">89.900.000</td></tr>
+            <tr><td data-l="Phương án"><strong>Khuyến nghị</strong></td><td data-l="Nội dung"><strong>Giai đoạn 1 cộng phần A</strong></td><td data-l="Giá sau ưu đãi" class="r num"><strong>107.800.000</strong></td></tr>
+            <tr><td data-l="Phương án">Mở rộng từng phần</td><td data-l="Nội dung">Phần A cộng một phân hệ Giai đoạn 2</td><td data-l="Giá sau ưu đãi" class="r num">107.800.000 + phân hệ</td></tr>
+            <tr><td data-l="Phương án">Làm hết</td><td data-l="Nội dung">Phần A cộng toàn bộ sáu phân hệ</td><td data-l="Giá sau ưu đãi" class="r num">280.700.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card card-pad" id="chua-tinh">
+      <span class="eyebrow">Ranh giới</span>
+      <h2 style="font-size:1.15rem;margin-top:2px">Chưa được tính trong mọi con số trên</h2>
+      <ul class="small mt-2" style="padding-left:18px;line-height:1.9">
+        <li>Nhập dữ liệu lịch sử: giao dịch cũ, bảng kê hoa hồng cũ, hồ sơ nhân sự.</li>
+        <li>Phí dịch vụ bên thứ ba: nền tảng quảng cáo, gửi tin nhắn, lưu trữ video đào tạo.</li>
+        <li>Hạ tầng tăng thêm do lưu video và dữ liệu giao dịch nhiều năm — xem <a href="ha-tang.html">Vận hành</a>.</li>
+        <li>Thời gian chạy song song để đối chiếu số liệu với cách làm hiện tại của RECO.</li>
+      </ul>
+      <div class="row mt-3">
+        <a class="btn btn-outline" href="xem-truoc-gd2.html">Xem trước báo cáo GĐ2</a>
+      </div>
+    </section>
+
+    </div>
+
   </div>
 </main>
+
+<div class="modal" id="m-hub" hidden role="dialog" aria-modal="true" aria-labelledby="m-hub-t">
+  <div class="modal-box" style="max-width:640px">
+    <div class="modal-head">
+      <div><span class="eyebrow" id="m-hub-tag">Chi tiết</span><h3 id="m-hub-t">Hạng mục</h3></div>
+      <button type="button" class="icon-btn" data-x aria-label="Đóng">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="m-hub-body"></div>
+      <div class="cost" id="m-hub-cost" hidden></div>
+    </div>
+    <div class="modal-foot">
+      <div id="m-hub-links" class="row" style="flex:1"></div>
+      <button type="button" class="btn btn-outline" data-x>Đóng</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

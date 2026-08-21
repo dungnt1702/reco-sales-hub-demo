@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hạ tầng, tên miền và chi phí vận hành · RECO Sales Hub</title>
+<title>Vận hành · RECO Sales Hub</title>
 <meta name="theme-color" content="#09263c">
 <link rel="icon" href="../assets/img/reco-logo.png">
 <link rel="stylesheet" href="../assets/reco.css">
 <script defer src="../assets/reco.js"></script>
 <script defer src="store.js"></script>
 <script defer src="../assets/data.js"></script>
+<script defer src="../assets/hub.js"></script>
 <style>
   .kpi b { font-family: var(--font-display); font-size: 1.5rem; display: block; margin: 2px 0; }
   .card-head h2 { margin: 0; }
@@ -34,25 +35,30 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
 
+    <nav class="hub-bar" aria-label="Phạm vi và báo giá">
+      <div class="seg" role="group">
+        <a href="tinh-nang-gd1.html" role="button" aria-pressed="false">Báo giá</a>
+        <a href="ha-tang.html" role="button" aria-pressed="true">Vận hành</a>
+        <a href="sitemap.html" role="button" aria-pressed="false">Bản đồ</a>
+      </div>
+    </nav>
+
     <div class="spread mb-3">
       <div>
         <span class="eyebrow">Ngoài gói 89.900.000 · khoản RECO tự chi trả</span>
-        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Hạ tầng, tên miền và chi phí vận hành</h1>
+        <h1 style="font-size:clamp(1.6rem,3vw,2.1rem)">Vận hành</h1>
         <p class="lead mt-1" style="font-size:.98rem;max-width:74ch">
-          Những thứ phần mềm cần để chạy thật mà tiền phát triển không mua: tên miền, máy chủ,
-          dung lượng lưu trữ, sao lưu và tài khoản Google. Mỗi khoản nêu yêu cầu trước, rồi mới đến
-          ước tính chi phí theo bảng giá đang niêm yết.
+          Hạ tầng (tên miền, máy chủ, lưu trữ) RECO trả thẳng cho nhà cung cấp.
+          Lịch triển khai và ba gói bảo trì năm — sau một tháng bảo hành.
         </p>
       </div>
-      <div class="row-tight">
-        <div class="seg" role="group" aria-label="Chọn nội dung">
-          <a href="tinh-nang-gd1.html" role="button">Giai đoạn 1</a>
-          <a href="tinh-nang-gd2.html" role="button">Giai đoạn 2</a>
-          <button type="button" aria-pressed="true">Hạ tầng</button>
-          <a href="bao-tri.html" role="button">Bảo trì</a>
-        </div>
+      <div class="seg" role="group" aria-label="Chọn nội dung vận hành">
+        <button type="button" data-pane="ha-tang" aria-pressed="true">Hạ tầng</button>
+        <button type="button" data-pane="bao-tri">Lịch và bảo trì</button>
       </div>
     </div>
+
+    <div data-hub-pane="ha-tang" id="ha-tang-pane">
 
     <div class="grid g-4 mb-4">
       <div class="card card-pad kpi"><span class="micro muted">Chi phí năm đầu · mức khuyến nghị</span><b>19.494.000</b><span class="micro muted">VNĐ, bình quân 1.624.500 mỗi tháng</span></div>
@@ -65,7 +71,7 @@
       <strong>Đây là ước tính, không phải cam kết giá.</strong>
       Số liệu lấy từ bảng giá niêm yết của Nhân Hòa và Google ngày 18/08/2026, còn thay đổi theo
       khuyến mãi và theo cấu hình cuối cùng. RECO đứng tên tài khoản và thanh toán thẳng cho nhà cung cấp;
-      HASU chỉ nhận quyền kỹ thuật để cấu hình và vận hành. Cách tính chi phí vận hành hằng tháng
+      TLB chỉ nhận quyền kỹ thuật để cấu hình và vận hành. Cách tính chi phí vận hành hằng tháng
       vẫn là điểm chờ RECO chốt — <a href="#chua-chot">xem cuối trang</a>.
     </div>
 
@@ -87,8 +93,8 @@
           <a href="#tong">Tổng chi phí năm đầu</a>
           <a href="#trach-nhiem">Ai mua, ai vận hành</a>
           <a href="#chua-chot">Chờ RECO xác nhận</a>
-          <a href="bao-tri.html">Lịch và bảo trì</a>
-          <a href="chi-tiet-gd1.html#chua-gom">Ranh giới phạm vi Giai đoạn 1</a>
+          <a href="#bao-tri">Lịch và bảo trì</a>
+          <a href="tinh-nang-gd1.html#chua-gom">Ranh giới phạm vi Giai đoạn 1</a>
         </div>
       </div>
 
@@ -266,7 +272,7 @@
               <strong>Đặt cạnh giá phát triển để thấy tỷ lệ.</strong>
               Gói Giai đoạn 1 là 89.900.000 đồng trả một lần. Hạ tầng mức khuyến nghị là 19.494.000 đồng cho năm đầu,
               bằng khoảng một phần sáu giá phát triển, và là khoản lặp lại hằng năm chứ không phải trả một lần.
-              Hai con số này nằm ở hai hóa đơn khác nhau: phần mềm trả cho HASU, hạ tầng trả thẳng cho nhà cung cấp.
+              Hai con số này nằm ở hai hóa đơn khác nhau: phần mềm trả cho TLB, hạ tầng trả thẳng cho nhà cung cấp.
             </div>
           </div>
         </section>
@@ -276,9 +282,9 @@
           <h2 style="font-size:1.15rem;margin-top:2px">Ai mua, ai vận hành</h2>
           <div class="kv kv-2 mt-3">
             <div><div class="k">RECO</div><div class="v" style="font-size:.9rem">Mở tài khoản Nhân Hòa và Google, đứng tên, thanh toán thẳng cho nhà cung cấp</div></div>
-            <div><div class="k">HASU</div><div class="v" style="font-size:.9rem">Nhận quyền kỹ thuật để cấu hình, triển khai và vận hành trong thời gian dự án</div></div>
-            <div><div class="k">Quyền quản trị</div><div class="v" style="font-size:.9rem">RECO thu hồi được bất cứ lúc nào, không phụ thuộc HASU</div></div>
-            <div><div class="k">Sau bảo hành 1 tháng</div><div class="v" style="font-size:.9rem">Vá hệ điều hành và trực sự cố thuộc <a href="bao-tri.html">gói bảo trì</a>, chưa nằm trong 89.900.000</div></div>
+            <div><div class="k">TLB</div><div class="v" style="font-size:.9rem">Nhận quyền kỹ thuật để cấu hình, triển khai và vận hành trong thời gian dự án</div></div>
+            <div><div class="k">Quyền quản trị</div><div class="v" style="font-size:.9rem">RECO thu hồi được bất cứ lúc nào, không phụ thuộc TLB</div></div>
+            <div><div class="k">Sau bảo hành 1 tháng</div><div class="v" style="font-size:.9rem">Vá hệ điều hành và trực sự cố thuộc <a href="#bao-tri">gói bảo trì</a>, chưa nằm trong 89.900.000</div></div>
           </div>
           <p class="small mt-3">Cách này giữ cho RECO không bị khóa vào một nhà cung cấp phần mềm: tên miền, máy chủ và dữ liệu đều đứng tên RECO, đổi đơn vị triển khai chỉ là đổi người được cấp quyền.</p>
         </section>
@@ -295,8 +301,8 @@
             <li>RECO đang dùng gói Google Workspace nào và còn bao nhiêu chỗ ngồi.</li>
           </ul>
           <div class="row mt-3">
-            <a class="btn btn-outline" href="tinh-nang-gd1.html">Về cây tính năng Giai đoạn 1</a>
-            <a class="btn btn-outline" href="chi-tiet-gd1.html#chua-gom">Ranh giới phạm vi Giai đoạn 1</a>
+            <a class="btn btn-outline" href="tinh-nang-gd1.html">Về báo giá Giai đoạn 1</a>
+            <a class="btn btn-outline" href="tinh-nang-gd1.html#chua-gom">Ranh giới phạm vi Giai đoạn 1</a>
             <a class="btn btn-quiet" href="index.html">Về bản đồ prototype</a>
           </div>
           <p class="src mt-4">
@@ -312,6 +318,148 @@
 
       </div>
     </div>
+
+    </div><!-- /pane hạ tầng -->
+
+    <div data-hub-pane="bao-tri" id="bao-tri" hidden>
+
+    <div class="grid g-4 mb-4">
+      <div class="card card-pad kpi"><span class="micro muted">Phát triển</span><b>1 tháng</b><span class="micro muted">Nhân sự làm song song</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Kiểm thử</span><b>2 tuần</b><span class="micro muted">Sau khi khóa phạm vi phát triển</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Bảo hành</span><b>1 tháng</b><span class="micro muted">Sửa lỗi so với nghiệm thu</span></div>
+      <div class="card card-pad kpi"><span class="micro muted">Bảo trì 15% · khuyến nghị</span><b>13.485.000</b><span class="micro muted">VNĐ / năm, trên 89.900.000</span></div>
+    </div>
+
+    <div class="note note-navy mb-4">
+      <strong>Công thức là phần trăm × giá phát triển tại thời điểm ký.</strong>
+      Với gói v0.10 cơ sở là 89.900.000 VNĐ. Gói bảo trì không gồm máy chủ, tên miền và lưu trữ —
+      những khoản đó RECO trả thẳng cho nhà cung cấp, xem tab Hạ tầng.
+      Thời hạn bảo hành một tháng và tỷ lệ bảo trì 10 / 15 / 20% là đề xuất mới (QD-077, QD-078).
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-side">
+        <nav class="secnav" aria-label="Lịch và bảo trì">
+          <p class="micro muted mb-1" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">Nội dung</p>
+          <ol>
+            <li><a href="#lich" class="on">Bốn mốc lịch</a></li>
+            <li><a href="#goi">Ba gói bảo trì</a></li>
+            <li><a href="#pham-vi">Phạm vi từng mức</a></li>
+            <li><a href="#luu-y">Công thức và lệch quyết định</a></li>
+          </ol>
+        </nav>
+        <div class="side-more">
+          <a href="tinh-nang-gd1.html#gia">Chuỗi tính giá Giai đoạn 1</a>
+          <a href="#ha-tang-pane">Hạ tầng và chi phí vận hành</a>
+        </div>
+      </div>
+      <div class="detail-main">
+
+        <section class="sec card card-pad" id="lich">
+          <div class="sec-head"><span class="n">LỊCH</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Bốn mốc từ lúc bắt đầu đến hết bảo hành</h2>
+          <p class="small mt-1">Sáu tuần dương không phải 123 ngày nối đuôi: hai người xây dựng sản phẩm gần như toàn thời gian; quản lý dự án và kiểm thử bán thời gian.</p>
+          <ul class="timeline mt-3">
+            <li class="done">
+              <span class="t">Mốc 1</span>
+              <span class="d">1 tháng phát triển</span>
+              <p class="small muted">Mười bốn hạng mục của gói v0.10. Phạm vi khóa theo bản mô phỏng 19/08.</p>
+            </li>
+            <li class="done">
+              <span class="t">Mốc 2</span>
+              <span class="d">2 tuần kiểm thử</span>
+              <p class="small muted">Quyền theo vai trò, luồng chính và biên nội dung công khai. Sửa lỗi phát hiện trước bàn giao.</p>
+            </li>
+            <li class="on">
+              <span class="t">Mốc 3</span>
+              <span class="d">Bàn giao + 1 tháng bảo hành</span>
+              <p class="small muted">Sửa miễn phí lỗi sai so với tài liệu đã nghiệm thu. Yêu cầu mới tính riêng.</p>
+            </li>
+            <li>
+              <span class="t">Mốc 4</span>
+              <span class="d">Sau bảo hành · gói bảo trì năm</span>
+              <p class="small muted">RECO chọn 10%, 15% hoặc 20% trên giá phát triển tại thời điểm. Mức 15% là khuyến nghị.</p>
+            </li>
+          </ul>
+        </section>
+
+        <section class="sec card" id="goi">
+          <div class="card-head" style="padding-block:14px">
+            <div>
+              <span class="eyebrow">QD-078 · trên 89.900.000</span>
+              <h2 style="font-size:1.05rem;margin-top:2px">Ba gói bảo trì theo năm</h2>
+            </div>
+            <span class="micro muted">Đơn vị: VNĐ</span>
+          </div>
+          <div class="card-body">
+            <p class="small">Cột giữa là mức khuyến nghị. Cột tháng chia đều 12, không làm tròn thêm ngoài số đã ghi.</p>
+            <div class="tbl-wrap mt-3">
+              <table class="tbl ladder">
+                <thead><tr><th>Mức</th><th class="r">Theo năm</th><th class="r">Theo tháng</th></tr></thead>
+                <tbody>
+                  <tr><td data-l="Mức">10% · Duy trì</td><td data-l="Theo năm" class="r">8.990.000</td><td data-l="Theo tháng" class="r">749.167</td></tr>
+                  <tr><td data-l="Mức" class="pick"><strong>15% · Vận hành chuẩn</strong></td><td data-l="Theo năm" class="r pick">13.485.000</td><td data-l="Theo tháng" class="r pick">1.123.750</td></tr>
+                  <tr><td data-l="Mức">20% · Đồng hành</td><td data-l="Theo năm" class="r">17.980.000</td><td data-l="Theo tháng" class="r">1.498.333</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="micro muted mt-2">13.485.000 ÷ 12 = 1.123.750 đúng. Hai mức kia chia 12 có phần lẻ, ghi 749.167 và 1.498.333.</p>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="pham-vi">
+          <div class="sec-head"><span class="n">PHẠM VI</span></div>
+          <h2 style="font-size:1.15rem;margin-top:0">Ba mức, mỗi mức cộng thêm lên mức dưới</h2>
+          <div class="grid g-3 mt-3">
+            <div class="card card-pad">
+              <span class="eyebrow">10%</span>
+              <h3 style="font-size:1.02rem;margin:4px 0 8px">Duy trì</h3>
+              <p class="small">Sửa lỗi sai so với tài liệu nghiệm thu. Vá bảo mật. Tiếp nhận ticket trong giờ hành chính, thứ Hai đến thứ Sáu, 8h30–17h30. Không gồm tính năng mới.</p>
+              <div class="cost">
+                <div><span class="k">Năm</span><span class="v">8.990.000 đ</span></div>
+                <div><span class="k">Tháng</span><span class="v">749.167 đ</span></div>
+              </div>
+            </div>
+            <div class="card card-pad pick">
+              <span class="eyebrow">15% · khuyến nghị</span>
+              <h3 style="font-size:1.02rem;margin:4px 0 8px">Vận hành chuẩn</h3>
+              <p class="small">Toàn bộ mức 10%, thêm sự cố chặn bán trong 4 giờ làm việc; 4 giờ thay đổi nhỏ mỗi tháng; báo cáo tháng; rà soát quý.</p>
+              <div class="cost">
+                <div><span class="k">Năm</span><span class="v">13.485.000 đ</span></div>
+                <div><span class="k">Tháng</span><span class="v">1.123.750 đ</span></div>
+              </div>
+            </div>
+            <div class="card card-pad">
+              <span class="eyebrow">20%</span>
+              <h3 style="font-size:1.02rem;margin:4px 0 8px">Đồng hành</h3>
+              <p class="small">Toàn bộ mức 15%, thêm sự cố P1 ngoài giờ tối đa 2 lần mỗi tháng; 8 giờ thay đổi nhỏ mỗi tháng; 1 buổi đào tạo lại mỗi năm.</p>
+              <div class="cost">
+                <div><span class="k">Năm</span><span class="v">17.980.000 đ</span></div>
+                <div><span class="k">Tháng</span><span class="v">1.498.333 đ</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="sec card card-pad" id="luu-y">
+          <span class="eyebrow">Công thức và quyết định</span>
+          <h2 style="font-size:1.15rem;margin-top:2px">Cách tính và chỗ lệch quyết định cũ</h2>
+          <ul class="small mt-2" style="padding-left:18px;line-height:1.9">
+            <li>Bảo trì = % × <strong>giá phát triển tại thời điểm ký</strong>. Với v0.10 cơ sở Web là 89.900.000 VNĐ. Nếu RECO chọn thêm ứng dụng (QD-080), cơ sở là 109.900.000 → 10% = 10.990.000 · 15% = 16.485.000 · 20% = 21.980.000.</li>
+            <li>Không gồm hạ tầng: máy chủ, tên miền, lưu trữ, sao lưu.</li>
+            <li>Bảo hành <strong>1 tháng</strong> sau bàn giao (QD-077) đè thời hạn 3 tháng của QD-038.</li>
+            <li>Ba mức 10 / 15 / 20% là QD-078 — khi ký hợp đồng ghi rõ đây là đề xuất mới QD-077 / QD-078.</li>
+          </ul>
+          <div class="row mt-3">
+            <a class="btn btn-primary" href="tinh-nang-gd1.html#gia">Chuỗi tính giá Giai đoạn 1</a>
+            <a class="btn btn-outline" href="#ha-tang-pane">Hạ tầng</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    </div><!-- /pane bảo trì -->
 
   </div>
 </main>

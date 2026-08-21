@@ -4,7 +4,7 @@
 
 `index.html` là **cổng**: chọn Giai đoạn 1 (bản đang làm) hoặc Giai đoạn 2 (snapshot đóng băng).
 
-**Giai đoạn 1** (`gd01/`) — ba trụ: thông tin dự án, căn hộ + SP Hot (không giá), thư viện mẫu chia sẻ tin. Báo giá v0.10: 14 hạng mục, ba vai trò, 123 ngày công, dự phòng 10%, ưu đãi 30%, thanh toán **89.900.000 VNĐ** đã gồm VAT 8%. Ứng dụng iOS/Android là tùy chọn: nếu làm cùng Giai đoạn 1 thì **20.000.000 VNĐ** (Web + ứng dụng = 109.900.000). Lịch: 1 tháng phát triển + 2 tuần kiểm thử + 1 tháng bảo hành; bảo trì 10/15/20% năm trên giá phát triển (`gd01/bao-tri.html`).
+**Giai đoạn 1** (`gd01/`) — ba trụ: thông tin dự án, căn hộ + SP Hot (không giá), thư viện mẫu chia sẻ tin. Báo giá v0.10: 14 hạng mục, ba vai trò, 123 ngày công, ưu đãi 30%, thanh toán **89.900.000 VNĐ** đã gồm VAT 8%. Ứng dụng iOS/Android là tùy chọn: nếu làm cùng Giai đoạn 1 thì **20.000.000 VNĐ** (Web + ứng dụng = 109.900.000). Lịch: 1 tháng phát triển + 2 tuần kiểm thử + 1 tháng bảo hành; bảo trì 10/15/20% năm trên giá phát triển (`gd01/ha-tang.html#bao-tri`). Phạm vi gom **ba hub**: Báo giá · Vận hành · Bản đồ.
 
 **Giai đoạn 2** (`gd02/`) giữ bản trước 19/08 (kịch bản, soạn bảy kênh, lưới bảng hàng).
 
@@ -35,10 +35,9 @@ Trạng thái nằm trong URL (`?role=…&dev=m&bare=1`).
 | `gd01/du-an-chi-tiet.html` | Chi tiết dự án 3 tầng |
 | `gd01/san-pham.html` | Chi tiết căn |
 | `gd01/chia-se.html` | Thư viện mẫu chia sẻ tin |
-| `gd01/tinh-nang-gd1.html` | Cây 14 hạng mục v0.10 |
-| `gd01/chi-tiet-gd1.html` | Chi tiết báo giá 89,9 triệu |
-| `gd01/bao-tri.html` | Lịch bàn giao và 3 gói bảo trì |
-| `gd01/ha-tang.html` | Hạ tầng (RECO tự chi) |
+| `gd01/tinh-nang-gd1.html` | Hub Báo giá — cây 14 hạng mục + tab GĐ2, modal chi tiết |
+| `gd01/ha-tang.html` | Hub Vận hành — hạ tầng + lịch/bảo trì |
+| `gd01/sitemap.html` | Hub Bản đồ — đối chiếu SaleHUB + lưới màn |
 | `gd02/` | Snapshot Giai đoạn 2 |
 | `assets/` | CSS/JS/ảnh/tiles dùng chung — không nhân đôi |
 
@@ -79,23 +78,17 @@ Bảng tệp bên dưới mô tả snapshot `gd02/` (IA trước 19/08). Kiểm 
 Tệp dùng chung nằm trong `assets/`: `reco.js` (nền tảng), `store.js` (kho dữ liệu), `data.js` (thẻ dự án),
 `geo.js` + `reco-map.js` + `vendor/leaflet.js` + `tiles/` (bản đồ vị trí — xem mục dưới).
 
-Bốn màn tính năng/báo giá vào được từ mục **Tính năng & báo giá** trên thanh trên cùng (vai trò Khách hàng
-không thấy mục này). Hai màn cây dùng chung `.tree`/`.tnode` của cây thư mục; hai màn chi tiết dùng chung
-`.detail-grid`/`.secnav` của màn chi tiết dự án — node trên cây neo thẳng tới hạng mục tương ứng
-(`chi-tiet-gd1.html#hm-05`, `chi-tiet-gd2.html#gd2-01`).
+Ba hub Báo giá / Vận hành / Bản đồ vào được từ mục **Phạm vi & báo giá** trên thanh trên cùng (vai trò Khách hàng
+không thấy mục này). Node trên cây mở modal, không sang trang chi tiết riêng.
 
-**Số liệu của bốn màn này là bản sao, không phải nguồn.** Nguồn sự thật là
-`reco-sales-hub/docs/08-delivery/feature-effort-pricing.md` (18 hạng mục, chuỗi giá, mục Chưa bao gồm) và
-`reco-sales-hub/docs/08-delivery/phase-2-catalog.md` (Phần A, Phần B, bốn phương án). Đổi giá thì **sửa ở docs
-trước**, chạy lại `tools/build-deliverables.ps1` bên repo đó, rồi mới sửa bốn màn này — bốn con số
-`218` · `191.810.000` · `248.585.760` · `198.800.000` phải giống nhau ở markdown, Excel, hai PDF và ở đây.
-Con số ở cây là **chi phí cốt lõi trước VAT**; tổng theo nhánh cộng lại đúng 191.810.000. Riêng Phần A và
-Giai đoạn 2 hiển thị giá **sau ưu đãi 20%**, và tổng từng phần cố tình không cộng khớp với tổng khối
-(làm tròn xuống 100.000 chỉ áp một lần cho khối được chốt) — chỗ nào cũng đã có ghi chú giải thích, đừng "sửa cho khớp".
+**Số liệu của các màn này là bản sao, không phải nguồn.** Nguồn sự thật là
+`reco-sales-hub/docs/gd01/08-delivery/feature-effort-pricing.md`. Đổi giá thì **sửa ở docs
+trước**. Con số `123` · `108.220.000` · `128.565.360` · `89.900.000` phải giống nhau ở markdown, Excel, PDF và ở đây.
+Con số ở cây là **chi phí trước VAT**. Giai đoạn 2 hiển thị giá **sau ưu đãi 30%**.
 
-Màn thứ năm của cụm này, `ha-tang.html`, đi theo hướng ngược lại: nó **cụ thể hóa mục "Chưa bao gồm"** bằng
-ước tính có nguồn, và **không được cộng vào bốn con số trên** — hạ tầng là khoản RECO trả thẳng cho nhà cung
-cấp, HASU không xuất hóa đơn. Giá tra ngày **18/08/2026** từ [bảng giá máy chủ ảo](https://nhanhoa.com/may-chu/may-chu-ao-vps.html),
+Hub Vận hành (`ha-tang.html`) **cụ thể hóa mục "Chưa bao gồm"** bằng
+ước tính có nguồn, và **không được cộng vào giá phát triển** — hạ tầng là khoản RECO trả thẳng cho nhà cung
+cấp, TLB không xuất hóa đơn. Giá tra ngày **18/08/2026** từ [bảng giá máy chủ ảo](https://nhanhoa.com/may-chu/may-chu-ao-vps.html),
 [High CPU](https://nhanhoa.com/may-chu/may-chu-cloud-high-cpu.html), [Cloud Storage](https://nhanhoa.com/may-chu/cloud-storage.html)
 và [tên miền](https://nhanhoa.com/trang/ten-mien/bang-gia-ten-mien.html) của Nhân Hòa, cùng
 [bảng giá Google Workspace](https://workspace.google.com/pricing). Khi RECO chốt DX-016 (cách tính chi phí vận
