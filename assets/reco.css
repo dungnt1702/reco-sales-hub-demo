@@ -1747,6 +1747,8 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
 .reco-slide { --slide-per: 1; --slide-gap: 16px; }
 .reco-slide[data-per="home"],
 .reco-slide[data-per="pj"] { --slide-per: 1; }
+/* Số liệu nhanh (mobile) — YC-03 (QD-116): hé một phần thẻ kế bên để gợi ý vuốt được */
+.reco-slide[data-per="kpi"] { --slide-per: 1.15; }
 @media (min-width: 768px) {
   .reco-slide[data-per="home"],
   .reco-slide[data-per="pj"] { --slide-per: 2; }
@@ -1910,6 +1912,11 @@ body.proto-off .mau-layout.is-edit .mau-aside { top: var(--header-h); }
   #m-preview .modal-box {
     max-width: min(var(--container-max), calc(100vw - 48px));
   }
+}
+/* Ảnh tóm tắt dự án phóng to — YC-06 (QD-116): đủ lớn để đọc chữ nếu ảnh là infographic */
+#m-anh-tomtat .modal-box {
+  max-width: min(48rem, 100%);
+  max-height: min(94vh, calc(100dvh - var(--header-h, 0px)));
 }
 #m-intent .intent-chips button { min-height: 44px; }
 @media (max-width: 767px) {

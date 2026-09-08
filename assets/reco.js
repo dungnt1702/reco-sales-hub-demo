@@ -199,7 +199,7 @@
   var NAV = inGd01() ? [
     { href: 'trang-dau.html', label: 'Trang đầu', key: 'trang-dau', icon: 'home' },
     { href: 'du-an.html', label: 'Dự án', key: 'du-an', icon: 'layers' },
-    { href: 'danh-muc-san-pham.html', label: 'Sản phẩm', key: 'san-pham', icon: 'grid' },
+    { href: 'danh-muc-san-pham.html', label: 'Sản phẩm chọn lọc', key: 'san-pham', icon: 'grid' },
     { href: 'cay-thu-muc.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
     { href: 'chia-se.html', label: 'Bài đăng', key: 'chia-se', icon: 'share' },
     { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' },
@@ -1278,7 +1278,10 @@
   }
 
   function readSlidePer(el) {
-    var v = parseInt((window.getComputedStyle(el).getPropertyValue('--slide-per') || '1').trim(), 10);
+    /* parseFloat (không phải parseInt) để hỗ trợ --slide-per thập phân, ví dụ 1.15 để hé lộ
+       một phần thẻ kế bên (YC-03, QD-116) — không đổi cách đọc các giá trị nguyên đang dùng
+       cho data-per="home"/"pj". */
+    var v = parseFloat((window.getComputedStyle(el).getPropertyValue('--slide-per') || '1').trim());
     return v > 0 ? v : 1;
   }
 

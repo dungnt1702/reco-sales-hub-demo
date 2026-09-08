@@ -120,12 +120,13 @@
         <p class="micro muted mb-1" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">Khu vực nội dung</p>
         <ol>
           <li><a href="#kv1" class="on">Tổng quan</a></li>
+          <li><a href="#kv5">Tài liệu nguồn</a></li>
           <li><a href="#kv2">Vị trí</a></li>
+          <li><a href="#kv-tienich">Tiện ích</a></li>
           <li><a href="#kv3">Điểm chính</a></li>
           <li><a href="#kv4">Mặt bằng</a></li>
           <li><a href="#kv-hot">SP Hot</a></li>
           <li><a href="#kv-mau">Bài đăng</a></li>
-          <li><a href="#kv5">Tài liệu nguồn</a></li>
           <li><a href="#kv6">Ảnh và tài liệu</a></li>
         </ol>
       </nav>
@@ -173,84 +174,10 @@
           </div>
         </section>
 
-        <!-- 2. Vị trí -->
-        <section class="sec" id="kv2">
-          <div class="sec-head"><span class="n">KHU VỰC 02</span><h2>Vị trí và liên kết vùng</h2>
-            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv2" aria-label="Mục đích của khu vực Vị trí và liên kết vùng">
-              <span class="itip-bub" id="tip-kv2" role="tooltip">Vị trí dự án và các điểm kết nối quanh khu vực, để nhân viên trả lời ngay câu hỏi “chỗ đó ở đâu, gần những gì”.</span>
-            </button>
-            <span class="lb lb-public">Công khai</span>
-            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="place" data-roles="tkkd gddu gd">+ Thêm điểm liên kết</button></span>
-          </div>
-          <div class="card card-pad">
-            <div id="kv2-map" class="mb-2"></div>
-            <p class="micro muted mb-3">Nền bản đồ OpenStreetMap. Trỏ vào một điểm bên dưới để thấy vị trí trên bản đồ.</p>
-            <div class="kv kv-3" id="kv2-grid"></div>
-          </div>
-        </section>
-
-        <!-- 3. Điểm chính -->
-        <section class="sec" id="kv3">
-          <div class="sec-head"><span class="n">KHU VỰC 03</span><h2>Điểm chính của sản phẩm</h2>
-            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv3" aria-label="Mục đích của khu vực Điểm chính của sản phẩm">
-              <span class="itip-bub" id="tip-kv3" role="tooltip">Các điểm bán hàng chính dùng khi tư vấn. Mỗi điểm mang nhãn quyền riêng — chỉ điểm Công khai mới được đưa vào trang gửi khách.</span>
-            </button>
-            <span class="sec-act row-tight">
-              <span class="open-q" data-roles-not="nvbh" title="DX-018 — cách biểu diễn điểm bán hàng còn chờ RECO chốt">Cần RECO xác nhận</span>
-              <button class="btn btn-outline btn-sm" data-sec-new="point" data-roles="tkkd gddu gd">+ Thêm điểm bán</button>
-            </span>
-          </div>
-          <div class="card card-pad">
-            <p class="small muted mb-2">Mỗi điểm bán hàng mang nhãn quyền riêng — chỉ điểm mang nhãn Công khai mới được đưa vào trang gửi khách.</p>
-            <div id="kv3-list"></div>
-          </div>
-        </section>
-
-        <!-- 4. Mặt bằng -->
-        <section class="sec" id="kv4">
-          <div class="sec-head"><span class="n">KHU VỰC 04</span><h2>Mặt bằng</h2>
-            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv4" aria-label="Mục đích của khu vực Mặt bằng">
-              <span class="itip-bub" id="tip-kv4" role="tooltip">Mặt bằng tổng thể, mặt bằng tầng và mặt bằng căn để mở ngay khi khách hỏi bố trí. Tải xuống luôn là bản PDF có dấu nhận diện người tải.</span>
-            </button>
-            <span class="lb lb-public">Công khai</span>
-            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="plan" data-roles="tkkd gddu gd mkt">+ Thêm mặt bằng</button></span>
-          </div>
-          <div class="gal" id="kv4-gal"></div>
-          <p class="micro muted mt-2" id="kv4-note" hidden>Bản mô phỏng chưa có tệp mặt bằng thật: ảnh trong khối này là <b>ảnh thay chỗ</b> lấy từ kho ảnh phối cảnh, không phải mặt bằng của đúng căn hay đúng tầng ghi ở nhãn.</p>
-          <p class="micro muted mt-2">Tệp gốc nằm ở nhánh <a href="cay-thu-muc.html">Tài liệu bán hàng</a>. Tải xuống luôn là bản PDF có dấu nhận diện người tải.</p>
-        </section>
-
-        </div><!-- /kv1-info -->
-
-        <!-- SP Hot -->
-        <section class="sec" id="kv-hot">
-          <div class="sec-head"><span class="n">SP HOT</span><h2>Sản phẩm Hot</h2>
-            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv-hot" aria-label="Mục đích của khu vực Sản phẩm Hot">
-              <span class="itip-bub" id="tip-kv-hot" role="tooltip">Căn đang đẩy tuần này, gắn từ màn Quản trị. Không hiện giá — nhân viên mở căn rồi gửi khách bằng bài đã duyệt.</span>
-            </button>
-            <span class="sec-act row-tight">
-              <button type="button" class="reco-slide-btn reco-slide-prev" id="kv-hot-prev" aria-label="Sản phẩm trước">‹</button>
-              <button type="button" class="reco-slide-btn reco-slide-next" id="kv-hot-next" aria-label="Sản phẩm sau">›</button>
-            </span>
-          </div>
-          <div class="reco-slide" id="kv-hot-slide">
-            <div class="reco-slide-stage" id="kv-hot-list"></div>
-            <div class="reco-slide-dots" id="kv-hot-dots"></div>
-          </div>
-        </section>
-
-        <!-- Bài đăng -->
-        <section class="sec" id="kv-mau">
-          <div class="sec-head"><h2>Bài đăng</h2>
-            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv-mau" aria-label="Mục đích của khu vực Bài đăng">
-              <span class="itip-bub" id="tip-kv-mau" role="tooltip">Bài dùng chung của đội (phải duyệt mới gửi được) và bài cá nhân của anh/chị. Bấm để mở thư viện và sao chép tin Zalo hoặc đường dẫn.</span>
-            </button>
-            <span class="sec-act"><a class="btn btn-primary btn-sm" href="chia-se.html">Tạo link</a></span>
-          </div>
-          <div class="stack" id="kv-mau-list"></div>
-        </section>
-
-        <!-- 5. Tài liệu nguồn — chỉ liên kết Drive, không bảng hàng / phiếu tính giá -->
+        <!-- 5. Tài liệu nguồn — chỉ liên kết Drive, không bảng hàng / phiếu tính giá.
+             Dời lên ngay sau Tổng quan theo YC-05 (QD-116) — chỉ đổi vị trí trình bày, các
+             phần tử lưới bảng hàng/phiếu tính giá bên trong vẫn giữ nguyên trạng thái hoãn
+             thi hành `hidden` trần theo QD-115, không gỡ ẩn trong đợt này. -->
         <section class="sec" id="kv5">
           <div class="sec-head"><span class="n">KHU VỰC 05</span><h2>Tài liệu nguồn (chỉ link)</h2>
             <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv5" aria-label="Mục đích của khu vực Tài liệu nguồn">
@@ -352,6 +279,96 @@
             <div class="kv kv-2" id="kv5-bank-grid"></div>
             <p class="micro muted mt-2">Nhân viên bấm để sao chép từng dòng, tránh gõ tay sai số tài khoản hoặc sai cú pháp nội dung chuyển khoản.</p>
           </div>
+        </section>
+
+        <!-- 2. Vị trí -->
+        <section class="sec" id="kv2">
+          <div class="sec-head"><span class="n">KHU VỰC 02</span><h2>Vị trí và liên kết vùng</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv2" aria-label="Mục đích của khu vực Vị trí và liên kết vùng">
+              <span class="itip-bub" id="tip-kv2" role="tooltip">Vị trí dự án và các điểm kết nối quanh khu vực, để nhân viên trả lời ngay câu hỏi “chỗ đó ở đâu, gần những gì”.</span>
+            </button>
+            <span class="lb lb-public">Công khai</span>
+            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="place" data-roles="tkkd gddu gd">+ Thêm điểm liên kết</button></span>
+          </div>
+          <div class="card card-pad">
+            <div id="kv2-map" class="mb-2"></div>
+            <p class="micro muted mb-3">Nền bản đồ OpenStreetMap. Trỏ vào một điểm bên dưới để thấy vị trí trên bản đồ.</p>
+            <div class="kv kv-3" id="kv2-grid"></div>
+          </div>
+        </section>
+
+        <!-- Tiện ích — khối mới YC-07 (QD-116), ngay sau Vị trí, trước Điểm chính.
+             Dữ liệu mẫu trong store.js là minh họa cho demo, chưa phải nội dung RECO duyệt
+             (đúng quy ước QD-073 dùng ở khu vực 01). -->
+        <section class="sec" id="kv-tienich">
+          <div class="sec-head"><span class="n">TIỆN ÍCH</span><h2>Tiện ích</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv-tienich" aria-label="Mục đích của khu vực Tiện ích">
+              <span class="itip-bub" id="tip-kv-tienich" role="tooltip">Tiện ích nội khu và tiện ích lân cận của đúng dự án này — ảnh, tên và mô tả ngắn để nhân viên giới thiệu nhanh khi tư vấn.</span>
+            </button>
+            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="amenity" data-roles="tkkd gddu gd">+ Thêm tiện ích</button></span>
+          </div>
+          <div class="grid g-3" id="kv-tienich-list"></div>
+        </section>
+
+        <!-- 3. Điểm chính -->
+        <section class="sec" id="kv3">
+          <div class="sec-head"><span class="n">KHU VỰC 03</span><h2>Điểm chính của sản phẩm</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv3" aria-label="Mục đích của khu vực Điểm chính của sản phẩm">
+              <span class="itip-bub" id="tip-kv3" role="tooltip">Các điểm bán hàng chính dùng khi tư vấn. Mỗi điểm mang nhãn quyền riêng — chỉ điểm Công khai mới được đưa vào trang gửi khách.</span>
+            </button>
+            <span class="sec-act row-tight">
+              <span class="open-q" data-roles-not="nvbh" title="DX-018 — cách biểu diễn điểm bán hàng còn chờ RECO chốt">Cần RECO xác nhận</span>
+              <button class="btn btn-outline btn-sm" data-sec-new="point" data-roles="tkkd gddu gd">+ Thêm điểm bán</button>
+            </span>
+          </div>
+          <div class="card card-pad">
+            <p class="small muted mb-2">Mỗi điểm bán hàng mang nhãn quyền riêng — chỉ điểm mang nhãn Công khai mới được đưa vào trang gửi khách.</p>
+            <div id="kv3-list"></div>
+          </div>
+        </section>
+
+        <!-- 4. Mặt bằng -->
+        <section class="sec" id="kv4">
+          <div class="sec-head"><span class="n">KHU VỰC 04</span><h2>Mặt bằng</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv4" aria-label="Mục đích của khu vực Mặt bằng">
+              <span class="itip-bub" id="tip-kv4" role="tooltip">Mặt bằng tổng thể, mặt bằng tầng và mặt bằng căn để mở ngay khi khách hỏi bố trí. Tải xuống luôn là bản PDF có dấu nhận diện người tải.</span>
+            </button>
+            <span class="lb lb-public">Công khai</span>
+            <span class="sec-act"><button class="btn btn-outline btn-sm" data-sec-new="plan" data-roles="tkkd gddu gd mkt">+ Thêm mặt bằng</button></span>
+          </div>
+          <div class="gal" id="kv4-gal"></div>
+          <p class="micro muted mt-2" id="kv4-note" hidden>Bản mô phỏng chưa có tệp mặt bằng thật: ảnh trong khối này là <b>ảnh thay chỗ</b> lấy từ kho ảnh phối cảnh, không phải mặt bằng của đúng căn hay đúng tầng ghi ở nhãn.</p>
+          <p class="micro muted mt-2">Tệp gốc nằm ở nhánh <a href="cay-thu-muc.html">Tài liệu bán hàng</a>. Tải xuống luôn là bản PDF có dấu nhận diện người tải.</p>
+        </section>
+
+        </div><!-- /kv1-info -->
+
+        <!-- SP Hot -->
+        <section class="sec" id="kv-hot">
+          <div class="sec-head"><span class="n">SP HOT</span><h2>Sản phẩm Hot</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv-hot" aria-label="Mục đích của khu vực Sản phẩm Hot">
+              <span class="itip-bub" id="tip-kv-hot" role="tooltip">Căn đang đẩy tuần này, gắn từ màn Quản trị. Không hiện giá — nhân viên mở căn rồi gửi khách bằng bài đã duyệt.</span>
+            </button>
+            <span class="sec-act row-tight">
+              <button type="button" class="reco-slide-btn reco-slide-prev" id="kv-hot-prev" aria-label="Sản phẩm trước">‹</button>
+              <button type="button" class="reco-slide-btn reco-slide-next" id="kv-hot-next" aria-label="Sản phẩm sau">›</button>
+            </span>
+          </div>
+          <div class="reco-slide" id="kv-hot-slide">
+            <div class="reco-slide-stage" id="kv-hot-list"></div>
+            <div class="reco-slide-dots" id="kv-hot-dots"></div>
+          </div>
+        </section>
+
+        <!-- Bài đăng -->
+        <section class="sec" id="kv-mau">
+          <div class="sec-head"><h2>Bài đăng</h2>
+            <button type="button" class="itip" data-tip aria-expanded="false" aria-describedby="tip-kv-mau" aria-label="Mục đích của khu vực Bài đăng">
+              <span class="itip-bub" id="tip-kv-mau" role="tooltip">Bài dùng chung của đội (phải duyệt mới gửi được) và bài cá nhân của anh/chị. Bấm để mở thư viện và sao chép tin Zalo hoặc đường dẫn.</span>
+            </button>
+            <span class="sec-act"><a class="btn btn-primary btn-sm" href="chia-se.html">Tạo link</a></span>
+          </div>
+          <div class="stack" id="kv-mau-list"></div>
         </section>
 
         <!-- 6. Ảnh, video, tài liệu -->
@@ -572,6 +589,21 @@
     <div class="modal-foot">
       <button class="btn btn-outline" data-close="1">Hủy</button>
       <button type="button" class="btn btn-primary" id="cn-luu">Lưu cập nhật</button>
+    </div>
+  </div>
+</div>
+
+<!-- Phóng to ảnh tóm tắt dự án — YC-06 (QD-116). Modal đủ lớn để đọc chữ trên ảnh dạng infographic. -->
+<div class="modal" id="m-anh-tomtat" hidden role="dialog" aria-modal="true" aria-labelledby="m-anh-tomtat-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Khu vực 01</span><h3 id="m-anh-tomtat-t">Ảnh tóm tắt dự án</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" style="padding:0 22px 20px">
+      <img id="m-anh-tomtat-img" src="" alt="" style="width:100%;height:auto;display:block;border-radius:var(--radius-md)">
     </div>
   </div>
 </div>
@@ -865,11 +897,18 @@ document.addEventListener('DOMContentLoaded', function () {
     if (sum) {
       sum.innerHTML = p.summary
         ? '<img src="' + RECO.asset(p.summary) + '" alt="Ảnh tóm tắt dự án ' + esc(p.name) + '" ' +
-            'style="width:100%;height:230px;object-fit:cover;display:block;border-radius:var(--radius-md)">' +
-          '<figcaption class="micro muted mt-1">Ảnh tóm tắt dự án · nhãn Công khai, được phép đưa vào trang gửi khách. ' +
+            'data-zoom-img="' + RECO.asset(p.summary) + '" data-zoom-alt="Ảnh tóm tắt dự án ' + esc(p.name) + '" ' +
+            'style="width:100%;height:230px;object-fit:cover;display:block;border-radius:var(--radius-md);cursor:zoom-in">' +
+          '<figcaption class="micro muted mt-1">Ảnh tóm tắt dự án · nhãn Công khai, được phép đưa vào trang gửi khách. Bấm ảnh để xem cỡ lớn. ' +
             'Bản mô phỏng dùng ảnh phối cảnh thay chỗ — bản thật là tấm tóm tắt do RECO thiết kế và tải lên.</figcaption>'
         : '<div class="empty">Dự án này chưa có ảnh tóm tắt. Người phụ trách dữ liệu tải một tấm lên ở màn Quản trị.</div>';
     }
+    /* Ảnh tóm tắt thay phần mô tả + bảng nhận diện dài — YC-06 (QD-116), đề xuất mặc định của
+       tài liệu gốc (C4 vẫn cần RECO chốt bằng văn bản, xem DX-025). Dự án chưa có ảnh thì giữ
+       nguyên bảng nhận diện như hành vi đã chốt ở QD-065. */
+    var kv1Body = id('kv1-body'), kv1Grid = id('kv1-grid');
+    if (kv1Body) kv1Body.hidden = !!p.summary;
+    if (kv1Grid) kv1Grid.hidden = !!p.summary;
 
     /* Liên kết website hoặc trang giới thiệu dự án — nhân viên đang phải đi tìm trong tin nhắn nhóm */
     var web = id('kv1-web');
@@ -1046,6 +1085,27 @@ document.addEventListener('DOMContentLoaded', function () {
     var planNote = id('kv4-note');
     if (planNote) planNote.hidden = !secs('plan').length;
 
+    /* Tiện ích — YC-07 (QD-116). Lưới ảnh + tên + mô tả ngắn như Mặt bằng ở trên; dự án
+       chưa có tiện ích thì hiện trạng thái trống rõ ràng, không để khung rỗng gây hiểu nhầm. */
+    if (id('kv-tienich-list')) {
+      var am = secs('amenity').filter(function (s) { return S.canSee(s.label, RECO.role); });
+      id('kv-tienich-list').innerHTML = am.length
+        ? am.map(function (s) {
+            return '<div class="card" style="overflow:hidden"' + (s.label === 'restricted' ? ' data-roles="' + SEE_RESTRICTED + '"' : '') + '>' +
+              '<img src="' + RECO.asset(s.img) + '" alt="' + esc(s.title) + '" loading="lazy" ' +
+                'style="width:100%;height:140px;object-fit:cover;display:block">' +
+              '<div class="card-pad">' +
+                '<div class="spread mb-1"><b>' + esc(s.title) + '</b>' + S.label(s.label) + '</div>' +
+                '<p class="small muted" style="margin:0">' + esc(s.body) + '</p>' +
+                '<div class="mt-2">' + editBtn(s) + '</div>' +
+              '</div></div>';
+          }).join('')
+        : '<div style="grid-column:1/-1">' +
+            RECO_DATA.empty('Thông tin tiện ích đang cập nhật', 'RECO chưa gửi ảnh và mô tả tiện ích đã duyệt cho dự án này.') +
+          '</div>';
+      RECO.applyRoles(id('kv-tienich-list'));
+    }
+
     /* 08 · Nội dung bán hàng được duyệt */
     if (id('kv8-grid')) {
       id('kv8-grid').innerHTML = secs('content').filter(function (s) { return S.canSee(s.label, RECO.role); })
@@ -1072,7 +1132,8 @@ document.addEventListener('DOMContentLoaded', function () {
     place: { title: 'Địa điểm', body: 'Khoảng cách và thời gian' },
     point: { title: 'Điểm bán hàng', body: 'Diễn giải ngắn' },
     plan: { title: 'Tên mặt bằng', body: 'Ghi chú' },
-    content: { title: 'Tiêu đề nội dung', body: 'Mô tả ngắn' }
+    content: { title: 'Tiêu đề nội dung', body: 'Mô tả ngắn' },
+    amenity: { title: 'Tên tiện ích', body: 'Mô tả ngắn' }
   };
 
   function tpOpen(kind, s) {
@@ -1092,8 +1153,8 @@ document.addEventListener('DOMContentLoaded', function () {
     id('tp-title').value = s && s.title ? s.title : '';
     id('tp-body').value = s && s.body ? s.body : '';
 
-    id('tp-wrap-img').hidden = kind !== 'plan';
-    if (kind === 'plan') {
+    id('tp-wrap-img').hidden = kind !== 'plan' && kind !== 'amenity';
+    if (kind === 'plan' || kind === 'amenity') {
       var imgs = S.get('media').filter(function (m) { return m.img; });
       id('tp-img').innerHTML = imgs.map(function (m) {
         return '<option value="' + esc(m.img) + '"' + (s && s.img === m.img ? ' selected' : '') + '>' + esc(m.name) + '</option>';
@@ -1128,12 +1189,23 @@ document.addEventListener('DOMContentLoaded', function () {
     if (s) tpOpen(s.kind, s);
   });
 
+  /* Phóng to ảnh tóm tắt dự án — YC-06 (QD-116) */
+  id('page').addEventListener('click', function (e) {
+    var img = e.target.closest ? e.target.closest('[data-zoom-img]') : null;
+    if (!img) return;
+    var big = id('m-anh-tomtat-img');
+    if (!big) return;
+    big.src = img.getAttribute('data-zoom-img');
+    big.alt = img.getAttribute('data-zoom-alt') || '';
+    RECO.openModal('m-anh-tomtat');
+  });
+
   tpSave.addEventListener('click', function () {
     if (!RECO.validate(tpForm)) return;
     var kind = editingSec ? editingSec.kind : newKind;
     var patch = { body: id('tp-body').value.trim(), label: id('tp-label').value };
     if (TP_LAB[kind].title) patch.title = id('tp-title').value.trim();
-    if (kind === 'plan') patch.img = id('tp-img').value;
+    if (kind === 'plan' || kind === 'amenity') patch.img = id('tp-img').value;
     if (kind === 'content') patch.at = today();
     /* Hạ nhãn của mục đã có xuống Công khai phải hỏi lại — MH-09 */
     RECO.guardLabel({

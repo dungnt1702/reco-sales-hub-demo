@@ -69,8 +69,9 @@ var CASES = [
   say('--- Nav mục dính không bị bắt nhầm link dự án ---');
   var f1 = await load(PHASE + '/du-an-chi-tiet.html?bare=1&pj=leparc', 1440);
   var d1 = f1.contentDocument;
-  /* Neo Giai đoạn 1: Tổng quan · Vị trí · Điểm chính · Mặt bằng · SP Hot · Mẫu · Tài liệu nguồn · Ảnh */
-  if (!ok(d1.querySelectorAll('.secnav a[href^="#"]').length === 8, 'secnav có đủ 8 neo trong trang')) bad++;
+  /* Neo Giai đoạn 1 (YC-05/YC-07, QD-116): Tổng quan · Tài liệu nguồn · Vị trí · Tiện ích ·
+     Điểm chính · Mặt bằng · SP Hot · Mẫu · Ảnh */
+  if (!ok(d1.querySelectorAll('.secnav a[href^="#"]').length === 9, 'secnav có đủ 9 neo trong trang')) bad++;
   if (!ok(d1.querySelectorAll('#pj-near-list .on').length === 0, 'không dòng dự án nào bị gán class .on của nav')) bad++;
   if (!ok(!d1.querySelector('.secnav #pj-near-list'), 'khối dự án nằm ngoài <nav class="secnav">')) bad++;
 
@@ -151,7 +152,7 @@ var CASES = [
   var burger = d2.querySelector('.burger');
   var bdisp = burger ? w2.getComputedStyle(burger).display : 'missing';
   if (!ok(bdisp !== 'none' && burger, 'hamburger hiện trên điện thoại')) bad++;
-  if (!ok(d2.querySelectorAll('#nav-drawer .drawer-local a').length === 8, 'hamburger có 8 neo khu vực')) bad++;
+  if (!ok(d2.querySelectorAll('#nav-drawer .drawer-local a').length === 9, 'hamburger có 9 neo khu vực')) bad++;
   var hotM = d2.querySelector('#kv-hot-slide');
   if (!ok(hotM && w2.getComputedStyle(hotM).getPropertyValue('--slide-per').trim() === '1', 'MH-04 mobile --slide-per=1')) bad++;
   if (!ok(side.getBoundingClientRect().top > main.getBoundingClientRect().top, 'cột trái nằm SAU nội dung')) bad++;
@@ -181,8 +182,11 @@ var CASES = [
   if (!ok(wt.getComputedStyle(dt.querySelector('.burger')).display === 'none', 'tablet: hamburger ẩn')) bad++;
   var hotT = dt.querySelector('#kv-hot-slide');
   if (!ok(hotT && wt.getComputedStyle(hotT).getPropertyValue('--slide-per').trim() === '2', 'MH-04 tablet --slide-per=2')) bad++;
-  var kv1 = dt.querySelector('#kv1-grid');
-  var gtc = kv1 ? wt.getComputedStyle(kv1).gridTemplateColumns : '';
+  /* #kv1-grid dùng dự án leparc có ảnh tóm tắt (p.summary) nên bị `hidden` theo YC-06
+     (QD-116) — không đo được cột trên phần tử display:none. #kv2-grid mang cùng class
+     .kv.kv-3 và không bao giờ bị ẩn kiểu này, đo tương đương. */
+  var kv2 = dt.querySelector('#kv2-grid');
+  var gtc = kv2 ? wt.getComputedStyle(kv2).gridTemplateColumns : '';
   var nCol = gtc.replace(/minmax\([^)]*\)/gi, 'x').trim().split(/\s+/).filter(Boolean).length;
   if (!ok(nCol === 3, 'tablet: kv-3 ba cột như cột phải desktop (got ' + nCol + ')')) bad++;
   ft.remove();

@@ -433,6 +433,16 @@
         { id: 'lps16', pj: 'leparc', kind: 'plan', label: 'internal', title: 'Mặt bằng khối đế và bãi đỗ xe', img: 'thien-duong.jpg' },
         { id: 'lps28', pj: 'leparc', kind: 'plan', label: 'public', title: 'Mặt bằng tầng 15 — vườn trên cao và tiện ích', img: 'reco-banner.jpg' },
 
+        /* Tiện ích — YC-07 (QD-116). Dữ liệu minh họa cho demo, dùng lại ảnh phối cảnh có sẵn
+           trong kho làm ảnh thay chỗ (chưa có ảnh tiện ích thật do RECO duyệt, giống quy ước
+           đã áp dụng ở khu vực 04 · Mặt bằng ngay trên). */
+        { id: 'lps29', pj: 'leparc', kind: 'amenity', label: 'public', title: 'Lap pool 40 m điện phân muối', img: 'celestine.jpg',
+          body: 'Ảnh minh họa cho demo. Hồ bơi công nghệ điện phân muối tại tầng tiện ích 5, mở cho toàn bộ cư dân.' },
+        { id: 'lps30', pj: 'leparc', kind: 'amenity', label: 'public', title: 'Sân pickleball tiêu chuẩn', img: 'la-perle.webp',
+          body: 'Ảnh minh họa cho demo. Nằm trong tầng tiện ích 5, cùng khu với gym và yoga.' },
+        { id: 'lps31', pj: 'leparc', kind: 'amenity', label: 'public', title: 'Phòng gym và yoga 442 m²', img: 'palmy.jpg',
+          body: 'Ảnh minh họa cho demo. Trang bị theo tiêu chuẩn nội khu, mở cửa cả ngày cho cư dân.' },
+
         { id: 'lps17', pj: 'leparc', kind: 'content', label: 'public', title: 'Giới thiệu Le Parc Place — bản ngắn',
           body: 'Khoảng 90 từ, kèm 4 ảnh đã duyệt. Nêu quy mô 802 căn, tiện ích tầng 5 và vị trí đối diện Công viên Trung tâm.', at: '15/08/2026' },
         { id: 'lps18', pj: 'leparc', kind: 'content', label: 'public', title: 'Tiêu chuẩn bàn giao — bản gửi khách',
@@ -462,6 +472,12 @@
         { id: 'sc14', pj: 'celestine', kind: 'plan', label: 'public', title: 'Mặt bằng căn 2PN — loại A1', img: 'la-perle.webp' },
         { id: 'sc15', pj: 'celestine', kind: 'plan', label: 'public', title: 'Mặt bằng căn 3PN — loại A3', img: 'palmy.jpg' },
         { id: 'sc16', pj: 'celestine', kind: 'plan', label: 'internal', title: 'Mặt bằng khối đế và bốn tầng hầm', img: 'thien-duong.jpg' },
+
+        /* Tiện ích — YC-07 (QD-116). Dữ liệu minh họa cho demo, ảnh thay chỗ như nhóm plan trên. */
+        { id: 'sc18', pj: 'celestine', kind: 'amenity', label: 'public', title: 'Khối đế thương mại và tiện ích nội khu', img: 'celestine.jpg',
+          body: 'Ảnh minh họa cho demo. Ba tầng khối đế dành cho thương mại và tiện ích chung của cư dân hai tòa tháp.' },
+        { id: 'sc19', pj: 'celestine', kind: 'amenity', label: 'public', title: 'Sân vườn tầm nhìn Hồ Tây', img: 'la-perle.webp',
+          body: 'Ảnh minh họa cho demo. Khu vực sinh hoạt ngoài trời hướng về phía Hồ Tây và sông Hồng.' },
 
         /* Tổng quan của năm dự án còn lại — viết từ đúng số liệu trên trang dự án của RECO.
            Trước đây chỉ Le Parc Place và Celestine có khu vực 01, năm dự án kia mở ra là màn trống. */
@@ -1778,11 +1794,12 @@
     place: 'tkkd gddu gd',
     point: 'tkkd gddu gd',
     plan: 'tkkd gddu gd mkt',
-    content: 'mkt gddu gd'
+    content: 'mkt gddu gd',
+    amenity: 'tkkd gddu gd'
   };
   var SECTION_NAME = {
     overview: 'Tổng quan', place: 'Điểm liên kết vùng', point: 'Điểm bán hàng',
-    plan: 'Mặt bằng', content: 'Nội dung bán hàng được duyệt'
+    plan: 'Mặt bằng', content: 'Nội dung bán hàng được duyệt', amenity: 'Tiện ích'
   };
   function canEditSection(kind, role) {
     return (SECTION_ROLES[kind] || '').split(' ').indexOf(role) >= 0;

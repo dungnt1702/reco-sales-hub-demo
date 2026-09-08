@@ -27,6 +27,45 @@
   /* .micro và .go đều là span; không cho xuống dòng thì chữ phụ dính liền vào link */
   a.tile [data-sub] { display: block; }
   a.tile .go { display: block; margin-top: 8px; font-size: .78rem; font-weight: 700; color: var(--navy); }
+
+  /* Ghim cụm đầu trang chủ khi cuộn — YC-02 (QD-116), desktop/tablet.
+     Cùng công thức offset đã dùng cho .topbar/.page-tabs (assets/reco.css). */
+  @media (min-width: 768px) {
+    .home-fold {
+      position: sticky; top: calc(var(--proto-h) + var(--header-h)); z-index: 30;
+      background: color-mix(in srgb, var(--paper) 94%, transparent);
+      backdrop-filter: blur(10px);
+      padding-bottom: 10px; border-bottom: 1px solid var(--line);
+    }
+    body.proto-off .home-fold { top: var(--header-h); }
+  }
+  /* Biến thể gọn cho màn hình thấp — đề xuất của tài liệu gốc (DX-023, chưa "Đã thống nhất"),
+     chỉ xử lý chiều cao vùng nhìn thấp; không tự thu gọn theo tiến độ cuộn (xem Context kế hoạch). */
+  @media (min-width: 768px) and (max-height: 760px) {
+    .home-fold .hero.home-hero { padding: 10px 14px; }
+    .home-fold .home-hero h1 { font-size: .98rem; margin-top: 2px; }
+    .home-fold .honor-rail { min-height: 150px; height: 160px; }
+    .home-fold .honor-slides { min-height: 150px; }
+    .home-fold .home-kpi h2 { font-size: .92rem; }
+    .home-fold .home-kpi .tile { padding: 8px 10px; }
+    .home-fold .home-kpi .tile .num { font-size: 1.1rem; }
+  }
+
+  /* Hai thanh gọn cố định trên mobile — YC-04 (QD-116): ô tìm kiếm 1 dòng + cảnh báo 1 dòng.
+     Không ghim lời chào lớn, ảnh vinh danh hay bốn thẻ số liệu trên mobile — chỉ hai thanh này. */
+  @media (max-width: 767px) {
+    #home-quickbar:not([hidden]) {
+      position: sticky; top: calc(var(--proto-h) + var(--header-h)); z-index: 35;
+      background: color-mix(in srgb, var(--paper) 94%, transparent);
+      backdrop-filter: blur(10px);
+      margin-inline: calc(-1 * var(--gutter)); padding: 8px var(--gutter) 6px;
+      border-bottom: 1px solid var(--line);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    body.proto-off #home-quickbar:not([hidden]) { top: var(--header-h); }
+    #home-quickbar .home-search { margin-top: 0; box-shadow: none; border: 1px solid var(--line); min-height: 44px; }
+    #home-quickbar .alert-ticker { margin-top: 0; min-height: 44px; display: flex; align-items: center; }
+  }
 </style>
 </head>
 <body data-shell="app" data-page="trang-dau">
@@ -34,6 +73,11 @@
 <main id="page" class="pad-b">
   <div class="wrap page">
   <div class="home-fold" id="home-fold">
+
+    <!-- Thanh gọn cố định trên mobile — YC-04 (QD-116). Rỗng lúc tải trang; JS
+         (layoutQuickbar) chuyển ô tìm kiếm + cảnh báo vào đây trên mobile, trả lại
+         đúng chỗ cũ khi rộng ≥768px. Không nhân bản phần tử — tránh trùng id. -->
+    <div class="home-quickbar" id="home-quickbar" hidden></div>
 
     <!-- Chào/tìm gọn. Honor: desktop 1/3 phải span KPI; tablet 1/2 phải, KPI dưới; mobile ô 2. -->
     <section class="hero home-hero">
@@ -520,15 +564,57 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     return map[role] || map.nvbh;
   }
+  /* Số liệu nhanh trên mobile — YC-03 (QD-116): carousel vuốt ngang, tái dùng đúng engine
+     .reco-slide/RECO.bindSlide đã dùng cho Sản phẩm Hot. Từ 768px trở lên giữ nguyên lưới
+     tĩnh .grid.g-4 như trước — không bắt buộc một thẻ mỗi lần trên máy tính (nghiệm thu YC-03). */
+  var MQ_MOBILE = window.matchMedia ? window.matchMedia('(max-width: 767px)') : null;
+  function isMobileLayout() { return !!(MQ_MOBILE && MQ_MOBILE.matches); }
+
   function metrics() {
     var box = document.getElementById('kpi-grid');
     if (!box) return;
-    box.innerHTML = kpiOf(RECO.role).map(function (t) {
+    var tiles = kpiOf(RECO.role);
+    function tileHtml(t, asItem) {
       var numStyle = t.warn ? ' style="color:var(--orange-text)"' : '';
-      return '<a class="tile" href="' + t.href + '"><span class="k">' + esc(t.k) + '</span>' +
+      return '<a class="tile' + (asItem ? ' reco-slide-item on' : '') + '" href="' + t.href + '"><span class="k">' + esc(t.k) + '</span>' +
         '<span class="num"' + numStyle + '>' + t.n + '</span>' +
         '<span class="micro muted" data-sub>' + esc(t.s) + '</span></a>';
-    }).join('');
+    }
+    if (isMobileLayout()) {
+      box.className = 'reco-slide';
+      box.innerHTML = '<div class="reco-slide-stage">' + tiles.map(function (t) { return tileHtml(t, true); }).join('') + '</div>' +
+        '<div class="reco-slide-dots"></div>';
+      /* prev/next trỏ tới selector không tồn tại: không có nút mũi tên cho carousel này (chỉ
+         vuốt + chấm vị trí) — nếu bỏ trống, pickSlideEl() trong reco.js sẽ rơi về document-wide
+         fallback ".reco-slide-prev"/".reco-slide-next" và vô tình chiếm mất nút của Sản phẩm Hot. */
+      RECO.bindSlide(box, { per: 'kpi', prev: '[data-kpi-nav-prev]', next: '[data-kpi-nav-next]' });
+    } else {
+      box.className = 'grid g-4';
+      box.innerHTML = tiles.map(function (t) { return tileHtml(t, false); }).join('');
+    }
+  }
+
+  /* Hai thanh gọn cố định trên mobile — YC-04 (QD-116). Di chuyển đúng phần tử có sẵn
+     (không sao chép, giữ nguyên id/listener) vào #home-quickbar khi ở mobile; trả lại
+     đúng vị trí gốc khi rộng ra — neo bằng node liền kề đã lưu một lần lúc tải trang. */
+  var hqBox = document.getElementById('home-quickbar');
+  var hqSearch = document.querySelector('.home-hero .home-search');
+  var hqTicker = document.getElementById('alert-ticker');
+  var hqSearchParent = hqSearch ? hqSearch.parentNode : null;
+  var hqSearchAnchor = hqSearch ? hqSearch.nextSibling : null;
+  var hqTickerParent = hqTicker ? hqTicker.parentNode : null;
+  var hqTickerAnchor = hqTicker ? hqTicker.nextSibling : null;
+  function layoutQuickbar() {
+    if (!hqBox || !hqSearch || !hqTicker) return;
+    if (isMobileLayout()) {
+      hqBox.appendChild(hqSearch);
+      hqBox.appendChild(hqTicker);
+      hqBox.hidden = false;
+    } else {
+      if (hqSearchParent) hqSearchParent.insertBefore(hqSearch, hqSearchAnchor);
+      if (hqTickerParent) hqTickerParent.insertBefore(hqTicker, hqTickerAnchor);
+      hqBox.hidden = true;
+    }
   }
 
   /* ---------- Việc đang chờ ---------- */
@@ -791,9 +877,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   layoutHome();
   metrics(); queue(); pinned(); featured(); hotHome(); homeTpl();
+  layoutQuickbar();
   paintAccounts(); paintCommission();
   RECO.applyRoles(document.getElementById('home-stack'));
   RECO.applyRoles(document.getElementById('home-fold'));
+
+  /* Đổi bố cục carousel số liệu nhanh + thanh gọn mobile khi cuộn/xoay máy làm bề rộng
+     vượt qua mốc 767px — YC-03/YC-04 (QD-116). */
+  if (MQ_MOBILE) {
+    var onMobileChange = function () { metrics(); layoutQuickbar(); };
+    if (MQ_MOBILE.addEventListener) MQ_MOBILE.addEventListener('change', onMobileChange);
+    else if (MQ_MOBILE.addListener) MQ_MOBILE.addListener(onMobileChange); /* Safari cũ */
+  }
 
   /* Duyệt ở đây hay ở màn quản trị đều làm số liệu và hàng chờ đổi theo */
   watch('approvals', function () { metrics(); queue(); });
