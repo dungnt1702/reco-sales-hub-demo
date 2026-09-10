@@ -10,7 +10,7 @@
 (function () {
   'use strict';
 
-  var KEY = 'reco-salehub-demo-gd01-v8';
+  var KEY = 'reco-salehub-demo-gd01-v9';
 
   /* ---------- Dữ liệu gốc ---------- */
   function seed() {
@@ -25,7 +25,7 @@
            Mọi số liệu giao dịch, hoa hồng và nhân sự trong bản mô phỏng vẫn là số giả. */
         { id: 'leparc', name: 'Le Parc Place — ParkCity Hanoi', code: 'LPP', area: 'Hà Nội', place: 'Dương Nội, Hà Đông, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 4.6, priceText: '4,6 – 18 tỷ',
-          size: 62, sizeText: '62 – 210 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
+          size: 62, sizeText: '62 – 210 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Sơ cấp',
           featured: true, pinned: true, hidden: false, img: 'reco-banner.jpg', docs: 24, ready: 88,
           /* Ảnh tóm tắt dự án — mục "Tóm tắt dự án, dạng 1 ảnh" của SaleHUB (BR-DL-17, QD-065).
              Ảnh do RECO tải lên; dự án chưa có thì khu vực 1 hiện trạng thái trống. */
@@ -51,7 +51,7 @@
            trên web, mà buổi demo vẫn cần phiếu tính giá và giữ chỗ chạy đủ (QD-073). */
         { id: 'celestine', name: 'Celestine Westlake', code: 'CWL', area: 'Hà Nội', place: '300 Võ Chí Công, Tây Hồ, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 8.4, priceText: '8,4 – 26 tỷ',
-          size: 78, sizeText: '78 – 220 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
+          size: 78, sizeText: '78 – 220 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Sơ cấp',
           /* Ảnh phối cảnh thật tải từ trang dự án của RECO — đúng hai tháp bên Hồ Tây */
           featured: true, pinned: true, hidden: false, img: 'celestine-westlake.jpg', docs: 48, ready: 100,
           summary: 'celestine-westlake.jpg',
@@ -62,7 +62,7 @@
           src: 'recogroup.vn/du-an/celestine-westlake · trích 17/08/2026', illus: true },
         { id: 'la-perle', name: 'La Perle Héritage', code: 'LPH', area: 'Khánh Hòa', place: '16 Phước Long, Nha Trang, Khánh Hòa',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 3.9, priceText: 'Từ 65 triệu/m² · 3,9 – 20 tỷ',
-          size: 60, sizeText: '60 – 160 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
+          size: 60, sizeText: '60 – 160 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Sơ cấp',
           featured: true, pinned: true, hidden: false, img: 'la-perle.webp', docs: 36, ready: 92,
           updated: 'Hôm nay, 09:15', struct: '39 tầng nổi · 41 nhà liền kề',
           tenure: 'Sở hữu lâu dài',
@@ -73,7 +73,7 @@
           illus: true },
         { id: 'palmy', name: 'Palmy Biztown', code: 'PBT', area: 'Hà Nội', place: 'Thanh Liệt, Thanh Trì, Hà Nội',
           type: 'thaptang', typeName: 'Biệt thự, nhà liền kề, shophouse', segment: 'cao', price: 8.5, priceText: '8,5 – 19 tỷ',
-          size: 90, sizeText: '90 – 160 m² đất', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
+          size: 90, sizeText: '90 – 160 m² đất', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Sơ cấp',
           /* Ảnh phối cảnh thật — dãy liên kế mang biển hiệu Palmy Biztown */
           featured: false, pinned: true, hidden: false, img: 'palmy-biztown.jpg', docs: 29, ready: 84,
           updated: 'Hôm qua, 16:40', struct: '142 căn thương mại liên kế · 4–5 tầng',
@@ -83,7 +83,7 @@
           src: 'recogroup.vn/du-an/palmy-biztown · trích 17/08/2026', illus: true },
         { id: 'thien-duong', name: 'Công Viên Thiên Đường', code: 'CVTD', area: 'Tuyên Quang', place: 'Lang Quán, Yên Sơn, Tuyên Quang',
           type: 'tamlinh', typeName: 'Bất động sản tâm linh', segment: 'thap', price: 0.048, priceText: '48 triệu – 1,4 tỷ',
-          size: 4, sizeText: '4 – 64 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
+          size: 4, sizeText: '4 – 64 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Sơ cấp',
           featured: true, pinned: false, hidden: false, img: 'thien-duong.jpg', docs: 17, ready: 46,
           updated: '3 ngày trước', struct: '5 dòng khuôn viên · 1.240 khuôn viên đã quy hoạch',
           tenure: 'Sử dụng lâu dài',
@@ -93,7 +93,7 @@
         { id: 'central', name: 'Khu đô thị Việt Hàn', code: 'VH', area: 'Thái Nguyên', place: 'Hồng Tiến, Phổ Yên, Thái Nguyên',
           /* Phân khúc theo đơn giá mỗi mét vuông: lô 90 m² giá 1,8 tỷ là 20 triệu/m² → Giá thấp */
           type: 'datnen', typeName: 'Đất nền', segment: 'thap', price: 1.8, priceText: '1,8 – 7,2 tỷ',
-          size: 90, sizeText: '90 – 369 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Bán mới',
+          size: 90, sizeText: '90 – 369 m²', status: 'live', statusText: 'Đang bán', channel: 'moi', channelText: 'Sơ cấp',
           /* Chưa lấy được ảnh phối cảnh xác thực của Việt Hàn (khudothiviethan.com không trả về ảnh
              qua HTTP thường, ảnh trong bản trích 10/08/2026 thì gán lẫn giữa các dự án) — dùng banner
              RECO trung tính, thà không có ảnh còn hơn dán ảnh của dự án khác lên tên dự án này. */
@@ -106,7 +106,7 @@
         { id: 'opening', name: 'Gold Season — 47 Nguyễn Tuân', code: 'GS', area: 'Hà Nội', place: '47 Nguyễn Tuân, Thanh Xuân, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 4.2, priceText: '4,2 – 12 tỷ',
           size: 64, sizeText: '64 – 170 m²', status: 'live', statusText: 'Đang bán',
-          channel: 'cn', channelText: 'Chuyển nhượng',
+          channel: 'cn', channelText: 'Thứ cấp',
           /* Ảnh phối cảnh thật — đúng ảnh og:image của trang Gold Season trên reco.nhaongay.vn */
           featured: false, pinned: false, hidden: false, img: 'gold-season.jpg', docs: 33, ready: 100,
           updated: '12/07/2026', struct: '4 tòa Autumn, Five Seasons, Summer, Spring · 1.500 căn',
@@ -119,7 +119,7 @@
           place: '25 Lê Văn Lương, Nhân Chính, Thanh Xuân, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 5.8, priceText: '5,8 – 18 tỷ',
           size: 62, sizeText: '62 – 204 m²', status: 'live', statusText: 'Đang bán',
-          channel: 'cn', channelText: 'Chuyển nhượng',
+          channel: 'cn', channelText: 'Thứ cấp',
           featured: false, pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 18, ready: 100,
           updated: 'Hôm qua, 11:20', struct: '2 tháp · 35 tầng · 2–4 PN',
           land: 'Ngã tư Lê Văn Lương – Hoàng Đạo Thúy', tenure: 'Sở hữu lâu dài',
@@ -132,7 +132,7 @@
           place: '107 Nguyễn Tuân, Thanh Xuân Trung, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 4.5, priceText: '4,5 – 11 tỷ',
           size: 72, sizeText: '72 – 118 m²', status: 'live', statusText: 'Đang bán',
-          channel: 'cn', channelText: 'Chuyển nhượng',
+          channel: 'cn', channelText: 'Thứ cấp',
           featured: false, pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 14, ready: 100,
           updated: '3 ngày trước', struct: '1 tháp · 33 tầng nổi · 468 căn',
           land: '7.432 m² · mật độ 42%', tenure: 'Sổ hồng lâu dài',
@@ -144,7 +144,7 @@
           place: '4 Chính Kinh / 212 Nguyễn Trãi, Thanh Xuân, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'trung', price: 3.6, priceText: '20 – 30 triệu/m² · minh họa',
           size: 70, sizeText: '70 – 110 m²', status: 'live', statusText: 'Đang bán',
-          channel: 'cn', channelText: 'Chuyển nhượng',
+          channel: 'cn', channelText: 'Thứ cấp',
           featured: false, pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 11, ready: 100,
           updated: 'Hôm nay, 07:50', struct: '1 tháp · 21 tầng',
           land: '3.171 m²', tenure: 'Sở hữu lâu dài',
@@ -156,7 +156,7 @@
           place: '108 Nguyễn Trãi, Thượng Đình, Thanh Xuân, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 5.5, priceText: '5,5 – 14 tỷ',
           size: 81, sizeText: '81 – 126 m²', status: 'live', statusText: 'Đang bán',
-          channel: 'cn', channelText: 'Chuyển nhượng',
+          channel: 'cn', channelText: 'Thứ cấp',
           featured: false, pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 16, ready: 100,
           updated: '2 ngày trước', struct: 'Tháp A 36 tầng · 410 căn',
           land: '6.973 m² · mật độ 45,5%', tenure: 'Sổ hồng vĩnh viễn',
@@ -168,7 +168,7 @@
           place: 'Lê Văn Lương / ngã ba Hoàng Ngân, Nhân Chính, Thanh Xuân, Hà Nội',
           type: 'canho', typeName: 'Chung cư', segment: 'cao', price: 4.8, priceText: '4,8 – 12 tỷ',
           size: 70, sizeText: '70 – 120 m²', status: 'live', statusText: 'Đang bán',
-          channel: 'cn', channelText: 'Chuyển nhượng',
+          channel: 'cn', channelText: 'Thứ cấp',
           featured: false, pinned: false, hidden: false, img: 'reco-banner.jpg', docs: 12, ready: 100,
           updated: '4 ngày trước', struct: '2 tòa · 27 tầng · 405 căn',
           land: '5.859 m²', tenure: 'Sở hữu lâu dài',
@@ -1526,6 +1526,42 @@
           go: 'trang-dau.html?alert=al3', alertId: 'al3' }
       ],
 
+      /* Việc được giao — biểu tượng việc trên thanh trên cùng. Tách hẳn khỏi kho thông báo:
+         thông báo là tin báo, việc thì có người giao, có hạn và có trạng thái phải cập nhật.
+         `obj` là nhóm đối tượng (dự án / sản phẩm / bài đăng), `channel` là kênh bán. */
+      tasks: [
+        { id: 'tk1', obj: 'du-an', channel: 'moi', title: 'Cập nhật tiến độ xây dựng Celestine tháng 9',
+          by: 'admin', due: 'Hạn 12/09 — trước buổi mở bán đợt 2', to: 'gd gddu tkkd qlkd nvbh mkt',
+          state: 'chua', go: 'du-an-chi-tiet.html' },
+        { id: 'tk2', obj: 'du-an', channel: 'moi', title: 'Bổ sung mặt bằng tầng điển hình tòa C — Le Parc',
+          by: 'Trần Minh Quân (Trưởng phòng KD)', due: 'Hạn 10/09 — CĐT đã gửi bản mới', to: 'gd gddu tkkd qlkd nvbh mkt',
+          state: 'dang', go: 'du-an-chi-tiet.html' },
+        { id: 'tk3', obj: 'du-an', channel: 'cn', title: 'Rà soát hồ sơ pháp lý giỏ hàng Gold Season',
+          by: 'admin', due: 'Hạn 15/09 — cần sổ và hợp đồng gốc', to: 'gd gddu tkkd qlkd nvbh',
+          state: 'chua', go: 'du-an.html?channel=cn' },
+        { id: 'tk4', obj: 'san-pham', channel: 'moi', title: 'Chọn 3 căn Hot tuần này cho Celestine',
+          by: 'admin', due: 'Hạn thứ Sáu — dùng cho dải Hot trang đầu', to: 'gd gddu tkkd qlkd mkt',
+          state: 'chua', go: 'danh-muc-san-pham.html?hot=1' },
+        { id: 'tk5', obj: 'san-pham', channel: 'moi', title: 'Đối chiếu tình trạng 12 căn tháp T2 với bảng hàng CĐT',
+          by: 'Trần Minh Quân (Trưởng phòng KD)', due: 'Hạn 11/09 — sau khi CĐT chốt đợt giữ chỗ', to: 'gd gddu tkkd qlkd nvbh',
+          state: 'dang', go: 'danh-muc-san-pham.html?scope=tat' },
+        { id: 'tk6', obj: 'san-pham', channel: 'cn', title: 'Bổ sung ảnh hiện trạng căn GS-FS.2501',
+          by: 'admin', due: 'Hạn 09/09 — chủ nhà đã đồng ý cho chụp', to: 'gd gddu tkkd qlkd nvbh mkt',
+          state: 'chua', go: 'san-pham.html' },
+        { id: 'tk7', obj: 'san-pham', channel: 'cn', title: 'Xác minh giá chào lại căn KP-A.11.08',
+          by: 'Lê Thu Hà (Quản lý kinh doanh)', due: 'Hạn 13/09 — khách hỏi lại giá tuần trước', to: 'gd gddu tkkd qlkd nvbh',
+          state: 'xong', go: 'san-pham.html' },
+        { id: 'tk8', obj: 'bai-dang', channel: 'moi', title: 'Soạn bài giới thiệu chính sách đợt 2 Celestine',
+          by: 'admin', due: 'Hạn 10/09 — đăng trước ngày mở bán', to: 'gd gddu tkkd qlkd nvbh mkt',
+          state: 'chua', go: 'chia-se.html' },
+        { id: 'tk9', obj: 'bai-dang', channel: 'moi', title: 'Duyệt lại mẫu chung Le Parc — số liệu tòa C',
+          by: 'admin', due: 'Hạn 12/09 — mẫu đang dùng chung cả sàn', to: 'gd gddu tkkd mkt',
+          state: 'dang', go: 'chia-se.html' },
+        { id: 'tk10', obj: 'bai-dang', channel: 'cn', title: 'Gỡ bài chuyển nhượng căn đã bán VH-23.04',
+          by: 'Lê Thu Hà (Quản lý kinh doanh)', due: 'Hạn hôm nay — căn đã chốt sáng nay', to: 'gd gddu tkkd qlkd nvbh mkt',
+          state: 'chua', go: 'chia-se.html' }
+      ],
+
       /* Màn vừa xem — phục vụ ô tìm kiếm toàn cục */
       recent: []
     };
@@ -1593,7 +1629,7 @@
     if (!obj.id) obj.id = name.slice(0, 2) + '-new-' + (++seq);
     if (name === 'projects' && !obj.channel) {
       obj.channel = 'moi';
-      obj.channelText = obj.channelText || 'Bán mới';
+      obj.channelText = obj.channelText || 'Sơ cấp';
     }
     if (atBottom) list.push(obj); else list.unshift(obj);
     save(); emit(name);
@@ -1646,7 +1682,7 @@
      `tamlinh` là loại hình thứ sáu, nới QD-057 (QD-071): recogroup.vn và reco.nhaongay.vn đều
      có danh mục bất động sản tâm linh riêng, và Công Viên Thiên Đường là dự án RECO tự làm
      chủ đầu tư — xếp nó vào Đất nền là nhìn thấy lệch ngay. */
-  var CHANNELS = { moi: 'Bán mới', cn: 'Chuyển nhượng' };
+  var CHANNELS = { moi: 'Sơ cấp', cn: 'Thứ cấp' };
   function channelOf(p) {
     if (!p) return 'moi';
     return p.channel === 'cn' ? 'cn' : 'moi';
@@ -1988,6 +2024,16 @@
     var hot = find('hotProducts', t.hotId);
     return hot ? hot.unitId : '';
   }
+  /* Bài chung (mau.html) mang sharePjs: rỗng = "Tất cả dự án", có danh sách = chỉ những dự án đó.
+     Nguồn sự thật duy nhất cho "bài này có áp cho dự án X không" — dùng chung ở chia-se.html
+     và du-an-chi-tiet.html để hai màn không lệch nhau. */
+  function tplAppliesToPj(t, pjId) {
+    if (!t) return false;
+    if (t.projectId === pjId) return true;
+    if (t.scope !== 'shared') return false;
+    var share = t.sharePjs || [];
+    return share.length === 0 || share.indexOf(pjId) >= 0;
+  }
   function tplIntent(t) {
     if (t && t.intent) {
       var known = intentOf(t.intent);
@@ -2055,6 +2101,7 @@
     label: label, money: money, billion: billion, projectName: projectName, canSee: canSee, channelOf: channelOf,
     unitView: unitView, unitCover: unitCover, tplForUnit: tplForUnit,
     TICK_LAB: TICK_LAB, INTENTS: INTENTS, tplIntent: tplIntent, tplCover: tplCover, tplUnitId: tplUnitId,
+    tplAppliesToPj: tplAppliesToPj,
     productNoun: productNoun, tickLab: tickLab, autoTitle: autoTitle,
     projectMedia: projectMedia, unitMedia: unitMedia, mediaCover: mediaCover, intentOf: intentOf,
     myProjects: myProjects,

@@ -32,7 +32,7 @@ const PAGES_DEFAULT = [
 ];
 const PAGES_GD01 = [
   'index', 'sitemap', 'dang-nhap', 'trang-dau', 'du-an', 'du-an-chi-tiet', 'danh-muc-san-pham', 'san-pham',
-  'thu-vien-tai-lieu', 'cay-thu-muc', 'chia-se', 'mau',
+  'thu-vien-tai-lieu', 'cay-thu-muc', 'chia-se', 'mau', 'qa-goi-y',
   'trang-gui-khach', 'link-het-han', 'quan-tri', 'nguoi-dung', 'de-nghi-sua',
   'xem-truoc-gd2', 'bao-tri',
   'tinh-nang-gd1', 'chi-tiet-gd1', 'tinh-nang-gd2', 'chi-tiet-gd2', 'ha-tang'

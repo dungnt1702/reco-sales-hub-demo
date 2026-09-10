@@ -143,6 +143,7 @@
   var I = {
     search: '<path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/>',
     bell: '<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+    tasks: '<rect x="4" y="4" width="16" height="17" rx="2"/><path d="M9 3h6v3H9Z"/><path d="m8.5 12 2 2 4-4"/>',
     menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
     x: '<path d="M18 6 6 18M6 6l12 12"/>',
     home: '<path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/>',
@@ -199,9 +200,10 @@
   var NAV = inGd01() ? [
     { href: 'trang-dau.html', label: 'Trang đầu', key: 'trang-dau', icon: 'home' },
     { href: 'du-an.html', label: 'Dự án', key: 'du-an', icon: 'layers' },
-    { href: 'danh-muc-san-pham.html', label: 'Sản phẩm chọn lọc', key: 'san-pham', icon: 'grid' },
+    { href: 'danh-muc-san-pham.html', label: 'Sản phẩm', key: 'san-pham', icon: 'grid' },
     { href: 'cay-thu-muc.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
     { href: 'chia-se.html', label: 'Bài đăng', key: 'chia-se', icon: 'share' },
+    { href: 'qa-goi-y.html', label: 'Gợi ý khai thác khách', key: 'qa-goi-y', icon: 'info' },
     { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' },
     /* Ba hub Báo giá / Vận hành / Bản đồ. Dock không lấy mục này (chỉ 4 key đầu). */
     { href: 'tinh-nang-gd1.html', label: 'Phạm vi & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
@@ -289,6 +291,7 @@
               '<div class="gs-panel" id="gs-panel" hidden></div>' +
             '</div>' +
             '<button type="button" class="icon-btn gs-open" id="gs-open" aria-label="Tìm kiếm">' + svg('search') + '</button>' +
+            '<button type="button" class="icon-btn" id="tasks-icon" aria-label="Công việc được giao">' + svg('tasks') + '<i class="dot" hidden></i></button>' +
             '<div class="gs">' +
               '<button type="button" class="icon-btn" id="bell" aria-label="Thông báo" aria-expanded="false">' + svg('bell') + '<i class="dot" hidden></i></button>' +
               '<div class="gs-panel gs-right" id="bell-panel" hidden></div>' +
@@ -504,6 +507,126 @@
         if (rec && rec.kind === 'alert') return;
         window.RECO.store.update('notifications', a.getAttribute('data-nid'), { read: true });
       });
+    });
+  }
+
+  /* ---------- Việc được giao ----------
+     Kho riêng `tasks`, không dùng chung với chuông: việc có người giao, có hạn và có
+     trạng thái phải cập nhật, còn thông báo chỉ đọc rồi thôi. */
+  var TASK_OBJ = [
+    { id: 'du-an', label: 'Dự án' },
+    { id: 'san-pham', label: 'Sản phẩm' },
+    { id: 'bai-dang', label: 'Bài đăng' }
+  ];
+  var TASK_CH = [{ id: 'moi', label: 'Sơ cấp' }, { id: 'cn', label: 'Thứ cấp' }];
+  var TASK_STATE = { chua: 'Chưa làm', dang: 'Đang làm', xong: 'Hoàn thành' };
+  var TASK_NEXT = { chua: 'dang', dang: 'xong', xong: 'chua' };
+  var taskObj = 'du-an', taskCh = 'moi';
+
+  function myTasks() {
+    var S = window.RECO.store;
+    if (!S) return [];
+    return S.get('tasks').filter(function (t) {
+      return !t.to || t.to.split(' ').indexOf(role) >= 0;
+    });
+  }
+  function buildTasks() {
+    var objTabs = TASK_OBJ.map(function (o) {
+      var on = o.id === taskObj;
+      return '<button type="button" role="tab" data-tobj="' + o.id + '" aria-selected="' + on + '"' +
+        (on ? '' : ' tabindex="-1"') + '>' + o.label + '</button>';
+    }).join('');
+    var chTabs = TASK_CH.map(function (c) {
+      var on = c.id === taskCh;
+      return '<button type="button" role="tab" data-tch="' + c.id + '" aria-selected="' + on + '"' +
+        (on ? '' : ' tabindex="-1"') + '>' + c.label + '</button>';
+    }).join('');
+    return '' +
+      '<div class="modal" id="m-tasks" hidden role="dialog" aria-modal="true" aria-labelledby="m-tasks-t">' +
+        '<div class="modal-box">' +
+          '<div class="modal-head">' +
+            '<div><span class="eyebrow">Việc giao cho vai trò đang xem</span><h3 id="m-tasks-t">Công việc được giao</h3></div>' +
+            '<button class="icon-btn" data-close="1" aria-label="Đóng">' + svg('x') + '</button>' +
+          '</div>' +
+          '<div class="modal-body">' +
+            '<div class="page-tabs" id="task-obj" role="tablist" aria-label="Nhóm đối tượng">' + objTabs + '</div>' +
+            '<div class="seg-channel mt-2" id="task-ch" role="tablist" aria-label="Kênh bán">' + chTabs + '</div>' +
+            '<div id="task-list" class="mt-3"></div>' +
+          '</div>' +
+          '<div class="modal-foot">' +
+            '<button class="btn btn-outline" data-close="1">Đóng</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+  function taskRow(t) {
+    return '<div class="tk-row' + (t.state === 'xong' ? ' tk-done' : '') + '" data-tid="' + t.id + '">' +
+      '<div class="tk-main">' +
+        '<b>' + (t.state === 'xong' ? svg('check', 'tk-tick') : '') + t.title + '</b>' +
+        '<small class="micro muted">Người giao: ' + t.by + ' · ' + t.due + '</small>' +
+      '</div>' +
+      '<div class="row-tight">' +
+        '<span class="chip">' + TASK_STATE[t.state] + '</span>' +
+        '<a class="btn btn-outline btn-sm" href="' + link(t.go || 'trang-dau.html') + '">Xem</a>' +
+        '<button type="button" class="btn btn-quiet btn-sm" data-tact="sau">Để sau</button>' +
+        '<button type="button" class="btn btn-primary btn-sm" data-tact="tiep">Cập nhật trạng thái</button>' +
+      '</div>' +
+    '</div>';
+  }
+  function renderTasks() {
+    var box = document.getElementById('task-list');
+    var dot = document.querySelector('#tasks-icon .dot');
+    var all = myTasks();
+    if (dot) dot.hidden = all.filter(function (t) { return t.state !== 'xong'; }).length === 0;
+    if (!box) return;
+    /* initTabs() là nơi duy nhất ghi aria-selected khi bấm/điều hướng bàn phím trên
+       #task-obj/#task-ch — ở đây chỉ đọc lại để tránh hai bộ máy cùng ghi một trạng thái. */
+    var onObj = document.querySelector('#task-obj [aria-selected="true"]');
+    var onCh = document.querySelector('#task-ch [aria-selected="true"]');
+    if (onObj) taskObj = onObj.getAttribute('data-tobj');
+    if (onCh) taskCh = onCh.getAttribute('data-tch');
+    var list = all.filter(function (t) { return t.obj === taskObj && t.channel === taskCh; });
+    box.innerHTML = list.length
+      ? list.map(taskRow).join('')
+      : '<p class="gs-none">Không có việc nào được giao ở nhóm này.</p>';
+  }
+  function initTasks() {
+    var btn = document.getElementById('tasks-icon');
+    if (!btn) return;
+    renderTasks();
+    btn.addEventListener('click', function () {
+      renderTasks();
+      openModal('m-tasks');
+    });
+    /* Chọn tab (chuột lẫn mũi tên) do initTabs() xử lý; ở đây chỉ render lại sau khi
+       aria-selected đã đổi, theo đúng cách chia-se.html/danh-muc-san-pham.html đang làm. */
+    [document.getElementById('task-obj'), document.getElementById('task-ch')].forEach(function (bar) {
+      if (!bar) return;
+      bar.addEventListener('click', function (e) {
+        if (!e.target.closest('[role="tab"]')) return;
+        setTimeout(renderTasks, 0);
+      });
+      bar.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        setTimeout(renderTasks, 0);
+      });
+    });
+    var box = document.getElementById('task-list');
+    if (box) box.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-tact]');
+      if (!b) return;
+      var row = b.closest('[data-tid]');
+      if (!row) return;
+      if (b.getAttribute('data-tact') === 'sau') {
+        closeModal('m-tasks');
+        toast('Đã để sau — việc vẫn nằm trong danh sách được giao');
+        return;
+      }
+      var rec = window.RECO.store.find('tasks', row.getAttribute('data-tid'));
+      if (!rec) return;
+      window.RECO.store.update('tasks', rec.id, { state: TASK_NEXT[rec.state] || 'dang' });
+      renderTasks();
+      toast('“' + rec.title + '” · ' + TASK_STATE[rec.state]);
     });
   }
 
@@ -1202,13 +1325,15 @@
     var title = '';
     var nodes = [];
     var sec = document.querySelector('.secnav');
-    var list = document.querySelector('[role="tablist"]');
+    /* .page-tabs (tab chính của trang, dạng MH-17 Sơ cấp/Thứ cấp) không cần lối tắt riêng trong
+       drawer — bỏ qua nó để tìm đúng tablist phụ (vd. seg-channel) bất kể thứ tự trong DOM. */
+    var list = document.querySelector('[role="tablist"]:not(.page-tabs)');
     if (sec) {
       title = 'Khu vực nội dung';
       Array.prototype.forEach.call(sec.querySelectorAll('ol a[href^="#"]'), function (a) {
         nodes.push({ kind: 'a', href: a.getAttribute('href'), label: a.textContent.replace(/\s+/g, ' ').trim() });
       });
-    } else if (list && shownEl(list) && !list.classList.contains('page-tabs')) {
+    } else if (list && shownEl(list)) {
       title = list.getAttribute('aria-label') || 'Mục trên trang';
       Array.prototype.forEach.call(list.querySelectorAll('[role="tab"]'), function (t) {
         if (!shownEl(t)) return;
@@ -1539,9 +1664,12 @@
     var shell = body.getAttribute('data-shell') || 'app';   // app | plain | public
 
     // Dọn vỏ của lần dựng trước (bản gói dựng lại mỗi khi đổi màn)
-    document.querySelectorAll('.proto, .topbar, .drawer, .scrim, .dock, .toasts, #proto-back')
+    document.querySelectorAll('.proto, .topbar, .drawer, .scrim, .dock, .toasts, #proto-back, #m-tasks')
       .forEach(function (el) { el.remove(); });
     body.classList.remove('proto-off');
+    /* #m-tasks bị gỡ ở trên khi còn mở (link "Xem" điều hướng đi mà không qua closeModal) —
+       dọn luôn khoá cuộn/dock để menu dưới không bị kẹt pointer-events:none sau khi dựng lại vỏ. */
+    body.classList.remove('modal-on');
     body.style.overflow = '';
 
     if (framed()) {
@@ -1569,7 +1697,7 @@
     if (shell === 'app') html += buildTopbar(active);
     body.insertAdjacentHTML('afterbegin', html);
     if (shell === 'app') {
-      body.insertAdjacentHTML('beforeend', buildDrawer(active) + buildDock(active));
+      body.insertAdjacentHTML('beforeend', buildDrawer(active) + buildDock(active) + buildTasks());
     }
     if (bare) {
       body.classList.add('proto-off');
@@ -1611,6 +1739,7 @@
     applyRoles();
     bindProto();
     initTopbarPanels();
+    initTasks();
     initTabs();
     initSecnav();
     initLocalDrawer();

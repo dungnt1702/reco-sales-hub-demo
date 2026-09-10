@@ -21,6 +21,10 @@
     <div class="list-chrome">
     <div class="page-head">
       <h1>Sản phẩm</h1>
+      <div class="page-tabs" role="tablist" aria-label="Nhóm sản phẩm">
+        <button role="tab" id="t-loc" data-scope="loc" aria-selected="true">Sản phẩm chọn lọc</button>
+        <button role="tab" id="t-tat" data-scope="tat" aria-selected="false" tabindex="-1">Tất cả sản phẩm</button>
+      </div>
       <div class="page-head-end">
         <div class="view-toggle" role="group" aria-label="Chế độ hiển thị">
           <button type="button" data-view="card" data-view-target="ket-qua" aria-pressed="true" aria-label="Dạng thẻ" title="Dạng thẻ">
@@ -35,11 +39,11 @@
 
     <div class="seg-channel" role="tablist" aria-label="Kênh bán">
       <button type="button" role="tab" id="ch-moi" data-channel="moi" aria-selected="true">
-        <span class="seg-label-full">Bán mới</span><span class="seg-label-short">Bán mới</span>
+        <span class="seg-label-full">Sơ cấp</span><span class="seg-label-short">SC</span>
         <span class="n" id="n-moi">0</span>
       </button>
       <button type="button" role="tab" id="ch-cn" data-channel="cn" aria-selected="false" tabindex="-1">
-        <span class="seg-label-full">Chuyển nhượng</span><span class="seg-label-short">CN</span>
+        <span class="seg-label-full">Thứ cấp</span><span class="seg-label-short">TC</span>
         <span class="n" id="n-cn">0</span>
       </button>
     </div>
@@ -135,7 +139,6 @@ document.addEventListener('DOMContentLoaded', function () {
     mkt: ['celestine', 'thien-duong']
   };
   var didInitPj = false;
-  var wantHot = qs().get('hot') === '1';
   var kq = document.getElementById('ket-qua');
   var tai = document.getElementById('dang-tai');
   var timer = null;
@@ -173,6 +176,20 @@ document.addEventListener('DOMContentLoaded', function () {
       t.tabIndex = on ? 0 : -1;
     });
     setChannelUrl(want);
+  }
+  /* Hai tab nhóm sản phẩm dùng chung bộ lọc kênh và dự án bên dưới —
+     đổi tab chỉ đổi phạm vi "chỉ hàng Hot" hay "cả catalog", không đụng bộ lọc. */
+  function scope() {
+    var on = document.querySelector('.page-tabs [aria-selected="true"]');
+    return (on && on.getAttribute('data-scope') === 'loc') ? 'loc' : 'tat';
+  }
+  function selectScope(sc) {
+    var want = sc === 'loc' ? 'loc' : 'tat';
+    document.querySelectorAll('.page-tabs [role="tab"]').forEach(function (t) {
+      var on = t.getAttribute('data-scope') === want;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+    });
   }
   function pjChannel(id) {
     return S.channelOf(S.find('projects', id));
@@ -268,15 +285,16 @@ document.addEventListener('DOMContentLoaded', function () {
     var others = S.get('unitProfiles').filter(function (p) {
       return p.catalog && !hotIds[p.unitId] && S.find('units', p.unitId);
     }).map(function (p) { return S.unitView(p.unitId); }).filter(Boolean).filter(match);
-    if (wantHot) others = [];
+    var sc = scope();
+    if (sc === 'loc') others = [];
 
     var total = hotViews.length + others.length;
     if (kq) kq.hidden = !total;
-    var word = channel() === 'cn' ? 'chuyển nhượng' : 'bán mới';
+    var word = channel() === 'cn' ? 'thứ cấp' : 'sơ cấp';
     var filtered = !!(fQ.value || (fPj.value && fPj.value !== '__mine__') || fType.value || fBeds.value || fSt.value);
     document.getElementById('sp-count').textContent = filtered
       ? 'Đang hiện ' + total + ' căn khớp bộ lọc'
-      : 'Đang hiện ' + total + ' căn trong catalog';
+      : 'Đang hiện ' + total + ' căn ' + (sc === 'loc' ? 'chọn lọc' : 'trong catalog');
 
     var empty = document.getElementById('sp-empty');
     var hotSec = document.getElementById('hot-sec');
@@ -361,6 +379,25 @@ document.addEventListener('DOMContentLoaded', function () {
     fSt.value = '';
     apply();
   }
+
+  /* Mặc định mở "Sản phẩm chọn lọc" (BS2-05); nơi cần đối chiếu toàn bộ căn — không chỉ
+     hàng Hot — tự nối ?scope=tat vào link (vd. việc đối chiếu bảng hàng ở store.js). */
+  selectScope(qs().get('scope') === 'tat' ? 'tat' : 'loc');
+  var scopeTabs = document.querySelector('.page-tabs');
+  scopeTabs.addEventListener('click', function (e) {
+    var t = e.target.closest('[role="tab"]');
+    if (!t) return;
+    selectScope(t.getAttribute('data-scope'));
+    apply();
+  });
+  scopeTabs.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    setTimeout(function () {
+      var t = document.activeElement && document.activeElement.closest('[role="tab"]');
+      if (t && scopeTabs.contains(t)) selectScope(t.getAttribute('data-scope'));
+      apply();
+    }, 0);
+  });
 
   selectChannel(qs().get('channel') === 'cn' ? 'cn' : 'moi');
   tabCounts();

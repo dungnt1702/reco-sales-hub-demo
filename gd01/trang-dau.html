@@ -514,13 +514,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var map = {
       nvbh: [
-        { k: 'Đường dẫn của tôi còn hiệu lực', n: mineLive.length, s: soonSub(mineLive), href: goTo('chia-se.html', 'state=live&by=toi') },
+        { k: 'Sản phẩm gửi khách của tôi còn hiệu lực', n: mineLive.length, s: soonSub(mineLive), href: goTo('chia-se.html', 'state=live&by=toi') },
         { k: 'Sản phẩm Hot dự án tôi bán', n: hot.length, s: hotSub, href: goTo('danh-muc-san-pham.html', 'hot=1') },
         { k: 'Nội dung vừa cập nhật', n: rec.length, s: rec.length ? 'Trong 7 ngày — tránh tư vấn bản cũ' : 'Không có cập nhật trong 7 ngày', href: goTo('thu-vien-tai-lieu.html', 'updated=7d') },
         { k: 'Đề nghị sửa tôi đã gửi', n: sent.length, s: sent.filter(function (r) { return r.state === 'done'; }).length + ' đã cập nhật · ' + sent.filter(function (r) { return r.state === 'doing'; }).length + ' đang xử lý', href: goTo('de-nghi-sua.html', 'by=toi') }
       ],
       qlkd: [
-        { k: 'Đường dẫn đội còn hiệu lực', n: teamLive.length, s: soonSub(teamLive), href: goTo('chia-se.html', 'state=live') },
+        { k: 'Sản phẩm gửi khách đội còn hiệu lực', n: teamLive.length, s: soonSub(teamLive), href: goTo('chia-se.html', 'state=live') },
         { k: 'Sản phẩm Hot phạm vi đội', n: hot.length, s: hotSub, href: goTo('danh-muc-san-pham.html', 'hot=1') },
         { k: 'Đề nghị sửa đội đang chờ', n: teamRq.length, s: teamRq.length ? 'Nhân viên đội đã gửi, chưa có người nhận' : 'Đội không còn đề nghị chờ', href: goTo('de-nghi-sua.html', 'team=1&state=new'), warn: teamRq.length },
         { k: 'Nội dung vừa cập nhật', n: rec.length, s: rec.length ? 'Trong 7 ngày — brief đội trước khi bán' : 'Không có cập nhật trong 7 ngày', href: goTo('thu-vien-tai-lieu.html', 'updated=7d') }

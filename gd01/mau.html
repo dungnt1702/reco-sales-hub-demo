@@ -530,6 +530,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var ticksTouched = false;
     var scopeTouched = !isNew;
     var projects = S.get('projects').filter(function (p) { return !p.hidden; });
+    /* Bài dùng chung không mặc định hiện ở mọi dự án nữa — người soạn chọn phạm vi.
+       Danh sách rỗng nghĩa là "Tất cả dự án". */
+    var sharePjs = (draft.sharePjs || []).slice();
     var cancelHref = t ? goPage('mau.html', 'tpl=' + encodeURIComponent(t.id)) : goPage('chia-se.html');
     document.getElementById('mau-layout').classList.add('is-edit');
     document.getElementById('mau-cta').hidden = false;
@@ -577,6 +580,7 @@ document.addEventListener('DOMContentLoaded', function () {
         unitId: unitEl ? (unitEl.value || '') : (draft.unitId || ''),
         hotId: hotEl ? (hotEl.value || '') : (draft.hotId || ''),
         scope: scopeEl ? scopeEl.value : (draft.scope || 'personal'),
+        sharePjs: readSharePjs(),
         intent: intent,
         galleryMedia: galleryMedia.slice(),
         unitMedia: unitMediaSel.slice(),
@@ -850,6 +854,28 @@ document.addEventListener('DOMContentLoaded', function () {
       document.querySelectorAll('#mau-chrome [data-scope]').forEach(function (b) {
         b.setAttribute('aria-pressed', b.getAttribute('data-scope') === val ? 'true' : 'false');
       });
+      var wrapShare = document.getElementById('wrap-share-pj');
+      if (wrapShare) wrapShare.hidden = val !== 'shared';
+    }
+    /* Rỗng = mọi dự án. Chọn từng dự án thì bỏ ô "Tất cả dự án" ra. */
+    function readSharePjs() {
+      var all = document.querySelector('[name="nm-share-pj"][value="__all__"]');
+      if (!all || all.checked) return [];
+      return Array.prototype.slice
+        .call(document.querySelectorAll('[name="nm-share-pj"]:checked'))
+        .map(function (c) { return c.value; });
+    }
+    function syncSharePjs(changed) {
+      var all = document.querySelector('[name="nm-share-pj"][value="__all__"]');
+      var each = Array.prototype.slice.call(document.querySelectorAll('[name="nm-share-pj"]'))
+        .filter(function (c) { return c.value !== '__all__'; });
+      if (changed === all) {
+        each.forEach(function (c) { c.disabled = all.checked; if (all.checked) c.checked = false; });
+        return;
+      }
+      var any = each.some(function (c) { return c.checked; });
+      all.checked = !any;
+      each.forEach(function (c) { c.disabled = all.checked; });
     }
     function ensureKindList(kind) {
       var d = readDraft();
@@ -1110,6 +1136,17 @@ document.addEventListener('DOMContentLoaded', function () {
           '<button type="button" class="btn btn-outline" id="mau-preview" aria-label="Xem trước">' + RECO.svg('eye') + '<span class="mau-preview-lab">Xem trước</span></button>' +
           '<button type="button" class="btn btn-primary" id="mau-save">Lưu</button>' +
         '</div>' +
+        '<div class="mau-chrome-row" id="wrap-share-pj"' + (draft.scope === 'shared' ? '' : ' hidden') + '>' +
+          '<div class="share-pj" role="group" aria-label="Dự án áp dụng bài chung">' +
+            '<span class="micro muted">Bài chung hiện ở:</span>' +
+            '<label class="share-pj-item"><input type="checkbox" name="nm-share-pj" value="__all__"' +
+              (sharePjs.length ? '' : ' checked') + '> Tất cả dự án</label>' +
+            projects.map(function (p) {
+              return '<label class="share-pj-item"><input type="checkbox" name="nm-share-pj" value="' + E(p.id) + '"' +
+                (sharePjs.indexOf(p.id) >= 0 ? ' checked' : '') + (sharePjs.length ? '' : ' disabled') + '> ' + E(p.name) + '</label>';
+            }).join('') +
+          '</div>' +
+        '</div>' +
         '<p class="micro muted mau-chrome-hint" id="intent-hint"></p>' +
         '<div class="mau-sr">' +
           '<p id="unit-hint"></p>' +
@@ -1220,6 +1257,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (el.value === 'shared') forcePersonalForBank(true);
         paintScopePills();
       }
+      if (el && el.name === 'nm-share-pj') syncSharePjs(el);
       if (el && el.id === 'nm-pj') {
         fillSelects();
         galleryMedia = [];
@@ -1312,6 +1350,7 @@ document.addEventListener('DOMContentLoaded', function () {
         unitId: d.unitId || null,
         hotId: d.hotId || null,
         scope: d.scope,
+        sharePjs: d.scope === 'shared' ? d.sharePjs : [],
         intent: d.intent,
         galleryMedia: galleryTouched ? d.galleryMedia : [],
         unitMedia: unitTouched ? d.unitMedia : []

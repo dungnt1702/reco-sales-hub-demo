@@ -18,7 +18,7 @@
   function channelChip(p) {
     var ch = (S.channelOf ? S.channelOf(p) : (p && p.channel)) || 'moi';
     if (ch !== 'cn') return '';
-    return '<span class="chip chip-cn">' + esc((p && p.channelText) || 'Chuyển nhượng') + '</span>';
+    return '<span class="chip chip-cn">' + esc((p && p.channelText) || 'Thứ cấp') + '</span>';
   }
   function verifyChip(p) {
     return p.verify ? '<span class="chip">Cần xác nhận lại</span>' : '';

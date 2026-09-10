@@ -251,7 +251,12 @@ var CASES = [
   if (!ok(fq.contentDocument.querySelectorAll('#nav-drawer .drawer-local button').length === 0, 'Quản trị mobile: không nhét tab vào hamburger')) bad++;
   fq.remove();
   var fs2 = await load(PHASE + '/chia-se.html?bare=1', 390);
-  if (!ok(fs2.contentDocument.querySelectorAll('#nav-drawer .drawer-local button').length === 0, 'Bài đăng mobile: không nhét tab vào hamburger')) bad++;
+  /* Bài đăng nay có thêm cặp Sơ cấp / Thứ cấp (không sticky) nên hamburger được phép chứa
+     cặp đó — thứ không được lặp vẫn là ba tab thư viện sticky. */
+  var drawerTabs = Array.prototype.slice.call(fs2.contentDocument.querySelectorAll('#nav-drawer .drawer-local button'))
+    .map(function (b) { return b.textContent.replace(/\s+/g, ' ').trim(); });
+  var LIB_TABS = ['Mẫu chung', 'Mẫu của tôi', 'Đã gửi'];
+  if (!ok(LIB_TABS.every(function (l) { return drawerTabs.indexOf(l) < 0; }), 'Bài đăng mobile: không nhét tab thư viện vào hamburger')) bad++;
   var intentOpts = fs2.contentDocument.querySelectorAll('#tf-intent option');
   var intentIds = [];
   intentOpts.forEach(function (o) { if (o.value) intentIds.push(o.value); });

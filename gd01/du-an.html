@@ -37,11 +37,11 @@
 
     <div class="seg-channel" role="tablist" aria-label="Kênh bán">
       <button type="button" role="tab" id="ch-moi" data-channel="moi" aria-selected="true">
-        <span class="seg-label-full">Bán mới</span><span class="seg-label-short">Bán mới</span>
+        <span class="seg-label-full">Sơ cấp</span><span class="seg-label-short">SC</span>
         <span class="n" id="n-moi">0</span>
       </button>
       <button type="button" role="tab" id="ch-cn" data-channel="cn" aria-selected="false" tabindex="-1">
-        <span class="seg-label-full">Chuyển nhượng</span><span class="seg-label-short">CN</span>
+        <span class="seg-label-full">Thứ cấp</span><span class="seg-label-short">TC</span>
         <span class="n" id="n-cn">0</span>
       </button>
     </div>
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function draw(list) {
     var none = list.length === 0;
     var ch = channel();
-    var word = ch === 'cn' ? 'chuyển nhượng' : 'bán mới';
+    var word = ch === 'cn' ? 'thứ cấp' : 'sơ cấp';
     kq.hidden = none; rong.hidden = !none;
     count.textContent = none ? 'Không có dự án nào khớp bộ lọc' : 'Đang hiển thị ' + list.length + ' dự án';
     document.getElementById('rong-t').textContent = 'Chưa có dự án ' + word + ' khớp bộ lọc';

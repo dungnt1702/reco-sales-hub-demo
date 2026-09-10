@@ -98,6 +98,7 @@
               </div>
               <div class="row-tight">
                 <button class="btn btn-primary btn-sm" id="bhq-new">+ Thêm căn/lô</button>
+                <button class="btn btn-outline btn-sm" id="bhq-xls">Nhập sản phẩm từ Excel</button>
                 <button class="btn btn-quiet btn-sm" id="bhq-close">Đóng bảng hàng</button>
               </div>
             </div>
@@ -301,8 +302,8 @@
                data-required data-msg="Ghi quy mô dự án, ví dụ 2 tháp · 23 tầng · 216 căn."></label>
       <label class="field"><span class="lab">Kênh bán</span>
         <select class="inp" id="pj-f-channel">
-          <option value="moi">Bán mới</option>
-          <option value="cn">Chuyển nhượng</option>
+          <option value="moi">Sơ cấp</option>
+          <option value="cn">Thứ cấp</option>
         </select></label>
       <label class="field"><span class="lab">Trạng thái</span>
         <select class="inp" id="pj-f-status">
@@ -360,6 +361,49 @@
     <div class="modal-foot">
       <button class="btn btn-outline" data-close="1">Hủy</button>
       <button class="btn btn-primary" id="un-save">Thêm vào bảng hàng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nhập bảng hàng từ tệp Excel. Bản mô phỏng chạy đúng các bước kiểm tra nhưng không đọc tệp thật:
+     tệp chọn lên chỉ để thấy luồng, dữ liệu xem trước là ví dụ dựng sẵn. -->
+<div class="modal" id="m-xls" hidden role="dialog" aria-modal="true" aria-labelledby="m-xls-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Bảng hàng tới cấp căn/lô</span><h3 id="m-xls-t">Nhập sản phẩm từ Excel</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div id="xls-tai">
+        <label class="field"><span class="lab">Tệp bảng hàng (.xlsx)</span>
+          <input class="inp" type="file" id="xls-file" accept=".xlsx,.xls,.csv">
+          <span class="hint">Đúng năm cột của tệp mẫu: Mã căn/lô · Vị trí · Loại sản phẩm · Diện tích · Tình trạng.</span></label>
+        <p><button type="button" class="btn-text" id="xls-mau">Tải mẫu bảng hàng (.xlsx)</button></p>
+        <div class="note">Bản mô phỏng không đọc tệp thật. Bấm <strong>Xem trước</strong> để chạy thử bước kiểm tra từng dòng.</div>
+      </div>
+      <div id="xls-xem" hidden>
+        <p class="small muted" id="xls-tom" style="margin:0 0 8px"></p>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Dòng</th><th>Mã căn/lô</th><th>Loại</th><th class="r">Diện tích</th><th>Tình trạng</th><th>Kiểm tra</th></tr></thead>
+            <tbody id="xls-body"></tbody>
+          </table>
+        </div>
+        <div class="note note-danger mt-2" id="xls-loi" hidden>
+          Còn dòng hỏng nên chưa nhập được. Sửa trong tệp rồi tải lại — ở bản mô phỏng bấm
+          <strong>Sửa và thử lại</strong> để xem trạng thái sau khi sửa.
+        </div>
+      </div>
+      <div id="xls-xong" hidden>
+        <div class="note note-navy" id="xls-xong-t"></div>
+        <p class="micro muted">Căn/lô vừa nhập nằm ngay trong bảng hàng bên dưới và ở khu vực Bảng hàng của màn Chi tiết dự án.</p>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-outline" id="xls-sua" hidden>Sửa và thử lại</button>
+      <button class="btn btn-primary" id="xls-xem-btn">Xem trước</button>
+      <button class="btn btn-primary" id="xls-ok" hidden disabled>Xác nhận nhập</button>
     </div>
   </div>
 </div>
@@ -474,7 +518,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   var STATUS = { live: 'Đang bán', soon: 'Sắp mở bán', closed: 'Ngừng bán' };
   var STATUS_CLS = { live: 'st-live', soon: 'st-wait', closed: 'st-off' };
-  var CHANNEL = S.CHANNELS || { moi: 'Bán mới', cn: 'Chuyển nhượng' };
+  var CHANNEL = S.CHANNELS || { moi: 'Sơ cấp', cn: 'Thứ cấp' };
 
   function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd'); }
   function toISO(vn) { var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(vn || ''); return m ? m[3] + '-' + m[2] + '-' + m[1] : ''; }
@@ -772,6 +816,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!bhqPj) return;
     var ext = driveSheet();
     document.getElementById('bhq-new').hidden = !!ext;
+    document.getElementById('bhq-xls').hidden = !!ext;
     var warn = document.getElementById('bhq-drive');
     warn.hidden = !ext;
     if (ext) {
@@ -867,6 +912,101 @@ document.addEventListener('DOMContentLoaded', function () {
     RECO.openModal('m-unit');
   }
   document.getElementById('bhq-new').addEventListener('click', function () { unOpen(null); });
+
+  /* ---- Nhập bảng hàng từ Excel ----
+     Bản mô phỏng không đọc tệp thật: dữ liệu xem trước dựng sẵn để buổi trình bày đi hết
+     chuỗi trạng thái tải lên → xem trước có lỗi → chặn xác nhận → sửa → nhập xong. */
+  var xlsBody = document.getElementById('xls-body'), xlsOk = document.getElementById('xls-ok'),
+      xlsSua = document.getElementById('xls-sua'), xlsXemBtn = document.getElementById('xls-xem-btn');
+  var xlsRows = [];
+  function xlsSeed() {
+    return [
+      { line: 2, id: 'T2-15.03', kind: '2PN + 1', area: 96.4, dir: 'Đông Nam', state: 'con' },
+      { line: 3, id: 'T2-15.04', kind: '2PN', area: 78.4, dir: 'Đông', state: 'con' },
+      { line: 4, id: 'T2-16.01', kind: '3PN', area: 0, dir: 'Tây Bắc', state: 'con',
+        err: 'Cột Diện tích để trống' },
+      { line: 5, id: 'T2-16.02', kind: '2PN', area: 78.4, dir: 'Đông Nam', state: 'con' },
+      { line: 6, id: 'T2-16.03', kind: '3PN + 1', area: 112.5, dir: 'Nam', state: '', stateRaw: 'Đã cọc',
+        err: 'Tình trạng “Đã cọc” không nằm trong danh sách cho phép' }
+    ];
+  }
+  function xlsBad() {
+    return xlsRows.filter(function (r) { return r.err; });
+  }
+  function xlsPaint() {
+    var bad = xlsBad().length;
+    xlsBody.innerHTML = xlsRows.map(function (r) {
+      return '<tr>' +
+        '<td data-l="Dòng">' + r.line + '</td>' +
+        '<td data-l="Mã căn/lô"><b>' + esc(r.id) + '</b></td>' +
+        '<td data-l="Loại">' + esc(r.kind) + '</td>' +
+        '<td data-l="Diện tích" class="r">' + (r.area ? String(r.area).replace('.', ',') + ' m²' : '—') + '</td>' +
+        '<td data-l="Tình trạng">' + esc(r.state ? S.UNIT_STATE[r.state].text : (r.stateRaw || '—')) + '</td>' +
+        '<td data-l="Kiểm tra">' + (r.err
+          ? '<span class="st st-off">Lỗi</span><div class="micro muted">' + esc(r.err) + '</div>'
+          : '<span class="st st-live">Hợp lệ</span>') + '</td>' +
+        '</tr>';
+    }).join('');
+    document.getElementById('xls-tom').textContent = xlsRows.length + ' dòng đọc được · ' +
+      (xlsRows.length - bad) + ' hợp lệ · ' + bad + ' lỗi';
+    document.getElementById('xls-loi').hidden = !bad;
+    xlsSua.hidden = !bad;
+    xlsOk.disabled = !!bad;
+  }
+  function xlsStep(step) {
+    document.getElementById('xls-tai').hidden = step !== 'tai';
+    document.getElementById('xls-xem').hidden = step !== 'xem';
+    document.getElementById('xls-xong').hidden = step !== 'xong';
+    xlsXemBtn.hidden = step !== 'tai';
+    xlsOk.hidden = step !== 'xem';
+    if (step !== 'xem') xlsSua.hidden = true;
+  }
+  document.getElementById('bhq-xls').addEventListener('click', function () {
+    xlsRows = xlsSeed();
+    document.getElementById('xls-file').value = '';
+    xlsStep('tai');
+    RECO.openModal('m-xls');
+  });
+  document.getElementById('xls-mau').addEventListener('click', function () {
+    RECO.toast('Bản mô phỏng chưa kèm tệp mẫu — bản thật tải về mau-bang-hang.xlsx');
+  });
+  xlsXemBtn.addEventListener('click', function () {
+    RECO.busy(xlsXemBtn, 'Đang đọc tệp…', 900, function () {
+      xlsStep('xem');
+      xlsPaint();
+    });
+  });
+  xlsSua.addEventListener('click', function () {
+    var fixed = xlsBad().length;
+    xlsRows.forEach(function (r) {
+      if (!r.err) return;
+      if (!r.area) r.area = 110.4;
+      if (!r.state) { r.state = 'giu'; r.stateRaw = ''; }
+      r.err = '';
+    });
+    xlsPaint();
+    RECO.toast('Đã sửa ' + fixed + ' dòng hỏng — nhập được rồi');
+  });
+  xlsOk.addEventListener('click', function () {
+    if (xlsBad().length || !bhqPj) return;
+    RECO.busy(xlsOk, 'Đang nhập…', 900, function () {
+      var them = 0, trung = 0;
+      xlsRows.forEach(function (r) {
+        if (S.find('units', r.id)) { trung++; return; }
+        S.add('units', {
+          id: r.id, pj: bhqPj.id, zone: selZone || null,
+          block: selZone ? zonePath(selZone) : '—', floor: 0,
+          kind: r.kind, area: r.area, dir: r.dir, price: 0, state: r.state
+        });
+        them++;
+      });
+      document.getElementById('xls-xong-t').innerHTML = '<strong>Đã nhập ' + them + ' căn/lô</strong> vào bảng hàng ' +
+        esc(bhqPj.name) + (trung ? ' · bỏ qua ' + trung + ' dòng trùng mã đã có' : '') + '.';
+      xlsStep('xong');
+      RECO.toast('Đã nhập ' + them + ' căn/lô từ tệp Excel');
+      bhqRender();
+    });
+  });
 
   bhqBody.addEventListener('click', function (e) {
     var hotBtn = e.target.closest('[data-act="hot"]');

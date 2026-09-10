@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gợi ý khai thác khách · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css?v=fsheet3">
+<script defer src="../assets/reco.js?v=fsheet3"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+</head>
+<body data-shell="app" data-page="qa-goi-y">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="page-head">
+      <h1>Gợi ý khai thác khách</h1>
+      <div class="page-head-end">
+        <button type="button" class="btn btn-primary" id="qa-new" data-roles="gd gddu tkkd mkt">+ Thêm câu hỏi</button>
+      </div>
+    </div>
+
+    <p class="small muted mb-3">
+      Ngân hàng câu hỏi và câu trả lời mẫu do đội nội dung biên tập. Không gắn với một dự án cụ thể —
+      nhân viên tra khi khách hỏi ngoài kịch bản.
+    </p>
+
+    <div class="filterbar" data-filter-sheet>
+      <div class="searchbox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#636f78" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="qa-q" placeholder="Tìm câu hỏi hoặc từ khóa trong câu trả lời…" aria-label="Tìm câu hỏi">
+      </div>
+      <select class="inp" id="qa-topic" aria-label="Chủ đề"><option value="">Mọi chủ đề</option></select>
+      <button type="button" class="btn-text" id="qa-reset" hidden>Xóa lọc</button>
+    </div>
+
+    <p class="small muted mt-2 mb-2" id="qa-count" role="status"></p>
+
+    <div class="stack" id="qa-list"></div>
+    <div id="qa-empty" hidden></div>
+
+  </div>
+</main>
+
+<!-- Thêm hoặc sửa một câu hỏi. Bản mô phỏng giữ trong bộ nhớ trang, không lưu về máy chủ. -->
+<div class="modal" id="m-qa" hidden role="dialog" aria-modal="true" aria-labelledby="m-qa-t">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><span class="eyebrow">Ngân hàng câu hỏi</span><h3 id="m-qa-t">Thêm câu hỏi</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" id="qa-form">
+      <label class="field"><span class="lab">Câu hỏi</span>
+        <input class="inp" type="text" id="qa-f-q" placeholder="Khách hỏi gì?"
+               data-required data-msg="Nhập câu hỏi đúng như khách hay hỏi."></label>
+      <label class="field"><span class="lab">Chủ đề</span>
+        <select class="inp" id="qa-f-topic"></select></label>
+      <label class="field"><span class="lab">Câu trả lời mẫu</span>
+        <textarea class="inp" id="qa-f-a" rows="6"
+                  data-required data-msg="Viết câu trả lời mẫu để cả đội nói giống nhau."></textarea>
+        <span class="hint">Viết như đang nói với khách. Không ghi giá và không dán liên kết Drive của Chủ đầu tư.</span></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Hủy</button>
+      <button class="btn btn-primary" id="qa-save">Thêm vào ngân hàng</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (!document.getElementById('qa-list')) return;
+  var E = RECO_DATA.esc;
+  var fQ = document.getElementById('qa-q');
+  var fTopic = document.getElementById('qa-topic');
+  var fReset = document.getElementById('qa-reset');
+  var listBox = document.getElementById('qa-list');
+  var emptyBox = document.getElementById('qa-empty');
+
+  /* Nội dung mẫu — bản mô phỏng giữ trong bộ nhớ trang. Bản thật lấy từ kho nội dung
+     do Marketing và Thư ký kinh doanh biên tập. */
+  var TOPICS = ['Mở đầu cuộc gọi', 'Phản đối về giá', 'Pháp lý và sổ', 'Vay và thanh toán', 'Chốt và giữ chỗ'];
+  var qaEntries = [
+    { id: 'qa1', topic: 'Mở đầu cuộc gọi', by: 'Đội nội dung', at: '18/08/2026',
+      q: 'Khách bắt máy nhưng nói “anh đang bận”, mở lời thế nào?',
+      a: 'Xin đúng 30 giây và nói ngay lý do gọi: “Em gọi vì căn 2PN view hồ tòa T1 vừa mở lại, em gửi anh mặt bằng qua Zalo trong hôm nay được không ạ?”. Hẹn giờ gọi lại cụ thể rồi cúp máy trước, đừng cố nói thêm.' },
+    { id: 'qa2', topic: 'Mở đầu cuộc gọi', by: 'Đội nội dung', at: '18/08/2026',
+      q: 'Khách để lại thông tin từ quảng cáo, nhắn tin đầu tiên nên viết gì?',
+      a: 'Nhắc đúng nội dung khách đã bấm vào, xưng tên và sàn, rồi hỏi một câu duy nhất về nhu cầu: ở hay đầu tư. Một câu hỏi mỗi tin nhắn thì khách mới trả lời.' },
+    { id: 'qa3', topic: 'Phản đối về giá', by: 'Trần Minh Quân', at: '19/08/2026',
+      q: 'Khách nói “dự án bên cạnh rẻ hơn 5 giá”, trả lời sao?',
+      a: 'Không so giá suông. Hỏi khách đang so với căn nào, tầng nào, hướng nào, rồi đối chiếu đúng loại căn tương đương: diện tích tim tường, bàn giao, phí quản lý và tiến độ. Chốt lại bằng khoản chênh thật sau khi quy về cùng điều kiện.' },
+    { id: 'qa4', topic: 'Phản đối về giá', by: 'Đội nội dung', at: '19/08/2026',
+      q: 'Khách hỏi giá ngay khi vừa nghe giới thiệu?',
+      a: 'Đưa khoảng giá theo loại căn chứ không đưa giá một căn cụ thể, và nói rõ giá chính thức nằm trong bảng hàng Chủ đầu tư. Sales Hub không hiện giá — em gửi phiếu tính giá riêng khi anh/chị chốt được căn.' },
+    { id: 'qa5', topic: 'Pháp lý và sổ', by: 'Đội nội dung', at: '17/08/2026',
+      q: 'Khách hỏi dự án đã đủ điều kiện bán chưa?',
+      a: 'Trả lời theo đúng giấy tờ đang có trong Thư viện tài liệu: quyết định giao đất, giấy phép xây dựng, văn bản đủ điều kiện bán. Chỉ nói những gì có văn bản, phần chưa có thì hẹn gửi sau khi Chủ đầu tư cập nhật.' },
+    { id: 'qa6', topic: 'Vay và thanh toán', by: 'Lê Thu Hà', at: '20/08/2026',
+      q: 'Khách muốn vay 70% nhưng lo lãi suất thả nổi sau ưu đãi?',
+      a: 'Tính trước cho khách hai con số: khoản trả hằng tháng trong kỳ ưu đãi và khoản trả sau khi hết ưu đãi theo lãi suất thả nổi giả định. Khách sợ cái không biết, không sợ con số.' },
+    { id: 'qa7', topic: 'Chốt và giữ chỗ', by: 'Trần Minh Quân', at: '20/08/2026',
+      q: 'Khách đồng ý nhưng muốn về bàn với vợ/chồng rồi trả lời sau?',
+      a: 'Chốt việc nhỏ thay vì ép việc lớn: hẹn khung giờ gọi lại có mặt cả hai, và giữ chỗ có hoàn lại cho căn đang xem để khách không mất căn trong lúc bàn.' },
+    { id: 'qa8', topic: 'Chốt và giữ chỗ', by: 'Đội nội dung', at: '21/08/2026',
+      q: 'Khách hỏi giữ chỗ có mất tiền không?',
+      a: 'Nói rõ khoản giữ chỗ, điều kiện hoàn và thời hạn giữ theo đúng chính sách đợt bán đang chạy. Không hứa miệng khác với chính sách — chính sách nằm ở Thư viện tài liệu.' }
+  ];
+
+  function fillTopics() {
+    fTopic.innerHTML = '<option value="">Mọi chủ đề</option>' +
+      TOPICS.map(function (t) { return '<option value="' + E(t) + '">' + E(t) + '</option>'; }).join('');
+    document.getElementById('qa-f-topic').innerHTML =
+      TOPICS.map(function (t) { return '<option value="' + E(t) + '">' + E(t) + '</option>'; }).join('');
+  }
+  function match(x) {
+    var q = RECO.norm(fQ.value || '');
+    if (q && RECO.norm(x.q + ' ' + x.a).indexOf(q) < 0) return false;
+    if (fTopic.value && x.topic !== fTopic.value) return false;
+    return true;
+  }
+  function card(x) {
+    return '<article class="card">' +
+      '<div class="card-body">' +
+        '<span class="chip">' + E(x.topic) + '</span>' +
+        '<h2 style="font-size:1rem;margin:8px 0 6px">' + E(x.q) + '</h2>' +
+        '<p class="small" style="margin:0;white-space:pre-line">' + E(x.a) + '</p>' +
+        '<p class="micro muted mt-2" style="margin-bottom:0">Biên tập: ' + E(x.by) + ' · ' + E(x.at) + '</p>' +
+      '</div></article>';
+  }
+  function paint() {
+    var list = qaEntries.filter(match);
+    var filtering = !!(fQ.value || fTopic.value);
+    fReset.hidden = !filtering;
+    document.getElementById('qa-count').textContent = filtering
+      ? 'Đang hiện ' + list.length + ' câu hỏi khớp bộ lọc'
+      : 'Ngân hàng có ' + qaEntries.length + ' câu hỏi';
+    listBox.hidden = !list.length;
+    emptyBox.hidden = !!list.length;
+    if (!list.length) {
+      emptyBox.innerHTML = RECO_DATA.empty('Không có câu hỏi nào khớp',
+        'Anh/chị thử đổi chủ đề hoặc xóa ô tìm.',
+        '<button type="button" class="btn btn-outline" id="qa-empty-reset">Xóa lọc</button>');
+      var b = document.getElementById('qa-empty-reset');
+      if (b) b.addEventListener('click', reset);
+      listBox.innerHTML = '';
+      return;
+    }
+    listBox.innerHTML = list.map(card).join('');
+  }
+  function reset() {
+    fQ.value = '';
+    fTopic.value = '';
+    paint();
+  }
+
+  var qaForm = document.getElementById('qa-form');
+  document.getElementById('qa-new').addEventListener('click', function () {
+    document.getElementById('qa-f-q').value = '';
+    document.getElementById('qa-f-a').value = '';
+    document.getElementById('qa-f-topic').value = TOPICS[0];
+    qaForm.querySelectorAll('.err').forEach(function (e) { e.remove(); });
+    qaForm.querySelectorAll('[aria-invalid]').forEach(function (e) { e.removeAttribute('aria-invalid'); });
+    RECO.openModal('m-qa');
+  });
+  var qaSave = document.getElementById('qa-save');
+  qaSave.addEventListener('click', function () {
+    if (!RECO.validate(qaForm)) return;
+    RECO.busy(qaSave, 'Đang thêm…', 700, function () {
+      qaEntries.unshift({
+        id: 'qa-new-' + (qaEntries.length + 1),
+        topic: document.getElementById('qa-f-topic').value,
+        by: RECO.current.who,
+        at: RECO.today(),
+        q: document.getElementById('qa-f-q').value.trim(),
+        a: document.getElementById('qa-f-a').value.trim()
+      });
+      RECO.closeModal('m-qa');
+      reset();
+      RECO.toast('Đã thêm câu hỏi vào ngân hàng');
+    });
+  });
+
+  fillTopics();
+  [fQ, fTopic].forEach(function (el) {
+    el.addEventListener('input', paint);
+    el.addEventListener('change', paint);
+  });
+  fReset.addEventListener('click', reset);
+  paint();
+});
+</script>
+</body>
+</html>

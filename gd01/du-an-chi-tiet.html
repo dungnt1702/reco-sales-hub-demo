@@ -2172,9 +2172,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!box) return;
     var uid = currentUserId();
     var list = S.get('shareTemplates').filter(function (t) {
-      if (t.projectId !== PJ) return false;
-      if (t.scope === 'shared') return true;
-      return t.scope === 'personal' && t.ownerUserId === uid;
+      if (t.scope === 'shared') return S.tplAppliesToPj(t, PJ);
+      return t.projectId === PJ && t.scope === 'personal' && t.ownerUserId === uid;
     }).sort(function (a, b) {
       var aa = a.scope === 'shared' && a.approved ? 0 : 1;
       var bb = b.scope === 'shared' && b.approved ? 0 : 1;

@@ -23,11 +23,6 @@
 
     <div class="page-head">
       <h1>Bài đăng</h1>
-      <div class="page-tabs" role="tablist" aria-label="Thư viện bài đăng">
-        <button role="tab" id="t-doi" aria-controls="p-doi" aria-selected="true">Mẫu chung</button>
-        <button role="tab" id="t-toi" aria-controls="p-toi" aria-selected="false" tabindex="-1">Mẫu của tôi</button>
-        <button role="tab" id="t-gui" aria-controls="p-gui" aria-selected="false" tabindex="-1">Đã gửi</button>
-      </div>
       <div class="page-head-end">
         <div class="view-toggle" id="tpl-view" role="group" aria-label="Chế độ hiển thị">
           <button type="button" data-view="card" data-view-target="tpl-ket-qua" aria-pressed="true" aria-label="Dạng thẻ" title="Dạng thẻ">
@@ -41,15 +36,37 @@
       </div>
     </div>
 
+    <!-- Kênh bán là tab cấp một: ba tab thư viện bên dưới nằm trong kênh đang chọn. -->
+    <div class="seg-channel" id="cs-channel" role="tablist" aria-label="Kênh bán">
+      <button type="button" role="tab" id="cs-moi" data-channel="moi" aria-selected="true">
+        <span class="seg-label-full">Sơ cấp</span><span class="seg-label-short">SC</span>
+        <span class="n" id="cs-n-moi">0</span>
+      </button>
+      <button type="button" role="tab" id="cs-cn" data-channel="cn" aria-selected="false" tabindex="-1">
+        <span class="seg-label-full">Thứ cấp</span><span class="seg-label-short">TC</span>
+        <span class="n" id="cs-n-cn">0</span>
+      </button>
+    </div>
+
+    <div class="page-tabs mt-3 mb-3" role="tablist" aria-label="Thư viện bài đăng">
+      <button role="tab" id="t-doi" aria-controls="p-doi" aria-selected="true">Mẫu chung</button>
+      <button role="tab" id="t-toi" aria-controls="p-toi" aria-selected="false" tabindex="-1">Mẫu của tôi</button>
+      <button role="tab" id="t-gui" aria-controls="p-gui" aria-selected="false" tabindex="-1">Đã gửi</button>
+    </div>
+
     <div class="note note-navy mb-3" data-roles="hcns ktoan">
       Vai trò <strong>HCNS &amp; Kế toán</strong> không tạo bài và không thu hồi đường dẫn gửi khách.
       Anh/chị đang xem nhật ký ở chế độ tham khảo.
     </div>
 
+    <div class="cs-layout">
+    <!-- Cột dự án thay ô "Lọc theo dự án" cũ — cùng một bộ lọc, đổi cách chọn. -->
+    <aside class="cs-side" id="cs-side" aria-label="Lọc theo dự án"></aside>
+    <div class="cs-main">
+
     <div id="tpl-filter-wrap">
       <div class="filterbar" data-filter-sheet>
         <input class="inp" type="search" id="tf-q" placeholder="Tìm tiêu đề hoặc nội dung…" aria-label="Tìm bài đăng">
-        <select class="inp" id="tf-pj" aria-label="Lọc theo dự án"><option value="">Mọi dự án</option></select>
         <select class="inp" id="tf-unit" aria-label="Lọc theo sản phẩm" disabled><option value="">Chọn dự án trước</option></select>
         <select class="inp" id="tf-intent" aria-label="Loại bài">
           <option value="">Mọi loại</option>
@@ -76,7 +93,6 @@
         <p class="micro muted mb-2" id="t-live-sub">&nbsp;</p>
 
         <div class="filterbar mb-3" data-filter-sheet>
-          <select class="inp" id="f-pj" aria-label="Lọc theo dự án"><option value="">Mọi dự án</option></select>
           <select class="inp" id="f-by" aria-label="Lọc theo người tạo"><option value="">Mọi người tạo</option></select>
           <select class="inp" id="f-st" aria-label="Lọc theo trạng thái">
             <option value="">Mọi trạng thái</option>
@@ -100,6 +116,9 @@
 
         <p class="micro muted mt-3">Không nhúng liên kết Google Drive của Chủ đầu tư vào trang gửi khách.</p>
       </div>
+    </div>
+
+    </div>
     </div>
 
   </div>
@@ -163,10 +182,26 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ---------- Mẫu ---------- */
   var openUnit = qs().get('unit') || null;
   var tfQ = document.getElementById('tf-q');
-  var tfPj = document.getElementById('tf-pj');
   var tfUnit = document.getElementById('tf-unit');
   var tfIntent = document.getElementById('tf-intent');
   var tfWrap = document.getElementById('tpl-filter-wrap');
+
+  /* Kênh bán và dự án là hai bộ lọc cấp trên, dùng chung cho cả ba tab thư viện.
+     Bài đăng không mang kênh riêng — kênh của bài là kênh của dự án nó thuộc về. */
+  var curPj = '';
+  function channel() {
+    var on = document.querySelector('#cs-channel [aria-selected="true"]');
+    return (on && on.getAttribute('data-channel') === 'cn') ? 'cn' : 'moi';
+  }
+  function pjChannel(id) {
+    return S.channelOf(S.find('projects', id));
+  }
+  function channelProjects() {
+    return S.get('projects').filter(function (p) { return !p.hidden && pjChannel(p.id) === channel(); });
+  }
+  function inChannel(pjId) {
+    return pjChannel(pjId) === channel();
+  }
 
   function canSendTpl(t) {
     if (!CAN_SEND) return false;
@@ -185,10 +220,29 @@ document.addEventListener('DOMContentLoaded', function () {
     var hot = S.find('hotProducts', t.hotId);
     return hot ? hot.unitId : '';
   }
+  /* Bài chung mang sharePjs (mau.html): rỗng = "Tất cả dự án" (mọi kênh),
+     có danh sách = chỉ những dự án đó (có thể khác kênh với dự án gốc của bài). */
+  function tplSharePjs(t) {
+    return t.scope === 'shared' ? (t.sharePjs || []) : [];
+  }
+  /* Nguồn sự thật duy nhất cho "bài này thuộc (những) kênh nào" — dùng chung cho lọc
+     (matchTpl) và đếm badge (channelCounts) để hai nơi không lệch nhau. */
+  function templateChannels(t) {
+    var share = tplSharePjs(t);
+    if (t.scope === 'shared' && share.length === 0) return ['moi', 'cn'];
+    var chans = [pjChannel(t.projectId)];
+    share.forEach(function (pjId) {
+      var ch = pjChannel(pjId);
+      if (chans.indexOf(ch) < 0) chans.push(ch);
+    });
+    return chans;
+  }
   function matchTpl(t) {
     var q = RECO.norm(tfQ.value || '');
+    var inCh = templateChannels(t).indexOf(channel()) >= 0;
+    if (!inCh) return false;
     if (q && RECO.norm((t.title || '') + ' ' + (t.body || '')).indexOf(q) < 0) return false;
-    if (tfPj.value && t.projectId !== tfPj.value) return false;
+    if (curPj && !S.tplAppliesToPj(t, curPj)) return false;
     if (tfUnit.value && tplUnitId(t) !== tfUnit.value) return false;
     if (tfIntent.value && S.tplIntent(t) !== tfIntent.value) return false;
     return true;
@@ -207,13 +261,22 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     tfUnit.value = units.some(function (u) { return u.id === keep; }) ? keep : '';
   }
+  function paintSide() {
+    var side = document.getElementById('cs-side');
+    var pjs = channelProjects();
+    if (!pjs.some(function (p) { return p.id === curPj; })) curPj = '';
+    side.innerHTML = '<p class="cs-side-h">Dự án</p>' +
+      '<button type="button" class="cs-pj' + (curPj ? '' : ' on') + '" data-pj="" aria-pressed="' +
+        (curPj ? 'false' : 'true') + '">Tất cả dự án</button>' +
+      pjs.map(function (p) {
+        var on = p.id === curPj;
+        return '<button type="button" class="cs-pj' + (on ? ' on' : '') + '" data-pj="' + E(p.id) +
+          '" aria-pressed="' + (on ? 'true' : 'false') + '">' + E(p.name) + '</button>';
+      }).join('');
+  }
   function fillTplFilters() {
-    var pjs = S.get('projects');
-    var keep = tfPj.value;
-    tfPj.innerHTML = '<option value="">Mọi dự án</option>' +
-      pjs.map(function (p) { return '<option value="' + E(p.id) + '">' + E(p.name) + '</option>'; }).join('');
-    tfPj.value = pjs.some(function (p) { return p.id === keep; }) ? keep : '';
-    fillUnitSelect(tfPj.value);
+    paintSide();
+    fillUnitSelect(curPj);
     if (tfIntent && !tfIntent.getAttribute('data-filled')) {
       S.INTENTS.forEach(function (it) {
         tfIntent.appendChild(new Option(it.lab, it.id));
@@ -339,19 +402,52 @@ document.addEventListener('DOMContentLoaded', function () {
   tfQ.addEventListener('input', function () { paintTeam(); paintMine(); });
   tfIntent.addEventListener('change', function () { paintTeam(); paintMine(); });
   tfUnit.addEventListener('change', function () { paintTeam(); paintMine(); });
-  tfPj.addEventListener('change', function () {
-    fillUnitSelect(tfPj.value);
+  document.getElementById('cs-side').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pj]');
+    if (!b) return;
+    curPj = b.getAttribute('data-pj');
+    paintSide();
+    fillUnitSelect(curPj);
     tfUnit.value = '';
-    paintTeam(); paintMine();
+    paintAll();
+  });
+  function paintAll() {
+    paintTeam(); paintMine(); render();
+  }
+  function channelCounts() {
+    var uid = currentUserId();
+    var moi = 0, cn = 0;
+    S.get('shareTemplates').forEach(function (t) {
+      if (t.scope !== 'shared' && t.ownerUserId !== uid) return;
+      /* Bài dùng chung áp cho mọi dự án (sharePjs rỗng) hoặc bắc cầu sang kênh khác thì
+         tính vào cả hai badge — khớp đúng những gì matchTpl() sẽ hiện ở mỗi tab. */
+      templateChannels(t).forEach(function (ch) { if (ch === 'cn') cn++; else moi++; });
+    });
+    document.getElementById('cs-n-moi').textContent = moi;
+    document.getElementById('cs-n-cn').textContent = cn;
+  }
+  var segCh = document.getElementById('cs-channel');
+  segCh.addEventListener('click', function (e) {
+    var t = e.target.closest('[role="tab"]');
+    if (!t) return;
+    setTimeout(function () {
+      /* Dự án đang chọn không còn bài ở kênh mới thì quay về Tất cả dự án. */
+      fillTplFilters();
+      paintAll();
+    }, 0);
+  });
+  segCh.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    setTimeout(function () { fillTplFilters(); paintAll(); }, 0);
   });
   function syncTplFilter() {
-    var on = document.querySelector('[role="tablist"] [aria-selected="true"]');
+    var on = document.querySelector('.page-tabs [aria-selected="true"]');
     var sent = !!(on && on.id === 't-gui');
     if (tfWrap) tfWrap.hidden = sent;
     var view = document.getElementById('tpl-view');
     if (view) view.hidden = sent;
   }
-  var tablist = document.querySelector('[role="tablist"]');
+  var tablist = document.querySelector('.page-tabs');
   tablist.addEventListener('click', function () { setTimeout(syncTplFilter, 0); });
   tablist.addEventListener('keydown', function () { setTimeout(syncTplFilter, 0); });
 
@@ -378,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return { key: 'live', cls: 'st-live', text: 'Còn ' + l.days + ' ngày' };
   }
 
-  var fPj = document.getElementById('f-pj'), fBy = document.getElementById('f-by'),
+  var fBy = document.getElementById('f-by'),
       fSt = document.getElementById('f-st'), fClear = document.getElementById('f-clear'),
       body = document.getElementById('lk-body'), wrap = document.getElementById('lk-wrap'),
       emptyBox = document.getElementById('lk-empty');
@@ -422,16 +518,15 @@ document.addEventListener('DOMContentLoaded', function () {
     return out.join('');
   }
   function render() {
-    var all = S.get('shareLinks');
-    fillSelect(fPj, uniq(all, 'pj'), 'Mọi dự án', function (id) { return S.projectName(id); });
+    var all = S.get('shareLinks').filter(function (l) { return inChannel(l.pj); });
     fillSelect(fBy, uniq(all, 'by'), 'Mọi người tạo');
     var filtered = all.filter(function (l) {
-      if (fPj.value && l.pj !== fPj.value) return false;
+      if (curPj && l.pj !== curPj) return false;
       if (fBy.value && l.by !== fBy.value) return false;
       if (fSt.value && statusOf(l).key !== fSt.value) return false;
       return true;
     });
-    var filtering = !!(fPj.value || fBy.value || fSt.value);
+    var filtering = !!(curPj || fBy.value || fSt.value);
     fClear.hidden = !filtering;
     tiles(all);
     body.innerHTML = filtered.map(function (l) {
@@ -493,11 +588,18 @@ document.addEventListener('DOMContentLoaded', function () {
   emptyBox.addEventListener('click', function (e) {
     var b = e.target.closest('[data-act]');
     if (!b) return;
-    if (b.getAttribute('data-act') === 'clear') { fPj.value = ''; fBy.value = ''; fSt.value = ''; render(); }
+    if (b.getAttribute('data-act') === 'clear') { clearLinkFilters(); }
     else selectTab('t-doi');
   });
-  [fPj, fBy, fSt].forEach(function (s) { s.addEventListener('change', render); });
-  fClear.addEventListener('click', function () { fPj.value = ''; fBy.value = ''; fSt.value = ''; render(); });
+  function clearLinkFilters() {
+    curPj = ''; fBy.value = ''; fSt.value = '';
+    paintSide();
+    fillUnitSelect(curPj);
+    tfUnit.value = '';
+    paintAll();
+  }
+  [fBy, fSt].forEach(function (s) { s.addEventListener('change', render); });
+  fClear.addEventListener('click', clearLinkFilters);
 
   var qs = (function () {
     var h = location.hash, i = h.indexOf('?');
@@ -508,6 +610,8 @@ document.addEventListener('DOMContentLoaded', function () {
   if (qs.get('by') === 'toi') fBy.value = RECO.current.who;
 
   S.on('shareLinks', render);
+  S.on('shareTemplates', channelCounts);
+  channelCounts();
   render();
 });
 </script>
