@@ -22,10 +22,11 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 
-const require = createRequire(import.meta.url);
-const sharp = require('e:/Projects/RECO/reco-main-web/node_modules/sharp');
-
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+
+// sharp is borrowed from the sibling reco-main-web checkout (this repo has no package.json).
+const require = createRequire(import.meta.url);
+const sharp = require(path.join(root, '..', 'reco-main-web', 'node_modules', 'sharp'));
 const OUT = path.join(root, 'assets', 'tiles');
 const UA = 'reco-sales-hub-demo/1.0 (+dungnt1@hasutech.com.vn)';
 const HOSTS = ['a', 'b', 'c'];
