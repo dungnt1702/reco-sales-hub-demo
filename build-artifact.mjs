@@ -11,10 +11,12 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 
-const require = createRequire(import.meta.url);
-const sharp = require('e:/Projects/RECO/reco-main-web/node_modules/sharp');
-
 const root = path.dirname(fileURLToPath(import.meta.url));
+
+// sharp is borrowed from the sibling reco-main-web checkout (this repo has no package.json).
+const require = createRequire(import.meta.url);
+const sharp = require(path.join(root, '..', 'reco-main-web', 'node_modules', 'sharp'));
+
 const A = (...p) => path.join(root, 'assets', ...p);
 
 const args = process.argv.slice(2);
