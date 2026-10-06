@@ -296,13 +296,41 @@
               '<button type="button" class="icon-btn" id="bell" aria-label="Thông báo" aria-expanded="false">' + svg('bell') + '<i class="dot" hidden></i></button>' +
               '<div class="gs-panel gs-right" id="bell-panel" hidden></div>' +
             '</div>' +
-            '<div class="people">' +
-              '<span class="avatar" aria-hidden="true">' + R.short + '</span>' +
-              '<span class="who only-lg"><b>' + R.who + '</b><span>' + R.name + '</span></span>' +
+            /* MH-23 (QD-137, reco-devops#372): nút tài khoản là phần tử cuối thanh, chỉ chữ cái đầu —
+               không in tên lên thanh để giữ chỗ cho menu ở 1024. Dưới 480 bị ẩn (xem reco.css),
+               lối vào nằm ở đầu ngăn kéo. */
+            '<div class="gs acct">' +
+              '<button type="button" class="people acct-btn" id="acct" aria-haspopup="dialog" aria-expanded="false" aria-label="Tài khoản: ' + R.who + '" title="' + R.who + '">' +
+                '<span class="avatar" aria-hidden="true">' + initialsOf(R.who) + '</span>' +
+              '</button>' +
+              '<div class="gs-panel gs-right acct-panel" id="acct-panel" role="dialog" aria-label="Tài khoản" hidden>' +
+                '<div class="acct-head">' +
+                  '<span class="avatar" aria-hidden="true">' + initialsOf(R.who) + '</span>' +
+                  '<span class="who"><b>' + R.who + '</b><span>' + R.name + ' · ' + R.scope + '</span></span>' +
+                '</div>' +
+                acctLinks() +
+              '</div>' +
             '</div>' +
           '</div>' +
         '</div>' +
       '</header>';
+  }
+
+  /* Chữ cái đầu của từ đầu và từ cuối trong họ tên: "Lê Thu Hà" → "LH" (giống bản thật). */
+  function initialsOf(name) {
+    var w = String(name || '').trim().split(/\s+/).filter(Boolean);
+    if (!w.length) return '?';
+    return (w[0].charAt(0) + (w.length > 1 ? w[w.length - 1].charAt(0) : '')).toUpperCase();
+  }
+
+  /* Ba lối của menu tài khoản — dùng chung cho bảng thả xuống và đầu ngăn kéo. */
+  function acctLinks() {
+    return '' +
+      '<nav class="acct-links" aria-label="Tài khoản">' +
+        '<a href="' + link('tai-khoan.html') + '">Tài khoản của tôi</a>' +
+        '<a href="' + link('tai-khoan.html?muc=bao-mat') + '">Đổi mật khẩu</a>' +
+        '<a href="' + link('dang-nhap.html?da=dang-xuat') + '" class="acct-out">Đăng xuất</a>' +
+      '</nav>';
   }
 
   function dockKeysOf() {
@@ -327,9 +355,11 @@
       '<div class="scrim" id="nav-scrim"></div>' +
       '<aside class="drawer" id="nav-drawer" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1">' +
         '<div class="drawer-head">' +
-          '<div class="people"><span class="avatar">' + R.short + '</span><span class="who"><b>' + R.who + '</b><span>' + R.name + '</span></span></div>' +
+          '<div class="people"><span class="avatar">' + initialsOf(R.who) + '</span><span class="who"><b>' + R.who + '</b><span>' + R.name + '</span></span></div>' +
           '<button type="button" class="icon-btn" id="nav-close" aria-label="Đóng menu">' + svg('x') + '</button>' +
         '</div>' +
+        /* MH-23: dưới 480 thanh trên không còn nút tài khoản — đây là lối vào duy nhất. */
+        '<div class="drawer-acct">' + acctLinks() + '</div>' +
         mainNav +
         '<div style="padding:6px 20px 4px" class="micro muted" role="presentation">Khác</div>' +
         '<nav aria-label="Mục khác">' + more + '</nav>' +
@@ -647,10 +677,27 @@
     var openBtn = document.getElementById('gs-open');
     var bell = document.getElementById('bell');
     var bellPanel = document.getElementById('bell-panel');
+    var acct = document.getElementById('acct');
+    var acctPanel = document.getElementById('acct-panel');
 
     function closeAll(except) {
       if (panel && panel !== except) panel.hidden = true;
       if (bellPanel && bellPanel !== except) { bellPanel.hidden = true; if (bell) bell.setAttribute('aria-expanded', 'false'); }
+      if (acctPanel && acctPanel !== except) { acctPanel.hidden = true; if (acct) acct.setAttribute('aria-expanded', 'false'); }
+    }
+
+    /* Menu tài khoản (MH-23): bấm mở/đóng, Escape đóng và trả tiêu điểm về nút (V-11). */
+    if (acct && acctPanel) {
+      acct.addEventListener('click', function () {
+        var open = acctPanel.hidden;
+        closeAll(acctPanel);
+        acctPanel.hidden = !open;
+        acct.setAttribute('aria-expanded', String(open));
+        if (open) { var first = acctPanel.querySelector('a'); if (first) first.focus(); }
+      });
+      acctPanel.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { closeAll(null); acct.focus(); }
+      });
     }
 
     if (input && panel) {

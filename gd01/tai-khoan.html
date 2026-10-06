@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tài khoản của tôi · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  /* MH-23 (QD-137, reco-devops#372): một cột dưới 1024; từ 1024 Hồ sơ và Vai trò cạnh nhau,
+     ba thẻ thao tác trải hết bề ngang bên dưới. */
+  .acct-grid { display: grid; gap: 18px; }
+  @media (min-width: 1024px) { .acct-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .acct-stack { display: grid; gap: 18px; margin-top: 18px; }
+  .acct-card h2 { font-size: 1.05rem; margin: 0 0 12px; color: var(--navy); }
+  .acct-card h3 { font-size: 0.95rem; margin: 0 0 6px; color: var(--navy); }
+  .acct-who { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; min-width: 0; }
+  .acct-who > div { min-width: 0; }
+  .acct-who b { display: block; font-size: 1.05rem; color: var(--navy); }
+  .acct-facts { display: grid; margin: 0; }
+  .acct-facts > div { display: grid; gap: 2px; padding: 9px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+  @media (min-width: 640px) { .acct-facts > div { grid-template-columns: 170px minmax(0, 1fr); gap: 16px; } }
+  .acct-facts dt { font-size: 0.86rem; color: var(--muted); }
+  .acct-facts dd { margin: 0; font-size: 0.92rem; font-weight: 600; overflow-wrap: anywhere; }
+  .acct-roles { list-style: none; margin: 0; padding: 0; }
+  .acct-roles li { display: grid; gap: 2px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .acct-roles li:last-child { border-bottom: 0; }
+  @media (min-width: 640px) { .acct-roles li { grid-template-columns: 210px minmax(0, 1fr); gap: 16px; } }
+  .acct-roles span { color: var(--muted); font-size: 0.9rem; }
+  .pw-grid { display: grid; gap: 0 14px; }
+  @media (min-width: 768px) { .pw-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .acct-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .acct-sep { border: 0; border-top: 1px solid var(--line); margin: 18px 0; }
+  .agent-preview { max-width: 340px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--paper); padding: 12px 14px; margin: 10px 0 14px; }
+  #bao-mat { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 12px); }
+</style>
+</head>
+<body data-shell="app" data-page="tai-khoan">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="page-head">
+      <h1>Tài khoản của tôi</h1>
+    </div>
+
+    <div class="acct-grid">
+      <section class="card card-pad acct-card" aria-labelledby="ho-so">
+        <div class="acct-who">
+          <span class="avatar lg" id="a-avatar" aria-hidden="true">?</span>
+          <div>
+            <b id="ho-so">—</b>
+            <span class="muted small" id="a-role">—</span>
+          </div>
+        </div>
+        <dl class="acct-facts">
+          <div><dt>Mã nhân viên</dt><dd>RC0123</dd></div>
+          <div><dt>Chức danh</dt><dd id="a-position">—</dd></div>
+          <div><dt>Phòng ban</dt><dd id="a-scope">—</dd></div>
+          <div><dt>Số điện thoại</dt><dd>0912 345 678</dd></div>
+          <div><dt>Email</dt><dd>nhanvien@nhaongayreco.vn</dd></div>
+          <div><dt>Đăng nhập bằng</dt><dd>Mật khẩu Sales Hub</dd></div>
+          <div><dt>Trạng thái</dt><dd>Đang hoạt động</dd></div>
+        </dl>
+        <p class="muted small" style="margin:12px 0 0">Thông tin do Hành chính nhân sự quản lý (đồng bộ RecoHR). Thấy sai, anh/chị liên hệ Hành chính nhân sự.</p>
+        <div class="acct-row" style="margin-top:12px">
+          <button type="button" class="btn btn-outline" id="a-photo">Đổi ảnh</button>
+          <span class="micro muted">JPEG, PNG hoặc WebP, tối đa 5 MB</span>
+        </div>
+      </section>
+
+      <section class="card card-pad acct-card" aria-labelledby="vai-tro">
+        <h2 id="vai-tro">Vai trò và phạm vi</h2>
+        <ul class="acct-roles" id="a-roles"></ul>
+        <p class="muted small" style="margin:12px 0 0">Cần thêm quyền hoặc phạm vi, anh/chị liên hệ Hành chính nhân sự.</p>
+      </section>
+    </div>
+
+    <div class="acct-stack">
+      <section class="card card-pad acct-card" id="bao-mat" aria-labelledby="bao-mat-t">
+        <h2 id="bao-mat-t">Bảo mật</h2>
+        <h3>Đổi mật khẩu</h3>
+        <p class="muted small">Mật khẩu từ 12 đến 128 ký tự, không dùng mật khẩu quá phổ biến, không chứa tên, số điện thoại hay email của anh/chị. Đổi xong, mọi thiết bị bị đăng xuất và anh/chị đăng nhập lại bằng mật khẩu mới.</p>
+        <form id="pw-form" novalidate>
+          <div class="pw-grid">
+            <label class="field"><span class="lab">Mật khẩu hiện tại</span>
+              <input class="inp" type="password" id="pw-cur" autocomplete="current-password"
+                     data-required data-msg="Vui lòng nhập mật khẩu hiện tại."></label>
+            <label class="field"><span class="lab">Mật khẩu mới</span>
+              <input class="inp" type="password" id="pw-new" autocomplete="new-password"
+                     data-required data-pattern="^.{12,128}$" data-msg="Mật khẩu phải có từ 12 đến 128 ký tự."></label>
+            <label class="field"><span class="lab">Nhập lại mật khẩu mới</span>
+              <input class="inp" type="password" id="pw-again" autocomplete="new-password"
+                     data-required data-msg="Vui lòng nhập lại mật khẩu."></label>
+          </div>
+          <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+        </form>
+
+        <hr class="acct-sep">
+        <h3>Phiên đăng nhập</h3>
+        <p class="muted small">Quên đăng xuất trên máy khác, hoặc mất điện thoại: dùng <b>Đăng xuất mọi thiết bị</b>.</p>
+        <div class="acct-row">
+          <a class="btn btn-outline" id="out-this" href="dang-nhap.html?da=dang-xuat">Đăng xuất</a>
+          <button type="button" class="btn btn-outline" id="out-all">Đăng xuất mọi thiết bị</button>
+        </div>
+      </section>
+
+      <section class="card card-pad acct-card" aria-labelledby="trang-khach" data-roles="gd gddu tkkd qlkd nvbh mkt">
+        <h2 id="trang-khach">Hiển thị trên trang gửi khách</h2>
+        <div id="consent-on">
+          <p class="small" style="margin:0">Anh/chị đã đồng ý hiện họ tên và số điện thoại trên trang gửi khách từ ngày <b>01/10/2026</b> (văn bản v1). Đang có <b>3</b> liên kết còn hiệu lực.</p>
+          <div class="agent-preview">
+            <span class="micro muted" style="text-transform:uppercase;letter-spacing:.06em">Khách thấy</span>
+            <b style="display:block" id="a-preview">—</b>
+            <span class="small">0912 345 678</span>
+          </div>
+          <div class="acct-row">
+            <button type="button" class="btn btn-outline" id="refresh">Làm mới hồ sơ trên liên kết</button>
+            <button type="button" class="btn btn-outline" id="consent-off">Ngừng hiển thị</button>
+          </div>
+        </div>
+        <p class="small muted" id="consent-none" hidden style="margin:0">Đã ngừng hiển thị. Chưa đồng ý hiển thị — khách không thấy họ tên và số điện thoại của anh/chị. Hệ thống hỏi lại khi anh/chị tạo liên kết gửi khách.</p>
+      </section>
+
+      <section class="card card-pad acct-card" aria-labelledby="thiet-bi">
+        <h2 id="thiet-bi">Thiết bị này</h2>
+        <p class="muted small">Ô tìm kiếm nhớ tám màn anh/chị vừa xem, lưu trên trình duyệt này.</p>
+        <button type="button" class="btn btn-outline" id="recent-clear">Xoá danh sách Gần đây</button>
+      </section>
+    </div>
+
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (!window.RECO || RECO.embedded) return;
+  var R = RECO.current;
+  function initials(n) {
+    var w = String(n || '').trim().split(/\s+/).filter(Boolean);
+    return w.length ? (w[0].charAt(0) + (w.length > 1 ? w[w.length - 1].charAt(0) : '')).toUpperCase() : '?';
+  }
+  function txt(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+
+  txt('a-avatar', initials(R.who));
+  txt('ho-so', R.who);
+  txt('a-role', R.name);
+  txt('a-position', R.name);
+  txt('a-scope', R.scope);
+  txt('a-preview', R.who);
+
+  var li = document.createElement('li');
+  li.innerHTML = '<b></b><span></span>';
+  li.querySelector('b').textContent = R.name;
+  li.querySelector('span').textContent = R.scope;
+  document.getElementById('a-roles').appendChild(li);
+
+  if (RECO.param('muc') === 'bao-mat') {
+    document.getElementById('bao-mat').scrollIntoView();
+    document.getElementById('pw-cur').focus();
+  }
+
+  document.getElementById('pw-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!RECO.validate(this)) return;
+    var a = document.getElementById('pw-new'), b = document.getElementById('pw-again');
+    if (a.value !== b.value) { RECO.fieldError(b, 'Hai mật khẩu chưa khớp.'); b.focus(); return; }
+    location.href = RECO.link('dang-nhap.html?da=doi-mat-khau');
+  });
+
+  document.getElementById('out-all').addEventListener('click', function () {
+    RECO.confirm({
+      eyebrow: 'Phiên đăng nhập',
+      title: 'Đăng xuất mọi thiết bị?',
+      body: '<p class="small muted">Mọi máy tính và điện thoại đang đăng nhập tài khoản này, kể cả thiết bị đang dùng, sẽ phải đăng nhập lại.</p>',
+      okText: 'Đăng xuất mọi thiết bị',
+      danger: true,
+      onOk: function () { location.href = RECO.link('dang-nhap.html?da=dang-xuat-moi-noi'); }
+    });
+  });
+
+  document.getElementById('refresh').addEventListener('click', function () {
+    RECO.toast('Đã làm mới hồ sơ trên 3 liên kết.');
+  });
+  document.getElementById('consent-off').addEventListener('click', function () {
+    RECO.confirm({
+      eyebrow: 'Trang gửi khách',
+      title: 'Ngừng hiện thông tin trên trang gửi khách?',
+      body: '<p class="small muted">Khối thông tin người gửi biến mất ngay trên 3 liên kết đang hiệu lực; khách không còn thấy họ tên và số điện thoại của anh/chị. Liên kết vẫn mở được.</p>',
+      okText: 'Ngừng hiển thị',
+      danger: true,
+      onOk: function () {
+        document.getElementById('consent-on').hidden = true;
+        document.getElementById('consent-none').hidden = false;
+      }
+    });
+  });
+
+  document.getElementById('a-photo').addEventListener('click', function () {
+    RECO.toast('Bản mô phỏng: chọn ảnh JPEG, PNG hoặc WebP — ảnh được cắt vuông 256 px.');
+  });
+  document.getElementById('recent-clear').addEventListener('click', function () {
+    RECO.toast('Đã xoá danh sách Gần đây.');
+  });
+});
+</script>
+</body>
+</html>
