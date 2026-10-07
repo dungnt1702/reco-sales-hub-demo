@@ -458,7 +458,7 @@ body:not(.proto-off) .topbar { top: var(--proto-h); }
 .avatar.sm { width: 30px; height: 30px; font-size: 0.7rem; }
 .avatar.lg { width: 56px; height: 56px; font-size: 1.05rem; }
 
-/* MH-23 — menu tài khoản ở cuối thanh trên (QD-138). Nút mang class .people nên tự ẩn dưới 480
+/* MH-23 — menu tài khoản ở cuối thanh trên (QD-140). Nút mang class .people nên tự ẩn dưới 480
    theo luật của .topbar-end; lối vào khi đó là .drawer-acct ở đầu ngăn kéo. */
 .acct-btn { padding: 0; border: 0; background: transparent; border-radius: 50%; cursor: pointer; }
 .acct-btn:hover .avatar { box-shadow: 0 0 0 3px color-mix(in srgb, var(--navy) 18%, transparent); }

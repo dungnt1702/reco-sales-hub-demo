@@ -296,7 +296,7 @@
               '<button type="button" class="icon-btn" id="bell" aria-label="Thông báo" aria-expanded="false">' + svg('bell') + '<i class="dot" hidden></i></button>' +
               '<div class="gs-panel gs-right" id="bell-panel" hidden></div>' +
             '</div>' +
-            /* MH-23 (QD-138, reco-devops#372): nút tài khoản là phần tử cuối thanh, chỉ chữ cái đầu —
+            /* MH-23 (QD-140, reco-devops#372): nút tài khoản là phần tử cuối thanh, chỉ chữ cái đầu —
                không in tên lên thanh để giữ chỗ cho menu ở 1024. Dưới 480 bị ẩn (xem reco.css),
                lối vào nằm ở đầu ngăn kéo. */
             '<div class="gs acct">' +
