@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chọn người dùng và kiêm nhiệm · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css">
+<script defer src="../assets/reco.js"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<script defer src="../assets/pick-people.js"></script>
+<style>
+  /* QD-141 (reco-devops#393): mô phỏng mọi chỗ gán người vào vị trí dùng chung một hộp chọn. */
+  .cn-grid { display: grid; gap: 18px; }
+  @media (min-width: 1024px) { .cn-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .cn-card h2 { font-size: 1.05rem; margin: 0 0 4px; color: var(--navy); }
+  .cn-card h3 { font-size: 0.92rem; margin: 16px 0 8px; color: var(--navy); }
+  .cn-card .sub { margin: 0 0 6px; }
+  .cn-actions { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .cn-role { display: grid; gap: 8px; }
+  @media (min-width: 640px) { .cn-role { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .cn-role .inp { min-width: 0; }
+</style>
+</head>
+<body data-shell="app" data-page="quan-tri">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="page-head">
+      <span class="eyebrow">QD-141 · bản mô phỏng</span>
+      <h1>Chọn người dùng và kiêm nhiệm</h1>
+      <p class="muted">Mọi chỗ gán một người vào một vị trí dùng cùng một hộp chọn: tìm theo tên hoặc mã nhân viên, lọc theo khối, phòng, chức danh; mỗi người hiện chức danh, phòng, mã nhân viên và các vị trí đang giữ. Đang giữ vị trí khác không chặn chọn.</p>
+    </div>
+
+    <div class="cn-grid">
+      <section class="card card-pad cn-card" aria-labelledby="t-khoi">
+        <span class="eyebrow">Quản trị · tab Khối KD</span>
+        <h2 id="t-khoi">Khối Dự án Hà Nội</h2>
+        <h3>Quản lý khối</h3>
+        <ul class="pos-list" id="l-block"></ul>
+        <div class="cn-actions"><button type="button" class="btn btn-outline btn-sm" id="b-block">+ Gán Quản lý khối</button></div>
+
+        <h3>Phòng KD 3 — Trưởng phòng KD</h3>
+        <ul class="pos-list" id="l-head"></ul>
+        <div class="cn-actions"><button type="button" class="btn btn-outline btn-sm" id="b-head">+ Gán Trưởng phòng KD</button></div>
+        <p class="micro muted" style="margin:8px 0 0">Người không thuộc Phòng KD 3 được gán sẽ thành thành viên kiêm nhiệm của phòng.</p>
+      </section>
+
+      <section class="card card-pad cn-card" aria-labelledby="t-du-an">
+        <span class="eyebrow">MH-04 · Chi tiết dự án</span>
+        <h2 id="t-du-an">Celestine</h2>
+        <h3>Giám đốc dự án</h3>
+        <ul class="pos-list" id="l-dir"></ul>
+        <div class="cn-actions"><button type="button" class="btn btn-outline btn-sm" id="b-dir">+ Gán Giám đốc dự án</button></div>
+
+        <h3>Giao dự án — cá nhân</h3>
+        <p class="micro muted sub">Đang xem bằng vai Trưởng phòng KD 3: chỉ thấy thành viên phòng mình, kể cả thành viên kiêm nhiệm.</p>
+        <ul class="pos-list" id="l-assign"></ul>
+        <div class="cn-actions"><button type="button" class="btn btn-outline btn-sm" id="b-assign">+ Giao cho người</button></div>
+      </section>
+
+      <section class="card card-pad cn-card" aria-labelledby="t-lien-ket">
+        <span class="eyebrow">Bài đăng · liên kết cần bàn giao</span>
+        <h2 id="t-lien-ket">Liên kết gửi khách — Celestine căn A-1208</h2>
+        <h3>Người đứng tên</h3>
+        <ul class="pos-list" id="l-owner"></ul>
+        <div class="cn-actions"><button type="button" class="btn btn-outline btn-sm" id="b-owner">Gán lại</button></div>
+        <p class="micro muted" style="margin:8px 0 0">Chọn một người. Người chưa đồng ý hiện hồ sơ trên trang khách hiện mờ kèm lý do.</p>
+      </section>
+
+      <section class="card card-pad cn-card" aria-labelledby="t-mh10">
+        <span class="eyebrow">MH-10 · Người dùng</span>
+        <h2 id="t-mh10">Ngô Thanh Bình</h2>
+        <p class="muted small sub">Chuyên viên kinh doanh · RC00211 · <strong>Phòng KD 7 · kiêm Phòng KD 3</strong></p>
+        <h3>Vai trò</h3>
+        <ul class="pos-list">
+          <li><span>Nhân viên kinh doanh · Phòng KD 7</span><span class="pos-src">Theo chức danh</span></li>
+          <li><span>Nhân viên kinh doanh · Phòng KD 3 (kiêm nhiệm)</span><span class="pos-src">Đã chọn tay</span></li>
+        </ul>
+        <h3>Thêm vai trò</h3>
+        <div class="cn-role">
+          <select class="inp" aria-label="Vai trò"><option>Trưởng phòng kinh doanh</option><option>Nhân viên kinh doanh</option><option>Thư ký kinh doanh</option></select>
+          <select class="inp" aria-label="Loại phạm vi"><option>Phòng</option></select>
+          <select class="inp" aria-label="Phòng">
+            <option>Phòng KD 7 — Phòng chính</option>
+            <option>Phòng KD 1 — kiêm nhiệm</option>
+            <option>Phòng KD 3 — kiêm nhiệm</option>
+            <option>Phòng KD 5 — kiêm nhiệm</option>
+            <option>Phòng KD 9 — kiêm nhiệm</option>
+          </select>
+        </div>
+        <p class="micro muted" style="margin:8px 0 0">Vai trò theo phòng chọn được ở mọi phòng KD. Thêm vai trò kiêm nhiệm không làm vai trò theo chức danh ngừng cập nhật theo RecoHR.</p>
+      </section>
+    </div>
+
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var P = {};
+  RECO.PICK_PEOPLE.forEach(function (p) { P[p.id] = p; });
+
+  /* Mỗi vị trí: người đang giữ (id + nguồn + gỡ được không) */
+  var slots = {
+    block: [{ id: 'p04', src: 'Gán ở Sales Hub', removable: true }],
+    head: [{ id: 'p05', src: 'Theo RecoHR', removable: false }],
+    dir: [{ id: 'p04', src: 'Theo khối Dự án Hà Nội — chỉ xem', removable: false }],
+    assign: [{ id: 'p06', src: 'Giao cá nhân', removable: true }],
+    owner: [{ id: 'p06', src: 'Đang đứng tên', removable: false }]
+  };
+
+  function render(key) {
+    var ul = document.getElementById('l-' + key);
+    ul.textContent = '';
+    if (!slots[key].length) {
+      var none = document.createElement('li');
+      none.className = 'muted small';
+      none.textContent = 'Chưa có ai.';
+      ul.appendChild(none);
+      return;
+    }
+    slots[key].forEach(function (s, i) {
+      var li = document.createElement('li');
+      var who = document.createElement('span');
+      who.textContent = RECO.describePerson(P[s.id]);
+      var src = document.createElement('span');
+      src.className = 'pos-src';
+      src.textContent = s.src;
+      li.appendChild(who);
+      li.appendChild(src);
+      if (s.removable) {
+        var rm = document.createElement('button');
+        rm.type = 'button';
+        rm.className = 'btn btn-outline btn-sm';
+        rm.textContent = 'Gỡ';
+        rm.addEventListener('click', function () {
+          slots[key].splice(i, 1);
+          render(key);
+          RECO.toast('Đã gỡ ' + P[s.id].name + '.');
+        });
+        li.appendChild(rm);
+      }
+      ul.appendChild(li);
+    });
+  }
+  Object.keys(slots).forEach(render);
+
+  function ids(key) { return slots[key].map(function (s) { return s.id; }); }
+  function add(key, people, src) {
+    people.forEach(function (p) { slots[key].push({ id: p.id, src: src, removable: true }); });
+    render(key);
+    RECO.toast('Đã gán ' + people.map(function (p) { return p.name; }).join(', ') + '.');
+  }
+  var gan = function (n) { return n > 0 ? 'Gán ' + n + ' người' : 'Chọn người để gán'; };
+
+  document.getElementById('b-block').addEventListener('click', function () {
+    RECO.pickPeople({ title: 'Gán Quản lý khối — Dự án Hà Nội', mode: 'multi', confirm: gan,
+      assigned: ids('block'), onConfirm: function (ps) { add('block', ps, 'Gán ở Sales Hub'); } });
+  });
+  document.getElementById('b-head').addEventListener('click', function () {
+    RECO.pickPeople({ title: 'Gán Trưởng phòng KD — Phòng KD 3', mode: 'multi', confirm: gan,
+      assigned: ids('head'), onConfirm: function (ps) { add('head', ps, 'Gán ở Sales Hub'); } });
+  });
+  document.getElementById('b-dir').addEventListener('click', function () {
+    RECO.pickPeople({ title: 'Gán Giám đốc dự án — Celestine', mode: 'multi', confirm: gan,
+      assigned: [], onConfirm: function (ps) { add('dir', ps, 'Giám đốc của dự án'); } });
+  });
+  document.getElementById('b-assign').addEventListener('click', function () {
+    RECO.pickPeople({ title: 'Giao Celestine cho người', mode: 'multi', only: ['Phòng KD 3'],
+      confirm: function (n) { return n > 0 ? 'Giao cho ' + n + ' người' : 'Chọn người để giao'; },
+      assigned: ids('assign'), onConfirm: function (ps) { add('assign', ps, 'Giao cá nhân'); } });
+  });
+  document.getElementById('b-owner').addEventListener('click', function () {
+    RECO.pickPeople({ title: 'Gán lại liên kết', mode: 'single',
+      confirm: function (n) { return n > 0 ? 'Gán lại cho người này' : 'Chọn người nhận'; },
+      assigned: ids('owner'),
+      blocked: { p07: 'Chưa đồng ý hiện hồ sơ trên trang khách', p13: 'Chưa đồng ý hiện hồ sơ trên trang khách' },
+      onConfirm: function (ps) {
+        slots.owner = [{ id: ps[0].id, src: 'Đang đứng tên', removable: false }];
+        render('owner');
+        RECO.toast('Liên kết đã chuyển sang ' + ps[0].name + '.');
+      } });
+  });
+
+  /* ?mo=block|head|dir|assign|owner mở sẵn hộp chọn — để gửi PO đường dẫn xem thẳng */
+  var mo = new URLSearchParams(location.search).get('mo');
+  var opener = mo && document.getElementById('b-' + mo);
+  if (opener) opener.click();
+});
+</script>
+</body>
+</html>
