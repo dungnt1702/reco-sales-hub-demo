@@ -11,7 +11,7 @@
 <script defer src="store.js"></script>
 <script defer src="../assets/data.js"></script>
 <style>
-  /* MH-23 (QD-137, reco-devops#372): một cột dưới 1024; từ 1024 Hồ sơ và Vai trò cạnh nhau,
+  /* MH-23 (QD-138, reco-devops#372): một cột dưới 1024; từ 1024 Hồ sơ và Vai trò cạnh nhau,
      ba thẻ thao tác trải hết bề ngang bên dưới. */
   .acct-grid { display: grid; gap: 18px; }
   @media (min-width: 1024px) { .acct-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var R = RECO.current;
   function initials(n) {
     var w = String(n || '').trim().split(/\s+/).filter(Boolean);
-    return w.length ? (w[0].charAt(0) + (w.length > 1 ? w[w.length - 1].charAt(0) : '')).toUpperCase() : '?';
+    return w.length ? w.slice(-2).map(function (x) { return x.charAt(0); }).join('').toUpperCase() : '?';
   }
   function txt(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
 

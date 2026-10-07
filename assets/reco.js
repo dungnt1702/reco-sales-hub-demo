@@ -296,7 +296,7 @@
               '<button type="button" class="icon-btn" id="bell" aria-label="Thông báo" aria-expanded="false">' + svg('bell') + '<i class="dot" hidden></i></button>' +
               '<div class="gs-panel gs-right" id="bell-panel" hidden></div>' +
             '</div>' +
-            /* MH-23 (QD-137, reco-devops#372): nút tài khoản là phần tử cuối thanh, chỉ chữ cái đầu —
+            /* MH-23 (QD-138, reco-devops#372): nút tài khoản là phần tử cuối thanh, chỉ chữ cái đầu —
                không in tên lên thanh để giữ chỗ cho menu ở 1024. Dưới 480 bị ẩn (xem reco.css),
                lối vào nằm ở đầu ngăn kéo. */
             '<div class="gs acct">' +
@@ -316,11 +316,11 @@
       '</header>';
   }
 
-  /* Chữ cái đầu của từ đầu và từ cuối trong họ tên: "Lê Thu Hà" → "LH" (giống bản thật). */
+  /* Chữ cái đầu của hai từ cuối trong họ tên: "Lê Thu Hà" → "TH" (giống bản thật và trang khách). */
   function initialsOf(name) {
     var w = String(name || '').trim().split(/\s+/).filter(Boolean);
     if (!w.length) return '?';
-    return (w[0].charAt(0) + (w.length > 1 ? w[w.length - 1].charAt(0) : '')).toUpperCase();
+    return w.slice(-2).map(function (x) { return x.charAt(0); }).join('').toUpperCase();
   }
 
   /* Ba lối của menu tài khoản — dùng chung cho bảng thả xuống và đầu ngăn kéo. */
