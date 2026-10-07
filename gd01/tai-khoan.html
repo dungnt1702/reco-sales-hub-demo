@@ -69,7 +69,7 @@
         <p class="muted small" style="margin:12px 0 0">Thông tin do Hành chính nhân sự quản lý (đồng bộ RecoHR). Thấy sai, anh/chị liên hệ Hành chính nhân sự.</p>
         <div class="acct-row" style="margin-top:12px">
           <button type="button" class="btn btn-outline" id="a-photo">Đổi ảnh</button>
-          <span class="micro muted">JPEG hoặc PNG, tối đa 5 MB</span>
+          <span class="micro muted">Ảnh bất kỳ từ máy hoặc điện thoại</span>
         </div>
       </section>
 
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('a-photo').addEventListener('click', function () {
-    RECO.toast('Bản mô phỏng: chọn ảnh JPEG hoặc PNG — ảnh được cắt vuông 256 px.');
+    RECO.toast('Bản mô phỏng: ảnh bất kỳ, trình duyệt tự xoay và thu nhỏ trước khi gửi — ảnh được cắt vuông 256 px.');
   });
   document.getElementById('recent-clear').addEventListener('click', function () {
     RECO.toast('Đã xoá danh sách Gần đây.');
