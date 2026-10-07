@@ -390,7 +390,8 @@ body:not(.proto-off) .topbar { top: var(--proto-h); }
 }
 .nav { display: none; gap: 2px; margin-left: 6px; min-width: 0; flex: 1 1 auto; overflow-x: auto; scrollbar-width: none; }
 .nav::-webkit-scrollbar { display: none; }
-@media (min-width: 768px) { .nav { display: flex; } }
+/* Menu ngang từ 1024 như sản phẩm (spec-00, #260); dưới 1024 danh sách màn nằm trong ngăn kéo. */
+@media (min-width: 1024px) { .nav { display: flex; } }
 .nav a {
   padding: 8px 9px; border-radius: var(--radius-md);
   font-size: 0.84rem; font-weight: 600; color: var(--ink);
@@ -442,10 +443,11 @@ body:not(.proto-off) .topbar { top: var(--proto-h); }
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--orange-button); border: 1.5px solid var(--white);
 }
+/* QD-137: dưới 1024, cầm dọc thì Thêm của dock mở ngăn kéo (☰ ẩn); xoay ngang thì ☰ mở ngăn kéo. */
 .burger { display: none; }
-@media (max-width: 767px) { .burger { display: inline-flex; } }
+@media (max-width: 1023.98px) and (orientation: landscape) { .burger { display: inline-flex; } }
 .nav-more-top { display: none; }
-@media (min-width: 768px) { .nav-more-top { display: inline-flex; } }
+@media (min-width: 1024px) { .nav-more-top { display: inline-flex; } }
 
 .avatar {
   width: 38px; height: 38px; flex: none; border-radius: 50%;
@@ -515,7 +517,8 @@ body:not(.proto-off) .topbar { top: var(--proto-h); }
 .drawer-local { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 4px; }
 .drawer-local-h { padding: 6px 20px 4px; }
 
-/* Dock đáy (mobile) */
+/* Dock đáy — QD-137 (reco-devops#363): màn đứng dọc và hẹp hơn 1024 (điện thoại, máy tính bảng
+   cầm dọc). Xoay ngang hoặc từ 1024 thì không có. Mục đã nằm trên dock không lặp trong ngăn kéo. */
 .dock {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 39;
   background: color-mix(in srgb, var(--paper) 96%, transparent);
@@ -524,8 +527,8 @@ body:not(.proto-off) .topbar { top: var(--proto-h); }
   display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   padding-bottom: env(safe-area-inset-bottom);
 }
-@media (min-width: 768px) { .dock { display: none; } }
-@media (max-width: 767px) and (orientation: landscape) { .dock { display: none; } }
+@media (min-width: 1024px), (orientation: landscape) { .dock { display: none; } }
+@media (max-width: 1023.98px) and (orientation: portrait) { .drawer .in-dock { display: none; } }
 body.device-mobile .dock { position: sticky; }
 .dock a {
   display: flex; flex-direction: column; align-items: center; gap: 3px;
@@ -2596,5 +2599,5 @@ body[data-home-role="mkt"] .home-stack > #sec-posts { order: 15; }
    đâu — bảng nhịp phải đủ cặp trên/dưới, thiếu một nửa là mời lỗi lặng. */
 .mb-4 { margin-bottom: 34px; }
 .pad-b { padding-bottom: 84px; }
-@media (min-width: 768px) { .pad-b { padding-bottom: 0; } }
-@media (max-width: 767px) and (orientation: landscape) { .pad-b { padding-bottom: 24px; } }
+@media (max-width: 1023.98px) and (orientation: landscape) { .pad-b { padding-bottom: 24px; } }
+@media (min-width: 1024px) { .pad-b { padding-bottom: 0; } }

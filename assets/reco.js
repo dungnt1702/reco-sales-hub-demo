@@ -339,11 +339,14 @@
     return pool.slice(0, 4).map(function (n) { return n.key; });
   }
 
+  /* QD-137: ngăn kéo có ĐỦ mục; mục đã nằm trên dock mang `in-dock` và chỉ ẩn khi dock đang hiện
+     (màn dọc < 1024, reco.css). Xoay ngang thì không có dock, ☰ mở ngăn kéo thấy đủ mục. */
   function buildDrawer(active) {
-    var skip = {};
-    dockKeysOf().forEach(function (k) { skip[k] = true; });
-    var main = NAV.filter(allowed).filter(function (n) { return !skip[n.key]; }).map(function (n) {
-      return '<a href="' + link(n.href) + '"' + (n.key === active ? ' aria-current="page"' : '') + '>' + n.label + '</a>';
+    var onDock = {};
+    dockKeysOf().forEach(function (k) { onDock[k] = true; });
+    var main = NAV.filter(allowed).map(function (n) {
+      return '<a href="' + link(n.href) + '"' + (onDock[n.key] ? ' class="in-dock"' : '') +
+        (n.key === active ? ' aria-current="page"' : '') + '>' + n.label + '</a>';
     }).join('');
     var more = MORE.filter(allowed).map(function (n) {
       return '<a href="' + link(n.href) + '"' + (n.key && n.key === active ? ' aria-current="page"' : '') + '>' + n.label + '</a>';

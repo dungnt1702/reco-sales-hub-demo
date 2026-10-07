@@ -204,12 +204,17 @@ var CASES = [
      var hrefs = Array.prototype.map.call(dock.querySelectorAll('a[href]'), function (a) { return a.getAttribute('href') || ''; }).join(' ');
      return dock.querySelectorAll('a').length === 5 && /chia-se/.test(hrefs) && !/cay-thu-muc/.test(hrefs);
    }, true],
-  ['trang-dau', 'nvbh', 'Drawer không lặp 4 mục bottom nav',
+  ['trang-dau', 'nvbh', 'Drawer có đủ mục; 4 mục bottom nav mang in-dock (ẩn khi dock hiện, QD-137)',
    function (d) {
      var nav = d.querySelector('#nav-drawer nav[aria-label="Điều hướng"]');
-     var html = nav ? nav.innerHTML : '';
-     return !/trang-dau\.html/.test(html) && !/href="[^"]*du-an\.html/.test(html) &&
-       !/danh-muc-san-pham/.test(html) && !/chia-se\.html/.test(html);
+     if (!nav) return false;
+     var docked = Array.prototype.map.call(nav.querySelectorAll('a.in-dock'), function (a) {
+       return a.getAttribute('href') || '';
+     }).join(' ');
+     var free = nav.querySelectorAll('a:not(.in-dock)').length;
+     return nav.querySelectorAll('a.in-dock').length === 4 && /trang-dau\.html/.test(docked) &&
+       /du-an\.html/.test(docked) && /danh-muc-san-pham/.test(docked) && /chia-se\.html/.test(docked) &&
+       free > 0;
    }, true],
   ['trang-dau', 'nvbh', 'NAV nvbh không có Tính năng & báo giá',
    function (d) { return d.querySelector('.nav a[href*="tinh-nang"]') === null; }, true],
