@@ -203,7 +203,6 @@
     { href: 'danh-muc-san-pham.html', label: 'Sản phẩm', key: 'san-pham', icon: 'grid' },
     { href: 'cay-thu-muc.html', label: 'Tài liệu', key: 'tai-lieu', icon: 'folder' },
     { href: 'chia-se.html', label: 'Bài đăng', key: 'chia-se', icon: 'share' },
-    { href: 'qa-goi-y.html', label: 'Gợi ý khai thác khách', key: 'qa-goi-y', icon: 'info' },
     { href: 'quan-tri.html', label: 'Quản trị', key: 'quan-tri', icon: 'shield', roles: 'gd gddu tkkd mkt hcns ktoan' },
     /* Ba hub Báo giá / Vận hành / Bản đồ. Dock không lấy mục này (chỉ 4 key đầu). */
     { href: 'tinh-nang-gd1.html', label: 'Phạm vi & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
@@ -220,6 +219,9 @@
     { href: 'tinh-nang-gd1.html', label: 'Tính năng & báo giá', key: 'tinh-nang', icon: 'sheet', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' }
   ];
   var MORE = inGd01() ? [
+    /* MH-19 (QD-117 BS2-08, reco-devops#110): menu chính giữ tối đa sáu mục (spec-00), nên
+       Gợi ý khai thác khách nằm ở "Thêm" — mọi vai nội bộ thấy, Khách hàng không. */
+    { href: 'qa-goi-y.html', label: 'Gợi ý khai thác khách', key: 'qa-goi-y', roles: 'gd gddu tkkd qlkd nvbh hcns ktoan mkt' },
     { href: 'de-nghi-sua.html', label: 'Đề nghị sửa nội dung' },
     { href: 'nguoi-dung.html', label: 'Người dùng và quyền', roles: 'gd hcns' },
     { href: '../index.html', label: 'Cổng Giai đoạn 1 / 2' }
