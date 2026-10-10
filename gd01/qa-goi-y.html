@@ -27,6 +27,16 @@
   .topic-add { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
   .topic-add .inp { flex: 1 1 200px; }
   .qa-sk { height: 132px; border-radius: var(--radius-lg); margin-bottom: 12px; }
+  /* reco-devops#414 — sửa tại chỗ, theo chế độ sửa của MH-04 (QD-138): bút 44px cạnh từng phần. */
+  .qa-part { display: flex; align-items: flex-start; gap: 8px; margin: 6px 0; }
+  .qa-part > .qa-val { flex: 1 1 auto; min-width: 0; }
+  .qa-pen { flex: none; display: inline-grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--white); color: var(--navy-2); cursor: pointer; }
+  .qa-pen:hover, .qa-pen:focus-visible { border-color: var(--orange); color: var(--orange-text); }
+  .qa-pen svg { width: 18px; height: 18px; }
+  .qa-editor { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .qa-editor .row { gap: 8px; }
+  .qa-editbar { border-left: 3px solid var(--navy); background: var(--soft); padding: 8px 12px; margin: 0 0 12px; }
+  .qa-conflict { border-left: 3px solid var(--danger); background: color-mix(in srgb, var(--danger) 6%, var(--white)); padding: 6px 10px; }
 </style>
 </head>
 <body data-shell="app" data-page="qa-goi-y">
@@ -38,6 +48,7 @@
       <h1>Gợi ý khai thác khách</h1>
       <div class="page-head-end">
         <!-- Chỉ người giữ quyền discovery.manage: TGĐ, GĐDA, TKKD, Marketing -->
+        <button type="button" class="btn btn-outline" id="qa-inline" data-roles="gd gddu tkkd mkt" aria-pressed="false">✎ Sửa tại chỗ</button>
         <button type="button" class="btn btn-outline" id="qa-topics" data-roles="gd gddu tkkd mkt">Chủ đề</button>
         <button type="button" class="btn btn-primary" id="qa-new" data-roles="gd gddu tkkd mkt">+ Thêm câu hỏi</button>
       </div>
@@ -47,6 +58,8 @@
       Ngân hàng câu hỏi và câu trả lời mẫu do đội nội dung biên tập. Không gắn với một dự án cụ thể —
       nhân viên tra khi khách hỏi ngoài kịch bản.
     </p>
+
+    <p class="small qa-editbar" id="qa-editbar" role="status" hidden></p>
 
     <div class="filterbar" data-filter-sheet>
       <div class="searchbox">
@@ -70,7 +83,8 @@
     <div id="qa-empty" hidden></div>
 
     <p class="micro muted mt-3">
-      Bản mô phỏng: thêm <code>?state=loi</code> vào địa chỉ để xem trạng thái không tải được.
+      Bản mô phỏng: thêm <code>?state=loi</code> vào địa chỉ để xem trạng thái không tải được;
+      <code>?sua=1&amp;xung-dot=1</code> để xem lần lưu bị báo vì người khác vừa sửa.
       Đổi vai trò ở góc trên để xem khác biệt giữa người soạn và nhân viên bán hàng.
     </p>
 
@@ -175,6 +189,15 @@ document.addEventListener('DOMContentLoaded', function () {
       a: 'Nói rõ khoản giữ chỗ, điều kiện hoàn và thời hạn giữ theo đúng chính sách đợt bán đang chạy. Không hứa miệng khác với chính sách — chính sách nằm ở Thư viện tài liệu.' }
   ];
   var editing = null;  // id câu hỏi đang sửa; null = thêm mới
+  /* #414 — chế độ sửa tại chỗ: `?sua=1` giữ chế độ khi tải lại; `?xung-dot=1` mô phỏng một người
+     khác vừa lưu cùng phần (lần lưu đầu bị báo, như `expectedUpdatedAt` của máy chủ). */
+  var inline = canEdit && RECO.param('sua') === '1';
+  var conflictDemo = RECO.param('xung-dot') === '1';
+  var open = {};       // phần đang mở: 'id|field' -> bản nháp
+  var conflict = {};   // phần vừa bị báo ghi đè
+  var LIMIT = { q: 500, a: 4000 };
+  var LABEL = { q: 'câu hỏi', a: 'câu trả lời mẫu', topic: 'chủ đề' };
+  var PEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 
   function topicOf(id) { return topics.filter(function (t) { return t.id === id; })[0]; }
   function countIn(id) { return qaEntries.filter(function (x) { return x.topic === id; }).length; }
@@ -195,7 +218,50 @@ document.addEventListener('DOMContentLoaded', function () {
     if (fTopic.value && x.topic !== fTopic.value) return false;
     return true;
   }
+  function editor(x, field) {
+    var key = x.id + '|' + field;
+    var draft = open[key];
+    var input;
+    if (field === 'topic') {
+      input = '<select class="inp" data-draft="' + key + '" aria-label="Chủ đề">' + topics.map(function (t) {
+        return '<option value="' + t.id + '"' + (t.id === draft ? ' selected' : '') + '>' + E(t.name) + '</option>';
+      }).join('') + '</select>';
+    } else if (field === 'a') {
+      input = '<textarea class="inp" rows="5" maxlength="' + LIMIT.a + '" data-draft="' + key + '" aria-label="Câu trả lời mẫu">' + E(draft) + '</textarea>';
+    } else {
+      input = '<input class="inp" maxlength="' + LIMIT.q + '" data-draft="' + key + '" aria-label="Câu hỏi" value="' + E(draft) + '">';
+    }
+    return '<div class="qa-editor">' + input +
+      (conflict[key]
+        ? '<p class="small qa-conflict" role="alert" style="margin:0">Có người vừa sửa mục này. Tải bản mới nhất rồi lưu lại nếu vẫn muốn thay đổi. ' +
+          '<button type="button" class="btn-text" data-preload="' + key + '">Tải bản mới</button></p>'
+        : '') +
+      '<span class="err" data-err="' + key + '" hidden></span>' +
+      '<div class="row"><button type="button" class="btn btn-primary btn-sm" data-psave="' + key + '">Lưu</button>' +
+      '<button type="button" class="btn btn-outline btn-sm" data-pcancel="' + key + '">Huỷ</button>' +
+      '<span class="micro muted">Ctrl+Enter để lưu · Esc để huỷ</span></div></div>';
+  }
+  function part(x, field, html) {
+    var key = x.id + '|' + field;
+    if (open[key] !== undefined) return '<div class="qa-part">' + editor(x, field) + '</div>';
+    return '<div class="qa-part"><div class="qa-val">' + html + '</div>' +
+      '<button type="button" class="qa-pen" data-pen="' + key + '" aria-label="Sửa ' + LABEL[field] + ': ' + E(x.q) + '">' + PEN + '</button></div>';
+  }
+  function inlineCard(x) {
+    var t = topicOf(x.topic);
+    return '<article class="card" data-id="' + x.id + '">' +
+      '<div class="card-body">' +
+        part(x, 'topic', '<span class="chip">' + E(t ? t.name : '') + '</span>') +
+        part(x, 'q', '<h2 style="font-size:1rem;margin:0">' + E(x.q) + '</h2>') +
+        part(x, 'a', '<p class="small" style="margin:0;white-space:pre-line">' + E(x.a) + '</p>') +
+        '<div class="qa-foot">' +
+          '<p class="micro muted">Biên tập: ' + E(x.by) + ' · ' + E(x.at) + '</p>' +
+          '<div class="qa-acts"><button type="button" class="btn-text danger" data-del="' + x.id + '">Xoá</button></div>' +
+        '</div>' +
+      '</div></article>';
+  }
   function card(x) {
+    if (inline) return inlineCard(x);
     var t = topicOf(x.topic);
     return '<article class="card" data-id="' + x.id + '">' +
       '<div class="card-body">' +
@@ -233,7 +299,22 @@ document.addEventListener('DOMContentLoaded', function () {
       'Anh/chị thử đổi chủ đề hoặc xóa ô tìm.',
       '<button type="button" class="btn btn-outline" id="qa-empty-reset">Xóa lọc</button>');
   }
+  function syncDrafts() {
+    listBox.querySelectorAll('[data-draft]').forEach(function (el) { open[el.getAttribute('data-draft')] = el.value; });
+  }
+  function dirtyCount() { return Object.keys(open).length; }
+  function paintBar() {
+    var bar = document.getElementById('qa-editbar');
+    var btn = document.getElementById('qa-inline');
+    bar.hidden = !inline;
+    btn.textContent = inline ? 'Xong' : '✎ Sửa tại chỗ';
+    btn.setAttribute('aria-pressed', inline ? 'true' : 'false');
+    var n = dirtyCount();
+    bar.textContent = 'Chế độ sửa: bấm biểu tượng bút cạnh từng phần để sửa ngay trên thẻ. Mỗi phần lưu riêng.' +
+      (n ? ' · ' + n + ' mục chưa lưu' : '');
+  }
   function paint() {
+    paintBar();
     showLoading(false);
     var list = qaEntries.filter(match);
     var filtering = !!(fQ.value || fTopic.value);
@@ -269,6 +350,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   var timer = null;
   function load() {
+    syncDrafts();       // giữ bản nháp đang gõ khi đổi bộ lọc
     showLoading(true);
     clearTimeout(timer);
     timer = setTimeout(function () { failMode ? failed() : paint(); }, 450);
@@ -321,7 +403,64 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ---------- Xoá câu hỏi ---------- */
+  function entry(key) { var id = key.split('|')[0]; return qaEntries.filter(function (q) { return q.id === id; })[0]; }
+  function savePart(key) {
+    syncDrafts();
+    var x = entry(key), field = key.split('|')[1];
+    var val = field === 'topic' ? open[key] : (open[key] || '').trim();
+    var err = listBox.querySelector('[data-err="' + key + '"]');
+    var why = !val ? 'Không để trống.' : (LIMIT[field] && val.length > LIMIT[field] ? 'Tối đa ' + LIMIT[field] + ' ký tự.' : '');
+    if (why) { err.textContent = why; err.hidden = false; return; }
+    if (conflictDemo) {           // một người khác đã lưu trước: không ghi đè
+      conflictDemo = false;
+      conflict[key] = true;
+      paint();
+      return;
+    }
+    var prev = { v: x[field], by: x.by, at: x.at };
+    x[field] = val; x.by = RECO.current.who; x.at = RECO.today();
+    delete open[key]; delete conflict[key];
+    fillTopics();
+    paint();
+    RECO.toast('Đã lưu ' + LABEL[field], { undo: function () {
+      x[field] = prev.v; x.by = prev.by; x.at = prev.at;
+      fillTopics(); paint();
+      RECO.toast('Đã hoàn tác');
+    } });
+  }
+  function cancelPart(key) { syncDrafts(); delete open[key]; delete conflict[key]; paint(); }
+  listBox.addEventListener('keydown', function (e) {
+    var box = e.target.closest('.qa-editor');
+    var el = box && box.querySelector('[data-draft]');
+    if (!el) return;
+    if (e.key === 'Escape') { e.preventDefault(); cancelPart(el.getAttribute('data-draft')); }
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); savePart(el.getAttribute('data-draft')); }
+  });
   listBox.addEventListener('click', function (e) {
+    var pen = e.target.closest('[data-pen]');
+    if (pen) {
+      syncDrafts();
+      var key = pen.getAttribute('data-pen'), x = entry(key), field = key.split('|')[1];
+      open[key] = x[field];
+      paint();
+      var el = listBox.querySelector('[data-draft="' + key + '"]');
+      if (el) el.focus();
+      return;
+    }
+    var ps = e.target.closest('[data-psave]');
+    if (ps) { savePart(ps.getAttribute('data-psave')); return; }
+    var pc = e.target.closest('[data-pcancel]');
+    if (pc) { cancelPart(pc.getAttribute('data-pcancel')); return; }
+    var pre = e.target.closest('[data-preload]');
+    if (pre) {
+      var k = pre.getAttribute('data-preload'), xx = entry(k), f = k.split('|')[1];
+      xx.by = 'Trần Minh Quân'; xx.at = RECO.today();
+      if (f !== 'topic') xx[f] = xx[f] + ' (bản người khác vừa lưu)';
+      open[k] = xx[f];
+      delete conflict[k];
+      paint();
+      return;
+    }
     var ed = e.target.closest('[data-edit]');
     if (ed) { openForm(ed.getAttribute('data-edit')); return; }
     var del = e.target.closest('[data-del]');
@@ -427,6 +566,31 @@ document.addEventListener('DOMContentLoaded', function () {
       paint();
       RECO.toast('Đã xoá chủ đề');
     }
+  });
+
+  document.getElementById('qa-inline').addEventListener('click', function () {
+    syncDrafts();
+    function flip() {
+      inline = !inline;
+      open = {}; conflict = {};
+      var url = new URL(location.href);
+      if (inline) url.searchParams.set('sua', '1'); else url.searchParams.delete('sua');
+      history.replaceState(null, '', url);
+      paint();
+    }
+    if (inline && dirtyCount() > 0) {
+      RECO.confirm({
+        eyebrow: 'Chế độ sửa', title: 'Bỏ ' + dirtyCount() + ' mục chưa lưu?',
+        body: '<p style="margin:0">Các phần đang sửa chưa bấm Lưu sẽ mất.</p>',
+        danger: true, okText: 'Bỏ thay đổi', onOk: flip
+      });
+      return;
+    }
+    flip();
+  });
+  window.addEventListener('beforeunload', function (e) {
+    syncDrafts();
+    if (inline && dirtyCount() > 0) { e.preventDefault(); e.returnValue = ''; }
   });
 
   fillTopics();
