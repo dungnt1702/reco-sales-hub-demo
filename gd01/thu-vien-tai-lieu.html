@@ -11,6 +11,14 @@
 <script defer src="store.js"></script>
 <script defer src="../assets/data.js"></script>
 <style>
+  /* FR-DOC-12 (QD-146, reco-devops#239): dòng đếm + lối vào Đã xoá, danh sách khôi phục */
+  .del-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .del-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-md); }
+  .del-list li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .del-list li:first-child { border-top: 0; }
+  .del-list .meta { flex: 1 1 220px; min-width: 0; }
+  .del-list .meta b { display: block; color: var(--navy); font-size: 0.9rem; }
+  .btn-del { color: var(--danger); }
   /* Khung xem trước: giả lập trang tài liệu, không phải tệp thật */
   .prev-frame { background: var(--soft); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px; }
   .prev-page {
@@ -88,7 +96,11 @@
       <button type="button" class="icon-btn" id="f-reset" aria-label="Xóa lọc" title="Xóa lọc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
 
-    <p class="small muted mb-2" id="count" style="margin:0">Đang hiển thị 0 tài liệu</p>
+    <div class="del-row">
+      <p class="small muted" id="count" style="margin:0">Đang hiển thị 0 tài liệu</p>
+      <!-- FR-DOC-12 AC-B-7: chỉ khi đang lọc một dự án và có tài liệu đã xoá người xem khôi phục được -->
+      <button type="button" class="btn-text" id="da-xoa" hidden>Đã xoá (0)</button>
+    </div>
     <p class="micro muted" id="f-sum" style="margin:0 0 8px" hidden></p>
     <p class="micro muted" id="hid-note" style="margin:0 0 8px" hidden></p>
 
@@ -214,6 +226,23 @@
   </div>
 </div>
 
+<!-- FR-DOC-12 (QD-146): tài liệu đã xoá của dự án đang lọc — khôi phục cùng luật quyền với xoá -->
+<div class="modal" id="m-da-xoa" hidden role="dialog" aria-modal="true" aria-labelledby="m-da-xoa-t">
+  <div class="modal-box" style="max-width:640px">
+    <div class="modal-head">
+      <div><span class="eyebrow" id="m-da-xoa-pj">Thư viện tài liệu</span><h3 id="m-da-xoa-t">Tài liệu đã xoá</h3></div>
+      <button class="icon-btn" data-close="1" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p class="small muted" style="margin-top:0">Tệp vẫn được giữ. Khôi phục đưa tài liệu về đúng trạng thái và vị trí trước khi xoá. Chỉ hiện tài liệu anh/chị có quyền khôi phục.</p>
+      <ul class="del-list" id="del-list"></ul>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" data-close="1">Đóng</button>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   var S = RECO.store, esc = RECO_DATA.esc;
@@ -282,7 +311,90 @@ document.addEventListener('DOMContentLoaded', function () {
       (roles ? ' data-roles="' + roles + '"' : '') + '>' + text + '</button>';
   }
 
+  /* ---------- Xoá và khôi phục — FR-DOC-12 (QD-146, reco-devops#239) ----------
+     Theo ô Xoá của ma trận quyền: Giám đốc dự án (P) xoá mọi trạng thái trong dự án phụ trách;
+     Thư ký kinh doanh và Marketing (N) chỉ bản nháp hoặc chờ duyệt, Marketing chỉ nhánh 4–7;
+     Tổng giám đốc không xoá (QD-060). Máy chủ thật kiểm lại trên trạng thái lúc xoá. */
+  var DEL_MKT = [4, 5, 6, 7];
+  function inMyProjects(pj) { return S.myProjects(RECO.role).some(function (p) { return p.id === pj; }); }
+  function canDelete(d) {
+    var r = RECO.role;
+    if (!inMyProjects(d.pj)) return false;
+    if (r === 'gddu') return true;
+    var pending = d.state === 'draft';
+    if (r === 'tkkd') return pending;
+    if (r === 'mkt') return pending && DEL_MKT.indexOf(+d.branch) >= 0;
+    return false;
+  }
+  var STATE_BEFORE = { live: 'Đã công bố', expiring: 'Sắp hết hiệu lực', expired: 'Hết hiệu lực', draft: 'Bản nháp / chờ duyệt', broken: 'Liên kết hỏng' };
+  function nowVN() {
+    var t = new Date();
+    return homNay() + ' ' + ('0' + t.getHours()).slice(-2) + ':' + ('0' + t.getMinutes()).slice(-2);
+  }
+  function restore(entry, silent) {
+    S.get('deletedDocs').splice(S.get('deletedDocs').indexOf(entry), 1);
+    S.add('documents', entry.doc);
+    paintDeleted();
+    if (!silent) RECO.toast('Đã khôi phục “' + entry.doc.name + '”');
+  }
+  function xoa(d) {
+    RECO.confirm({
+      eyebrow: 'Xoá tài liệu',
+      title: 'Xoá “' + esc(d.name) + '”?',
+      body: '<p class="small">Tài liệu sẽ không còn trong thư viện, cây thư mục và trên trang gửi khách; anh/chị khôi phục được ở mục <strong>Đã xoá</strong> của dự án.</p>' +
+        (d.state === 'live' ? '<p class="small muted">Bản cũ đã được tài liệu này thay vẫn ở trạng thái lưu trữ, không tự quay lại.</p>' : ''),
+      okText: 'Xoá tài liệu', danger: true,
+      onOk: function () {
+        var entry = { at: nowVN(), by: RECO.current.who, doc: d };
+        S.remove('documents', d.id);
+        S.get('deletedDocs').unshift(entry);
+        S.save();
+        render();
+        RECO.toast('Đã xoá “' + d.name + '”.', { undo: function () { restore(entry, true); RECO.toast('Đã hoàn tác — tài liệu trở lại'); } });
+      }
+    });
+  }
+  function myDeleted() {
+    if (!fpj.value) return [];
+    return S.get('deletedDocs').filter(function (e) { return e.doc.pj === fpj.value && canDelete(e.doc); });
+  }
+  function paintDeleted() {
+    var b = document.getElementById('da-xoa');
+    var n = myDeleted().length;
+    b.hidden = n === 0;
+    b.textContent = 'Đã xoá (' + n + ')';
+  }
+  function renderDeleted() {
+    var ul = document.getElementById('del-list');
+    var list = myDeleted();
+    document.getElementById('m-da-xoa-pj').textContent = S.projectName(fpj.value);
+    ul.innerHTML = list.length ? list.map(function (e, i) {
+      return '<li><div class="meta"><b>' + esc(e.doc.name) + '</b>' +
+        '<span class="micro muted">Nhánh ' + e.doc.branch + ' · trước khi xoá: ' + (STATE_BEFORE[e.doc.state] || e.doc.state) +
+        ' · Xoá bởi ' + esc(e.by) + ' · ' + e.at + '</span></div>' +
+        '<button type="button" class="btn btn-outline btn-sm" data-restore="' + i + '">Khôi phục</button></li>';
+    }).join('') : '<li class="muted small">Không còn tài liệu nào anh/chị khôi phục được.</li>';
+  }
+  document.getElementById('da-xoa').addEventListener('click', function () {
+    renderDeleted();
+    RECO.openModal('m-da-xoa');
+  });
+  document.getElementById('del-list').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-restore]');
+    if (!b) return;
+    var entry = myDeleted()[+b.getAttribute('data-restore')];
+    if (!entry) return;
+    RECO.busy(b, 'Đang khôi phục…', 600, function () {
+      restore(entry);
+      renderDeleted();
+      if (!myDeleted().length) RECO.closeModal('m-da-xoa');
+    });
+  });
+
   function actions(d) {
+    return actionsBase(d) + (canDelete(d) ? btn('btn-quiet btn-del', 'xoa', d.id, 'Xoá') : '');
+  }
+  function actionsBase(d) {
     if (d.src === 'broken') {
       return d.reported
         ? '<span class="chip">Giám đốc dự án đang đối chiếu với Chủ đầu tư</span>'
@@ -364,6 +476,7 @@ document.addEventListener('DOMContentLoaded', function () {
     count.textContent = n ? 'Đang hiển thị ' + n + ' tài liệu' : 'Không có tài liệu nào khớp bộ lọc';
     hidNote.hidden = hid === 0;
     hidNote.textContent = hid + ' tài liệu mang nhãn Nội bộ hạn chế được ẩn với vai trò ' + RECO.current.name + '.';
+    paintDeleted();
   }
 
   /* Lọc chạm vào máy chủ nên hiện khung chờ ngay, rồi mới vẽ kết quả */
@@ -644,7 +757,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return ('0' + t.getDate()).slice(-2) + '/' + ('0' + (t.getMonth() + 1)).slice(-2) + '/' + t.getFullYear();
   }
 
-  var ACT = { tai: tai, xem: xemTruoc, mo: moNguon, bao: bao, giahan: giahan, duyet: duyet };
+  var ACT = { tai: tai, xem: xemTruoc, mo: moNguon, bao: bao, giahan: giahan, duyet: duyet, xoa: xoa };
   ds.addEventListener('click', function (e) {
     var b = e.target.closest('[data-act]');
     if (!b || !ds.contains(b)) return;

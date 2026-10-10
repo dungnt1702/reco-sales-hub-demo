@@ -10,7 +10,7 @@
 (function () {
   'use strict';
 
-  var KEY = 'reco-salehub-demo-gd01-v9';
+  var KEY = 'reco-salehub-demo-gd01-v10';
 
   /* ---------- Dữ liệu gốc ---------- */
   function seed() {
@@ -1526,40 +1526,78 @@
           go: 'trang-dau.html?alert=al3', alertId: 'al3' }
       ],
 
-      /* Việc được giao — biểu tượng việc trên thanh trên cùng. Tách hẳn khỏi kho thông báo:
-         thông báo là tin báo, việc thì có người giao, có hạn và có trạng thái phải cập nhật.
-         `obj` là nhóm đối tượng (dự án / sản phẩm / bài đăng), `channel` là kênh bán. */
+      /* Tài liệu đã xoá — FR-DOC-12 (QD-146, reco-devops#239). Xoá mềm: tài liệu rời kho
+         `documents` nên mọi màn tự không thấy nó, tệp vẫn giữ; mục "Đã xoá" ở Thư viện tài liệu đọc
+         kho này để khôi phục. `prev` là trạng thái trước khi xoá — khôi phục trả đúng trạng thái đó. */
+      deletedDocs: [
+        { at: '13/08/2026 17:05', by: 'Trịnh Mai Lan',
+          doc: { id: 'd30', pj: 'celestine', branch: 3, folder: null, name: 'Chính sách bán hàng tháng 8 — bản nháp thứ hai',
+                 kind: 'chinhsach', src: 'reco', label: 'internal', ver: 'v2', from: '12/08/2026', to: null,
+                 state: 'draft', icon: 'pdf' } },
+        { at: '12/08/2026 09:20', by: 'Hoàng Anh Tuấn',
+          doc: { id: 'd31', pj: 'celestine', branch: 2, folder: null, name: 'Bảng hàng đợt 2 — Celestine Westlake (tải nhầm)',
+                 kind: 'banghang', src: 'reco', label: 'internal', ver: 'v2', from: '11/08/2026', to: null,
+                 state: 'live', icon: 'xls' } }
+      ],
+
+      /* Việc được giao — MH-24 (QD-117 BS2-03, QD-145, reco-devops#108). Tách hẳn khỏi kho
+         thông báo: thông báo là tin báo, việc thì có người giao, có hạn và có trạng thái.
+         `obj` nhóm đối tượng, `channel` kênh lấy theo dự án của đối tượng, `pj` dự án ('' = bài
+         đăng dùng chung). `by` là người giao, `rcp` là người nhận — mỗi người một trạng thái
+         (`st`), cờ đã xem (`seen`, tắt chấm) và cờ đã tự mở ở trang dự án (`nt`).
+         Mã người khớp bộ chọn người dùng assets/pick-people.js; tên và mã nhân viên giả (QD-072). */
       tasks: [
-        { id: 'tk1', obj: 'du-an', channel: 'moi', title: 'Cập nhật tiến độ xây dựng Celestine tháng 9',
-          by: 'admin', due: 'Hạn 12/09 — trước buổi mở bán đợt 2', to: 'gd gddu tkkd qlkd nvbh mkt',
-          state: 'chua', go: 'du-an-chi-tiet.html' },
-        { id: 'tk2', obj: 'du-an', channel: 'moi', title: 'Bổ sung mặt bằng tầng điển hình tòa C — Le Parc',
-          by: 'Trần Minh Quân (Trưởng phòng KD)', due: 'Hạn 10/09 — CĐT đã gửi bản mới', to: 'gd gddu tkkd qlkd nvbh mkt',
-          state: 'dang', go: 'du-an-chi-tiet.html' },
-        { id: 'tk3', obj: 'du-an', channel: 'cn', title: 'Rà soát hồ sơ pháp lý giỏ hàng Gold Season',
-          by: 'admin', due: 'Hạn 15/09 — cần sổ và hợp đồng gốc', to: 'gd gddu tkkd qlkd nvbh',
-          state: 'chua', go: 'du-an.html?channel=cn' },
-        { id: 'tk4', obj: 'san-pham', channel: 'moi', title: 'Chọn 3 căn Hot tuần này cho Celestine',
-          by: 'admin', due: 'Hạn thứ Sáu — dùng cho dải Hot trang đầu', to: 'gd gddu tkkd qlkd mkt',
-          state: 'chua', go: 'danh-muc-san-pham.html?hot=1' },
-        { id: 'tk5', obj: 'san-pham', channel: 'moi', title: 'Đối chiếu tình trạng 12 căn tháp T2 với bảng hàng CĐT',
-          by: 'Trần Minh Quân (Trưởng phòng KD)', due: 'Hạn 11/09 — sau khi CĐT chốt đợt giữ chỗ', to: 'gd gddu tkkd qlkd nvbh',
-          state: 'dang', go: 'danh-muc-san-pham.html?scope=tat' },
-        { id: 'tk6', obj: 'san-pham', channel: 'cn', title: 'Bổ sung ảnh hiện trạng căn GS-FS.2501',
-          by: 'admin', due: 'Hạn 09/09 — chủ nhà đã đồng ý cho chụp', to: 'gd gddu tkkd qlkd nvbh mkt',
-          state: 'chua', go: 'san-pham.html' },
-        { id: 'tk7', obj: 'san-pham', channel: 'cn', title: 'Xác minh giá chào lại căn KP-A.11.08',
-          by: 'Lê Thu Hà (Quản lý kinh doanh)', due: 'Hạn 13/09 — khách hỏi lại giá tuần trước', to: 'gd gddu tkkd qlkd nvbh',
-          state: 'xong', go: 'san-pham.html' },
-        { id: 'tk8', obj: 'bai-dang', channel: 'moi', title: 'Soạn bài giới thiệu chính sách đợt 2 Celestine',
-          by: 'admin', due: 'Hạn 10/09 — đăng trước ngày mở bán', to: 'gd gddu tkkd qlkd nvbh mkt',
-          state: 'chua', go: 'chia-se.html' },
-        { id: 'tk9', obj: 'bai-dang', channel: 'moi', title: 'Duyệt lại mẫu chung Le Parc — số liệu tòa C',
-          by: 'admin', due: 'Hạn 12/09 — mẫu đang dùng chung cả sàn', to: 'gd gddu tkkd mkt',
-          state: 'dang', go: 'chia-se.html' },
-        { id: 'tk10', obj: 'bai-dang', channel: 'cn', title: 'Gỡ bài chuyển nhượng căn đã bán VH-23.04',
-          by: 'Lê Thu Hà (Quản lý kinh doanh)', due: 'Hạn hôm nay — căn đã chốt sáng nay', to: 'gd gddu tkkd qlkd nvbh mkt',
-          state: 'chua', go: 'chia-se.html' }
+        { id: 'tk1', obj: 'du-an', channel: 'moi', pj: 'leparc', target: 'Le Parc Place — ParkCity Hanoi',
+          title: 'Cập nhật tiến độ xây dựng tòa A tháng 8',
+          body: 'Lấy ảnh tiến độ Chủ đầu tư gửi ngày 12/08, thay ảnh ở mục Tiến độ của trang dự án.',
+          by: 'p04', byName: 'Hoàng Anh Tuấn', due: '2026-08-16', go: 'du-an-chi-tiet.html?pj=leparc',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'chua', seen: false, nt: false, at: '' },
+                { u: 'p01', n: 'Nguyễn Văn An', st: 'dang', seen: true, nt: true, at: '13/08 09:40' },
+                { u: 'p09', n: 'Ngô Thanh Bình', st: 'xong', seen: true, nt: true, at: '13/08 16:05' }] },
+        { id: 'tk2', obj: 'du-an', channel: 'moi', pj: 'celestine', target: 'Celestine Westlake',
+          title: 'Gửi lại chính sách đợt 2 cho khách đã xem nhà mẫu',
+          body: 'Dùng bản chính sách đã duyệt ngày 10/08. Khách hỏi giá thì hẹn gọi lại, không ghi giá trên tin.',
+          by: 'p05', byName: 'Phạm Hải Đăng', due: '2026-08-12', go: 'du-an-chi-tiet.html?pj=celestine',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'dang', seen: true, nt: false, at: '12/08 10:15' },
+                { u: 'p01', n: 'Nguyễn Văn An', st: 'chua', seen: true, nt: false, at: '' }] },
+        { id: 'tk3', obj: 'du-an', channel: 'cn', pj: 'opening', target: 'Gold Season — 47 Nguyễn Tuân',
+          title: 'Rà soát hồ sơ pháp lý giỏ hàng chuyển nhượng', body: '',
+          by: 'p03', byName: 'Trần Thị Bình', due: '', go: 'du-an-chi-tiet.html?pj=opening',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'chua', seen: true, nt: false, at: '' },
+                { u: 'p09', n: 'Ngô Thanh Bình', st: 'chua', seen: true, nt: false, at: '' }] },
+        { id: 'tk4', obj: 'san-pham', channel: 'moi', pj: 'leparc', target: 'Căn A-12.08 · Le Parc Place',
+          title: 'Đối chiếu tình trạng căn với bảng hàng Chủ đầu tư',
+          body: 'Chủ đầu tư báo căn đã có khách giữ chỗ — kiểm lại trước khi gửi khách.',
+          by: 'p05', byName: 'Phạm Hải Đăng', due: '2026-08-15', go: 'san-pham.html',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'chua', seen: true, nt: true, at: '' },
+                { u: 'p01', n: 'Nguyễn Văn An', st: 'chua', seen: false, nt: false, at: '' },
+                { u: 'p09', n: 'Ngô Thanh Bình', st: 'dang', seen: true, nt: true, at: '14/08 08:30' }] },
+        { id: 'tk5', obj: 'san-pham', channel: 'cn', pj: 'opening', target: 'Căn GS-FS.2501 · Gold Season',
+          title: 'Bổ sung ảnh hiện trạng căn', body: 'Chủ nhà đã đồng ý cho chụp chiều thứ Bảy.',
+          by: 'p04', byName: 'Hoàng Anh Tuấn', due: '2026-08-20', go: 'san-pham.html',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'xong', seen: true, nt: true, at: '13/08 17:20' }] },
+        { id: 'tk6', obj: 'bai-dang', channel: 'moi', pj: 'celestine', target: 'Giới thiệu dự án — bản ngắn · Celestine',
+          title: 'Cập nhật số liệu tòa C trong bài giới thiệu', body: '',
+          by: 'p03', byName: 'Trần Thị Bình', due: '2026-08-18', go: 'mau.html',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'chua', seen: true, nt: false, at: '' },
+                { u: 'p07', n: 'Đỗ Bảo Ngọc', st: 'dang', seen: true, nt: false, at: '14/08 09:00' }] },
+        { id: 'tk7', obj: 'bai-dang', channel: 'cn', pj: '', target: 'Mẫu chung: Lời chào khách mới',
+          title: 'Đọc mẫu lời chào mới trước khi gửi khách thứ cấp', body: '',
+          by: 'p10', byName: 'Trần Minh Quang', due: '', go: 'mau.html',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'chua', seen: true, nt: false, at: '' },
+                { u: 'p01', n: 'Nguyễn Văn An', st: 'xong', seen: true, nt: false, at: '13/08 11:00' },
+                { u: 'p05', n: 'Phạm Hải Đăng', st: 'chua', seen: false, nt: false, at: '' },
+                { u: 'p12', n: 'Đinh Quốc Huy', st: 'chua', seen: true, nt: false, at: '' }] },
+        { id: 'tk8', obj: 'du-an', channel: 'moi', pj: 'celestine', target: 'Celestine Westlake',
+          title: 'Chốt danh sách tài liệu bàn giao đợt 2', body: 'Gửi lại cho tôi trước họp giao ban thứ Hai.',
+          by: 'p10', byName: 'Trần Minh Quang', due: '2026-08-19', go: 'du-an-chi-tiet.html?pj=celestine',
+          rcp: [{ u: 'p04', n: 'Hoàng Anh Tuấn', st: 'chua', seen: false, nt: false, at: '' },
+                { u: 'p03', n: 'Trần Thị Bình', st: 'dang', seen: true, nt: false, at: '14/08 10:10' }] },
+        /* Căn đã bị xoá khỏi dự án — dòng ghi "Đối tượng không còn", nút Xem khoá (FR-TASK-02 AC-B-7) */
+        { id: 'tk9', obj: 'san-pham', channel: 'moi', pj: 'celestine', target: 'Căn T2-09.03 · Celestine', gone: true,
+          title: 'Chụp lại ảnh ban công căn mẫu', body: '',
+          by: 'p05', byName: 'Phạm Hải Đăng', due: '2026-08-17', go: '',
+          rcp: [{ u: 'p06', n: 'Lê Thu Hà', st: 'chua', seen: true, nt: true, at: '' }] }
       ],
 
       /* Màn vừa xem — phục vụ ô tìm kiếm toàn cục */

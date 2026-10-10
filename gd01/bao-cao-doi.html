@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Báo cáo đội · RECO Sales Hub</title>
+<meta name="theme-color" content="#09263c">
+<link rel="icon" href="../assets/img/reco-logo.png">
+<link rel="stylesheet" href="../assets/reco.css?v=fsheet3">
+<script defer src="../assets/reco.js?v=fsheet3"></script>
+<script defer src="store.js"></script>
+<script defer src="../assets/data.js"></script>
+<style>
+  /* MH-25 Báo cáo đội (QD-147, reco-devops#240) — bố cục riêng của màn; màu, chữ, bo góc,
+     bảng → thẻ dưới 768 dùng lại token và lớp .tbl của reco.css. */
+  .tr-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .tr-period { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--white); padding: 3px; }
+  .tr-period button { border: 0; background: none; font: inherit; font-size: 0.86rem; font-weight: 600; color: var(--muted); padding: 7px 14px; border-radius: calc(var(--radius-md) - 3px); cursor: pointer; min-height: 36px; }
+  .tr-period button[aria-pressed="true"] { background: var(--navy); color: #fff; }
+  .tr-team { margin-bottom: 18px; }
+  .tr-team-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; margin-bottom: 8px; }
+  .tr-team-head h2 { margin: 0; font-size: 1.05rem; }
+  .tbl .tr-name b { display: block; color: var(--navy); }
+  .tbl tfoot td { font-weight: 700; background: var(--soft); border-top: 1px solid var(--line); padding: 12px; }
+  .tr-sum { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .tr-sum .card { padding: 12px 14px; }
+  .tr-sum b { display: block; font-size: 1.35rem; color: var(--navy); }
+  .tr-sk { height: 220px; border-radius: var(--radius-lg); margin-bottom: 14px; }
+  @media (max-width: 767px) {
+    .tbl tfoot { display: block; }
+    .tbl tfoot tr { background: var(--soft); }
+    .tbl tfoot td { background: none; border-top: 0; padding: 7px 14px; }
+    .tbl tfoot td:empty { display: none; }
+  }
+</style>
+</head>
+<body data-shell="app" data-page="bao-cao-doi">
+
+<main id="page" class="pad-b">
+  <div class="wrap page">
+
+    <div class="page-head">
+      <div>
+        <h1>Báo cáo đội</h1>
+        <p class="small muted" id="tr-scope" style="margin:4px 0 0"></p>
+      </div>
+      <div class="page-head-end tr-controls" id="tr-controls">
+        <div class="tr-period" role="group" aria-label="Kỳ báo cáo">
+          <button type="button" data-ky="7" aria-pressed="true">7 ngày</button>
+          <button type="button" data-ky="30" aria-pressed="false">30 ngày</button>
+        </div>
+        <select class="inp" id="tr-team" aria-label="Phòng" hidden></select>
+      </div>
+    </div>
+
+    <p class="small muted mb-3" id="tr-lead">
+      Hoạt động trên Sales Hub của từng nhân viên trong phạm vi anh/chị phụ trách. Không hiện thông tin của khách.
+    </p>
+
+    <div id="tr-loading" hidden aria-hidden="true">
+      <div class="skeleton tr-sk"></div>
+      <div class="skeleton tr-sk"></div>
+    </div>
+    <div id="tr-body" aria-live="polite"></div>
+
+    <p class="micro muted mt-3" id="tr-foot"></p>
+    <p class="micro muted">
+      Bản mô phỏng: đổi vai trò ở góc trên để xem phạm vi Trưởng phòng KD (một phòng), Giám đốc dự án (một khối),
+      Tổng giám đốc (toàn công ty). Thêm <code>?state=loi</code> để xem trạng thái không tải được.
+    </p>
+
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (RECO.embedded) return;
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = RECO_DATA.esc;
+
+  /* Phòng KD và thành viên — tên, mã giả (QD-072), khớp bộ chọn người dùng (assets/pick-people.js).
+     Người kiêm nhiệm (QD-141) có mặt ở cả hai phòng. Phòng KD 11 vừa lập, chưa có thành viên. */
+  var TEAMS = [
+    { id: 'kd1', name: 'Phòng KD 1', block: 'Khối Dự án Hà Nội', members: ['p04', 'p12'] },
+    { id: 'kd3', name: 'Phòng KD 3', block: 'Khối Dự án Hà Nội', members: ['p05', 'p01', 'p06', 'p09'] },
+    { id: 'kd5', name: 'Phòng KD 5', block: 'Khối Cho thuê', members: ['p13', 'p14'] },
+    { id: 'kd7', name: 'Phòng KD 7', block: 'Khối Dự án Tỉnh', members: ['p02', 'p09'] },
+    { id: 'kd9', name: 'Phòng KD 9', block: 'Khối Dự án Tỉnh', members: ['p11', 'p02'] },
+    { id: 'kd11', name: 'Phòng KD 11', block: 'Khối Dự án Tỉnh', members: [] }
+  ];
+  var PEOPLE = {
+    p01: { name: 'Nguyễn Văn An', title: 'Chuyên viên kinh doanh' },
+    p02: { name: 'Nguyễn Văn An', title: 'Trưởng phòng kinh doanh' },
+    p04: { name: 'Hoàng Anh Tuấn', title: 'Giám đốc kinh doanh' },
+    p05: { name: 'Phạm Hải Đăng', title: 'Trưởng phòng kinh doanh' },
+    p06: { name: 'Lê Thu Hà', title: 'Chuyên viên kinh doanh' },
+    p09: { name: 'Ngô Thanh Bình', title: 'Chuyên viên kinh doanh' },
+    p11: { name: 'Bùi Thị Lan', title: 'Chuyên viên kinh doanh' },
+    p12: { name: 'Đinh Quốc Huy', title: 'Phó phòng kinh doanh' },
+    p13: { name: 'Lý Minh Châu', title: 'Chuyên viên kinh doanh' },
+    p14: { name: 'Mai Xuân Trường', title: 'Chuyên viên kinh doanh' }
+  };
+  /* [ngày có đăng nhập, hoạt động gần nhất, liên kết đã gửi, lượt khách mở, yêu cầu khách, đã xử lý] */
+  var M = {
+    7: {
+      p01: [5, '14/08 17:42', 6, 19, 2, 2], p02: [4, '14/08 11:05', 3, 7, 1, 0], p04: [6, '14/08 18:10', 1, 2, 0, 0],
+      p05: [6, '14/08 16:20', 4, 11, 1, 1], p06: [7, '14/08 18:02', 9, 31, 4, 3], p09: [3, '13/08 20:15', 2, 4, 0, 0],
+      p11: [0, '02/08 09:30', 0, 1, 0, 0], p12: [5, '14/08 15:48', 3, 6, 1, 1], p13: [2, '12/08 10:12', 1, 0, 0, 0],
+      p14: [0, null, 0, 0, 0, 0]
+    },
+    30: {
+      p01: [21, '14/08 17:42', 24, 77, 7, 6], p02: [17, '14/08 11:05', 12, 30, 3, 2], p04: [25, '14/08 18:10', 4, 9, 1, 1],
+      p05: [24, '14/08 16:20', 15, 40, 4, 4], p06: [27, '14/08 18:02', 33, 118, 12, 10], p09: [12, '13/08 20:15', 8, 15, 1, 1],
+      p11: [3, '02/08 09:30', 2, 5, 0, 0], p12: [19, '14/08 15:48', 11, 25, 2, 2], p13: [9, '12/08 10:12', 5, 6, 1, 0],
+      p14: [0, null, 0, 0, 0, 0]
+    }
+  };
+  /* Phạm vi theo mã report.team (QD-147): phòng · khối · toàn công ty */
+  var SCOPE = {
+    qlkd: { text: 'Phòng KD 3 · Khối Dự án Hà Nội', teams: ['kd3'] },
+    gddu: { text: 'Khối Dự án Hà Nội · 2 phòng', teams: ['kd1', 'kd3'] },
+    gd: { text: 'Toàn công ty · ' + TEAMS.length + ' phòng kinh doanh', teams: TEAMS.map(function (t) { return t.id; }) }
+  };
+
+  var qs = new URLSearchParams(location.search);
+  var scope = SCOPE[RECO.role];
+  var ky = qs.get('ky') === '30' ? '30' : '7';
+  var teamSel = $('tr-team');
+
+  if (!scope) {
+    $('tr-controls').hidden = true;
+    $('tr-lead').hidden = true;
+    $('tr-body').innerHTML =
+      '<div class="empty"><h3>Báo cáo đội không dành cho tài khoản này</h3>' +
+      '<p class="lead mt-1">Báo cáo đội dành cho Trưởng phòng kinh doanh, Giám đốc dự án và Tổng giám đốc. ' +
+      'Nếu anh/chị cần xem, liên hệ người quản trị để được cấp quyền.</p></div>';
+    return;
+  }
+
+  $('tr-scope').textContent = scope.text;
+  var mine = TEAMS.filter(function (t) { return scope.teams.indexOf(t.id) >= 0; });
+  if (mine.length > 1) {
+    teamSel.hidden = false;
+    teamSel.innerHTML = '<option value="">Mọi phòng</option>' + mine.map(function (t) {
+      return '<option value="' + t.id + '">' + esc(t.name + ' · ' + t.block) + '</option>';
+    }).join('');
+    if (qs.get('phong')) teamSel.value = qs.get('phong');
+  }
+
+  function cells(pid) { return M[ky][pid]; }
+  function n(v) { return String(v); }
+  function rowHtml(pid) {
+    var p = PEOPLE[pid], c = cells(pid);
+    return '<tr>' +
+      '<td data-l="" class="tr-name"><b>' + esc(p.name) + '</b><span class="micro muted">' + esc(p.title) + '</span></td>' +
+      '<td data-l="Ngày có đăng nhập" class="r">' + n(c[0]) + '</td>' +
+      '<td data-l="Hoạt động gần nhất">' + (c[1] ? c[1] : '<span class="muted">Chưa đăng nhập</span>') + '</td>' +
+      '<td data-l="Liên kết đã gửi" class="r">' + n(c[2]) + '</td>' +
+      '<td data-l="Lượt khách mở" class="r">' + n(c[3]) + '</td>' +
+      '<td data-l="Yêu cầu của khách" class="r">' + n(c[4]) + ' · đã xử lý ' + n(c[5]) + '</td>' +
+    '</tr>';
+  }
+  function totals(ids) {
+    var t = [0, 0, 0, 0, 0];
+    ids.forEach(function (pid) {
+      var c = cells(pid);
+      if (c[0] > 0) t[0]++;
+      t[1] += c[2]; t[2] += c[3]; t[3] += c[4]; t[4] += c[5];
+    });
+    return t;
+  }
+  function teamHtml(team) {
+    var head = '<div class="tr-team-head"><h2>' + esc(team.name) + '</h2>' +
+      '<span class="micro muted">' + esc(team.block) + ' · ' + team.members.length + ' thành viên</span></div>';
+    if (!team.members.length) {
+      return '<section class="tr-team">' + head +
+        '<div class="empty"><h3>Phòng chưa có thành viên nào</h3>' +
+        '<p class="lead mt-1">Thành viên vào phòng theo RecoHR hoặc khi được gán kiêm nhiệm.</p></div></section>';
+    }
+    var ids = team.members.slice().sort(function (a, b) { return PEOPLE[a].name.localeCompare(PEOPLE[b].name, 'vi'); });
+    var t = totals(ids);
+    return '<section class="tr-team">' + head +
+      '<div class="tbl-wrap"><table class="tbl"><thead><tr>' +
+        '<th>Nhân viên</th><th class="r">Ngày có đăng nhập</th><th>Hoạt động gần nhất</th>' +
+        '<th class="r">Liên kết đã gửi</th><th class="r">Lượt khách mở</th><th class="r">Yêu cầu của khách</th>' +
+      '</tr></thead><tbody>' + ids.map(rowHtml).join('') + '</tbody>' +
+      '<tfoot><tr><td data-l="">Tổng ' + esc(team.name) + '</td>' +
+        '<td data-l="Có đăng nhập" class="r">' + t[0] + '/' + ids.length + ' người</td><td data-l=""></td>' +
+        '<td data-l="Liên kết đã gửi" class="r">' + t[1] + '</td><td data-l="Lượt khách mở" class="r">' + t[2] + '</td>' +
+        '<td data-l="Yêu cầu của khách" class="r">' + t[3] + ' · đã xử lý ' + t[4] + '</td></tr></tfoot>' +
+      '</table></div></section>';
+  }
+  /* Dòng tổng chung không đếm trùng người kiêm nhiệm ở hai phòng (FR-TR-02 AC-B-2) */
+  function summaryHtml(teams) {
+    var ids = [];
+    teams.forEach(function (t) { t.members.forEach(function (p) { if (ids.indexOf(p) < 0) ids.push(p); }); });
+    var t = totals(ids);
+    function box(v, label) { return '<div class="card"><b>' + v + '</b><span class="micro muted">' + label + '</span></div>'; }
+    return '<div class="tr-sum" aria-label="Tổng chung">' +
+      box(ids.length, 'nhân viên (người kiêm nhiệm đếm một lần)') + box(t[0], 'người có đăng nhập trong kỳ') +
+      box(t[1], 'liên kết gửi khách đã tạo') + box(t[2], 'lượt khách mở') +
+      box(t[3] + ' · ' + t[4], 'yêu cầu của khách · đã xử lý') + '</div>';
+  }
+
+  function paint() {
+    var sel = teamSel.hidden ? '' : teamSel.value;
+    var teams = mine.filter(function (t) { return !sel || t.id === sel; });
+    var html = (teams.length > 1 ? summaryHtml(teams) : '') + teams.map(teamHtml).join('');
+    $('tr-body').innerHTML = html;
+    $('tr-foot').textContent = ky + ' ngày đến 18:00 ngày 14/08/2026. Số liệu hoạt động trên Sales Hub, ' +
+      'chưa gồm giao dịch — báo cáo kinh doanh đầy đủ ở Giai đoạn 2.';
+  }
+  function load() {
+    var url = new URL(location.href);
+    url.searchParams.set('ky', ky);
+    if (!teamSel.hidden && teamSel.value) url.searchParams.set('phong', teamSel.value); else url.searchParams.delete('phong');
+    history.replaceState(null, '', url);
+    var body = $('tr-body');
+    $('tr-loading').hidden = false;
+    body.style.opacity = body.innerHTML ? '0.45' : '';
+    setTimeout(function () {
+      $('tr-loading').hidden = true;
+      body.style.opacity = '';
+      if (qs.get('state') === 'loi') {
+        body.innerHTML = '<div class="state-error"><h3>Không tải được báo cáo đội</h3>' +
+          '<p class="small">Mã tra cứu <code>TR-7F3K2</code>. Kỳ và phòng đang chọn được giữ nguyên.</p>' +
+          '<button type="button" class="btn btn-primary mt-2" id="tr-retry">Thử lại</button></div>';
+        $('tr-retry').addEventListener('click', function () { qs.delete('state'); load(); });
+        return;
+      }
+      paint();
+    }, 350);
+  }
+
+  document.querySelectorAll('.tr-period [data-ky]').forEach(function (b) {
+    b.setAttribute('aria-pressed', b.getAttribute('data-ky') === ky ? 'true' : 'false');
+    b.addEventListener('click', function () {
+      ky = b.getAttribute('data-ky');
+      document.querySelectorAll('.tr-period [data-ky]').forEach(function (x) {
+        x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+      });
+      load();
+    });
+  });
+  teamSel.addEventListener('change', load);
+  load();
+});
+</script>
+</body>
+</html>

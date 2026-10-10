@@ -1447,6 +1447,29 @@ h3[id] { scroll-margin-top: calc(var(--proto-h) + var(--header-h) + 16px); }
 .tk-tick { width: 15px; height: 15px; margin-right: 5px; color: var(--verified); vertical-align: -2px; }
 .tk-done { background: var(--soft); }
 .tk-done b { text-decoration: line-through; color: var(--muted); }
+/* MH-24 (QD-145): chuyển Việc giao cho tôi / Việc tôi đã giao, việc nổi bật khi tự mở ở trang
+   dự án, hạn quá, người nhận — chỉ dùng token sẵn có. */
+.tk-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.tk-note { margin: 0 0 10px; padding: 8px 12px; border-radius: var(--radius-md); background: var(--notice); color: var(--ink); }
+.tk-hl { border-color: var(--orange); box-shadow: 0 0 0 2px color-mix(in srgb, var(--orange) 22%, transparent); }
+.tk-late { color: var(--danger); font-weight: 700; }
+.tk-acts { flex-wrap: wrap; }
+.tk-body, .tk-who { margin-top: 6px; font-size: 0.84rem; }
+.tk-body summary, .tk-who summary { cursor: pointer; color: var(--navy); font-weight: 600; min-height: 32px; display: flex; align-items: center; }
+.tk-body p { margin: 4px 0 0; white-space: pre-line; }
+.tk-who ul { list-style: none; margin: 6px 0 0; padding: 0; }
+.tk-who li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 5px 0; border-top: 1px solid var(--line); }
+.tk-who li > span:first-child { flex: 1 1 140px; min-width: 0; }
+.tk-del { color: var(--danger); }
+.tk-rcp { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; min-height: 8px; }
+.tk-rcp .chip { gap: 4px; }
+.tk-rm { border: 0; background: none; color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; padding: 0 2px; min-width: 24px; min-height: 24px; }
+.tk-rm:hover { color: var(--danger); }
+.tk-ro { margin: 2px 0 0; color: var(--ink); }
+@media (max-width: 479px) {
+  .tk-acts { width: 100%; }
+  .tk-acts .btn { flex: 1 1 auto; min-height: 44px; }
+}
 /* Tab trong hộp thoại không mượn kiểu dính của tab đầu màn */
 @media (max-width: 767px) {
   .modal .page-tabs {
